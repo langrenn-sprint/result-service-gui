@@ -1,0 +1,54 @@
+version: '3'
+services:
+  event-service-gui:
+    build: .
+    image: gcr.io/langrenn-sprint/event-service-gui:test
+    ports:
+      - "8080:8080"
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - ADMIN_USERNAME=${ADMIN_USERNAME}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - HOST_PORT=8080
+      - EVENT_SERVICE_HOST=event-service
+      - EVENT_SERVICE_PORT=8082
+      - USER_SERVICE_HOST=user-service
+      - USER_SERVICE_PORT=8084
+    depends_on:
+      - "event-service"
+  event-service:
+    image: gcr.io/langrenn-sprint/event-service:latest
+    ports:
+      - "8082:8080"
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - ADMIN_USERNAME=${ADMIN_USERNAME}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - LOGGING_LEVEL=${LOGGING_LEVEL}
+      - DB_HOST=mongodb
+      - DB_PORT=27017
+      - DB_USER=user
+      - DB_PASSWORD=secret
+    depends_on:
+      - "mongodb"
+  user-service:
+    image: gcr.io/langrenn-sprint/user-service:latest
+    ports:
+      - "8084:8080"
+    environment:
+      - JWT_EXP_DELTA_SECONDS=${JWT_EXP_DELTA_SECONDS}
+      - JWT_SECRET=${JWT_SECRET}
+      - ADMIN_USERNAME=${ADMIN_USERNAME}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - LOGGING_LEVEL=${LOGGING_LEVEL}
+      - DB_HOST=mongodb
+      - DB_PORT=27017
+      - DB_USER=user
+      - DB_PASSWORD=secret
+    depends_on:
+      - "mongodb"
+
+  mongodb:
+    image: mongo:latest
+    ports:
+      - 27017:27017
