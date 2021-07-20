@@ -6,7 +6,7 @@ import aiohttp_jinja2
 from aiohttp_session import get_session
 from aiohttp_session import new_session
 
-from event_service_gui.services import UserAdapter
+from result_service_gui.services import UserAdapter
 
 
 class Login(web.View):
@@ -66,38 +66,21 @@ class Login(web.View):
             except Exception:
                 eventid = ""
 
-            # Create new event
-            if "create" in form.keys():
-                session = await get_session(self.request)
-                token = session["token"]
-                id = await UserAdapter().create_user(
-                    token,
-                    form["newrole"],
-                    form["newusername"],
-                    form["newpassword"],
-                    session,
-                )
-                informasjon = f"Ny bruker opprettet med id {id}"
-                return web.HTTPSeeOther(
-                    location=f"/login?new=True&informasjon={informasjon}"
-                )
-
-            else:
-                # Perform login
-                session = await new_session(self.request)
-                result = await UserAdapter().login(
-                    form["username"], form["password"], session
-                )
-                if result != 200:
-                    informasjon = f"Innlogging feilet - {result}"
+            # Perform login
+            session = await new_session(self.request)
+            result = await UserAdapter().login(
+                form["username"], form["password"], session
+            )
+            if result != 200:
+                informasjon = f"Innlogging feilet - {result}"
 
         except Exception as e:
             logging.error(f"Error: {e}")
             informasjon = f"Det har oppstått en feil - {e.args}."
             result = 400
 
+        event = {"name": "Langrenn", "organiser": "Ikke valgt"}
         if result != 200:
-            event = {"name": "Administrasjon"}
             return await aiohttp_jinja2.render_template_async(
                 "login.html",
                 self.request,

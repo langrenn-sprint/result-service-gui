@@ -5,8 +5,8 @@ from aiohttp import web
 import aiohttp_jinja2
 from aiohttp_session import get_session
 
-from event_service_gui.services import EventsAdapter
-from event_service_gui.services import UserAdapter
+from result_service_gui.services import EventsAdapter
+from result_service_gui.services import UserAdapter
 
 
 class Main(web.View):
