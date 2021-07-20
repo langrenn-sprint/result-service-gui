@@ -1,12 +1,12 @@
 [tool.poetry]
-name = "event-service-gui"
+name = "result-service-gui"
 version = "0.1.0"
 description = "Webserver serving startlists and results"
 authors = ["Stig B. Dørmænen <stigbd@gmail.com>", "Heming Harnæs <heming.harnaes@gmail.com"]
 license = "Apache-2.0"
 readme = "README.md"
 homepage = "https://github.com/langrenn-sprint"
-repository = "https://github.com/langrenn-sprint/event-service-gui"
+repository = "https://github.com/langrenn-sprint/result-service-gui"
 classifiers=[
   "Programming Language :: Python :: 3",
   "License :: OSI Approved :: Apache Software License",
@@ -56,7 +56,7 @@ source = ["src", "*/site-packages"]
 
 [tool.coverage.run]
 branch = false
-source = ["event_service_gui"]
+source = ["result_service_gui"]
 omit = ["*gunicorn_config.py"]
 
 [tool.coverage.report]

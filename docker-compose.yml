@@ -1,16 +1,16 @@
 version: '3'
 services:
-  event-service-gui:
+  result-service-gui:
     build: .
-    image: gcr.io/langrenn-sprint/event-service-gui:test
+    image: gcr.io/langrenn-sprint/result-service-gui:test
     ports:
-      - "8080:8080"
+      - "8081:8081"
     environment:
       - JWT_SECRET=${JWT_SECRET}
       - ADMIN_USERNAME=${ADMIN_USERNAME}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
-      - HOST_PORT=8080
-      - EVENT_SERVICE_HOST=event-service
+      - HOST_PORT=8081
+      - EVENT_SERVICE_HOST=result-service
       - EVENT_SERVICE_PORT=8082
       - USER_SERVICE_HOST=user-service
       - USER_SERVICE_PORT=8084

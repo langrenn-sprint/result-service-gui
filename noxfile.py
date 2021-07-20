@@ -5,7 +5,7 @@ import nox
 from nox.sessions import Session
 import nox_poetry  # noqa: F401
 
-package = "event_service_gui"
+package = "result_service_gui"
 locations = "src", "tests", "noxfile.py"
 nox.options.stop_on_first_error = True
 nox.options.sessions = (

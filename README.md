@@ -13,7 +13,7 @@ Her finner du en enkel webserver som generer html basert på csv-filer i test-da
 
 ### Installere programvare:
 ```
-% git clone https://github.com/langrenn-sprint/event-service-gui.git
+% git clone https://github.com/langrenn-sprint/result-service-gui.git
 % cd evnt-service-gui
 % pyenv install 3.9.1
 % pyenv local 3.9.1
@@ -53,7 +53,7 @@ Denne fila _skal_ ligge i .dockerignore og .gitignore
 ## Start lokal webserver mha aiohttp-devtools(adev):
 ```
 % source .env
-% cd src && poetry run adev runserver -p 8080 event_service_gui
+% cd src && poetry run adev runserver -p 8080 result_service_gui
 ```
 ### Teste manuelt
 Enten åpne din nettleser på http://localhost:8080/
@@ -62,7 +62,7 @@ Eller via curl:
 ```
 % curl -i http://localhost:8080/
 ```
-Når du endrer koden i event_service_gui, vil webserveren laste applikasjonen på nytt autoamtisk ved lagring.
+Når du endrer koden i result_service_gui, vil webserveren laste applikasjonen på nytt autoamtisk ved lagring.
 
 # Referanser
 aiohttp: https://docs.aiohttp.org/

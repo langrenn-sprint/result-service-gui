@@ -12,15 +12,10 @@ from cryptography import fernet
 import jinja2
 
 from .views import (
-    Contestants,
-    Events,
     Login,
     Logout,
     Main,
     Ping,
-    Raceclasses,
-    Schedules,
-    Users,
 )
 
 LOGGING_LEVEL = os.getenv("LOGGING_LEVEL", "INFO")
@@ -48,9 +43,9 @@ async def create_app() -> web.Application:
     # Set up logging
     logging.basicConfig(level=LOGGING_LEVEL)
     # Set up static path
-    static_path = os.path.join(os.getcwd(), "event_service_gui/static")
+    static_path = os.path.join(os.getcwd(), "result_service_gui/static")
     # Set up template path
-    template_path = os.path.join(os.getcwd(), "event_service_gui/templates")
+    template_path = os.path.join(os.getcwd(), "result_service_gui/templates")
     aiohttp_jinja2.setup(
         app,
         enable_async=True,
@@ -62,14 +57,9 @@ async def create_app() -> web.Application:
     app.add_routes(
         [
             web.view("/", Main),
-            web.view("/contestants", Contestants),
-            web.view("/events", Events),
             web.view("/login", Login),
             web.view("/logout", Logout),
             web.view("/ping", Ping),
-            web.view("/raceclasses", Raceclasses),
-            web.view("/schedules", Schedules),
-            web.view("/users", Users),
             web.static("/static", static_path),
         ]
     )
