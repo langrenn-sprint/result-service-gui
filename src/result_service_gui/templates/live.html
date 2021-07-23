@@ -1,0 +1,111 @@
+{% extends "adm_base.html" %}
+{% block titleheader %}
+  Live scroll {{ valgt_startnr }}{{ valgt_klasse }}, {{ lopsinfo[0] }}
+{% endblock %}
+
+{% block refresh %}60{% endblock %}
+
+{% block titlemain %}
+  Live scroll {{ valgt_startnr }}{{ valgt_klasse }}, {{ lopsinfo[0] }}
+{% endblock %}
+
+{% block menuitems %}
+  <li class=dropdown id=topborder>
+    <a href=javascript:void(0) class=dropbtn>Velg klasse</a>
+    <div class=dropdown-content>
+      {% for klasse in klasser %}
+          <a href=live?klasse={{ klasse.Løpsklasse }}>{{ klasse.Klasse }}</a>
+      {% endfor %}
+    </div>
+  </li>
+  <li class=dropdown id=topborder>
+    <a href=javascript:void(0) class=dropbtn>Velg løper</a>
+    <div class=dropdown-content>
+      {% if valgt_klasse == "" %}
+        <a href=live>Velg klasse først</a>
+      {% else %}
+        <a href=live?klasse={{ valgt_klasse }}>Alle</a>
+        {% for deltaker in deltakere %}
+          <a href=live?klasse={{ valgt_klasse }}&startnr={{ deltaker.Startnr }}>{{ deltaker.Startnr }} {{ deltaker.Navn }}</a>
+        {% endfor %}
+      {% endif %}
+    </div>
+  </li>
+{% endblock %}
+
+{% block content %}
+  <div id=spacer></div>
+  <div class="w3-row-padding">
+    <div class="{{ colclass }}">
+      <table>
+
+        {% for heat in kjoreplan %}
+
+            {% if heat.Heat in colseparators %}
+                </table>
+              </div>
+              <div class="{{ colclass }}">
+                <table>
+            {% endif %}
+
+            {% if heat.resultat_registrert %}
+              <tr id=headerblack>
+                <td colspan=3>{{ heat.Runde }}</td>
+                <td colspan=2>Resultater</td>
+              </tr>
+              <tr id=subheader>
+                <td><div id={{ heat.Heat[0] }} >Plass</div></td>
+                <td>Nr</td>
+                <td>Navn</td>
+                <td>Klubb</td>
+                {% if heat.Heat[0] == "F" %}
+                  <td></td>
+                {% else %}
+                  <td>Neste</td>
+                {% endif %}
+              </tr>
+              {% for loper in resultatliste %}
+                {% if heat.Index == loper.Heat %}
+                    <tr>
+                      <td>{{ loper.Plass }}</td>
+                      <td>{{ loper.Nr }}</td>
+                      <td>{{ loper.Navn[:24] }}</td>
+                      <td>{{ loper.Klubb[:8] }}</td>
+                      <td>{{ loper.Videre_til }}</td>
+                    </tr>
+                  {% endif %}
+              {% endfor %}
+            {% else %}
+              <tr id=headerblue>
+                <td colspan=3>{{ heat.Runde }}</td>
+                <td colspan=2>Kl. {{ heat.Start }}</td>
+              </tr>
+              <tr id=subheader>
+                <td><div id={{ heat.Heat[0] }} >Pos</div></td>
+                <td>Nr</td>
+                <td>Navn</td>
+                <td>Klubb</td>
+                <td></td>
+               </tr>
+               {% for loper in startliste %}
+                 {% if heat.Index == loper.Heat %}
+                     <tr>
+                       <td>{{ loper.Pos }}</td>
+                       <td>{{ loper.Nr }}</td>
+                       <td>{{ loper.Navn[:24] }}</td>
+                       <td>{{ loper.Klubb[:10] }}</td>
+                       <td></td>
+                     </tr>
+                   {% endif %}
+               {% endfor %}
+            {% endif %}
+
+          <tr>
+            <td id=spacer colspan=5> </td>
+          </tr>
+
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+{% endblock %}

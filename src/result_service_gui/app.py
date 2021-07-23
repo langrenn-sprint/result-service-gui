@@ -10,15 +10,26 @@ from aiohttp_session import get_session, setup
 from aiohttp_session.cookie_storage import EncryptedCookieStorage
 from cryptography import fernet
 import jinja2
+import motor.motor_asyncio
 
 from .views import (
+    Events,
+    Live,
     Login,
     Logout,
     Main,
     Ping,
+    Resultat,
+    ResultatHeat,
+    Start,
 )
 
 LOGGING_LEVEL = os.getenv("LOGGING_LEVEL", "INFO")
+DB_HOST = os.getenv("DB_HOST", "localhost")
+DB_PORT = int(os.getenv("DB_PORT", 27017))
+DB_NAME = os.getenv("DB_NAME", "test")
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
 
 
 async def handler(request) -> web.Response:
@@ -54,12 +65,22 @@ async def create_app() -> web.Application:
     logging.debug(f"template_path: {template_path}")
     logging.debug(f"static_path: {static_path}")
 
+    # todo - remove: Set up database connection:
+    client = motor.motor_asyncio.AsyncIOMotorClient(DB_HOST, DB_PORT)
+    db = client.DB_NAME
+    app["db"] = db
+
     app.add_routes(
         [
             web.view("/", Main),
+            web.view("/events", Events),
+            web.view("/live", Live),
             web.view("/login", Login),
             web.view("/logout", Logout),
             web.view("/ping", Ping),
+            web.view("/resultat", Resultat),
+            web.view("/resultat/heat", ResultatHeat),
+            web.view("/start", Start),
             web.static("/static", static_path),
         ]
     )

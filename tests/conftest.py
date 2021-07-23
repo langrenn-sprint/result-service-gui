@@ -9,7 +9,7 @@ import pytest
 import requests
 from requests.exceptions import ConnectionError
 
-from event_service_gui import create_app
+from result_service_gui import create_app
 
 HOST_PORT = int(env.get("HOST_PORT", "8080"))
 

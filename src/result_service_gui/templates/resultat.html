@@ -1,0 +1,114 @@
+{% extends "adm_base.html" %}
+{% block titleheader %}
+  Resultater {{ valgt_klubb }}{{ valgt_klasse }}, {{ lopsinfo[0] }}
+{% endblock %}
+
+{% block refresh %}300{% endblock %}
+
+{% block titlemain %}
+  Resultater {{ valgt_klubb }}{{ valgt_klasse }}, {{ lopsinfo[0] }}
+{% endblock %}
+
+{% block menuitems %}
+  <li class=dropdown id=topborder>
+    <a href=javascript:void(0) class=dropbtn>Velg klasse</a>
+    <div class=dropdown-content>
+      <a href=resultat>Alle</a>
+      {% for klasse in klasser %}
+        <a href=resultat?klasse={{ klasse.KlasseWeb }}>{{ klasse.Klasse }}</a>
+      {% endfor %}
+    </div>
+  </li>
+  <li class=dropdown id=topborder>
+    <a href=javascript:void(0) class=dropbtn>Velg klubb</a>
+    <div class=dropdown-content>
+      <a href=resultat>Alle</a>
+      {% for klubb in klubber %}
+        <a href=resultat?klubb={{ klubb }}>{{ klubb }}</a>
+      {% endfor %}
+    </div>
+  </li>
+{% endblock %}
+
+{% block content %}
+  <div id=spacer></div>
+  <div class="w3-row-padding">
+    {{ informasjon }}
+    <table>
+      <tr>
+        <td align=center>
+        {% for bilde in foto %}
+          {% if loop.index < 5 %}
+              <a href=foto?{{ valgt_bildevisning }}>
+                <img class="img_kvart" src="{{ bilde.Url_thumb }}">
+              </a>
+          {% endif %}
+        {% endfor %}
+        </td>
+      </tr>
+    </table>
+
+    <div class="w3-half">
+      <h2>Resultatliste sammenlagt</h2>
+      <table>
+        <tr id=headerblack>
+          <td>Plass</td>
+          <td>Startnr</td>
+          <td>Navn</td>
+          <td>Klubb</td>
+          <td>Klasse</td>
+        </tr>
+        {% for deltaker in resultatliste %}
+          {% if (deltaker.Navn != "-") %}
+                <tr>
+                  <td>{{ deltaker.Plass }}</td>
+                  <td>{{ deltaker.Nr }}</td>
+                  <td><a alt="Heat resultater" href=live?startnr={{ deltaker.Nr }}>{{ deltaker.Navn }}</a></td>
+                  <td>{{ deltaker.Klubb }}</td>
+                  <td>{{ deltaker.Klasse }}</td>
+                </tr>
+          {% endif %}
+        {% endfor %}
+        <tr>
+          <td id=spacer colspan=6> </td>
+        </tr>
+      </table>
+    </div>
+    <div class="w3-half">
+      <h2>Heat resultater</h2>
+      <table>
+        {% for heat in heatliste %}
+          <tr id=headerblack>
+            <td colspan=3>{{ heat.Runde }}</td>
+            <td colspan=2>Resultater</td>
+          </tr>
+          <tr id=subheader>
+            <td>Plass</td>
+            <td>Nr</td>
+            <td>Navn</td>
+            <td>Klubb</td>
+            {% if heat.Heat[0] == "F" %}
+              <td></td>
+            {% else %}
+              <td>Videre til</td>
+            {% endif %}
+          </tr>
+          {% for loper in resultatheatliste %}
+            {% if heat.Index == loper.Heat %}
+                <tr>
+                  <td>{{ loper.Plass }}</td>
+                  <td>{{ loper.Nr }}</td>
+                  <td>{{ loper.Navn }}</td>
+                  <td>{{ loper.Klubb }}</td>
+                  <td>{{ loper.Videre_til }}</td>
+                </tr>
+              {% endif %}
+          {% endfor %}
+          <tr>
+            <td id=spacer colspan=4> </td>
+          </tr>
+        {% endfor %}
+      </table>
+    </div>
+  </div>
+{% endblock %}
