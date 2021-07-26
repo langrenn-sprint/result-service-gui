@@ -16,14 +16,16 @@
     <div class="w3-row-padding">
     {% block titlecontainer %}{% endblock %}
       <div id=spacer></div>
-      <div class="w3-container" id=adminpagetitle>{{ event.name }}</div>
+      <div class="w3-container" id=adminpagetitle>
+        {% block titlemain %}{% endblock %} {{ event.name }}
+      </div>
       <div id=spacer></div>
       <div class="w3-container">
         <ul>
           <li class=dropdown>
             <a href=javascript:void(0) class=dropbtn>...</a>
             <div class=dropdown-content>
-              <a href="/">Hovedside</a>
+              <a href="/events?eventid={{ eventid }}">Hovedside</a>
             </div>
           </li>
           {% block menuitems %}{% endblock %}

@@ -8,7 +8,6 @@ from aiohttp_session import get_session
 from result_service_gui.services import (
     DeltakereService,
     EventsAdapter,
-    InnstillingerService,
     KjoreplanService,
     KlasserService,
     ResultatHeatService,
@@ -44,11 +43,6 @@ class Live(web.View):
         if eventid != "":
             logging.debug(f"get_event {eventid}")
             event = await EventsAdapter().get_event(token, eventid)
-
-        _lopsinfo = await InnstillingerService().get_header_footer_info(
-            self.request.app["db"],
-        )
-        logging.debug(_lopsinfo)
 
         try:
             valgt_klasse = self.request.rel_url.query["klasse"]
@@ -141,7 +135,6 @@ class Live(web.View):
                 "event": event,
                 "eventid": eventid,
                 "informasjon": informasjon,
-                "lopsinfo": _lopsinfo,
                 "valgt_klasse": valgt_klasse,
                 "valgt_startnr": valgt_startnr,
                 "colseparators": colseparators,

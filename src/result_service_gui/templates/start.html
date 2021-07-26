@@ -1,12 +1,16 @@
 {% extends "adm_base.html" %}
+{% block titlecontainer %}
+  <div class="w3-container">
+{% endblock %}
+
 {% block titleheader %}
-  Startlister {{ valgt_klubb }}{{ valgt_klasse }}, {{ lopsinfo[0] }}
+  Startlister {{ valgt_klubb }}{{ valgt_klasse }}
 {% endblock %}
 
 {% block refresh %}300{% endblock %}
 
 {% block titlemain %}
-  Startlister {{ valgt_klubb }}{{ valgt_klasse }}, {{ lopsinfo[0] }}
+  Startlister {{ valgt_klubb }}{{ valgt_klasse }}
 {% endblock %}
 
 {% block menuitems %}
@@ -14,46 +18,50 @@
     <a href=javascript:void(0) class=dropbtn>Velg klasse</a>
     <div class=dropdown-content>
       {% for klasse in klasser %}
-        <a href=start?klasse={{ klasse.Løpsklasse }}>{{ klasse.Klasse }}</a>
+        <a href=start?klasse={{ klasse.Løpsklasse }}&eventid={{ eventid }}>{{ klasse.Klasse }}</a>
       {% endfor %}
     </div>
   </li>
   <li class=dropdown id=topborder>
-    <a href="start?klasse=live" class=dropbtn alt="Se hvem som starter nå, viser de neste 8 heat">Starter nå</a>
+    <a href="start?klasse=live&eventid={{ eventid }}" class=dropbtn alt="Se hvem som starter nå, viser de neste 8 heat">Starter nå</a>
   </li>
 {% endblock %}
 
 {% block content %}
-  <div id=spacer></div>
+  {{ informasjon }}
+
+  {% if valgt_klasse != "live" %}
     <div class="w3-row-padding">
-      <div class="{{ colclass }}">
-        {{ informasjon }}
+      <div class="w3-quart"></div>
+      <div class="w3-half">
+        <table>
+           <tr id=headerblue>
+             <td>Klasse</td>
+             <td>Første kvart</td>
+             <td>Første semi</td>
+             <td>Første finale</td>
+          </tr>
+          <tr>
+            <td>{{ klassetider.Løpsklasse }}</td>
+            <td>{{ klassetider.TidKvart }}</td>
+            <td>{{ klassetider.TidSemi }}</td>
+            <td>{{ klassetider.TidFinale }}</td>
+          </tr>
+          <tr>
+            <td id=spacer colspan=4> </td>
+          </tr>
+        </table>
+      </div>
+    </div>
+  {% endif %}
 
-        {% if valgt_klasse != "live" %}
-          <table>
-             <tr id=headerblue>
-               <td>Starttider</td>
-               <td>Kvartfinaler</td>
-               <td>Semifinaler</td>
-               <td>Finaler</td>
-            </tr>
-            <tr>
-              <td>{{ klassetider.Løpsklasse }}</td>
-              <td>{{ klassetider.TidKvart }}</td>
-              <td>{{ klassetider.TidSemi }}</td>
-              <td>{{ klassetider.TidFinale }}</td>
-            </tr>
-            <tr>
-              <td id=spacer colspan=4> </td>
-            </tr>
-          </table>
-        {% endif %}
-
-
+    <div id=spacer></div>
+    <div class="w3-row-padding">
+      <div class="w3-third">
         <table>
           {% for heat in kjoreplan %}
 
-            {% if heat.Index in colseparators %}
+            {% if heat.Heat in colseparators %}
                 </table>
               </div>
               <div class="{{ colclass }}">

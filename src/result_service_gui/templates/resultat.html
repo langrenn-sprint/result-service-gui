@@ -1,12 +1,16 @@
 {% extends "adm_base.html" %}
+{% block titlecontainer %}
+<div class="w3-container">
+{% endblock %}
+
 {% block titleheader %}
-  Resultater {{ valgt_klubb }}{{ valgt_klasse }}, {{ lopsinfo[0] }}
+  Resultater {{ valgt_klubb }}{{ valgt_klasse }}
 {% endblock %}
 
 {% block refresh %}300{% endblock %}
 
 {% block titlemain %}
-  Resultater {{ valgt_klubb }}{{ valgt_klasse }}, {{ lopsinfo[0] }}
+  Resultater {{ valgt_klubb }}{{ valgt_klasse }}
 {% endblock %}
 
 {% block menuitems %}
@@ -15,7 +19,7 @@
     <div class=dropdown-content>
       <a href=resultat>Alle</a>
       {% for klasse in klasser %}
-        <a href=resultat?klasse={{ klasse.KlasseWeb }}>{{ klasse.Klasse }}</a>
+        <a href=resultat?klasse={{ klasse.KlasseWeb }}&eventid={{ eventid }}>{{ klasse.Klasse }}</a>
       {% endfor %}
     </div>
   </li>
@@ -24,7 +28,7 @@
     <div class=dropdown-content>
       <a href=resultat>Alle</a>
       {% for klubb in klubber %}
-        <a href=resultat?klubb={{ klubb }}>{{ klubb }}</a>
+        <a href=resultat?klubb={{ klubb }}&eventid={{ eventid }}>{{ klubb }}</a>
       {% endfor %}
     </div>
   </li>

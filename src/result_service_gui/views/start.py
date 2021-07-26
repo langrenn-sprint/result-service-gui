@@ -7,7 +7,6 @@ from aiohttp_session import get_session
 
 from result_service_gui.services import (
     EventsAdapter,
-    InnstillingerService,
     KjoreplanService,
     KlasserService,
     StartListeService,
@@ -41,11 +40,6 @@ class Start(web.View):
         if eventid != "":
             logging.debug(f"get_event {eventid}")
             event = await EventsAdapter().get_event(token, eventid)
-
-        _lopsinfo = await InnstillingerService().get_header_footer_info(
-            self.request.app["db"],
-        )
-        logging.debug(_lopsinfo)
 
         informasjon = ""
         startliste = []
@@ -93,6 +87,17 @@ class Start(web.View):
             startliste = await StartListeService().get_startliste_by_lopsklasse(
                 self.request.app["db"], valgt_klasse
             )
+
+            # responsive design - determine column-arrangement
+            colseparators = ["SC1", "SA1", "A1"]
+            for heat in kjoreplan:
+                if heat["Heat"] in colseparators:
+                    if heat["Heat"] == "SC1":
+                        colseparators.remove("SA1")
+                elif heat["Heat"] in {"FA", "FB", "FC"}:
+                    colseparators.append(heat["Heat"])
+                    break
+
         logging.debug(startliste)
 
         """Get route function."""
@@ -103,7 +108,6 @@ class Start(web.View):
                 "event": event,
                 "eventid": eventid,
                 "informasjon": informasjon,
-                "lopsinfo": _lopsinfo,
                 "valgt_klasse": valgt_klasse,
                 "colseparators": colseparators,
                 "colclass": colclass,

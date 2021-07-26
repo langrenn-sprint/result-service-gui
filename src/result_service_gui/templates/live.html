@@ -1,12 +1,16 @@
 {% extends "adm_base.html" %}
+{% block titlecontainer %}
+  <div class="w3-container">
+{% endblock %}
+
 {% block titleheader %}
-  Live scroll {{ valgt_startnr }}{{ valgt_klasse }}, {{ lopsinfo[0] }}
+  Live scroll {{ valgt_startnr }}{{ valgt_klasse }}
 {% endblock %}
 
 {% block refresh %}60{% endblock %}
 
 {% block titlemain %}
-  Live scroll {{ valgt_startnr }}{{ valgt_klasse }}, {{ lopsinfo[0] }}
+  Live scroll {{ valgt_startnr }}{{ valgt_klasse }}
 {% endblock %}
 
 {% block menuitems %}
@@ -14,7 +18,7 @@
     <a href=javascript:void(0) class=dropbtn>Velg klasse</a>
     <div class=dropdown-content>
       {% for klasse in klasser %}
-          <a href=live?klasse={{ klasse.Løpsklasse }}>{{ klasse.Klasse }}</a>
+          <a href=live?klasse={{ klasse.Løpsklasse }}&eventid={{ eventid }}>{{ klasse.Klasse }}</a>
       {% endfor %}
     </div>
   </li>
@@ -24,9 +28,9 @@
       {% if valgt_klasse == "" %}
         <a href=live>Velg klasse først</a>
       {% else %}
-        <a href=live?klasse={{ valgt_klasse }}>Alle</a>
+        <a href=live?klasse={{ valgt_klasse }}&eventid={{ eventid }}>Alle</a>
         {% for deltaker in deltakere %}
-          <a href=live?klasse={{ valgt_klasse }}&startnr={{ deltaker.Startnr }}>{{ deltaker.Startnr }} {{ deltaker.Navn }}</a>
+          <a href=live?klasse={{ valgt_klasse }}&startnr={{ deltaker.Startnr }}&eventid={{ eventid }}>{{ deltaker.Startnr }} {{ deltaker.Navn }}</a>
         {% endfor %}
       {% endif %}
     </div>

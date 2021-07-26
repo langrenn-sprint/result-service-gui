@@ -8,7 +8,6 @@ from aiohttp_session import get_session
 from result_service_gui.services import (
     EventsAdapter,
     FotoService,
-    InnstillingerService,
     KjoreplanService,
     KlasserService,
     ResultatHeatService,
@@ -57,11 +56,6 @@ class Resultat(web.View):
         if eventid != "":
             logging.debug(f"get_event {eventid}")
             event = await EventsAdapter().get_event(token, eventid)
-
-        _lopsinfo = await InnstillingerService().get_header_footer_info(
-            self.request.app["db"],
-        )
-        logging.debug(_lopsinfo)
 
         foto = []
         informasjon = ""
@@ -133,7 +127,6 @@ class Resultat(web.View):
                 "eventid": eventid,
                 "foto": foto,
                 "informasjon": informasjon,
-                "lopsinfo": _lopsinfo,
                 "valgt_bildevisning": valgt_bildevisning,
                 "valgt_klasse": valgt_klasse,
                 "valgt_klubb": valgt_klubb,
