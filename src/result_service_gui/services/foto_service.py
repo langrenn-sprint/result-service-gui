@@ -4,7 +4,6 @@ import logging
 from typing import Any, List
 
 from .deltakere_service import DeltakereService
-from .innstillinger_service import InnstillingerService
 from .kjoreplan_service import KjoreplanService
 from .klasser_service import KlasserService
 from .start_service import StartListeService
@@ -27,7 +26,7 @@ klubber = [
 class FotoService:
     """Class representing foto service."""
 
-    async def get_all_foto(self, db: Any) -> List:
+    async def get_all_foto(self, db: Any, event: dict) -> List:
         """Get all foto function."""
         foto = []
         cursor = db.foto_collection.find()
@@ -36,7 +35,7 @@ class FotoService:
             logging.debug(document)
         return foto
 
-    async def get_foto_by_klasse(self, db: Any, lopsklasse: str) -> List:
+    async def get_foto_by_klasse(self, db: Any, lopsklasse: str, event: dict) -> List:
         """Get all foto for a given klasse."""
         foto = []
         cursor = db.foto_collection.find({"Løpsklasse": lopsklasse})
@@ -45,7 +44,7 @@ class FotoService:
             logging.debug(document)
         return foto
 
-    async def get_foto_by_klubb(self, db: Any, klubb: str) -> List:
+    async def get_foto_by_klubb(self, db: Any, klubb: str, event: dict) -> List:
         """Get all foto for a given klubb."""
         foto = []
         myquery = ".*" + klubb + ".*"
@@ -55,15 +54,15 @@ class FotoService:
             logging.debug(document)
         return foto
 
-    async def create_foto(self, db: Any, body: Any) -> int:
+    async def create_foto(self, db: Any, body: Any, event: dict) -> int:
         """Create foto function. Delete existing foto, if any."""
         returncode = 201
 
         # analyze tags and enrich with event information
-        tags_fromnumbers = await find_event_information(db, body)
+        tags_fromnumbers = await find_event_information(db, body, event)
         body.update(tags_fromnumbers)
         if "Løpsklasse" not in body.keys():
-            body["Løpsklasse"] = await find_lopsklasse(db, body)
+            body["Løpsklasse"] = await find_lopsklasse(db, body, event)
         logging.debug(body)
 
         result = await db.foto_collection.insert_one(body)
@@ -71,7 +70,7 @@ class FotoService:
 
         return returncode
 
-    async def update_tags(self, db: Any, tags: Any) -> None:
+    async def update_tags(self, db: Any, tags: Any, event: dict) -> None:
         """Update tags for one photo."""
         logging.debug(f"Got tags {tags} of type {type(tags)}")
 
@@ -91,7 +90,7 @@ class FotoService:
             nummerliste = nummere.split(";")
             for nummer in nummerliste:
                 tmp_tags = await find_info_from_startnummer(
-                    db, nummer, tags["DateTime"]
+                    db, nummer, tags["DateTime"], event
                 )
                 for x, y in tmp_tags.items():
                     logging.debug(f"Found tag: {x}, {y}")
@@ -135,17 +134,21 @@ def get_seconds_diff(time1: str, time2: str) -> int:
     return seconds_diff
 
 
-async def find_event_information(db: Any, tags: dict) -> dict:
+async def find_event_information(db: Any, tags: dict, event: dict) -> dict:
     """Analyse photo tags and identify event information."""
-    newvalues = {}
-    nummere = tags["Numbers"]
+    newvalues = {"new": "new"}
+    newvalues.pop("new")
+    tmp_tags = {"new": "new"}
+    tmp_tags.pop("new")
     personer = tags["Persons"]
+    nummere = tags["Numbers"]
     if personer.isnumeric():
         if int(personer) > 0:
             nummerliste = nummere.split(";")
             for nummer in nummerliste:
-                tmp_tags = {}
-                tmp_tags = find_info_from_startnummer(db, nummer, tags["DateTime"])
+                tmp_tags = find_info_from_startnummer(
+                    db, nummer, tags["DateTime"], event
+                )
                 for x, y in tmp_tags.items():
                     logging.debug(f"Found tag: {x}, {y}")
                     if x not in newvalues.keys():
@@ -161,14 +164,15 @@ async def find_event_information(db: Any, tags: dict) -> dict:
                 if text in klubber:
                     if text not in newvalues["Klubb"]:
                         newvalues["Klubb"] = newvalues["Klubb"] + text + ";"
-
     return newvalues
 
 
-async def find_info_from_startnummer(db: Any, startnummer: str, tid: str) -> dict:
+async def find_info_from_startnummer(
+    db: Any, startnummer: str, tid: str, event: dict
+) -> dict:
     """Analyse photo tags and identify heat."""
     nye_tags = {}
-    funnetheat = ""
+    foundheat = ""
     funnetdeltaker = {}
 
     starter = await StartListeService().get_startliste_by_nr(db, startnummer)
@@ -178,10 +182,12 @@ async def find_info_from_startnummer(db: Any, startnummer: str, tid: str) -> dic
             # check startnummer
             logging.debug(f"Start funnet: {start}")
             # check heat (if not already found)
-            if funnetheat == "":
-                funnetheat = await verify_heat(db, tid, start["Heat"])
-                if funnetheat != "":
-                    nye_tags["Heat"] = funnetheat
+            if foundheat == "":
+                foundheat = await verify_heat(
+                    db, tid, event["date"], event["raceduration"], start["Heat"]
+                )
+                if foundheat != "":
+                    nye_tags["Heat"] = foundheat
         # Get klubb and klasse
         funnetdeltaker = await DeltakereService().get_deltaker_by_startnr(
             db, startnummer
@@ -194,7 +200,7 @@ async def find_info_from_startnummer(db: Any, startnummer: str, tid: str) -> dic
     return nye_tags
 
 
-async def find_lopsklasse(db: Any, tags: dict) -> str:
+async def find_lopsklasse(db: Any, tags: dict, event: dict) -> str:
     """Analyse photo tags and identify løpsklasse."""
     funnetklasse = ""
     alleklasser = await KlasserService().get_all_klasser(db)
@@ -207,25 +213,26 @@ async def find_lopsklasse(db: Any, tags: dict) -> str:
     return funnetklasse
 
 
-async def verify_heat(db: Any, datetime_foto: str, heat_index: str) -> str:
+async def verify_heat(
+    db: Any,
+    datetime_foto: str,
+    raceduration: int,
+    heat_index: str,
+    event: dict,
+) -> str:
     """Analyse photo tags and identify heat."""
-    funnetheat = ""
-    lopsdato = await InnstillingerService().get_dato(db)
-    tmplopsvarighet = await InnstillingerService().get_lopsvarighet(db)
-    # TODO: Move to properties
-    lopsvarighet = 180
-    if tmplopsvarighet.isnumeric():
-        lopsvarighet = int(tmplopsvarighet)
+    foundheat = ""
+    racedate = event["date"]
 
     if datetime_foto is not None:
         heat = await KjoreplanService().get_heat_by_index(db, heat_index)
         if heat is not None:
-            seconds = get_seconds_diff(datetime_foto, lopsdato + " " + heat["Start"])
+            seconds = get_seconds_diff(datetime_foto, racedate + " " + heat["Start"])
             logging.debug(
-                f"Verify heat, diff: {seconds}, heat: {lopsdato} {heat}, foto: {datetime_foto}"
+                f"Verify heat, diff: {seconds}, heat: {racedate} {heat}, foto: {datetime_foto}"
             )
-            if -300 < seconds < (300 + lopsvarighet):
+            if -300 < seconds < (300 + raceduration):
                 logging.debug(f"Funnet heat: {heat}")
-                funnetheat = heat["Index"]
+                foundheat = heat["Index"]
 
-    return funnetheat
+    return foundheat

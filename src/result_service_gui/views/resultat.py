@@ -91,7 +91,7 @@ class Resultat(web.View):
                 valgt_klubb,
             )
             foto = await FotoService().get_foto_by_klubb(
-                self.request.app["db"], valgt_klubb
+                self.request.app["db"], valgt_klubb, event
             )
             valgt_bildevisning = "klubb=" + valgt_klubb
         else:
@@ -114,7 +114,7 @@ class Resultat(web.View):
                 lopsklasse,
             )
             foto = await FotoService().get_foto_by_klasse(
-                self.request.app["db"], valgt_lopsklasse
+                self.request.app["db"], valgt_lopsklasse, event
             )
             valgt_bildevisning = "klasse=" + valgt_lopsklasse
 

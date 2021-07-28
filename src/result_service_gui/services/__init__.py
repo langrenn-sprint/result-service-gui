@@ -2,7 +2,6 @@
 from .deltakere_service import DeltakereService
 from .events_adapter import EventsAdapter
 from .foto_service import FotoService
-from .innstillinger_service import InnstillingerService
 from .kjoreplan_service import KjoreplanService
 from .klasser_service import KlasserService
 from .resultat_heat_service import ResultatHeatService

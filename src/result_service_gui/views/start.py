@@ -46,7 +46,7 @@ class Start(web.View):
         kjoreplan = []
         klassetider = {}
         colseparators = []
-        colclass = "w3-third"
+        colclass = "w3-half"
 
         try:
             valgt_klasse = self.request.rel_url.query["klasse"]
@@ -58,6 +58,7 @@ class Start(web.View):
 
         if valgt_klasse == "live":
             # vis heat som starter nå
+            colclass = "w3-third"
             iantallheat = 10
             isplitt = [3, 6]
             kjoreplan = await KjoreplanService().get_upcoming_heat(
@@ -87,16 +88,6 @@ class Start(web.View):
             startliste = await StartListeService().get_startliste_by_lopsklasse(
                 self.request.app["db"], valgt_klasse
             )
-
-            # responsive design - determine column-arrangement
-            colseparators = ["SC1", "SA1", "A1"]
-            for heat in kjoreplan:
-                if heat["Heat"] in colseparators:
-                    if heat["Heat"] == "SC1":
-                        colseparators.remove("SA1")
-                elif heat["Heat"] in {"FA", "FB", "FC"}:
-                    colseparators.append(heat["Heat"])
-                    break
 
         logging.debug(startliste)
 

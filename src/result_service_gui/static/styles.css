@@ -135,7 +135,7 @@ async function savefile(inp)
   padding:0.01em 0px
 }
 
-.w3-third,.w3-quart,.w3-quart-empty,.w3-row-padding,.w3-half {
+.w3-third,.w3-quart,.w3-quart-empty,.w3-half-empty,.w3-row-padding,.w3-half {
   padding:0.01em 2px
 }
 .w3-container:after,.w3-container:before,.w3-row-padding:after,.w3-row-padding:before {
@@ -148,6 +148,11 @@ async function savefile(inp)
   float:left;width:100%;
   width:50%;
   border-style: groove;
+}
+
+.w3-half-empty {
+  float:left;width:100%;
+  width:50%;
 }
 
 .w3-third {
@@ -170,7 +175,7 @@ async function savefile(inp)
   .w3-quart, .w3-quart-empty {
     width: 50%; /* The width is 100%, when the viewport is x px or smaller */
   }
-  .w3-third, .w3-half {
+  .w3-third, .w3-half, .w3-half-empty {
     width: 100%; /* The width is 100%, when the viewport is x px or smaller */
   }
 }

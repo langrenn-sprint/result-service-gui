@@ -42,13 +42,15 @@
           </li>
         </ul>
       </div>
-      <div id=spacer></div>
-      <div class="w3-container" id=info>{{ informasjon }}</div>
-      {% block content %}{% endblock %}
-      <div class="w3-container" id=footeradmin>
-          <a href="https://github.com/langrenn-sprint">langrenn-sprint</a> - utviklet av Lyn ski og Kjelsås langrenn
-      </div>
-      <div id=spacer></div>
+    <div id=spacer></div>
+    <div class="w3-container" id=info>{{ informasjon }}</div>
+    {% block content %}{% endblock %}
+  </div>
+  <div class="w3-row-padding">
+    <div class="w3-quart-empty"></div>
+    <div class="w3-half-empty" id=footeradmin>
+        <a href="https://github.com/langrenn-sprint">langrenn-sprint</a> - utviklet av Lyn ski og Kjelsås langrenn
     </div>
+  </div>
   </body>
 </html>

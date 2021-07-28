@@ -1,6 +1,11 @@
 {% extends "adm_base.html" %}
 {% block titlecontainer %}
-  <div class="w3-container">
+  {% if valgt_klasse != "live" %}
+    <div class="w3-quart-empty"></div>
+    <div class="w3-half">
+  {% else %}
+    <div class="w3-container">
+  {% endif %}
 {% endblock %}
 
 {% block titleheader %}
@@ -31,74 +36,73 @@
   {{ informasjon }}
 
   {% if valgt_klasse != "live" %}
+    <table>
+       <tr id=headerblue>
+         <td>Klasse</td>
+         <td>Første kvart</td>
+         <td>Første semi</td>
+         <td>Første finale</td>
+      </tr>
+      <tr>
+        <td>{{ klassetider.Løpsklasse }}</td>
+        <td>{{ klassetider.TidKvart }}</td>
+        <td>{{ klassetider.TidSemi }}</td>
+        <td>{{ klassetider.TidFinale }}</td>
+      </tr>
+      <tr>
+        <td id=spacer colspan=4> </td>
+      </tr>
+    </table>
+    <div id=spacer></div>
+  {% endif %}
+
+  {% if valgt_klasse == "live" %}
     <div class="w3-row-padding">
-      <div class="w3-quart"></div>
-      <div class="w3-half">
-        <table>
-           <tr id=headerblue>
-             <td>Klasse</td>
-             <td>Første kvart</td>
-             <td>Første semi</td>
-             <td>Første finale</td>
-          </tr>
+      <div class="{{ colclass }}">
+  {% endif %}
+    <table>
+      {% for heat in kjoreplan %}
+
+        {% if heat.Heat in colseparators %}
+            </table>
+          </div>
+          <div class="{{ colclass }}">
+            <table>
+        {% endif %}
+
+        <tr id=headerblue>
+          <td colspan=3>{{ heat.Løpsklasse }} {{ heat.Runde }}</td>
+          <td colspan=1>Kl. {{ heat.Start }}</td>
+        </tr>
+        <tr id=subheader>
+          <td><div id={{ heat.Heat[0] }} >Pos</div></td>
+          <td>Nr</td>
+          <td>Navn</td>
+          <td>Klubb</td>
+        </tr>
+      {% for loper in startliste %}
+        {% if heat.Index == loper.Heat %}
           <tr>
-            <td>{{ klassetider.Løpsklasse }}</td>
-            <td>{{ klassetider.TidKvart }}</td>
-            <td>{{ klassetider.TidSemi }}</td>
-            <td>{{ klassetider.TidFinale }}</td>
+            <td>{{ loper.Pos }}</td>
+            <td><div id={{ loper.Nr }}>{{ loper.Nr }}</div></td>
+            <td>
+              {% if valgt_klasse != "live" %}
+                <a href=live?klasse={{ heat.Løpsklasse }}&startnr={{ loper.Nr }}>{{ loper.Navn }}</a>
+              {% else %}
+                {{ loper.Navn[:24] }}
+              {% endif %}
+            </td>
+            <td>{{ loper.Klubb[:12] }}</td>
           </tr>
-          <tr>
-            <td id=spacer colspan=4> </td>
-          </tr>
-        </table>
+        {% endif %}
+      {% endfor %}
+      <tr>
+        <td id=spacer colspan=4> </td>
+      </tr>
+    {% endfor %}
+  </table>
+  {% if valgt_klasse == "live" %}
       </div>
     </div>
   {% endif %}
-
-    <div id=spacer></div>
-    <div class="w3-row-padding">
-      <div class="w3-third">
-        <table>
-          {% for heat in kjoreplan %}
-
-            {% if heat.Heat in colseparators %}
-                </table>
-              </div>
-              <div class="{{ colclass }}">
-                <table>
-            {% endif %}
-
-            <tr id=headerblue>
-              <td colspan=3>{{ heat.Løpsklasse }} {{ heat.Runde }}</td>
-              <td colspan=1>Kl. {{ heat.Start }}</td>
-            </tr>
-            <tr id=subheader>
-              <td><div id={{ heat.Heat[0] }} >Pos</div></td>
-              <td>Nr</td>
-              <td>Navn</td>
-              <td>Klubb</td>
-            </tr>
-          {% for loper in startliste %}
-            {% if heat.Index == loper.Heat %}
-              <tr>
-                <td>{{ loper.Pos }}</td>
-                <td><div id={{ loper.Nr }}>{{ loper.Nr }}</div></td>
-                <td>
-                  {% if valgt_klasse != "live" %}
-                    <a href=live?klasse={{ heat.Løpsklasse }}&startnr={{ loper.Nr }}>{{ loper.Navn }}</a>
-                  {% else %}
-                    {{ loper.Navn[:24] }}
-                  {% endif %}
-                </td>
-                <td>{{ loper.Klubb[:12] }}</td>
-              </tr>
-            {% endif %}
-          {% endfor %}
-          <tr>
-            <td id=spacer colspan=4> </td>
-          </tr>
-        {% endfor %}
-      </table>
-    </div>
-  </div>
 {% endblock %}
