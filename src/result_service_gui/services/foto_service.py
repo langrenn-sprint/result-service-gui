@@ -136,10 +136,7 @@ def get_seconds_diff(time1: str, time2: str) -> int:
 
 async def find_event_information(db: Any, tags: dict, event: dict) -> dict:
     """Analyse photo tags and identify event information."""
-    newvalues = {"new": "new"}
-    newvalues.pop("new")
-    tmp_tags = {"new": "new"}
-    tmp_tags.pop("new")
+    newvalues = {}
     personer = tags["Persons"]
     nummere = tags["Numbers"]
     if personer.isnumeric():
@@ -168,7 +165,7 @@ async def find_event_information(db: Any, tags: dict, event: dict) -> dict:
 
 
 async def find_info_from_startnummer(
-    db: Any, startnummer: str, tid: str, event: dict
+    db: Any, startnummer: str, foto_time: str, event: dict
 ) -> dict:
     """Analyse photo tags and identify heat."""
     nye_tags = {}
@@ -184,7 +181,7 @@ async def find_info_from_startnummer(
             # check heat (if not already found)
             if foundheat == "":
                 foundheat = await verify_heat(
-                    db, tid, event["date"], event["raceduration"], start["Heat"]
+                    db, foto_time, event["date"], event["raceduration"], start["Heat"]
                 )
                 if foundheat != "":
                     nye_tags["Heat"] = foundheat
