@@ -27,7 +27,7 @@
     <a href=javascript:void(0) class=dropbtn>Velg klubb</a>
     <div class=dropdown-content>
       <a href=resultat>Alle</a>
-      {% for klubb in klubber %}
+      {% for klubb in clubs %}
         <a href=resultat?klubb={{ klubb }}&eventid={{ eventid }}>{{ klubb }}</a>
       {% endfor %}
     </div>

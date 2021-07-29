@@ -16,20 +16,6 @@ from result_service_gui.services import (
     UserAdapter,
 )
 
-klubber = [
-    "Bækkelaget",
-    "Heming",
-    "Kjelsås",
-    "Koll",
-    "Lillomarka",
-    "Lyn",
-    "Njård",
-    "Rustad",
-    "Røa",
-    "Try",
-    "Årvoll",
-]
-
 
 class Resultat(web.View):
     """Class representing the resultat view. Both sluttresultat and heatresultat."""
@@ -45,7 +31,8 @@ class Resultat(web.View):
         except Exception:
             informasjon = ""
 
-        clubs = os.getenv("CLUBS")
+        SPORTS_CLUBS = os.getenv("SPORTS_CLUBS")
+        clubs = SPORTS_CLUBS.split(",")
         logging.info(f"Clubs: {clubs}")
 
         # check login
@@ -135,7 +122,7 @@ class Resultat(web.View):
                 "valgt_klasse": valgt_klasse,
                 "valgt_klubb": valgt_klubb,
                 "klasser": klasser,
-                "klubber": klubber,
+                "clubs": clubs,
                 "resultatliste": resultatliste,
                 "heatliste": heatliste,
                 "resultatheatliste": resultatheatliste,
