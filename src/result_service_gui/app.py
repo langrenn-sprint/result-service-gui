@@ -9,6 +9,7 @@ import aiohttp_jinja2
 from aiohttp_session import get_session, setup
 from aiohttp_session.cookie_storage import EncryptedCookieStorage
 from cryptography import fernet
+from dotenv import load_dotenv
 import jinja2
 import motor.motor_asyncio
 
@@ -24,6 +25,7 @@ from .views import (
     Start,
 )
 
+load_dotenv()
 LOGGING_LEVEL = os.getenv("LOGGING_LEVEL", "INFO")
 DB_HOST = os.getenv("DB_HOST", "localhost")
 DB_PORT = int(os.getenv("DB_PORT", 27017))

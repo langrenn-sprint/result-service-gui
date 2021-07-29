@@ -1,5 +1,6 @@
 """Resource module for resultat view."""
 import logging
+import os
 
 from aiohttp import web
 import aiohttp_jinja2
@@ -43,6 +44,9 @@ class Resultat(web.View):
             informasjon = self.request.rel_url.query["informasjon"]
         except Exception:
             informasjon = ""
+
+        clubs = os.getenv("CLUBS")
+        logging.info(f"Clubs: {clubs}")
 
         # check login
         username = ""
