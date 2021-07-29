@@ -3,4 +3,5 @@
 Modules:
     test_ping
     test_ready
+    test_start
 """

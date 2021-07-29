@@ -136,14 +136,14 @@ def get_seconds_diff(time1: str, time2: str) -> int:
 
 async def find_event_information(db: Any, tags: dict, event: dict) -> dict:
     """Analyse photo tags and identify event information."""
-    newvalues = {}
     personer = tags["Persons"]
     nummere = tags["Numbers"]
+    newvalues = {"": ""}
     if personer.isnumeric():
         if int(personer) > 0:
             nummerliste = nummere.split(";")
             for nummer in nummerliste:
-                tmp_tags = find_info_from_startnummer(
+                tmp_tags = await find_info_from_startnummer(
                     db, nummer, tags["DateTime"], event
                 )
                 for x, y in tmp_tags.items():
