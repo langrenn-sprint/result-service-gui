@@ -22,13 +22,6 @@ class Events(web.View):
             informasjon = self.request.rel_url.query["informasjon"]
         except Exception:
             informasjon = ""
-        try:
-            create_new = False
-            new = self.request.rel_url.query["new"]
-            if new != "":
-                create_new = True
-        except Exception:
-            create_new = False
 
         # check login
         username = ""
@@ -40,7 +33,7 @@ class Events(web.View):
         token = session["token"]
 
         event = {"name": "Nytt arrangement", "organiser": "Ikke valgt"}
-        if (not create_new) and (eventid != ""):
+        if eventid != "":
             logging.debug(f"get_event {eventid}")
             event = await EventsAdapter().get_event(token, eventid)
 
@@ -48,91 +41,10 @@ class Events(web.View):
             "events.html",
             self.request,
             {
-                "create_new": create_new,
                 "lopsinfo": "Arrangement",
                 "event": event,
                 "eventid": eventid,
                 "informasjon": informasjon,
                 "username": username,
             },
-        )
-
-    async def post(self) -> web.Response:
-        """Post route function that creates a collection of klasses."""
-        # check login
-        session = await get_session(self.request)
-        loggedin = UserAdapter().isloggedin(session)
-        if not loggedin:
-            return web.HTTPSeeOther(location="/login")
-        token = session["token"]
-
-        informasjon = ""
-        id = ""
-        try:
-            form = await self.request.post()
-            logging.debug(f"Form {form}")
-
-            # Create new event
-            if "create" in form.keys():
-                request_body = {
-                    "name": form["name"],
-                    "date": form["date"],
-                    "organiser": form["organiser"],
-                    "webpage": form["webpage"],
-                    "information": form["information"],
-                }
-                id = await EventsAdapter().create_event(token, request_body)
-                informasjon = f"Opprettet nytt arrangement,  id {id}"
-            elif "delete" in form.keys():
-                id = form["id"]
-                logging.info(f"Enter delete {id}")
-                res = await EventsAdapter().delete_event(token, id)
-                if res == 204:
-                    informasjon = "Arrangement er slettet."
-                    return web.HTTPSeeOther(location=f"/?informasjon={informasjon}")
-                else:
-                    logging.error(f"Error: {res}")
-                    informasjon = f"Det har oppstått en feil - {res}."
-        except Exception as e:
-            logging.error(f"Error: {e}")
-            informasjon = f"Det har oppstått en feil - {e.args}."
-
-        return web.HTTPSeeOther(
-            location=f"/events?eventid={id}&informasjon={informasjon}"
-        )
-
-    async def put(self) -> web.Response:
-        """Put route function."""
-        # check login
-        session = await get_session(self.request)
-        loggedin = UserAdapter().isloggedin(session)
-        if not loggedin:
-            return web.HTTPSeeOther(location="/login")
-        token = session["token"]
-
-        informasjon = ""
-        try:
-            form = await self.request.post()
-            logging.debug(f"Form {form}")
-
-            # Update event
-            request_body = {
-                "name": form["name"],
-                "date": form["date"],
-                "organiser": form["organiser"],
-                "webpage": form["webpage"],
-                "information": form["information"],
-            }
-            id = form["id"]
-            res = await EventsAdapter().update_event(token, id, request_body)
-            if res == 204:
-                informasjon = "Arrangementinformasjon er oppdatert."
-            else:
-                informasjon = f"En feil oppstod {res}."
-        except Exception as e:
-            logging.error(f"Error: {e}")
-            informasjon = f"Det har oppstått en feil - {e.args}."
-
-        return web.HTTPSeeOther(
-            location=f"/events?eventid={id}&informasjon={informasjon}"
         )

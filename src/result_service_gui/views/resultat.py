@@ -31,10 +31,6 @@ class Resultat(web.View):
         except Exception:
             informasjon = ""
 
-        sportsclubs = str(os.getenv("SPORTS_CLUBS"))
-        clubs = sportsclubs.split(",")
-        logging.info(f"Clubs: {clubs}")
-
         # check login
         username = ""
         session = await get_session(self.request)
@@ -55,6 +51,9 @@ class Resultat(web.View):
         resultatheatliste = []
         valgt_lopsklasse = ""
         valgt_bildevisning = ""
+
+        sportsclubs = str(os.getenv("SPORTS_CLUBS"))
+        clubs = sportsclubs.split(",")
 
         try:
             valgt_klasse = self.request.rel_url.query["klasse"]

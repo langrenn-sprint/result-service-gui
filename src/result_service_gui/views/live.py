@@ -49,6 +49,7 @@ class Live(web.View):
             logging.debug(valgt_klasse)
         except Exception:
             valgt_klasse = ""
+            informasjon = "Velg klasse for å se live resultater."
 
         try:
             valgt_startnr = self.request.rel_url.query["startnr"]

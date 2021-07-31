@@ -1,6 +1,7 @@
 {% extends "adm_base.html" %}
 {% block titlecontainer %}
-<div class="w3-container">
+  <div class="w3-quart-empty"></div>
+  <div class="w3-half">
 {% endblock %}
 
 {% block titleheader %}
@@ -35,9 +36,6 @@
 {% endblock %}
 
 {% block content %}
-  <div id=spacer></div>
-  <div class="w3-row-padding">
-    {{ informasjon }}
     <table>
       <tr>
         <td align=center>
@@ -51,17 +49,16 @@
         </td>
       </tr>
     </table>
-
-    <div class="w3-half">
-      <h2>Resultatliste sammenlagt</h2>
-      <table>
-        <tr id=headerblack>
-          <td>Plass</td>
-          <td>Startnr</td>
-          <td>Navn</td>
-          <td>Klubb</td>
-          <td>Klasse</td>
-        </tr>
+    <div id=spacer> </div>
+    <div id=headerblack><b><center>Resultatliste sammenlagt</center></b></div>
+    <table>
+      <tr id=subheader>
+        <td>Plass</td>
+        <td>Startnr</td>
+        <td>Navn</td>
+        <td>Klubb</td>
+        <td>Klasse</td>
+      </tr>
         {% for deltaker in resultatliste %}
           {% if (deltaker.Navn != "-") %}
                 <tr>
@@ -73,15 +70,11 @@
                 </tr>
           {% endif %}
         {% endfor %}
-        <tr>
-          <td id=spacer colspan=6> </td>
-        </tr>
-      </table>
-    </div>
-    <div class="w3-half">
-      <h2>Heat resultater</h2>
-      <table>
-        {% for heat in heatliste %}
+        </table>
+        <div id=spacer> </div>
+        <div id=headerblack><b><center>Heat resultater</center></b></div>
+      {% for heat in heatliste %}
+        <table>
           <tr id=headerblack>
             <td colspan=3>{{ heat.Runde }}</td>
             <td colspan=2>Resultater</td>
@@ -108,11 +101,7 @@
                 </tr>
               {% endif %}
           {% endfor %}
-          <tr>
-            <td id=spacer colspan=4> </td>
-          </tr>
-        {% endfor %}
-      </table>
-    </div>
-  </div>
+        </table>
+      {% endfor %}
+    <div id=spacer></div>
 {% endblock %}

@@ -41,17 +41,12 @@
   <div id=spacer></div>
   <div class="w3-row-padding">
     <div class="{{ colclass }}">
-      <table>
-
         {% for heat in kjoreplan %}
-
             {% if heat.Heat in colseparators %}
-                </table>
               </div>
               <div class="{{ colclass }}">
-                <table>
             {% endif %}
-
+            <table>
             {% if heat.resultat_registrert %}
               <tr id=headerblack>
                 <td colspan=3>{{ heat.Runde }}</td>
@@ -104,12 +99,9 @@
                {% endfor %}
             {% endif %}
 
-          <tr>
-            <td id=spacer colspan=5> </td>
-          </tr>
-
+          </table>
+          <div id=spacer></div>
         {% endfor %}
-      </table>
     </div>
   </div>
 {% endblock %}
