@@ -31,7 +31,7 @@ class Resultat(web.View):
         except Exception:
             informasjon = ""
 
-        sportsclubs = os.getenv("SPORTS_CLUBS")
+        sportsclubs = str(os.getenv("SPORTS_CLUBS"))
         clubs = sportsclubs.split(",")
         logging.info(f"Clubs: {clubs}")
 
