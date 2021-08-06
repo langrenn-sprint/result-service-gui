@@ -15,7 +15,6 @@
     {% if create_new %}
       <form action="/login?eventid={{ eventid }}" method="post">
         <table cellpadding=4>
-          <tr id=spacer></tr>
           <tr>
             <td colspan=2 id=headerblue>
               <b>Ny bruker</b>
@@ -36,13 +35,11 @@
           <td colspan=2>
             <input type="submit" name=create value="  Opprett  ">
           </td>
-          <tr id=spacer></tr>
         </table>
       </form>
     {% else %}
       <form action="/login?eventid={{ eventid }}" method="post">
         <table cellpadding=4>
-          <tr id=spacer></tr>
           <tr>
             <td colspan=2 id=headerblue>
               <b>Innlogging</b>
@@ -59,7 +56,6 @@
           <td colspan=2>
             <input type="submit" name=Login value="Logg inn">
           </td>
-          <tr id=spacer></tr>
         </table>
       </form>
     {% endif %}

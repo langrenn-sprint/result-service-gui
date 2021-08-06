@@ -50,9 +50,8 @@
       </tr>
     </table>
     <div id=spacer> </div>
-    <div id=headerblack><b><center>Resultatliste sammenlagt</center></b></div>
     <table>
-      <tr id=subheader>
+      <tr id=headerblack>
         <td>Plass</td>
         <td>Startnr</td>
         <td>Navn</td>
@@ -72,8 +71,9 @@
         {% endfor %}
         </table>
         <div id=spacer> </div>
-        <div id=headerblack><b><center>Heat resultater</center></b></div>
+        <div id=adminpagetitle>Heat resultater</div>
       {% for heat in heatliste %}
+        <div id=spacer> </div>
         <table>
           <tr id=headerblack>
             <td colspan=3>{{ heat.Runde }}</td>
@@ -103,5 +103,4 @@
           {% endfor %}
         </table>
       {% endfor %}
-    <div id=spacer></div>
 {% endblock %}
