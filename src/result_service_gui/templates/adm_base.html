@@ -14,26 +14,29 @@
   </head>
   <body>
     <div class="w3-row-padding">
-    {% block titlecontainer %}{% endblock %}
+      {% block titlecontainer %}{% endblock %}
       <div id=spacer></div>
       <div class="w3-container" id=adminpagetitle>
-        {% block titlemain %}{% endblock %} {{ event.name }}
+        {{ event.name }}
       </div>
-      <div id=spacer></div>
+      <div id=minispacer></div>
       <div class="w3-container">
         <ul>
           <li class=dropdown>
             <a href=javascript:void(0) class=dropbtn>...</a>
             <div class=dropdown-content>
-              {% if eventid == "" %}
-                <a href="/">Hovedside</a>
-              {% else %}
-                <a href="/events?eventid={{ eventid }}">Hovedside</a>
-                <a href="/start?eventid={{ eventid }}">Startlister</a>
-                <a href="/live?eventid={{ eventid }}">Live</a>
-                <a href="/resultat?eventid={{ eventid }}">Resultater</a>
+              <a href="/">Hovedside</a>
+              {% if event_id != "" %}
+                <a>{{ event.name }}</a>
+                <a href="/events?event_id={{ event_id }}">&nbsp;&nbsp;&nbsp;Info</a>
+                <a href="/start?event_id={{ event_id }}">&nbsp;&nbsp;&nbsp;Startlister</a>
+                <a href="/live?event_id={{ event_id }}">&nbsp;&nbsp;&nbsp;Live</a>
+                <a href="/resultat?event_id={{ event_id }}">&nbsp;&nbsp;&nbsp;Resultater</a>
               {% endif %}
             </div>
+          </li>
+          <li id=topborder class=active>
+            {% block titlemain %}{% endblock %}
           </li>
           {% block menuitems %}{% endblock %}
           {% if username == "" %}
@@ -52,11 +55,8 @@
     <div id=spacer></div>
     <div class="w3-container" id=info>{{ informasjon }}</div>
     {% block content %}{% endblock %}
-    <div id=spacer></div>
-  </div>
-  <div class="w3-row-padding">
-    <div class="w3-quart-empty"></div>
-    <div class="w3-half-empty" id=footeradmin>
+    <p><br></p>
+    <div id=footeradmin>
         <a href="https://github.com/langrenn-sprint">langrenn-sprint</a> - utviklet av Lyn ski og Kjelsås langrenn
     </div>
   </div>

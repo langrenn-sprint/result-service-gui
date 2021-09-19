@@ -8,7 +8,7 @@ from aiohttp_session import get_session
 from result_service_gui.services import (
     EventsAdapter,
     KjoreplanService,
-    KlasserService,
+    RaceclassesAdapter,
     StartListeService,
     UserAdapter,
 )
@@ -20,9 +20,9 @@ class Start(web.View):
     async def get(self) -> web.Response:
         """Get route function that return the startlister page."""
         try:
-            eventid = self.request.rel_url.query["eventid"]
+            event_id = self.request.rel_url.query["event_id"]
         except Exception:
-            eventid = ""
+            event_id = ""
         try:
             informasjon = self.request.rel_url.query["informasjon"]
         except Exception:
@@ -37,9 +37,9 @@ class Start(web.View):
         username = session["username"]
         token = session["token"]
         event = {"name": "Nytt arrangement", "organiser": "Ikke valgt"}
-        if eventid != "":
-            logging.debug(f"get_event {eventid}")
-            event = await EventsAdapter().get_event(token, eventid)
+        if event_id != "":
+            logging.debug(f"get_event {event_id}")
+            event = await EventsAdapter().get_event(token, event_id)
 
         informasjon = ""
         startliste = []
@@ -54,7 +54,7 @@ class Start(web.View):
             valgt_klasse = ""  # noqa: F841
             informasjon = "Velg klasse for å se startlister."
 
-        klasser = await KlasserService().get_all_klasser(self.request.app["db"])
+        klasser = await RaceclassesAdapter().get_ageclasses(token, event_id)
 
         if valgt_klasse == "live":
             # vis heat som starter nå
@@ -79,9 +79,9 @@ class Start(web.View):
                 logging.debug(startliste)
         else:
             # get startlister for klasse
-            klassetider = await KlasserService().get_klasse_by_lopsklasse(
-                self.request.app["db"], valgt_klasse
-            )
+            for klasse in klasser:
+                if klasse["raceclass"] == valgt_klasse:
+                    klassetider = klasse
             kjoreplan = await KjoreplanService().get_heat_by_klasse(
                 self.request.app["db"], valgt_klasse
             )
@@ -97,7 +97,7 @@ class Start(web.View):
             self.request,
             {
                 "event": event,
-                "eventid": eventid,
+                "event_id": event_id,
                 "informasjon": informasjon,
                 "valgt_klasse": valgt_klasse,
                 "colseparators": colseparators,

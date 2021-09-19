@@ -1,26 +1,12 @@
 {% extends "adm_base.html" %}
 {% block titlecontainer %}
-  <div class="w3-quart-empty"></div>
+  <div class="w3-quart"></div>
   <div class="w3-half">
 {% endblock %}
 
 {% block titleheader %}{{ lopsinfo }}{% endblock %}
 {% block refresh %}{% endblock %}
 {% block titlemain %}{{ lopsinfo }}{% endblock %}
-{% block menuitems %}
-  <li id=topborder class=active>
-    <a href=/events?eventid={{ eventid }} class=dropbtn>Info</a>
-  </li>
-  <li id=topborder>
-    <a href=/start?eventid={{ eventid }} class=dropbtn>Startlister</a>
-  </li>
-  <li id=topborder>
-    <a href=/live?eventid={{ eventid }} class=dropbtn>Live</a>
-  </li>
-  <li id=topborder>
-    <a href=/resultat?eventid={{ eventid }} class=dropbtn>Resultater</a>
-  </li>
-{% endblock %}
 {% block content %}
     <table cellpadding=4>
       <tr>
@@ -34,7 +20,11 @@
       </tr>
       <tr>
         <td>Dato</td>
-        <td>{{ event.date }}</td>
+        <td>{{ event.date_of_event }}</td>
+      </tr>
+      <tr>
+        <td>Format</td>
+        <td>{{ event.competition_format }}</td>
       </tr>
       <tr>
         <td>Arrangør</td>

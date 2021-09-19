@@ -20,7 +20,7 @@
     <div class=dropdown-content>
       <a href=resultat>Alle</a>
       {% for klasse in klasser %}
-        <a href=resultat?klasse={{ klasse.KlasseWeb }}&eventid={{ eventid }}>{{ klasse.Klasse }}</a>
+        <a href=resultat?klasse={{ klasse.raceclass }}&event_id={{ event_id }}>{{ klasse.name }}</a>
       {% endfor %}
     </div>
   </li>
@@ -29,7 +29,7 @@
     <div class=dropdown-content>
       <a href=resultat>Alle</a>
       {% for klubb in clubs %}
-        <a href=resultat?klubb={{ klubb }}&eventid={{ eventid }}>{{ klubb }}</a>
+        <a href=resultat?klubb={{ klubb }}&event_id={{ event_id }}>{{ klubb }}</a>
       {% endfor %}
     </div>
   </li>

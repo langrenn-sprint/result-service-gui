@@ -18,7 +18,7 @@
     <a href=javascript:void(0) class=dropbtn>Velg klasse</a>
     <div class=dropdown-content>
       {% for klasse in klasser %}
-          <a href=live?klasse={{ klasse.Løpsklasse }}&eventid={{ eventid }}>{{ klasse.Klasse }}</a>
+        <a href=live?klasse={{ klasse.raceclass }}&event_id={{ event_id }}>{{ klasse.name }}</a>
       {% endfor %}
     </div>
   </li>
@@ -28,9 +28,9 @@
       {% if valgt_klasse == "" %}
         <a href=live>Velg klasse først</a>
       {% else %}
-        <a href=live?klasse={{ valgt_klasse }}&eventid={{ eventid }}>Alle</a>
+        <a href=live?klasse={{ valgt_klasse }}&event_id={{ event_id }}>Alle</a>
         {% for deltaker in deltakere %}
-          <a href=live?klasse={{ valgt_klasse }}&startnr={{ deltaker.Startnr }}&eventid={{ eventid }}>{{ deltaker.Startnr }} {{ deltaker.Navn }}</a>
+          <a href=live?klasse={{ valgt_klasse }}&startnr={{ deltaker.Startnr }}&event_id={{ event_id }}>{{ deltaker.Startnr }} {{ deltaker.Navn }}</a>
         {% endfor %}
       {% endif %}
     </div>

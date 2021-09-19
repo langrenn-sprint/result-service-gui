@@ -23,12 +23,12 @@
     <a href=javascript:void(0) class=dropbtn>Velg klasse</a>
     <div class=dropdown-content>
       {% for klasse in klasser %}
-        <a href=start?klasse={{ klasse.Løpsklasse }}&eventid={{ eventid }}>{{ klasse.Klasse }}</a>
+        <a href=start?klasse={{ klasse.raceclass }}&event_id={{ event_id }}>{{ klasse.name }}</a>
       {% endfor %}
     </div>
   </li>
   <li class=dropdown id=topborder>
-    <a href="start?klasse=live&eventid={{ eventid }}" class=dropbtn alt="Se hvem som starter nå, viser de neste 8 heat">Starter nå</a>
+    <a href="start?klasse=live&event_id={{ event_id }}" class=dropbtn alt="Se hvem som starter nå, viser de neste 8 heat">Starter nå</a>
   </li>
 {% endblock %}
 

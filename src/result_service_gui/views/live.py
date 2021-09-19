@@ -9,7 +9,7 @@ from result_service_gui.services import (
     DeltakereService,
     EventsAdapter,
     KjoreplanService,
-    KlasserService,
+    RaceclassesAdapter,
     ResultatHeatService,
     StartListeService,
     UserAdapter,
@@ -23,9 +23,9 @@ class Live(web.View):
     async def get(self) -> web.Response:  # noqa: C901
         """Get route function that return the live result page."""
         try:
-            eventid = self.request.rel_url.query["eventid"]
+            event_id = self.request.rel_url.query["event_id"]
         except Exception:
-            eventid = ""
+            event_id = ""
         try:
             informasjon = self.request.rel_url.query["informasjon"]
         except Exception:
@@ -40,9 +40,9 @@ class Live(web.View):
         username = session["username"]
         token = session["token"]
         event = {"name": "Nytt arrangement", "organiser": "Ikke valgt"}
-        if eventid != "":
-            logging.debug(f"get_event {eventid}")
-            event = await EventsAdapter().get_event(token, eventid)
+        if event_id != "":
+            logging.debug(f"get_event {event_id}")
+            event = await EventsAdapter().get_event(token, event_id)
 
         try:
             valgt_klasse = self.request.rel_url.query["klasse"]
@@ -56,7 +56,7 @@ class Live(web.View):
         except Exception:
             valgt_startnr = ""
 
-        klasser = await KlasserService().get_all_klasser(self.request.app["db"])
+        klasser = await RaceclassesAdapter().get_ageclasses(token, event_id)
 
         deltakere = await DeltakereService().get_deltakere_by_lopsklasse(
             self.request.app["db"], valgt_klasse
@@ -134,7 +134,7 @@ class Live(web.View):
             self.request,
             {
                 "event": event,
-                "eventid": eventid,
+                "event_id": event_id,
                 "informasjon": informasjon,
                 "valgt_klasse": valgt_klasse,
                 "valgt_startnr": valgt_startnr,

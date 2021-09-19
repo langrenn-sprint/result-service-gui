@@ -11,7 +11,7 @@ services:
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - HOST_PORT=8080
       - EVENT_SERVICE_HOST=result-service
-      - EVENT_SERVICE_PORT=8082
+      - EVENT_SERVICE_PORT=8080
       - USER_SERVICE_HOST=user-service
       - USER_SERVICE_PORT=8086
   event-service:
@@ -22,6 +22,8 @@ services:
       - JWT_SECRET=${JWT_SECRET}
       - ADMIN_USERNAME=${ADMIN_USERNAME}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - USERS_HOST_SERVER=user-service
+      - USERS_HOST_PORT=8080
       - LOGGING_LEVEL=${LOGGING_LEVEL}
       - DB_HOST=mongodb
       - DB_PORT=27017

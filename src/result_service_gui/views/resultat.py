@@ -10,7 +10,7 @@ from result_service_gui.services import (
     EventsAdapter,
     FotoService,
     KjoreplanService,
-    KlasserService,
+    RaceclassesAdapter,
     ResultatHeatService,
     ResultatService,
     UserAdapter,
@@ -23,9 +23,9 @@ class Resultat(web.View):
     async def get(self) -> web.Response:
         """Get route function."""
         try:
-            eventid = self.request.rel_url.query["eventid"]
+            event_id = self.request.rel_url.query["event_id"]
         except Exception:
-            eventid = ""
+            event_id = ""
         try:
             informasjon = self.request.rel_url.query["informasjon"]
         except Exception:
@@ -40,16 +40,15 @@ class Resultat(web.View):
         username = session["username"]
         token = session["token"]
         event = {"name": "Nytt arrangement", "organiser": "Ikke valgt"}
-        if eventid != "":
-            logging.debug(f"get_event {eventid}")
-            event = await EventsAdapter().get_event(token, eventid)
+        if event_id != "":
+            logging.debug(f"get_event {event_id}")
+            event = await EventsAdapter().get_event(token, event_id)
 
         foto = []
         informasjon = ""
         resultatliste = []
         heatliste = []
         resultatheatliste = []
-        valgt_lopsklasse = ""
         valgt_bildevisning = ""
 
         sportsclubs = str(os.getenv("SPORTS_CLUBS"))
@@ -65,12 +64,10 @@ class Resultat(web.View):
         except Exception:
             valgt_klubb = ""
 
-        klasser = await KlasserService().get_all_klasser(self.request.app["db"])
+        klasser = await RaceclassesAdapter().get_ageclasses(token, event_id)
         # ensure web safe urls
         for klasse in klasser:
-            klasse["KlasseWeb"] = klasse["Klasse"].replace(" ", "%20")
-            if klasse["Klasse"] == valgt_klasse:
-                valgt_lopsklasse = klasse["Løpsklasse"]
+            klasse["KlasseWeb"] = klasse["name"].replace(" ", "%20")
 
         if (valgt_klasse == "") and (valgt_klubb == ""):
             informasjon = "Velg klasse eller klubb for å vise resultater"
@@ -91,22 +88,18 @@ class Resultat(web.View):
                 valgt_klasse,
             )
             # heatresultater
-            lopsklasse = await KlasserService().get_lopsklasse_for_klasse(
+            heatliste = await KjoreplanService().get_heat_by_klasse(
                 self.request.app["db"],
                 valgt_klasse,
             )
-            heatliste = await KjoreplanService().get_heat_by_klasse(
-                self.request.app["db"],
-                lopsklasse,
-            )
             resultatheatliste = await ResultatHeatService().get_resultatheat_by_klasse(
                 self.request.app["db"],
-                lopsklasse,
+                valgt_klasse,
             )
             foto = await FotoService().get_foto_by_klasse(
-                self.request.app["db"], valgt_lopsklasse, event
+                self.request.app["db"], valgt_klasse, event
             )
-            valgt_bildevisning = "klasse=" + valgt_lopsklasse
+            valgt_bildevisning = "klasse=" + valgt_klasse
 
         """Get route function."""
         return await aiohttp_jinja2.render_template_async(
@@ -114,7 +107,7 @@ class Resultat(web.View):
             self.request,
             {
                 "event": event,
-                "eventid": eventid,
+                "event_id": event_id,
                 "foto": foto,
                 "informasjon": informasjon,
                 "valgt_bildevisning": valgt_bildevisning,

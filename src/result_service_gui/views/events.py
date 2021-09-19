@@ -15,9 +15,9 @@ class Events(web.View):
     async def get(self) -> web.Response:
         """Get route function that return the events page."""
         try:
-            eventid = self.request.rel_url.query["eventid"]
+            event_id = self.request.rel_url.query["event_id"]
         except Exception:
-            eventid = ""
+            event_id = ""
         try:
             informasjon = self.request.rel_url.query["informasjon"]
         except Exception:
@@ -28,14 +28,14 @@ class Events(web.View):
         session = await get_session(self.request)
         loggedin = UserAdapter().isloggedin(session)
         if not loggedin:
-            return web.HTTPSeeOther(location=f"/login?event={eventid}")
+            return web.HTTPSeeOther(location=f"/login?event={event_id}")
         username = session["username"]
         token = session["token"]
 
         event = {"name": "Nytt arrangement", "organiser": "Ikke valgt"}
-        if eventid != "":
-            logging.debug(f"get_event {eventid}")
-            event = await EventsAdapter().get_event(token, eventid)
+        if event_id != "":
+            logging.debug(f"get_event {event_id}")
+            event = await EventsAdapter().get_event(token, event_id)
 
         return await aiohttp_jinja2.render_template_async(
             "events.html",
@@ -43,7 +43,7 @@ class Events(web.View):
             {
                 "lopsinfo": "Arrangement",
                 "event": event,
-                "eventid": eventid,
+                "event_id": event_id,
                 "informasjon": informasjon,
                 "username": username,
             },

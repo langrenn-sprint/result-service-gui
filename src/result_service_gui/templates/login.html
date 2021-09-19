@@ -13,7 +13,7 @@
 {% endblock %}
 {% block content %}
     {% if create_new %}
-      <form action="/login?eventid={{ eventid }}" method="post">
+      <form action="/login?event_id={{ event_id }}" method="post">
         <table cellpadding=4>
           <tr>
             <td colspan=2 id=headerblue>
@@ -38,7 +38,7 @@
         </table>
       </form>
     {% else %}
-      <form action="/login?eventid={{ eventid }}" method="post">
+      <form action="/login?event_id={{ event_id }}" method="post">
         <table cellpadding=4>
           <tr>
             <td colspan=2 id=headerblue>

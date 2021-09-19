@@ -4,6 +4,7 @@ from .events_adapter import EventsAdapter
 from .foto_service import FotoService
 from .kjoreplan_service import KjoreplanService
 from .klasser_service import KlasserService
+from .raceclasses_adapter import RaceclassesAdapter
 from .resultat_heat_service import ResultatHeatService
 from .resultat_service import ResultatService
 from .start_service import StartListeService
