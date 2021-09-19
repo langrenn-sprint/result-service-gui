@@ -53,14 +53,14 @@ Denne fila _skal_ ligge i .dockerignore og .gitignore
 ## Start lokal webserver mha aiohttp-devtools(adev):
 ```
 % source .env
-% cd src && poetry run adev runserver -p 8080 result_service_gui
+% cd src && poetry run adev runserver -p 8090 result_service_gui
 ```
 ### Teste manuelt
-Enten åpne din nettleser på http://localhost:8080/
+Enten åpne din nettleser på http://localhost:8090/
 
 Eller via curl:
 ```
-% curl -i http://localhost:8080/
+% curl -i http://localhost:8090/
 ```
 Når du endrer koden i result_service_gui, vil webserveren laste applikasjonen på nytt autoamtisk ved lagring.
 

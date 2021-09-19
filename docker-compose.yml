@@ -4,16 +4,18 @@ services:
     build: .
     image: gcr.io/langrenn-sprint/result-service-gui:test
     ports:
-      - "8080:8080"
+      - "8090:8080"
     environment:
       - JWT_SECRET=${JWT_SECRET}
       - ADMIN_USERNAME=${ADMIN_USERNAME}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - HOST_PORT=8080
-      - EVENT_SERVICE_HOST=result-service
+      - EVENT_SERVICE_HOST=event-service
       - EVENT_SERVICE_PORT=8080
       - USER_SERVICE_HOST=user-service
-      - USER_SERVICE_PORT=8086
+      - USER_SERVICE_PORT=8080
+    depends_on:
+      - "event-service"
   event-service:
     image: gcr.io/langrenn-sprint/event-service:latest
     ports:
