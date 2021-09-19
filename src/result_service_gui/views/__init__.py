@@ -1,4 +1,5 @@
 """Package for all views."""
+from .dashboard import Dashboard
 from .events import Events
 from .live import Live
 from .liveness import Ping, Ready

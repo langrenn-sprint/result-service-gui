@@ -1,0 +1,70 @@
+{% extends "adm_base.html" %}
+{% block titlecontainer %}
+  <div class="w3-quart"></div>
+  <div class="w3-half">
+{% endblock %}
+
+{% block titleheader %}{{ lopsinfo }}{% endblock %}
+{% block refresh %}{% endblock %}
+{% block titlemain %}{{ lopsinfo }}{% endblock %}
+{% block content %}
+  <div id=spacer></div>
+  <table cellpadding=4>
+    <tr>
+      <td valign=top>
+        <table>
+          <tr id=subheader id=black>
+            <td id=black>1. Start</td><td width=100>Status</td>
+          </tr>
+          <tr>
+            <td>Neste start: G16K2 - kl 12:05.</td><td id=green>OK</td>
+          </tr>
+          <tr>
+            <td>Antall startet: 34 startet / 3 DNS / 2 ukjent.</td><td id=orange>Bør sjekkes</td>
+          </tr>
+        </table>
+      </td>
+      <td valign=top>
+        <table>
+          <tr id=subheader>
+            <td id=black>2. Mål</td><td width=100>Status</td>
+          </tr>
+          <tr>
+            <td>Siste målpassering: G16K1 - 2 av 7 registrert i mål.</td><td id=orange>Delvis</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+    <tr id=tablespacer>
+      <td>&nbsp;</td>
+    </tr>
+    <tr>
+      <td valign=top>
+        <table>
+          <tr id=subheader id=black>
+            <td id=black>3. Datakvalitet</td><td width=100>Status</td>
+          </tr>
+          <tr>
+            <td>G14K1 start: 2 ukjent</td><td id=orange>Delvis</td>
+          </tr>
+          <tr>
+            <td>G14K2 start: 7 ukjent</td><td id=red>Mangler</td>
+          </tr>
+          <tr>
+            <td>G14K1 mål: 2 ukjent</td><td id=orange>Delvis</td>
+          </tr>
+        </table>
+      </td>
+      <td valign=top>
+        <table>
+          <tr id=subheader>
+            <td id=black></td><td width=100>Status</td>
+          </tr>
+          <tr>
+            <td></td><td></td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+{% endblock %}

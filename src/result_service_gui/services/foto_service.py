@@ -5,7 +5,7 @@ from typing import Any, List
 
 from .deltakere_service import DeltakereService
 from .kjoreplan_service import KjoreplanService
-from .klasser_service import KlasserService
+from .raceclasses_adapter import RaceclassesAdapter
 from .start_service import StartListeService
 
 klubber = [
@@ -54,15 +54,15 @@ class FotoService:
             logging.debug(document)
         return foto
 
-    async def create_foto(self, db: Any, body: Any, event: dict) -> int:
+    async def create_foto(self, token: str, db: Any, body: Any, event: dict) -> int:
         """Create foto function. Delete existing foto, if any."""
         returncode = 201
 
         # analyze tags and enrich with event information
-        tags_fromnumbers = await find_event_information(db, body, event)
+        tags_fromnumbers = await find_event_information(db, token, body, event)
         body.update(tags_fromnumbers)
         if "Løpsklasse" not in body.keys():
-            body["Løpsklasse"] = await find_lopsklasse(db, body, event)
+            body["Løpsklasse"] = await find_lopsklasse(token, body, event["id"])
         logging.debug(body)
 
         result = await db.foto_collection.insert_one(body)
@@ -70,7 +70,7 @@ class FotoService:
 
         return returncode
 
-    async def update_tags(self, db: Any, tags: Any, event: dict) -> None:
+    async def update_tags(self, db: Any, token: str, tags: Any, event: dict) -> None:
         """Update tags for one photo."""
         logging.debug(f"Got tags {tags} of type {type(tags)}")
 
@@ -90,7 +90,7 @@ class FotoService:
             nummerliste = nummere.split(";")
             for nummer in nummerliste:
                 tmp_tags = await find_info_from_startnummer(
-                    db, nummer, tags["DateTime"], event
+                    db, token, nummer, tags["DateTime"], event
                 )
                 for x, y in tmp_tags.items():
                     logging.debug(f"Found tag: {x}, {y}")
@@ -134,7 +134,7 @@ def get_seconds_diff(time1: str, time2: str) -> int:
     return seconds_diff
 
 
-async def find_event_information(db: Any, tags: dict, event: dict) -> dict:
+async def find_event_information(db: Any, token: str, tags: dict, event: dict) -> dict:
     """Analyse photo tags and identify event information."""
     personer = tags["Persons"]
     nummere = tags["Numbers"]
@@ -144,7 +144,7 @@ async def find_event_information(db: Any, tags: dict, event: dict) -> dict:
             nummerliste = nummere.split(";")
             for nummer in nummerliste:
                 tmp_tags = await find_info_from_startnummer(
-                    db, nummer, tags["DateTime"], event
+                    db, token, nummer, tags["DateTime"], event
                 )
                 for x, y in tmp_tags.items():
                     logging.debug(f"Found tag: {x}, {y}")
@@ -165,7 +165,7 @@ async def find_event_information(db: Any, tags: dict, event: dict) -> dict:
 
 
 async def find_info_from_startnummer(
-    db: Any, startnummer: str, foto_time: str, event: dict
+    db: Any, token: str, startnummer: str, foto_time: str, event: dict
 ) -> dict:
     """Analyse photo tags and identify heat."""
     nye_tags = {}
@@ -197,10 +197,10 @@ async def find_info_from_startnummer(
     return nye_tags
 
 
-async def find_lopsklasse(db: Any, tags: dict, event: dict) -> str:
+async def find_lopsklasse(self, token: str, tags: dict, event_id: str) -> str:
     """Analyse photo tags and identify løpsklasse."""
     funnetklasse = ""
-    alleklasser = await KlasserService().get_all_klasser(db)
+    alleklasser = await RaceclassesAdapter().get_ageclasses(token, event_id)
     for klasse in alleklasser:
         logging.debug(klasse)
         if tags["Filename"].find(klasse["Løpsklasse"]) > -1:
