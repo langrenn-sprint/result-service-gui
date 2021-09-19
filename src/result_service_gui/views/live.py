@@ -34,117 +34,122 @@ class Live(web.View):
         # check login
         username = ""
         session = await get_session(self.request)
-        loggedin = UserAdapter().isloggedin(session)
-        if not loggedin:
-            return web.HTTPSeeOther(location="/login")
-        username = session["username"]
-        token = session["token"]
-        event = {"name": "Nytt arrangement", "organiser": "Ikke valgt"}
-        if event_id != "":
-            logging.debug(f"get_event {event_id}")
-            event = await EventsAdapter().get_event(token, event_id)
-
         try:
-            valgt_klasse = self.request.rel_url.query["klasse"]
-            logging.debug(valgt_klasse)
-        except Exception:
-            valgt_klasse = ""
-            informasjon = "Velg klasse for å se live resultater."
+            loggedin = UserAdapter().isloggedin(session)
+            if not loggedin:
+                return web.HTTPSeeOther(location="/login")
+            username = session["username"]
+            token = session["token"]
+            event = {"name": "Nytt arrangement", "organiser": "Ikke valgt"}
+            if event_id != "":
+                logging.debug(f"get_event {event_id}")
+                event = await EventsAdapter().get_event(token, event_id)
 
-        try:
-            valgt_startnr = self.request.rel_url.query["startnr"]
-        except Exception:
-            valgt_startnr = ""
+            try:
+                valgt_klasse = self.request.rel_url.query["klasse"]
+                logging.debug(valgt_klasse)
+            except Exception:
+                valgt_klasse = ""
+                informasjon = "Velg klasse for å se live resultater."
 
-        klasser = await RaceclassesAdapter().get_ageclasses(token, event_id)
+            try:
+                valgt_startnr = self.request.rel_url.query["startnr"]
+            except Exception:
+                valgt_startnr = ""
 
-        deltakere = await DeltakereService().get_deltakere_by_lopsklasse(
-            self.request.app["db"], valgt_klasse
-        )
-        logging.debug(deltakere)
+            klasser = await RaceclassesAdapter().get_ageclasses(token, event_id)
 
-        kjoreplan = []
-        startliste = []
-        resultatliste = []
-        colseparators = []
-        colclass = "w3-third"
-        if valgt_startnr == "":
-
-            kjoreplan = await KjoreplanService().get_heat_for_live_scroll(
+            deltakere = await DeltakereService().get_deltakere_by_lopsklasse(
                 self.request.app["db"], valgt_klasse
             )
+            logging.debug(deltakere)
 
-            # responsive design - determine column-arrangement
-            colseparators = ["KA1", "KA5", "SC1", "SA1", "F1", "F5", "A1", "A5"]
-            icolcount = 0
-            for heat in kjoreplan:
-                if heat["Heat"] in colseparators:
-                    icolcount += 1
-                    if (heat["Heat"] == "SC1") and heat["resultat_registrert"]:
-                        colseparators.remove("SC1")
-                elif heat["Heat"] in {"FA", "FB", "FC"}:
-                    icolcount += 1
-                    colseparators.append(heat["Heat"])
-                    break
-            if icolcount == 4:
-                colclass = "w3-quart"
-            colseparators.remove("KA1")
-            colseparators.remove("F1")
+            kjoreplan = []
+            startliste = []
+            resultatliste = []
+            colseparators = []
+            colclass = "w3-third"
+            if valgt_startnr == "":
 
-            startliste = await StartListeService().get_startliste_by_lopsklasse(
-                self.request.app["db"], valgt_klasse
-            )
-            logging.debug(startliste)
-
-            resultatliste = await ResultatHeatService().get_resultatheat_by_klasse(
-                self.request.app["db"], valgt_klasse
-            )
-
-        else:
-            # only selected racer
-            logging.debug(valgt_startnr)
-
-            startliste = await StartListeService().get_startliste_by_nr(
-                self.request.app["db"],
-                valgt_startnr,
-            )
-            logging.debug(startliste)
-
-            for start in startliste:
-                _heat = await KjoreplanService().get_heat_by_index(
-                    self.request.app["db"],
-                    start["Heat"],
+                kjoreplan = await KjoreplanService().get_heat_for_live_scroll(
+                    self.request.app["db"], valgt_klasse
                 )
-                kjoreplan.append(_heat)
-                if valgt_klasse == "":
-                    valgt_klasse = start["Løpsklasse"]
-                    logging.info(valgt_klasse)
 
-            # check for resultat
-            resultatliste = await ResultatHeatService().get_resultatheat_by_nr(
-                self.request.app["db"],
-                valgt_startnr,
+                # responsive design - determine column-arrangement
+                colseparators = ["KA1", "KA5", "SC1", "SA1", "F1", "F5", "A1", "A5"]
+                icolcount = 0
+                for heat in kjoreplan:
+                    if heat["Heat"] in colseparators:
+                        icolcount += 1
+                        if (heat["Heat"] == "SC1") and heat["resultat_registrert"]:
+                            colseparators.remove("SC1")
+                    elif heat["Heat"] in {"FA", "FB", "FC"}:
+                        icolcount += 1
+                        colseparators.append(heat["Heat"])
+                        break
+                if icolcount == 4:
+                    colclass = "w3-quart"
+                colseparators.remove("KA1")
+                colseparators.remove("F1")
+
+                startliste = await StartListeService().get_startliste_by_lopsklasse(
+                    self.request.app["db"], valgt_klasse
+                )
+                logging.debug(startliste)
+
+                resultatliste = await ResultatHeatService().get_resultatheat_by_klasse(
+                    self.request.app["db"], valgt_klasse
+                )
+
+            else:
+                # only selected racer
+                logging.debug(valgt_startnr)
+
+                startliste = await StartListeService().get_startliste_by_nr(
+                    self.request.app["db"],
+                    valgt_startnr,
+                )
+                logging.debug(startliste)
+
+                for start in startliste:
+                    _heat = await KjoreplanService().get_heat_by_index(
+                        self.request.app["db"],
+                        start["Heat"],
+                    )
+                    kjoreplan.append(_heat)
+                    if valgt_klasse == "":
+                        valgt_klasse = start["Løpsklasse"]
+                        logging.info(valgt_klasse)
+
+                # check for resultat
+                resultatliste = await ResultatHeatService().get_resultatheat_by_nr(
+                    self.request.app["db"],
+                    valgt_startnr,
+                )
+
+                valgt_startnr = "Startnr: " + valgt_startnr + ", "
+
+            """Get route function."""
+            return await aiohttp_jinja2.render_template_async(
+                "live.html",
+                self.request,
+                {
+                    "event": event,
+                    "event_id": event_id,
+                    "informasjon": informasjon,
+                    "valgt_klasse": valgt_klasse,
+                    "valgt_startnr": valgt_startnr,
+                    "colseparators": colseparators,
+                    "colclass": colclass,
+                    "klasser": klasser,
+                    "deltakere": deltakere,
+                    "kjoreplan": kjoreplan,
+                    "resultatliste": resultatliste,
+                    "startliste": startliste,
+                    "username": username,
+                },
             )
-
-            valgt_startnr = "Startnr: " + valgt_startnr + ", "
-
-        """Get route function."""
-        return await aiohttp_jinja2.render_template_async(
-            "live.html",
-            self.request,
-            {
-                "event": event,
-                "event_id": event_id,
-                "informasjon": informasjon,
-                "valgt_klasse": valgt_klasse,
-                "valgt_startnr": valgt_startnr,
-                "colseparators": colseparators,
-                "colclass": colclass,
-                "klasser": klasser,
-                "deltakere": deltakere,
-                "kjoreplan": kjoreplan,
-                "resultatliste": resultatliste,
-                "startliste": startliste,
-                "username": username,
-            },
-        )
+        except Exception as e:
+            logging.error(f"Error: {e}. Starting new session.")
+            session.invalidate()
+            return web.HTTPSeeOther(location="/login")

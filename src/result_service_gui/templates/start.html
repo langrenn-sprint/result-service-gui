@@ -1,7 +1,7 @@
 {% extends "adm_base.html" %}
 {% block titlecontainer %}
   {% if valgt_klasse != "live" %}
-    <div class="w3-quart-empty"></div>
+    <div class="w3-quart"></div>
     <div class="w3-half">
   {% else %}
     <div class="w3-container">
@@ -41,12 +41,16 @@
          <td>Første semi</td>
          <td>Første finale</td>
       </tr>
-      <tr>
-        <td>{{ klassetider.Løpsklasse }}</td>
-        <td>{{ klassetider.TidKvart }}</td>
-        <td>{{ klassetider.TidSemi }}</td>
-        <td>{{ klassetider.TidFinale }}</td>
-      </tr>
+      {% for klasse in klasser %}
+        {% if valgt_klasse == klasse["raceclass"] %}
+          <tr>
+            <td>{{ klasse.Løpsklasse }}</td>
+            <td>{{ klasse.TidKvart }}</td>
+            <td>{{ klasse.TidSemi }}</td>
+            <td>{{ klasse.TidFinale }}</td>
+          </tr>
+        {% endif %}
+      {% endfor %}
       <tr>
         <td id=spacer colspan=4> </td>
       </tr>

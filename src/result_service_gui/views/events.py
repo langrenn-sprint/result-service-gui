@@ -26,25 +26,30 @@ class Events(web.View):
         # check login
         username = ""
         session = await get_session(self.request)
-        loggedin = UserAdapter().isloggedin(session)
-        if not loggedin:
-            return web.HTTPSeeOther(location=f"/login?event={event_id}")
-        username = session["username"]
-        token = session["token"]
+        try:
+            loggedin = UserAdapter().isloggedin(session)
+            if not loggedin:
+                return web.HTTPSeeOther(location=f"/login?event={event_id}")
+            username = session["username"]
+            token = session["token"]
 
-        event = {"name": "Nytt arrangement", "organiser": "Ikke valgt"}
-        if event_id != "":
-            logging.debug(f"get_event {event_id}")
-            event = await EventsAdapter().get_event(token, event_id)
+            event = {"name": "Nytt arrangement", "organiser": "Ikke valgt"}
+            if event_id != "":
+                logging.debug(f"get_event {event_id}")
+                event = await EventsAdapter().get_event(token, event_id)
 
-        return await aiohttp_jinja2.render_template_async(
-            "events.html",
-            self.request,
-            {
-                "lopsinfo": "Arrangement",
-                "event": event,
-                "event_id": event_id,
-                "informasjon": informasjon,
-                "username": username,
-            },
-        )
+            return await aiohttp_jinja2.render_template_async(
+                "events.html",
+                self.request,
+                {
+                    "lopsinfo": "Arrangement",
+                    "event": event,
+                    "event_id": event_id,
+                    "informasjon": informasjon,
+                    "username": username,
+                },
+            )
+        except Exception as e:
+            logging.error(f"Error: {e}. Starting new session.")
+            session.invalidate()
+            return web.HTTPSeeOther(location="/login")
