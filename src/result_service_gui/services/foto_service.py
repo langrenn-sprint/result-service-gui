@@ -197,7 +197,7 @@ async def find_info_from_startnummer(
     return nye_tags
 
 
-async def find_lopsklasse(self, token: str, tags: dict, event_id: str) -> str:
+async def find_lopsklasse(token: str, tags: dict, event_id: str) -> str:
     """Analyse photo tags and identify løpsklasse."""
     funnetklasse = ""
     alleklasser = await RaceclassesAdapter().get_ageclasses(token, event_id)
