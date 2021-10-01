@@ -10,10 +10,12 @@ services:
       - ADMIN_USERNAME=${ADMIN_USERNAME}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - HOST_PORT=8080
-      - EVENT_SERVICE_HOST=event-service
-      - EVENT_SERVICE_PORT=8080
-      - USER_SERVICE_HOST=user-service
-      - USER_SERVICE_PORT=8080
+      - EVENTS_HOST_SERVER=event-service
+      - EVENTS_HOST_PORT=8080
+      - RACE_HOST_SERVER=race-service
+      - RACE_HOST_PORT=8080
+      - USERS_HOST_SERVER=user-service
+      - USERS_HOST_PORT=8080
     depends_on:
       - "event-service"
   event-service:
@@ -29,8 +31,27 @@ services:
       - LOGGING_LEVEL=${LOGGING_LEVEL}
       - DB_HOST=mongodb
       - DB_PORT=27017
-      - DB_USER=user
-      - DB_PASSWORD=secret
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+    depends_on:
+      - "mongodb"
+  race-service:
+    image: gcr.io/langrenn-sprint/race-service:latest
+    ports:
+      - "8088:8080"
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - ADMIN_USERNAME=${ADMIN_USERNAME}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - EVENTS_HOST_SERVER=event-service
+      - EVENTS_HOST_PORT=8080
+      - USERS_HOST_SERVER=user-service
+      - USERS_HOST_PORT=8080
+      - LOGGING_LEVEL=${LOGGING_LEVEL}
+      - DB_HOST=mongodb
+      - DB_PORT=27017
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
     depends_on:
       - "mongodb"
   user-service:
@@ -45,12 +66,14 @@ services:
       - LOGGING_LEVEL=${LOGGING_LEVEL}
       - DB_HOST=mongodb
       - DB_PORT=27017
-      - DB_USER=user
-      - DB_PASSWORD=secret
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
     depends_on:
       - "mongodb"
-
   mongodb:
     image: mongo:latest
     ports:
       - 27017:27017
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${DB_USER}
+      - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}

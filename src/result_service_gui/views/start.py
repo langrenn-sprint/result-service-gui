@@ -9,6 +9,7 @@ from result_service_gui.services import (
     EventsAdapter,
     KjoreplanService,
     RaceclassesAdapter,
+    RaceplansAdapter,
     StartListeService,
     UserAdapter,
 )
@@ -54,7 +55,7 @@ class Start(web.View):
                 valgt_klasse = ""  # noqa: F841
                 informasjon = "Velg klasse for å se startlister."
 
-            klasser = await RaceclassesAdapter().get_ageclasses(token, event_id)
+            raceclasses = await RaceclassesAdapter().get_raceclasses(token, event_id)
 
             if valgt_klasse == "live":
                 # vis heat som starter nå
@@ -79,12 +80,14 @@ class Start(web.View):
                     logging.debug(startliste)
             else:
                 # get startlister for klasse
-                kjoreplan = await KjoreplanService().get_heat_by_klasse(
-                    self.request.app["db"], valgt_klasse
-                )
-                startliste = await StartListeService().get_startliste_by_lopsklasse(
-                    self.request.app["db"], valgt_klasse
-                )
+                race = []
+                if valgt_klasse != "":
+                    try:
+                        race = await RaceplansAdapter().get_race_by_class(
+                            token, event_id, valgt_klasse
+                        )
+                    except Exception as e:
+                        informasjon = e
 
             logging.debug(startliste)
 
@@ -99,9 +102,10 @@ class Start(web.View):
                     "valgt_klasse": valgt_klasse,
                     "colseparators": colseparators,
                     "colclass": colclass,
-                    "klasser": klasser,
-                    "kjoreplan": kjoreplan,
-                    "startliste": startliste,
+                    "raceclasses": raceclasses,
+                    "race": race,
+                    "kjoreplan": [],
+                    "startliste": [],
                     "username": username,
                 },
             )

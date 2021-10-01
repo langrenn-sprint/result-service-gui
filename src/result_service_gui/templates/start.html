@@ -22,8 +22,8 @@
   <li class=dropdown id=topborder>
     <a href=javascript:void(0) class=dropbtn>Velg klasse</a>
     <div class=dropdown-content>
-      {% for klasse in klasser %}
-        <a href=start?klasse={{ klasse.raceclass }}&event_id={{ event_id }}>{{ klasse.name }}</a>
+      {% for klasse in raceclasses %}
+        <a href=start?klasse={{ klasse.name }}&event_id={{ event_id }}>{{ klasse.ageclass_name }}</a>
       {% endfor %}
     </div>
   </li>
@@ -36,21 +36,17 @@
   {% if valgt_klasse != "live" %}
     <table>
        <tr id=headerblue>
-         <td>Klasse</td>
-         <td>Første kvart</td>
-         <td>Første semi</td>
-         <td>Første finale</td>
+        <td>Løpsklasse</td>
+        <td>Første start</td>
+        <td>Deltakere</td>
+        <td>Heat</td>
       </tr>
-      {% for klasse in klasser %}
-        {% if valgt_klasse == klasse["raceclass"] %}
-          <tr>
-            <td>{{ klasse.Løpsklasse }}</td>
-            <td>{{ klasse.TidKvart }}</td>
-            <td>{{ klasse.TidSemi }}</td>
-            <td>{{ klasse.TidFinale }}</td>
-          </tr>
-        {% endif %}
-      {% endfor %}
+      <tr>
+        <td>{{ race.raceclass }}</td>
+        <td>{{ race.start_time }}</td>
+        <td>{{ race.no_of_contestants }}</td>
+        <td>{{ race.heat }}</td>
+      </tr>
       <tr>
         <td id=spacer colspan=4> </td>
       </tr>
