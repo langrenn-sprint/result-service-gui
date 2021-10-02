@@ -7,7 +7,6 @@ import aiohttp_jinja2
 from aiohttp_session import get_session
 
 from result_service_gui.services import (
-    EventsAdapter,
     FotoService,
     KjoreplanService,
     RaceclassesAdapter,
@@ -15,6 +14,7 @@ from result_service_gui.services import (
     ResultatService,
     UserAdapter,
 )
+from .utils import get_event
 
 
 class Resultat(web.View):
@@ -40,10 +40,7 @@ class Resultat(web.View):
                 return web.HTTPSeeOther(location="/login")
             username = session["username"]
             token = session["token"]
-            event = {"name": "Nytt arrangement", "organiser": "Ikke valgt"}
-            if event_id != "":
-                logging.debug(f"get_event {event_id}")
-                event = await EventsAdapter().get_event(token, event_id)
+            event = await get_event(token, event_id)
 
             foto = []
             informasjon = ""
@@ -65,7 +62,7 @@ class Resultat(web.View):
             except Exception:
                 valgt_klubb = ""
 
-            klasser = await RaceclassesAdapter().get_ageclasses(token, event_id)
+            klasser = await RaceclassesAdapter().get_raceclasses(token, event_id)
             # ensure web safe urls
             for klasse in klasser:
                 klasse["KlasseWeb"] = klasse["name"].replace(" ", "%20")

@@ -6,7 +6,8 @@ from .foto_service import FotoService
 from .kjoreplan_service import KjoreplanService
 from .raceclasses_adapter import RaceclassesAdapter
 from .raceplans_adapter import RaceplansAdapter
+from .result_adapter import ResultAdapter
 from .resultat_heat_service import ResultatHeatService
 from .resultat_service import ResultatService
-from .start_service import StartListeService
+from .start_adapter import StartAdapter
 from .user_adapter import UserAdapter

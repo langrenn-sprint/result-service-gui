@@ -6,7 +6,7 @@ from typing import Any, List
 from .deltakere_service import DeltakereService
 from .kjoreplan_service import KjoreplanService
 from .raceclasses_adapter import RaceclassesAdapter
-from .start_service import StartListeService
+from .start_adapter import StartAdapter
 
 klubber = [
     "Bækkelaget",
@@ -172,7 +172,7 @@ async def find_info_from_startnummer(
     foundheat = ""
     funnetdeltaker = {}
 
-    starter = await StartListeService().get_startliste_by_nr(db, startnummer)
+    starter = await StartAdapter().get_startliste_by_nr(token, event["id"], startnummer)
     if len(starter) > 0:
         nye_tags["Numbers"] = startnummer
         for start in starter:
@@ -200,8 +200,8 @@ async def find_info_from_startnummer(
 async def find_lopsklasse(token: str, tags: dict, event_id: str) -> str:
     """Analyse photo tags and identify løpsklasse."""
     funnetklasse = ""
-    alleklasser = await RaceclassesAdapter().get_ageclasses(token, event_id)
-    for klasse in alleklasser:
+    raceclasses = await RaceclassesAdapter().get_raceclasses(token, event_id)
+    for klasse in raceclasses:
         logging.debug(klasse)
         if tags["Filename"].find(klasse["Løpsklasse"]) > -1:
             funnetklasse = klasse["Løpsklasse"]

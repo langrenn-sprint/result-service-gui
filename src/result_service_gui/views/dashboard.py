@@ -6,7 +6,8 @@ import aiohttp_jinja2
 from aiohttp_session import get_session
 
 # from event_service_gui.services import DashboardAdapter
-from result_service_gui.services import EventsAdapter, UserAdapter
+from result_service_gui.services import UserAdapter
+from .utils import get_event
 
 
 class Dashboard(web.View):
@@ -39,11 +40,7 @@ class Dashboard(web.View):
                 return web.HTTPSeeOther(location=f"/login?event={event_id}")
             username = str(session["username"])
             token = str(session["token"])
-
-            event = {"name": "Nytt arrangement", "organiser": "Ikke valgt"}
-            if event_id != "":
-                logging.debug(f"get_event {event_id}")
-                event = await EventsAdapter().get_event(token, event_id)
+            event = await get_event(token, event_id)
 
             return await aiohttp_jinja2.render_template_async(
                 "dashboard.html",

@@ -5,8 +5,8 @@ from aiohttp import web
 import aiohttp_jinja2
 from aiohttp_session import get_session
 
-from result_service_gui.services import EventsAdapter
 from result_service_gui.services import UserAdapter
+from .utils import get_event
 
 
 class Events(web.View):
@@ -33,10 +33,7 @@ class Events(web.View):
             username = session["username"]
             token = session["token"]
 
-            event = {"name": "Nytt arrangement", "organiser": "Ikke valgt"}
-            if event_id != "":
-                logging.debug(f"get_event {event_id}")
-                event = await EventsAdapter().get_event(token, event_id)
+            event = await get_event(token, event_id)
 
             return await aiohttp_jinja2.render_template_async(
                 "events.html",

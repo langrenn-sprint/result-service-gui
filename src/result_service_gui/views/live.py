@@ -7,13 +7,13 @@ from aiohttp_session import get_session
 
 from result_service_gui.services import (
     DeltakereService,
-    EventsAdapter,
     KjoreplanService,
     RaceclassesAdapter,
     ResultatHeatService,
-    StartListeService,
+    StartAdapter,
     UserAdapter,
 )
+from .utils import get_event
 
 
 class Live(web.View):
@@ -40,10 +40,7 @@ class Live(web.View):
                 return web.HTTPSeeOther(location="/login")
             username = session["username"]
             token = session["token"]
-            event = {"name": "Nytt arrangement", "organiser": "Ikke valgt"}
-            if event_id != "":
-                logging.debug(f"get_event {event_id}")
-                event = await EventsAdapter().get_event(token, event_id)
+            event = await get_event(token, event_id)
 
             try:
                 valgt_klasse = self.request.rel_url.query["klasse"]
@@ -57,7 +54,7 @@ class Live(web.View):
             except Exception:
                 valgt_startnr = ""
 
-            klasser = await RaceclassesAdapter().get_ageclasses(token, event_id)
+            klasser = await RaceclassesAdapter().get_raceclasses(token, event_id)
 
             deltakere = await DeltakereService().get_deltakere_by_lopsklasse(
                 self.request.app["db"], valgt_klasse
@@ -92,8 +89,8 @@ class Live(web.View):
                 colseparators.remove("KA1")
                 colseparators.remove("F1")
 
-                startliste = await StartListeService().get_startliste_by_lopsklasse(
-                    self.request.app["db"], valgt_klasse
+                startliste = await StartAdapter().get_startliste_by_lopsklasse(
+                    token, event_id, valgt_klasse
                 )
                 logging.debug(startliste)
 
@@ -105,8 +102,9 @@ class Live(web.View):
                 # only selected racer
                 logging.debug(valgt_startnr)
 
-                startliste = await StartListeService().get_startliste_by_nr(
-                    self.request.app["db"],
+                startliste = await StartAdapter().get_startliste_by_nr(
+                    token,
+                    event_id,
                     valgt_startnr,
                 )
                 logging.debug(startliste)

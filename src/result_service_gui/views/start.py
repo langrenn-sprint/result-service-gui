@@ -6,13 +6,13 @@ import aiohttp_jinja2
 from aiohttp_session import get_session
 
 from result_service_gui.services import (
-    EventsAdapter,
     KjoreplanService,
     RaceclassesAdapter,
     RaceplansAdapter,
-    StartListeService,
+    StartAdapter,
     UserAdapter,
 )
+from .utils import get_event
 
 
 class Start(web.View):
@@ -38,10 +38,7 @@ class Start(web.View):
                 return web.HTTPSeeOther(location="/login")
             username = session["username"]
             token = session["token"]
-            event = {"name": "Nytt arrangement", "organiser": "Ikke valgt"}
-            if event_id != "":
-                logging.debug(f"get_event {event_id}")
-                event = await EventsAdapter().get_event(token, event_id)
+            event = await get_event(token, event_id)
 
             informasjon = ""
             startliste = []
@@ -68,9 +65,8 @@ class Start(web.View):
                 i = 0
                 for heat in kjoreplan:
                     logging.debug(heat["Index"])
-                    _liste = await StartListeService().get_startliste_by_heat(
-                        self.request.app["db"], heat["Index"]
-                    )
+                    _liste = await StartAdapter().get_all_starts(token, event_id)
+                    logging.info(f"Starter: {_liste}")
                     if i in isplitt:
                         colseparators.append(heat["Index"])
                         logging.debug(colseparators)
@@ -80,14 +76,19 @@ class Start(web.View):
                     logging.debug(startliste)
             else:
                 # get startlister for klasse
-                race = []
+                race = {}
                 if valgt_klasse != "":
                     try:
                         race = await RaceplansAdapter().get_race_by_class(
                             token, event_id, valgt_klasse
                         )
                     except Exception as e:
-                        informasjon = e
+                        informasjon = str(e)
+
+                    _liste = await StartAdapter().get_all_starts(token, event_id)
+                    for start in _liste:
+                        startliste.append(start)
+                        logging.debug(f"Starter: {start['Nr']}")
 
             logging.debug(startliste)
 
@@ -105,20 +106,10 @@ class Start(web.View):
                     "raceclasses": raceclasses,
                     "race": race,
                     "kjoreplan": [],
-                    "startliste": [],
+                    "startliste": startliste,
                     "username": username,
                 },
             )
         except Exception as e:
             logging.error(f"Error: {e}. Starting new session.")
-            session.invalidate()
-            return web.HTTPSeeOther(location="/login")
-
-    async def post(self) -> web.Response:
-        """Post route function that creates a collection of athletes."""
-        body = await self.request.json()
-        logging.debug(f"Got request-body {body} of type {type(body)}")
-        result = await StartListeService().create_startliste(
-            self.request.app["db"], body
-        )
-        return web.Response(status=result)
+            return web.HTTPSeeOther(location=f"/?informasjon={e}")
