@@ -3,7 +3,6 @@ import logging
 
 from aiohttp import web
 import aiohttp_jinja2
-from aiohttp_session import get_session
 
 from result_service_gui.services import (
     DeltakereService,
@@ -11,9 +10,8 @@ from result_service_gui.services import (
     RaceclassesAdapter,
     ResultatHeatService,
     StartAdapter,
-    UserAdapter,
 )
-from .utils import get_event
+from .utils import check_login, get_event
 
 
 class Live(web.View):
@@ -31,16 +29,9 @@ class Live(web.View):
         except Exception:
             informasjon = ""
 
-        # check login
-        username = ""
-        session = await get_session(self.request)
         try:
-            loggedin = UserAdapter().isloggedin(session)
-            if not loggedin:
-                return web.HTTPSeeOther(location="/login")
-            username = session["username"]
-            token = session["token"]
-            event = await get_event(token, event_id)
+            user = await check_login(self)
+            event = await get_event(user["token"], event_id)
 
             try:
                 valgt_klasse = self.request.rel_url.query["klasse"]
@@ -54,7 +45,9 @@ class Live(web.View):
             except Exception:
                 valgt_startnr = ""
 
-            klasser = await RaceclassesAdapter().get_raceclasses(token, event_id)
+            klasser = await RaceclassesAdapter().get_raceclasses(
+                user["token"], event_id
+            )
 
             deltakere = await DeltakereService().get_deltakere_by_lopsklasse(
                 self.request.app["db"], valgt_klasse
@@ -90,7 +83,7 @@ class Live(web.View):
                 colseparators.remove("F1")
 
                 startliste = await StartAdapter().get_startliste_by_lopsklasse(
-                    token, event_id, valgt_klasse
+                    user["token"], event_id, valgt_klasse
                 )
                 logging.debug(startliste)
 
@@ -103,7 +96,7 @@ class Live(web.View):
                 logging.debug(valgt_startnr)
 
                 startliste = await StartAdapter().get_startliste_by_nr(
-                    token,
+                    user["token"],
                     event_id,
                     valgt_startnr,
                 )
@@ -144,10 +137,9 @@ class Live(web.View):
                     "kjoreplan": kjoreplan,
                     "resultatliste": resultatliste,
                     "startliste": startliste,
-                    "username": username,
+                    "username": user["name"],
                 },
             )
         except Exception as e:
-            logging.error(f"Error: {e}. Starting new session.")
-            session.invalidate()
-            return web.HTTPSeeOther(location="/login")
+            logging.error(f"Error: {e}. Redirect to main page.")
+            return web.HTTPSeeOther(location=f"/?informasjon={e}")

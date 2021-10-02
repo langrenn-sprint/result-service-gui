@@ -3,16 +3,14 @@ import logging
 
 from aiohttp import web
 import aiohttp_jinja2
-from aiohttp_session import get_session
 
 from result_service_gui.services import (
     KjoreplanService,
     RaceclassesAdapter,
     RaceplansAdapter,
     StartAdapter,
-    UserAdapter,
 )
-from .utils import get_event
+from .utils import check_login, get_event
 
 
 class Start(web.View):
@@ -29,16 +27,9 @@ class Start(web.View):
         except Exception:
             informasjon = ""
 
-        # check login
-        username = ""
-        session = await get_session(self.request)
         try:
-            loggedin = UserAdapter().isloggedin(session)
-            if not loggedin:
-                return web.HTTPSeeOther(location="/login")
-            username = session["username"]
-            token = session["token"]
-            event = await get_event(token, event_id)
+            user = await check_login(self)
+            event = await get_event(user["token"], event_id)
 
             informasjon = ""
             startliste = []
@@ -52,7 +43,9 @@ class Start(web.View):
                 valgt_klasse = ""  # noqa: F841
                 informasjon = "Velg klasse for å se startlister."
 
-            raceclasses = await RaceclassesAdapter().get_raceclasses(token, event_id)
+            raceclasses = await RaceclassesAdapter().get_raceclasses(
+                user["token"], event_id
+            )
 
             if valgt_klasse == "live":
                 # vis heat som starter nå
@@ -65,7 +58,9 @@ class Start(web.View):
                 i = 0
                 for heat in kjoreplan:
                     logging.debug(heat["Index"])
-                    _liste = await StartAdapter().get_all_starts(token, event_id)
+                    _liste = await StartAdapter().get_all_starts(
+                        user["token"], event_id
+                    )
                     logging.info(f"Starter: {_liste}")
                     if i in isplitt:
                         colseparators.append(heat["Index"])
@@ -80,12 +75,14 @@ class Start(web.View):
                 if valgt_klasse != "":
                     try:
                         race = await RaceplansAdapter().get_race_by_class(
-                            token, event_id, valgt_klasse
+                            user["token"], event_id, valgt_klasse
                         )
                     except Exception as e:
                         informasjon = str(e)
 
-                    _liste = await StartAdapter().get_all_starts(token, event_id)
+                    _liste = await StartAdapter().get_all_starts(
+                        user["token"], event_id
+                    )
                     for start in _liste:
                         startliste.append(start)
                         logging.debug(f"Starter: {start['Nr']}")
@@ -107,9 +104,9 @@ class Start(web.View):
                     "race": race,
                     "kjoreplan": [],
                     "startliste": startliste,
-                    "username": username,
+                    "username": user["name"],
                 },
             )
         except Exception as e:
-            logging.error(f"Error: {e}. Starting new session.")
+            logging.error(f"Error: {e}. Redirect to main page.")
             return web.HTTPSeeOther(location=f"/?informasjon={e}")

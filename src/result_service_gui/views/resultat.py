@@ -4,7 +4,6 @@ import os
 
 from aiohttp import web
 import aiohttp_jinja2
-from aiohttp_session import get_session
 
 from result_service_gui.services import (
     FotoService,
@@ -12,9 +11,8 @@ from result_service_gui.services import (
     RaceclassesAdapter,
     ResultatHeatService,
     ResultatService,
-    UserAdapter,
 )
-from .utils import get_event
+from .utils import check_login, get_event
 
 
 class Resultat(web.View):
@@ -31,16 +29,9 @@ class Resultat(web.View):
         except Exception:
             informasjon = ""
 
-        # check login
-        username = ""
-        session = await get_session(self.request)
         try:
-            loggedin = UserAdapter().isloggedin(session)
-            if not loggedin:
-                return web.HTTPSeeOther(location="/login")
-            username = session["username"]
-            token = session["token"]
-            event = await get_event(token, event_id)
+            user = await check_login(self)
+            event = await get_event(user["token"], event_id)
 
             foto = []
             informasjon = ""
@@ -62,7 +53,9 @@ class Resultat(web.View):
             except Exception:
                 valgt_klubb = ""
 
-            klasser = await RaceclassesAdapter().get_raceclasses(token, event_id)
+            klasser = await RaceclassesAdapter().get_raceclasses(
+                user["token"], event_id
+            )
             # ensure web safe urls
             for klasse in klasser:
                 klasse["KlasseWeb"] = klasse["name"].replace(" ", "%20")
@@ -118,13 +111,12 @@ class Resultat(web.View):
                     "resultatliste": resultatliste,
                     "heatliste": heatliste,
                     "resultatheatliste": resultatheatliste,
-                    "username": username,
+                    "username": user["name"],
                 },
             )
         except Exception as e:
-            logging.error(f"Error: {e}. Starting new session.")
-            session.invalidate()
-            return web.HTTPSeeOther(location="/login")
+            logging.error(f"Error: {e}. Redirect to main page.")
+            return web.HTTPSeeOther(location=f"/?informasjon={e}")
 
     async def post(self) -> web.Response:
         """Post route function that creates a collection of athletes."""
