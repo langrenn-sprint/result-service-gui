@@ -91,7 +91,7 @@ class RaceplansAdapter:
                     )
         return raceplans
 
-    async def get_all_races(self, token: str, event_id: str) -> dict:
+    async def get_all_races(self, token: str, event_id: str) -> List:
         """Get all races function."""
         raceplans = await RaceplansAdapter().get_all_raceplans(token, event_id)
         logging.debug(f"Raceplans len {len(raceplans)}")
