@@ -66,13 +66,17 @@
         <td>Navn</td>
         <td>Klubb</td>
         <td>Tid</td>
+        <td>Heat</td>
+        <td>Posisjon</td>
       </tr>
       {% for start in startliste %}
         <tr>
-          <td>{{ start.Nr }}</td>
-          <td>{{ start.Navn }}</td>
-          <td>{{ start.Klubb }}</td>
-          <td>{{ start.tid }}</td>
+          <td>{{ start.bib }}</td>
+          <td>{{ start.name }}</td>
+          <td>{{ start.club }}</td>
+          <td>{{ start.starttime }}</td>
+          <td>{{ start.race }}</td>
+          <td>{{ start.pos }}</td>
         </tr>
       {% endfor %}
       <tr>

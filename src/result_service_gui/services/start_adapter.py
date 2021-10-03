@@ -85,14 +85,14 @@ class StartAdapter:
                 hdrs.AUTHORIZATION: f"Bearer {token}",
             }
         )
-        raceplans = []
+        starts = []
         async with ClientSession() as session:
             async with session.get(
                 f"{RACE_SERVICE_URL}/raceplans", headers=headers
             ) as resp:
                 logging.debug(f"get_all_raceplans - got response {resp.status}")
                 if resp.status == 200:
-                    raceplans = await resp.json()
+                    starts = await resp.json()
                 elif resp.status == 401:
                     raise Exception(f"Login expired: {resp}")
                 else:
@@ -102,66 +102,54 @@ class StartAdapter:
                     raise web.HTTPBadRequest(
                         reason=f"Error - {resp.status}: {body['detail']}."
                     )
-            raceplans = [
+            starts = [
                 {
-                    "Heat": "G11KA1",
-                    "Pos": "1",
-                    "Nr": "414",
-                    "Navn": "Taiyo Fuseya Skjærven",
-                    "Klubb": "Rustad IL",
-                    "Plass": "1",
+                    "bib": "414",  # start number
+                    "name": "Taiyo Fuseya Skjærven",  # full name
+                    "club": "Rustad IL",
+                    "race": "G11KA1",  # race id
+                    "pos": "1",  # start line/position
                     "starttime": "10:01:30",
-                    "Videre til": "SA1-1",
                 },
                 {
-                    "Heat": "G11KA1",
-                    "Pos": "2",
-                    "Nr": "415",
-                    "Navn": "Aksel Lied-Storstenvik",
-                    "Klubb": "Kjelsås IL",
-                    "Plass": "2",
+                    "race": "G11KA1",
+                    "pos": "2",
+                    "bib": "415",
+                    "name": "Aksel Lied-Storstenvik",
+                    "club": "Kjelsås IL",
                     "starttime": "10:01:30",
-                    "Videre til": "SA1-3",
                 },
                 {
-                    "Heat": "G11KA1",
-                    "Pos": "3",
-                    "Nr": "416",
-                    "Navn": "Andreas Heggelund Dahl",
-                    "Klubb": "Bækkelagets SK",
-                    "Plass": "3",
+                    "race": "G11KA1",
+                    "pos": "3",
+                    "bib": "416",
+                    "name": "Andreas Heggelund Dahl",
+                    "club": "Bækkelagets SK",
                     "starttime": "10:01:30",
-                    "Videre til": "SA1-5",
                 },
                 {
-                    "Heat": "G11KA1",
-                    "Pos": "4",
-                    "Nr": "417",
-                    "Navn": "Theodor Owe",
-                    "Klubb": "Kjelsås IL",
-                    "Plass": "4",
+                    "race": "G11KA1",
+                    "pos": "4",
+                    "bib": "417",
+                    "name": "Theodor Owe",
+                    "club": "Kjelsås IL",
                     "starttime": "10:01:30",
-                    "Videre til": "SA1-7",
                 },
                 {
-                    "Heat": "G11KA1",
-                    "Pos": "5",
-                    "Nr": "418",
-                    "Navn": "Erik Skjellevik Innselset",
-                    "Klubb": "Kjelsås IL",
-                    "Plass": "5",
+                    "race": "G11KA1",
+                    "pos": "5",
+                    "bib": "418",
+                    "name": "Erik Skjellevik Innselset",
+                    "club": "Kjelsås IL",
                     "starttime": "10:01:30",
-                    "Videre til": "SC1-1",
                 },
                 {
-                    "Heat": "G11KA1",
-                    "Pos": "6",
-                    "Nr": "419",
-                    "Navn": "Aleksander Tronsmo-Oraug",
-                    "Klubb": "Kjelsås IL",
-                    "Plass": "6",
+                    "race": "G11KA1",
+                    "pos": "6",
+                    "bib": "419",
+                    "name": "Aleksander Tronsmo-Oraug",
+                    "club": "Kjelsås IL",
                     "starttime": "10:01:30",
-                    "Videre til": "SC1-3",
                 },
             ]
-        return raceplans
+        return starts

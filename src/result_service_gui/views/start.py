@@ -80,12 +80,9 @@ class Start(web.View):
                     except Exception as e:
                         informasjon = str(e)
 
-                    _liste = await StartAdapter().get_all_starts(
+                    startliste = await StartAdapter().get_all_starts(
                         user["token"], event_id
                     )
-                    for start in _liste:
-                        startliste.append(start)
-                        logging.debug(f"Starter: {start['Nr']}")
 
             logging.debug(startliste)
 

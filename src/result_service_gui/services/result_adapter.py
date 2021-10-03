@@ -17,7 +17,7 @@ class ResultAdapter:
     """Class representing result."""
 
     async def get_all_results(self, token: str, event_id: str) -> List:
-        """Get all results function."""
+        """Get all results - lap time or heat place function."""
         headers = MultiDict(
             {
                 hdrs.AUTHORIZATION: f"Bearer {token}",
@@ -42,64 +42,59 @@ class ResultAdapter:
                     )
             results = [
                 {
-                    "Heat": "G11KA1",
-                    "Pos": "1",
-                    "Nr": "414",
-                    "Navn": "Taiyo Fuseya Skjærven",
-                    "Klubb": "Rustad IL",
-                    "Plass": "1",
-                    "starttime": "10:01:30",
-                    "Videre til": "SA1-1",
+                    "bib": "414",  # start number
+                    "name": "Taiyo Fuseya Skjærven",  # full name
+                    "club": "Rustad IL",
+                    "race": "G11KA1",  # race id
+                    "point": "Mål",  # point in race where result where registered
+                    "rank": "1",  # optional for interval start
+                    "time": "10:01:30",  # optional for sprint competition
+                    "next_race": "SA1-1",  # optional, only for sprint competition
                 },
                 {
-                    "Heat": "G11KA1",
-                    "Pos": "2",
-                    "Nr": "415",
-                    "Navn": "Aksel Lied-Storstenvik",
-                    "Klubb": "Kjelsås IL",
-                    "Plass": "2",
-                    "starttime": "10:01:30",
-                    "Videre til": "SA1-3",
+                    "race": "G11KA1",
+                    "bib": "415",
+                    "name": "Aksel Lied-Storstenvik",
+                    "club": "Kjelsås IL",
+                    "rank": "2",
+                    "time": "10:01:30",
+                    "next_race": "SA1-3",
                 },
                 {
-                    "Heat": "G11KA1",
-                    "Pos": "3",
-                    "Nr": "416",
-                    "Navn": "Andreas Heggelund Dahl",
-                    "Klubb": "Bækkelagets SK",
-                    "Plass": "3",
-                    "starttime": "10:01:30",
-                    "Videre til": "SA1-5",
+                    "race": "G11KA1",
+                    "bib": "416",
+                    "name": "Andreas Heggelund Dahl",
+                    "club": "Bækkelagets SK",
+                    "rank": "3",
+                    "time": "10:01:30",
+                    "next_race": "SA1-5",
                 },
                 {
-                    "Heat": "G11KA1",
-                    "Pos": "4",
-                    "Nr": "417",
-                    "Navn": "Theodor Owe",
-                    "Klubb": "Kjelsås IL",
-                    "Plass": "4",
-                    "starttime": "10:01:30",
-                    "Videre til": "SA1-7",
+                    "race": "G11KA1",
+                    "bib": "417",
+                    "name": "Theodor Owe",
+                    "club": "Kjelsås IL",
+                    "rank": "4",
+                    "time": "10:01:30",
+                    "next_race": "SA1-7",
                 },
                 {
-                    "Heat": "G11KA1",
-                    "Pos": "5",
-                    "Nr": "418",
-                    "Navn": "Erik Skjellevik Innselset",
-                    "Klubb": "Kjelsås IL",
-                    "Plass": "5",
-                    "starttime": "10:01:30",
-                    "Videre til": "SC1-1",
+                    "race": "G11KA1",
+                    "bib": "418",
+                    "name": "Erik Skjellevik Innselset",
+                    "club": "Kjelsås IL",
+                    "rank": "5",
+                    "time": "10:01:30",
+                    "next_race": "SC1-1",
                 },
                 {
-                    "Heat": "G11KA1",
-                    "Pos": "6",
-                    "Nr": "419",
-                    "Navn": "Aleksander Tronsmo-Oraug",
-                    "Klubb": "Kjelsås IL",
-                    "Plass": "6",
-                    "starttime": "10:01:30",
-                    "Videre til": "SC1-3",
+                    "race": "G11KA1",
+                    "bib": "419",
+                    "name": "Aleksander Tronsmo-Oraug",
+                    "club": "Kjelsås IL",
+                    "rank": "6",
+                    "time": "10:01:30",
+                    "next_race": "SC1-3",
                 },
             ]
         return results
