@@ -45,12 +45,9 @@ class Passage(web.View):
 
             valgt_klasse = ""
             if registration_mode == "heat":
-                try:
-                    valgt_klasse = self.request.rel_url.query["klasse"]
-                except Exception:
-                    informasjon = f"{informasjon} Velg klasse for å registrere eller redigere passeringer."
-            elif registration_mode == "raceclass":
                 informasjon = f"{informasjon} Velg heat for å se passeringer."
+            elif registration_mode == "raceclass":
+                informasjon = f"{informasjon} Velg klasse for å se passeringer."
 
             # get passeringer for klasse
             race = {}
@@ -99,7 +96,7 @@ class Passage(web.View):
 
             # Create new deltakere
             if "update_bib" in form.keys():
-                informasjon = f"Passering ved {form['point']} er registrert for startnr {form['bib']}."
+                informasjon = f"Passering {form['point']} for startnr {form['bib']}."
                 registration_mode = "bib"
         except Exception as e:
             logging.error(f"Error: {e}")
