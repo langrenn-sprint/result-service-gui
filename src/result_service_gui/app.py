@@ -19,11 +19,11 @@ from .views import (
     Login,
     Logout,
     Main,
-    Timing,
     Ping,
     Resultat,
     ResultatHeat,
     Start,
+    Timing,
 )
 
 load_dotenv()
