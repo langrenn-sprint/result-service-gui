@@ -12,7 +12,7 @@ from result_service_gui.services import (
 from .utils import check_login, get_event
 
 
-class Passage(web.View):
+class Timing(web.View):
     """Class representing the start view."""
 
     async def get(self) -> web.Response:
@@ -62,7 +62,7 @@ class Passage(web.View):
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
-                "passage.html",
+                "timing.html",
                 self.request,
                 {
                     "colclass": colclass,
@@ -103,5 +103,5 @@ class Passage(web.View):
             informasjon = f"Det har oppstått en feil - {e.args}."
 
         return web.HTTPSeeOther(
-            location=f"/passage?event_id={event_id}&informasjon={informasjon}&registration_mode={registration_mode}"
+            location=f"/timing?event_id={event_id}&informasjon={informasjon}&registration_mode={registration_mode}"
         )
