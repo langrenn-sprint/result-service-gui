@@ -22,10 +22,21 @@
         <a href=timing?event_id={{ event_id }}&registration_mode=start_check>Start - check</a>
         <a href=timing?event_id={{ event_id }}&registration_mode=lap>Mellomtid</a>
         <a href=timing?event_id={{ event_id }}&registration_mode=finish_bib>Mål - bib</a>
-        <a href=timing?event_id={{ event_id }}&registration_mode=finish_check>Mål - check</a>
+        <a href=timing?event_id={{ event_id }}&registration_mode=finish_place>Mål - place</a>
         <a href=timing?event_id={{ event_id }}&registration_mode=control>Kontroll</a>
     </div>
   </li>
+  {% if registration_mode == "control" %}
+    <li class=dropdown id=topborder>
+      <a href=javascript:void(0) class=dropbtn>Velg klasse</a>
+      <div class=dropdown-content>
+        <a href=timing?&event_id={{ event_id }}&registration_mode={{ registration_mode }}>Alle</a>
+        {% for klasse in raceclasses %}
+          <a href=timing?klasse={{ klasse.name }}&event_id={{ event_id }}&registration_mode={{ registration_mode }}>{{ klasse.ageclass_name }}</a>
+        {% endfor %}
+      </div>
+    </li>
+  {% endif %}
 {% endblock %}
 
 {% block content %}
@@ -62,6 +73,7 @@
       <table>
          <tr id=headerblue>
           <td>Startnummer</td>
+          <td>DNS</td>
           <td>Navn</td>
           <td>Klubb</td>
           <td>Starttid</td>
@@ -73,13 +85,20 @@
         {% for start in passeringer %}
           <tr>
             <td>{{ start.bib }}</td>
+            <td id=red><input type=checkbox name="dns" value="{{ start.bib }}"></td>
             <td>{{ start.name }}</td>
             <td>{{ start.club }}</td>
             <td>{{ start.starttime }}</td>
             <td>{{ start.race }}</td>
-            <td><input type=text name="point" value="Mål"></td>
-            <td><input type=text name="splittime" value=""></td>
-            <td><input type=text name="splitplace" value="2"></td>
+            <td>
+              <select name="point_{{ start.bib }}">
+                  <option value="start">Start</option>
+                  <option value="passering">Passering</option>
+                  <option value="mål">Mål</option>
+              </select>
+            </td>
+            <td><input type=text name="time_{{ start.bib }}" value="Klokkeslett" size=10></td>
+            <td><input type=text name="place_{{ start.bib }}" value="Plassering" size=5></td>
           </tr>
         {% endfor %}
         <tr>
@@ -91,6 +110,73 @@
               <input type="submit" name="{{ registration_mode }}" value="  Oppdater  ">
             </td>
             <td></td>
+        </tr>
+      </table>
+    </form>
+  {% elif registration_mode == "start_check" %}
+    <div id=spacer></div>
+    <form action=/timing method=post>
+      <table>
+         <tr id=headerblue>
+          <td width=80>Startnr</td>
+          <td width=150>Startet</td>
+          <td width=100>Starttid</td>
+          <td>Navn</td>
+          <td>Klubb</td>
+          <td>Heat</td>
+        </tr>
+        {% for start in passeringer %}
+          <tr>
+            <td align=right>{{ start.bib }}</td>
+            <td>
+              <input type="radio" id=started name="started_{{ start.bib }}" value="ok"><label for="ok">OK</label>
+              <input type="radio" id=dns name="started_{{ start.bib }}" value="dns"><label for="dns">DNS</label>
+            </td>
+            <td>{{ start.starttime }}</td>
+            <td>{{ start.name }}</td>
+            <td>{{ start.club }}</td>
+            <td>{{ start.race }}</td>
+          </tr>
+        {% endfor %}
+        <tr id=spacer>
+        </tr>
+        <tr>
+            <td></td>
+            <td colspan=5>
+              <input type="hidden" name="event_id" value="{{ event_id }}">
+              <input type="submit" name="{{ registration_mode }}" value="  Oppdater  ">
+            </td>
+        </tr>
+      </table>
+    </form>
+  {% elif registration_mode == "finish_place" %}
+    <div id=spacer></div>
+    <form action=/timing method=post>
+      <table>
+         <tr id=headerblue>
+          <td width=80>Startnr</td>
+          <td width=80>Plass</td>
+          <td>Heat</td>
+          <td>Navn</td>
+          <td>Klubb</td>
+        </tr>
+        {% for start in passeringer %}
+          <tr>
+            <td align=center>{{ start.bib }}</td>
+            <td><input type=text name="place_{{ start.bib }}" value="" size=5></td>
+            <td>{{ start.race }}</td>
+            <td>{{ start.name }}</td>
+            <td>{{ start.club }}</td>
+          </tr>
+        {% endfor %}
+        <tr id=spacer>
+        </tr>
+        <tr>
+            <td></td>
+            <td colspan=5>
+              <input type="hidden" name="event_id" value="{{ event_id }}">
+              <input type="submit" name="{{ registration_mode }}" value="  Oppdater  ">
+            </td>
         </tr>
       </table>
     </form>
@@ -109,7 +195,18 @@
           <td id=spacer colspan=3> </td>
         </tr>
         <tr>
-          <td><input type=text name="point" value="Mål"></td>
+          <td>
+            {% if registration_mode == "start_bib" %}
+              Start
+            {% elif registration_mode == "finish_bib" %}
+              Mål
+            {% else %}
+              <select name="point">
+                  <option value="forvarsel_1">Forvarsel 1</option>
+                  <option value="runde_1">Runde 1</option>
+              </select>
+            {% endif %}
+          </td>
           <td><input type=text name="bib" value=""></td>
           <td>Ved flere passeringer, bruk space mellom startnummer. x før eller etter startnummer indikerer at løper ikke startet. Eksempel: 2 3x 4</td>
         </tr>

@@ -91,13 +91,22 @@ class Timing(web.View):
         registration_mode = ""
         try:
             form = await self.request.post()
-            logging.debug(f"Form {form}")
+            logging.info(f"Form {form}")
             event_id = str(form["event_id"])
 
             # Create new deltakere
-            if "update_bib" in form.keys():
-                informasjon = f"Passering {form['point']} for startnr {form['bib']}."
-                registration_mode = "bib"
+            if "start_bib" in form.keys():
+                informasjon = f"Start BIB - {form}."
+                registration_mode = "start_bib"
+            elif "start_check" in form.keys():
+                informasjon = f"Start check - {form}."
+                registration_mode = "start_check"
+            elif "finish_place" in form.keys():
+                informasjon = f"finish check - {form}."
+                registration_mode = "finish_place"
+            elif "control" in form.keys():
+                informasjon = f"Control for {form}."
+                registration_mode = "control"
         except Exception as e:
             logging.error(f"Error: {e}")
             informasjon = f"Det har oppstått en feil - {e.args}."
