@@ -7,9 +7,9 @@ import aiohttp_jinja2
 from result_service_gui.services import (
     RaceclassesAdapter,
     RaceplansAdapter,
-    StartAdapter,
+    TimeEventsAdapter,
 )
-from .utils import check_login, get_event
+from .utils import check_login, create_time_event, get_event
 
 
 class Timing(web.View):
@@ -58,7 +58,9 @@ class Timing(web.View):
             except Exception as e:
                 informasjon = str(e)
 
-            passeringer = await StartAdapter().get_all_starts(user["token"], event_id)
+            passeringer = await TimeEventsAdapter().get_time_events_by_event_id(
+                user["token"], event_id
+            )
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
@@ -91,18 +93,25 @@ class Timing(web.View):
         registration_mode = ""
         try:
             form = await self.request.post()
-            logging.info(f"Form {form}")
+            logging.debug(f"Form {form}")
             event_id = str(form["event_id"])
 
             # Create new deltakere
             if "start_bib" in form.keys():
-                informasjon = f"Start BIB - {form}."
+                informasjon = await create_time_event(user["token"], "start_bib", form)
                 registration_mode = "start_bib"
             elif "start_check" in form.keys():
-                informasjon = f"Start check - {form}."
+                informasjon = await create_time_event(
+                    user["token"], "start_check", form
+                )
                 registration_mode = "start_check"
+            elif "finish_bib" in form.keys():
+                informasjon = await create_time_event(user["token"], "finish_bib", form)
+                registration_mode = "finish_bib"
             elif "finish_place" in form.keys():
-                informasjon = f"finish check - {form}."
+                informasjon = await create_time_event(
+                    user["token"], "finish_place", form
+                )
                 registration_mode = "finish_place"
             elif "control" in form.keys():
                 informasjon = f"Control for {form}."

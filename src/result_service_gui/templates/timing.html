@@ -76,29 +76,21 @@
           <td>DNS</td>
           <td>Navn</td>
           <td>Klubb</td>
-          <td>Starttid</td>
           <td>Heat</td>
           <td>Passeringspunkt</td>
           <td>Passeringstid</td>
           <td>Plass</td>
         </tr>
-        {% for start in passeringer %}
+        {% for passering in passeringer %}
           <tr>
-            <td>{{ start.bib }}</td>
-            <td id=red><input type=checkbox name="dns" value="{{ start.bib }}"></td>
-            <td>{{ start.name }}</td>
-            <td>{{ start.club }}</td>
-            <td>{{ start.starttime }}</td>
-            <td>{{ start.race }}</td>
-            <td>
-              <select name="point_{{ start.bib }}">
-                  <option value="start">Start</option>
-                  <option value="passering">Passering</option>
-                  <option value="mål">Mål</option>
-              </select>
-            </td>
-            <td><input type=text name="time_{{ start.bib }}" value="Klokkeslett" size=10></td>
-            <td><input type=text name="place_{{ start.bib }}" value="Plassering" size=5></td>
+            <td>{{ passering.bib }}</td>
+            <td id=red><input type=checkbox name="dns" value="{{ passering.bib }}"></td>
+            <td>{{ passering.name }}</td>
+            <td>{{ passering.club }}</td>
+            <td>{{ passering.race_id }}</td>
+            <td><input type=text name="point_{{ passering.point }}" value="{{ passering.point }}"></td>
+            <td><input type=text name="time_{{ passering.bib }}" value="{{ passering.registration_time }}" size=10></td>
+            <td><input type=text name="rank_{{ passering.bib }}" value="{{ passering.rank }}" size=5></td>
           </tr>
         {% endfor %}
         <tr>
@@ -118,7 +110,7 @@
     <form action=/timing method=post>
       <table>
          <tr id=headerblue>
-          <td width=80>Startnr</td>
+          <td width=80>Startnr<input type="hidden" name="bib" value=""></td>
           <td width=150>Startet</td>
           <td width=100>Starttid</td>
           <td>Navn</td>
@@ -129,8 +121,8 @@
           <tr>
             <td align=right>{{ start.bib }}</td>
             <td>
-              <input type="radio" id=started name="started_{{ start.bib }}" value="ok"><label for="ok">OK</label>
-              <input type="radio" id=dns name="started_{{ start.bib }}" value="dns"><label for="dns">DNS</label>
+              <input type="radio" name="start_{{ start.bib }}" value="OK"><label for="OK">OK</label>
+              <input type="radio" name="start_{{ start.bib }}" value="DNS"><label for="OK">DNS</label>
             </td>
             <td>{{ start.starttime }}</td>
             <td>{{ start.name }}</td>
@@ -160,13 +152,13 @@
           <td>Navn</td>
           <td>Klubb</td>
         </tr>
-        {% for start in passeringer %}
+        {% for passering in passeringer %}
           <tr>
-            <td align=center>{{ start.bib }}</td>
-            <td><input type=text name="place_{{ start.bib }}" value="" size=5></td>
-            <td>{{ start.race }}</td>
-            <td>{{ start.name }}</td>
-            <td>{{ start.club }}</td>
+            <td align=center>{{ passering.bib }}</td>
+            <td><input type=text name="place_{{ passering.bib }}" value="" size=5></td>
+            <td>{{ passering.race_id }}</td>
+            <td>{{ passering.name }}</td>
+            <td>{{ passering.club }}</td>
           </tr>
         {% endfor %}
         <tr id=spacer>
