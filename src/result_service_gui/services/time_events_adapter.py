@@ -91,6 +91,32 @@ class TimeEventsAdapter:
             logging.debug(f"Updated time_event: {id} - res {resp.status}")
         return str(resp.status)
 
+    async def get_time_event_by_id(self, token: str, id: str) -> dict:
+        """Get all time_events - lap time or heat place function."""
+        headers = MultiDict(
+            {
+                hdrs.AUTHORIZATION: f"Bearer {token}",
+            }
+        )
+        time_event = {}
+        async with ClientSession() as session:
+            async with session.get(
+                f"{RACE_SERVICE_URL}/time-events/{id}", headers=headers
+            ) as resp:
+                logging.debug(f"get_time_event_by_id - got response {resp.status}")
+                if resp.status == 200:
+                    time_event = await resp.json()
+                elif resp.status == 401:
+                    raise Exception(f"Login expired: {resp}")
+                else:
+                    servicename = "get_time_event_by_id"
+                    body = await resp.json()
+                    logging.error(f"{servicename} failed - {resp.status} - {body}")
+                    raise web.HTTPBadRequest(
+                        reason=f"Error - {resp.status}: {body['detail']}."
+                    )
+        return time_event
+
     async def get_time_events_by_event_id(self, token: str, event_id: str) -> List:
         """Get all time_events - lap time or heat place function."""
         headers = MultiDict(

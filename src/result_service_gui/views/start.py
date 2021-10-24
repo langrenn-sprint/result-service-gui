@@ -10,7 +10,12 @@ from result_service_gui.services import (
     RaceplansAdapter,
     StartAdapter,
 )
-from .utils import check_login, get_event
+from .utils import (
+    check_login,
+    get_enchiced_startlist,
+    get_event,
+    get_qualification_text,
+)
 
 
 class Start(web.View):
@@ -33,6 +38,7 @@ class Start(web.View):
 
             informasjon = ""
             startliste = []
+            races = []
             kjoreplan = []
             colseparators = []
             colclass = "w3-half"
@@ -71,20 +77,23 @@ class Start(web.View):
                     logging.debug(startliste)
             else:
                 # get startlister for klasse
-                race = {}
-                if valgt_klasse != "":
-                    try:
-                        race = await RaceplansAdapter().get_race_by_class(
+                raceplans = await RaceplansAdapter().get_all_raceplans(
+                    user["token"], event_id
+                )
+                if len(raceplans) > 0:
+                    _tmp_races = raceplans[0]["races"]
+                    if len(_tmp_races) == 0:
+                        informasjon = f"{informasjon} Ingen kjøreplaner funnet."
+                    else:
+                        for race in _tmp_races:
+                            if race["raceclass"] == valgt_klasse:
+                                race["next_race"] = get_qualification_text(race)
+                                race["start_time"] = race["start_time"][-8:]
+                                races.append(race)
+
+                        startliste = await get_enchiced_startlist(
                             user["token"], event_id, valgt_klasse
                         )
-                    except Exception as e:
-                        informasjon = str(e)
-
-                    startliste = await StartAdapter().get_all_starts(
-                        user["token"], event_id
-                    )
-
-            logging.debug(startliste)
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
@@ -98,7 +107,7 @@ class Start(web.View):
                     "colseparators": colseparators,
                     "colclass": colclass,
                     "raceclasses": raceclasses,
-                    "race": race,
+                    "races": races,
                     "kjoreplan": [],
                     "startliste": startliste,
                     "username": user["name"],

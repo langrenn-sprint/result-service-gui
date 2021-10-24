@@ -30,27 +30,6 @@
 
 {% block content %}
 
-  {% if valgt_klasse != "live" %}
-    <table>
-       <tr id=headerblue>
-        <td>Løpsklasse</td>
-        <td>Første start</td>
-        <td>Deltakere</td>
-        <td>Heat</td>
-      </tr>
-      <tr>
-        <td>{{ race.raceclass }}</td>
-        <td>{{ race.start_time }}</td>
-        <td>{{ race.no_of_contestants }}</td>
-        <td>{{ race.heat }}</td>
-      </tr>
-      <tr>
-        <td id=spacer colspan=4> </td>
-      </tr>
-    </table>
-    <div id=spacer></div>
-  {% endif %}
-
   {% if valgt_klasse == "live" %}
     <div class="w3-row-padding">
       <div class="{{ colclass }}">
@@ -81,35 +60,42 @@
     </table>
     <div id=spacer></div>
   {% else %}
-    {% for heat in kjoreplan %}
-      {% if heat.Heat in colseparators %}
+    {% for race in races %}
+      {% if race.Heat in colseparators %}
         </div>
         <div class="{{ colclass }}">
       {% endif %}
       <table>
         <tr id=headerblue>
-          <td colspan=3>{{ heat.Løpsklasse }} {{ heat.Runde }}</td>
-          <td colspan=1>Kl. {{ heat.Start }}</td>
+            {% if race.round == "Q" %}
+              <td colspan=2>{{ race.raceclass }} Kvartfinale {{ race.heat }}</td>
+            {% elif race.round == "S" %}
+              <td colspan=2>{{ race.raceclass }} Semifinale {{ race.heat }}</td>
+            {% elif race.round == "F" %}
+              <td colspan=2>{{ race.raceclass }} Finale {{ race.heat }}</td>
+            {% endif %}
+          <td>Kl. {{ race.start_time }}</td>
+          <td>Neste heat: {{ race.next_race }}</td>
         </tr>
         <tr id=subheader>
-          <td><div id={{ heat.Heat[0] }} >Pos</div></td>
+          <td><div id={{ race.heat }} >Pos</div></td>
           <td>Nr</td>
-          <td>Navn</td>
-          <td>Klubb</td>
+          <td></td>
+          <td></td>
         </tr>
         {% for loper in startliste %}
-          {% if heat.Index == loper.Heat %}
+          {% if loper.race_id == race.id[1] %}
             <tr>
-              <td>{{ loper.Pos }}</td>
-              <td><div id={{ loper.Nr }}>{{ loper.Nr }}</div></td>
+              <td>{{ loper.position }}</td>
+              <td><div id={{ loper.bib }}>{{ loper.bib }}</div></td>
               <td>
                 {% if valgt_klasse != "live" %}
-                  <a href=live?klasse={{ heat.Løpsklasse }}&startnr={{ loper.Nr }}>{{ loper.Navn }}</a>
+                  <a href=live?klasse={{ valgt_klasse }}&startnr={{ loper.bib }}>{{ loper.name }}</a>
                 {% else %}
-                  {{ loper.Navn[:24] }}
+                  {{ loper.name }}
                 {% endif %}
               </td>
-              <td>{{ loper.Klubb[:12] }}</td>
+              <td>{{ loper.club }}</td>
             </tr>
           {% endif %}
         {% endfor %}

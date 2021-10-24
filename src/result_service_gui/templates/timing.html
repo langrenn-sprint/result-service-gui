@@ -11,28 +11,28 @@
 {% block refresh %}{% endblock %}
 
 {% block titlemain %}
-  Passeringer {{ registration_mode }}
+  Passeringer {{ action }}
 {% endblock %}
 
 {% block menuitems %}
   <li class=dropdown id=topborder>
     <a href=javascript:void(0) class=dropbtn>Velg modus</a>
     <div class=dropdown-content>
-        <a href=timing?event_id={{ event_id }}&registration_mode=start_bib>Start - bib</a>
-        <a href=timing?event_id={{ event_id }}&registration_mode=start_check>Start - check</a>
-        <a href=timing?event_id={{ event_id }}&registration_mode=lap>Mellomtid</a>
-        <a href=timing?event_id={{ event_id }}&registration_mode=finish_bib>Mål - bib</a>
-        <a href=timing?event_id={{ event_id }}&registration_mode=finish_place>Mål - place</a>
-        <a href=timing?event_id={{ event_id }}&registration_mode=control>Kontroll</a>
+        <a href=timing?event_id={{ event_id }}&action=start_bib>Start - bib</a>
+        <a href=timing?event_id={{ event_id }}&action=start_check>Start - check</a>
+        <a href=timing?event_id={{ event_id }}&action=lap>Mellomtid</a>
+        <a href=timing?event_id={{ event_id }}&action=finish_bib>Mål - bib</a>
+        <a href=timing?event_id={{ event_id }}&action=finish_place>Mål - place</a>
+        <a href=timing?event_id={{ event_id }}&action=control>Kontroll</a>
     </div>
   </li>
-  {% if registration_mode == "control" %}
+  {% if action == "control" %}
     <li class=dropdown id=topborder>
       <a href=javascript:void(0) class=dropbtn>Velg klasse</a>
       <div class=dropdown-content>
-        <a href=timing?&event_id={{ event_id }}&registration_mode={{ registration_mode }}>Alle</a>
+        <a href=timing?&event_id={{ event_id }}&action={{ action }}>Alle</a>
         {% for klasse in raceclasses %}
-          <a href=timing?klasse={{ klasse.name }}&event_id={{ event_id }}&registration_mode={{ registration_mode }}>{{ klasse.ageclass_name }}</a>
+          <a href=timing?klasse={{ klasse.name }}&event_id={{ event_id }}&action={{ action }}>{{ klasse.ageclass_name }}</a>
         {% endfor %}
       </div>
     </li>
@@ -40,7 +40,7 @@
 {% endblock %}
 
 {% block content %}
-  {% if registration_mode == "" %}
+  {% if action == "" %}
     <p>
       <b>- Start</b> - registrere starter, skrive inn startnummer.<br>
       <b>- Start</b> - registrere starter, krysse av på liste.<br>
@@ -50,62 +50,52 @@
       <b>- Kontroll</b> - korringeringer og manglende registreringer.<br>
       <br>
       <br>
-  {% elif registration_mode == "control" %}
-    <table>
-       <tr id=headerblue>
-        <td>Løpsklasse</td>
-        <td>Første start</td>
-        <td>Deltakere</td>
-        <td>Heat</td>
-      </tr>
-      <tr>
-        <td>{{ race.raceclass }}</td>
-        <td>{{ race.start_time }}</td>
-        <td>{{ race.no_of_contestants }}</td>
-        <td>{{ race.heat }}</td>
-      </tr>
-      <tr>
-        <td id=spacer colspan=4> </td>
-      </tr>
-    </table>
+  {% elif action == "control" %}
     <div id=spacer></div>
-    <form action=/timing method=post>
       <table>
          <tr id=headerblue>
-          <td>Startnummer</td>
-          <td>DNS</td>
-          <td>Navn</td>
-          <td>Klubb</td>
+          <td>Startnr</td>
           <td>Heat</td>
           <td>Passeringspunkt</td>
           <td>Passeringstid</td>
           <td>Plass</td>
+          <td>Status</td>
+          <td></td>
+          <td></td>
+          <td>Changelog</td>
         </tr>
         {% for passering in passeringer %}
           <tr>
-            <td>{{ passering.bib }}</td>
-            <td id=red><input type=checkbox name="dns" value="{{ passering.bib }}"></td>
-            <td>{{ passering.name }}</td>
-            <td>{{ passering.club }}</td>
-            <td>{{ passering.race_id }}</td>
-            <td><input type=text name="point_{{ passering.point }}" value="{{ passering.point }}"></td>
-            <td><input type=text name="time_{{ passering.bib }}" value="{{ passering.registration_time }}" size=10></td>
-            <td><input type=text name="rank_{{ passering.bib }}" value="{{ passering.rank }}" size=5></td>
+            <form action=/timing method=post>
+              <td align=right>{{ passering.bib }}</td>
+              <td>{{ passering.race_id }}</td>
+              <td><input type=text name="point" value="{{ passering.point }}" size=7></td>
+              <td><input type=text name="registration_time" value="{{ passering.registration_time }}" size=7></td>
+              <td><input type=text name="rank" value="{{ passering.rank }}" size=7></td>
+              <td>{{ passering.status }}</td>
+              <td align=right>
+                <input type="hidden" name="event_id" value="{{ event_id }}">
+                <input type="hidden" name="id" value="{{ passering.id }}">
+                <input type="hidden" name="action" value="{{ action }}">
+                <input type="submit" name="update" value="Oppdater">
+              </td>
+            </form>
+            <form action=/timing method=post>
+              <td>
+                <input type="hidden" name="event_id" value="{{ event_id }}">
+                <input type="hidden" name="id" value="{{ passering.id }}">
+                <input type="hidden" name="action" value="{{ action }}">
+                <input type="submit" name="delete" value="  Slett  ">
+              </td>
+            </form>
+              <td>&nbsp;{{ passering.changelog }}</td>
           </tr>
         {% endfor %}
         <tr>
           <td id=spacer colspan=8> </td>
         </tr>
-        <tr>
-            <td colspan=7 align=right>
-              <input type="hidden" name="event_id" value="{{ event_id }}">
-              <input type="submit" name="{{ registration_mode }}" value="  Oppdater  ">
-            </td>
-            <td></td>
-        </tr>
       </table>
-    </form>
-  {% elif registration_mode == "start_check" %}
+  {% elif action == "start_check" %}
     <div id=spacer></div>
     <form action=/timing method=post>
       <table>
@@ -136,12 +126,13 @@
             <td></td>
             <td colspan=5>
               <input type="hidden" name="event_id" value="{{ event_id }}">
-              <input type="submit" name="{{ registration_mode }}" value="  Oppdater  ">
+              <input type="hidden" name="action" value="{{ action }}">
+              <input type="submit" name="{{ action }}" value="  Oppdater  ">
             </td>
         </tr>
       </table>
     </form>
-  {% elif registration_mode == "finish_place" %}
+  {% elif action == "finish_place" %}
     <div id=spacer></div>
     <form action=/timing method=post>
       <table>
@@ -167,7 +158,8 @@
             <td></td>
             <td colspan=5>
               <input type="hidden" name="event_id" value="{{ event_id }}">
-              <input type="submit" name="{{ registration_mode }}" value="  Oppdater  ">
+              <input type="hidden" name="action" value="{{ action }}">
+              <input type="submit" name="{{ action }}" value="  Oppdater  ">
             </td>
         </tr>
       </table>
@@ -188,9 +180,9 @@
         </tr>
         <tr>
           <td>
-            {% if registration_mode == "start_bib" %}
+            {% if action == "start_bib" %}
               Start
-            {% elif registration_mode == "finish_bib" %}
+            {% elif action == "finish_bib" %}
               Mål
             {% else %}
               <select name="point">
@@ -206,7 +198,8 @@
           <td></td>
             <td align=right>
               <input type="hidden" name="event_id" value="{{ event_id }}">
-              <input type="submit" name={{ registration_mode }} value="  Registrer  ">
+              <input type="hidden" name="action" value="{{ action }}">
+              <input type="submit" name={{ action }} value="  Registrer  ">
             </td>
             <td></td>
         </tr>
