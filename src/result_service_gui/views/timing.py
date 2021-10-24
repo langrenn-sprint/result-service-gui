@@ -6,10 +6,15 @@ import aiohttp_jinja2
 
 from result_service_gui.services import (
     RaceclassesAdapter,
-    RaceplansAdapter,
     TimeEventsAdapter,
 )
-from .utils import check_login, create_time_event, get_event, update_time_event
+from .utils import (
+    check_login,
+    create_time_event,
+    get_enchiced_startlist,
+    get_event,
+    update_time_event,
+)
 
 
 class Timing(web.View):
@@ -37,6 +42,7 @@ class Timing(web.View):
             event = await get_event(user["token"], event_id)
 
             passeringer = []
+            startlist = []
             colclass = "w3-half"
 
             raceclasses = await RaceclassesAdapter().get_raceclasses(
@@ -44,20 +50,11 @@ class Timing(web.View):
             )
 
             valgt_klasse = ""
-            if action == "heat":
-                informasjon = f"{informasjon} Velg heat for å se passeringer."
-            elif action == "raceclass":
-                informasjon = f"{informasjon} Velg klasse for å se passeringer."
+            startlist = await get_enchiced_startlist(
+                user["token"], event_id, valgt_klasse
+            )
 
             # get passeringer for klasse
-            race = {}
-            try:
-                race = await RaceplansAdapter().get_race_by_class(
-                    user["token"], event_id, "G12"
-                )
-            except Exception as e:
-                informasjon = str(e)
-
             passeringer = await TimeEventsAdapter().get_time_events_by_event_id(
                 user["token"], event_id
             )
@@ -67,14 +64,14 @@ class Timing(web.View):
                 "timing.html",
                 self.request,
                 {
+                    "action": action,
                     "colclass": colclass,
                     "event": event,
                     "event_id": event_id,
                     "informasjon": informasjon,
                     "passeringer": passeringer,
-                    "race": race,
                     "raceclasses": raceclasses,
-                    "action": action,
+                    "startlist": startlist,
                     "username": user["name"],
                     "valgt_klasse": valgt_klasse,
                 },

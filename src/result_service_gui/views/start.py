@@ -67,7 +67,6 @@ class Start(web.View):
                     _liste = await StartAdapter().get_all_starts(
                         user["token"], event_id
                     )
-                    logging.info(f"Starter: {_liste}")
                     if i in isplitt:
                         colseparators.append(heat["Index"])
                         logging.debug(colseparators)

@@ -100,24 +100,24 @@
     <form action=/timing method=post>
       <table>
          <tr id=headerblue>
+          <td width=100>Starttid</td>
+          <td>Pos</td>
           <td width=80>Startnr<input type="hidden" name="bib" value=""></td>
           <td width=150>Startet</td>
-          <td width=100>Starttid</td>
           <td>Navn</td>
           <td>Klubb</td>
-          <td>Heat</td>
         </tr>
-        {% for start in passeringer %}
+        {% for start in startlist %}
           <tr>
-            <td align=right>{{ start.bib }}</td>
+            <td>{{ start.start_time }}</td>
+            <td>{{ start.position }}</td>
+            <td align=center>{{ start.bib }}</td>
             <td>
-              <input type="radio" name="start_{{ start.bib }}" value="OK"><label for="OK">OK</label>
-              <input type="radio" name="start_{{ start.bib }}" value="DNS"><label for="OK">DNS</label>
+              <input type="radio" name="form_start_{{ start.bib }}" value="OK"><label for="OK">OK</label>
+              <input type="radio" name="form_start_{{ start.bib }}" value="DNS"><label for="OK">DNS</label>
             </td>
-            <td>{{ start.starttime }}</td>
             <td>{{ start.name }}</td>
             <td>{{ start.club }}</td>
-            <td>{{ start.race }}</td>
           </tr>
         {% endfor %}
         <tr id=spacer>
@@ -137,19 +137,21 @@
     <form action=/timing method=post>
       <table>
          <tr id=headerblue>
-          <td width=80>Startnr</td>
-          <td width=80>Plass</td>
-          <td>Heat</td>
+          <td width=100>Starttid</td>
+          <td width=80>Startnr<input type="hidden" name="bib" value=""></td>
+          <td width=150>Plass</td>
           <td>Navn</td>
           <td>Klubb</td>
         </tr>
-        {% for passering in passeringer %}
+        {% for start in startlist %}
           <tr>
-            <td align=center>{{ passering.bib }}</td>
-            <td><input type=text name="place_{{ passering.bib }}" value="" size=5></td>
-            <td>{{ passering.race_id }}</td>
-            <td>{{ passering.name }}</td>
-            <td>{{ passering.club }}</td>
+            <td>{{ start.start_time }}</td>
+            <td align=center>{{ start.bib }}</td>
+            <td>
+              <input type="text" name="form_place_{{ start.bib }}" value="" size="4">
+            </td>
+            <td>{{ start.name }}</td>
+            <td>{{ start.club }}</td>
           </tr>
         {% endfor %}
         <tr id=spacer>

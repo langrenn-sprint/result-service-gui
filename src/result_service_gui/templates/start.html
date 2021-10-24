@@ -68,19 +68,19 @@
       <table>
         <tr id=headerblue>
             {% if race.round == "Q" %}
-              <td colspan=2>{{ race.raceclass }} Kvartfinale {{ race.heat }}</td>
+              <td colspan=2>{{ race.raceclass }} Kvartfinale {{ race.index }}{{ race.heat }}</td>
             {% elif race.round == "S" %}
-              <td colspan=2>{{ race.raceclass }} Semifinale {{ race.heat }}</td>
+              <td colspan=2>{{ race.raceclass }} Semifinale {{ race.index }}{{ race.heat }}</td>
             {% elif race.round == "F" %}
-              <td colspan=2>{{ race.raceclass }} Finale {{ race.heat }}</td>
+              <td colspan=2>{{ race.raceclass }} Finale {{ race.index }}</td>
             {% endif %}
           <td>Kl. {{ race.start_time }}</td>
-          <td>Neste heat: {{ race.next_race }}</td>
+          <td>{% if race.round != "F" %}Neste heat: {{ race.next_race }}{% endif %}</td>
         </tr>
         <tr id=subheader>
           <td><div id={{ race.heat }} >Pos</div></td>
           <td>Nr</td>
-          <td></td>
+          <td>Todo: fix filter</td>
           <td></td>
         </tr>
         {% for loper in startliste %}

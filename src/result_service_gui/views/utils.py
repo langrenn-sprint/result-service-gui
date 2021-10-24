@@ -31,7 +31,7 @@ async def create_time_event(token: str, action: str, form: dict) -> str:
     reg_time = datetime.datetime.now()
 
     request_body = {
-        "bib": form["bib"],
+        "bib": "",
         "event_id": form["event_id"],
         "race_id": "",
         "point": "",
@@ -53,19 +53,20 @@ async def create_time_event(token: str, action: str, form: dict) -> str:
                     "changelog"
                 ] = f"{reg_time.strftime('%X')}: DNS registrert. "
                 request_body["bib"] = bib.replace("x", "")
+                informasjon += f" {request_body['bib']}-DNS "
             else:
                 request_body["rank"] = "Started"
                 request_body[
                     "changelog"
                 ] = f"{reg_time.strftime('%X')}: Start registrert. "
                 request_body["bib"] = bib
+                informasjon += f" {bib}-OK "
             i += 1
             id = await TimeEventsAdapter().create_time_event(token, request_body)
-            informasjon += f"{i}. Bib:{bib}. "
     elif action == "start_check":
         for x in form.keys():
-            if x.startswith("start_"):
-                request_body["bib"] = x[6:]
+            if x.startswith("form_start_"):
+                request_body["bib"] = x[11:]
                 request_body["point"] = "Start"
                 if form[x] == "DNS":
                     # register DNS
@@ -81,8 +82,7 @@ async def create_time_event(token: str, action: str, form: dict) -> str:
                     ] = f"{reg_time.strftime('%X')}: Start registrert. "
                 i += 1
                 id = await TimeEventsAdapter().create_time_event(token, request_body)
-                informasjon += f"{i}. Bib:{form['bib']} "
-        informasjon = f"Registreringer OK: {i}." + informasjon
+                informasjon += f" {request_body['bib']}-{form[x]}. "
     elif action == "finish_bib":
         request_body["point"] = "Finish"
         request_body[
@@ -93,12 +93,25 @@ async def create_time_event(token: str, action: str, form: dict) -> str:
             request_body["bib"] = bib
             i += 1
             id = await TimeEventsAdapter().create_time_event(token, request_body)
-            informasjon += f"{i}. Bib:{bib} "
+            informasjon += f" {bib} "
     elif action == "finish_place":
-        logging.info("finish_place")
+        for x in form.keys():
+            if x.startswith("form_place_"):
+                _place = form[x]
+                if _place.isnumeric():
+                    request_body["bib"] = x[11:]
+                    request_body["place"] = _place
+                    request_body[
+                        "changelog"
+                    ] = f"{reg_time.strftime('%X')}: {_place} plass i mål. "
+                    i += 1
+                    id = await TimeEventsAdapter().create_time_event(
+                        token, request_body
+                    )
+                    informasjon += f" {request_body['bib']}-{_place} plass. "
     logging.debug(f"Registrations: {informasjon}, last id: {id}")
 
-    return f"Registreringer: {i} - {informasjon}"
+    return f"Utført {i} registreringer: {informasjon}"
 
 
 async def get_event(token: str, event_id: str) -> dict:
@@ -133,6 +146,8 @@ def get_qualification_text(race: dict) -> str:
                     text += "Resten til finale C. "
                 elif x == "C":
                     text += f"{y} til finale C. "
+            if text.count("Resten") == 0:
+                text += "Resten er ute. "
     logging.debug(f"Regel hele: {text}")
     return text
 
@@ -140,7 +155,6 @@ def get_qualification_text(race: dict) -> str:
 async def get_enchiced_startlist(token: str, event_id: str, valgt_klasse: str) -> list:
     """Enrich startlist information."""
     startlist = await StartAdapter().get_all_starts(token, event_id)
-
     # add name and club
     contestants = await ContestantsAdapter().get_all_contestants(token, event_id, "")
     for start in startlist:
