@@ -28,7 +28,7 @@ async def check_login(self) -> dict:
 async def create_time_event(token: str, action: str, form: dict) -> str:
     """Register time event - return information."""
     informasjon = ""
-    reg_time = datetime.datetime.now()
+    time_now = datetime.datetime.now()
 
     request_body = {
         "bib": "",
@@ -36,7 +36,7 @@ async def create_time_event(token: str, action: str, form: dict) -> str:
         "race_id": "",
         "point": "",
         "rank": "",
-        "registration_time": reg_time.strftime("%X"),
+        "registration_time": time_now.strftime("%X"),
         "next_race_id": "",
         "status": "OK",
         "changelog": "",
@@ -51,14 +51,14 @@ async def create_time_event(token: str, action: str, form: dict) -> str:
                 request_body["rank"] = "DNS"
                 request_body[
                     "changelog"
-                ] = f"{reg_time.strftime('%X')}: DNS registrert. "
+                ] = f"{time_now.strftime('%X')}: DNS registrert. "
                 request_body["bib"] = bib.replace("x", "")
                 informasjon += f" {request_body['bib']}-DNS "
             else:
                 request_body["rank"] = "Started"
                 request_body[
                     "changelog"
-                ] = f"{reg_time.strftime('%X')}: Start registrert. "
+                ] = f"{time_now.strftime('%X')}: Start registrert. "
                 request_body["bib"] = bib
                 informasjon += f" {bib}-OK "
             i += 1
@@ -73,13 +73,13 @@ async def create_time_event(token: str, action: str, form: dict) -> str:
                     request_body["rank"] = "DNS"
                     request_body[
                         "changelog"
-                    ] = f"{reg_time.strftime('%X')}: DNS registrert. "
+                    ] = f"{time_now.strftime('%X')}: DNS registrert. "
                 else:
                     # register normal start
                     request_body["rank"] = "Started"
                     request_body[
                         "changelog"
-                    ] = f"{reg_time.strftime('%X')}: Start registrert. "
+                    ] = f"{time_now.strftime('%X')}: Start registrert. "
                 i += 1
                 id = await TimeEventsAdapter().create_time_event(token, request_body)
                 informasjon += f" {request_body['bib']}-{form[x]}. "
@@ -87,7 +87,7 @@ async def create_time_event(token: str, action: str, form: dict) -> str:
         request_body["point"] = "Finish"
         request_body[
             "changelog"
-        ] = f"{reg_time.strftime('%X')}: Målpassering registrert. "
+        ] = f"{time_now.strftime('%X')}: Målpassering registrert. "
         biblist = form["bib"].rsplit(" ")
         for bib in biblist:
             request_body["bib"] = bib
@@ -103,7 +103,7 @@ async def create_time_event(token: str, action: str, form: dict) -> str:
                     request_body["place"] = _place
                     request_body[
                         "changelog"
-                    ] = f"{reg_time.strftime('%X')}: {_place} plass i mål. "
+                    ] = f"{time_now.strftime('%X')}: {_place} plass i mål. "
                     i += 1
                     id = await TimeEventsAdapter().create_time_event(
                         token, request_body
@@ -112,6 +112,30 @@ async def create_time_event(token: str, action: str, form: dict) -> str:
     logging.debug(f"Registrations: {informasjon}, last id: {id}")
 
     return f"Utført {i} registreringer: {informasjon}"
+
+
+async def get_enchiced_startlist(token: str, event_id: str, valgt_klasse: str) -> list:
+    """Enrich startlist information."""
+    startlist = []
+    _startlist = await StartAdapter().get_all_starts_by_event(token, event_id)
+    if len(_startlist) > 0:
+        # add name and club
+        contestants = await ContestantsAdapter().get_all_contestants(
+            token, event_id, ""
+        )
+        for start in _startlist[0]["start_entries"]:
+            for contestant in contestants:
+                if start["bib"] == contestant["bib"]:
+                    start[
+                        "name"
+                    ] = f"{contestant['first_name']} {contestant['last_name']}"
+                    start["club"] = contestant["club"]
+                    start["ageclass"] = contestant["ageclass"]
+                    start["team"] = contestant["team"]
+                    start["region"] = contestant["region"]
+                    start["scheduled_start_time"] = start["scheduled_start_time"][-8:]
+                    startlist.append(start)
+    return startlist
 
 
 async def get_event(token: str, event_id: str) -> dict:
@@ -152,35 +176,38 @@ def get_qualification_text(race: dict) -> str:
     return text
 
 
-async def get_enchiced_startlist(token: str, event_id: str, valgt_klasse: str) -> list:
-    """Enrich startlist information."""
-    startlist = await StartAdapter().get_all_starts(token, event_id)
-    # add name and club
-    contestants = await ContestantsAdapter().get_all_contestants(token, event_id, "")
-    for start in startlist:
-        for contestant in contestants:
-            if start["bib"] == str(contestant["bib"]):
-                start["name"] = f"{contestant['first_name']} {contestant['last_name']}"
-                start["club"] = contestant["club"]
-    return startlist
+def get_races_for_live_view(
+    token: str, event_id: str, number_of_races: int, races: list
+) -> list:
+    """Return races to display in live view."""
+    filtered_racelist = []
+    time_now = datetime.datetime.now().strftime("%X")
+    i = 0
+    for race in races:
+        if (time_now < race["start_time"][-8:]) and (i < number_of_races):
+            race["next_race"] = get_qualification_text(race)
+            race["start_time"] = race["start_time"][-8:]
+            filtered_racelist.append(race)
+            i += 1
+    return filtered_racelist
 
 
 async def update_time_event(token: str, action: str, form: dict) -> str:
     """Register time event - return information."""
     informasjon = ""
-    reg_time = datetime.datetime.now()
+    time_now = datetime.datetime.now()
     request_body = await TimeEventsAdapter().get_time_event_by_id(token, form["id"])
     if "update" in form.keys():
         request_body[
             "changelog"
-        ] += f"{reg_time.strftime('%X')}: Oppdatering - tidligere informasjon: {request_body}. "
+        ] += f"{time_now.strftime('%X')}: Oppdatering - tidligere informasjon: {request_body}. "
         request_body["point"] = form["point"]
         request_body["registration_time"] = form["registration_time"]
         request_body["rank"] = form["rank"]
     elif "delete" in form.keys():
         request_body[
             "changelog"
-        ] += f"{reg_time.strftime('%X')}: Status set to deleted "
+        ] += f"{time_now.strftime('%X')}: Status set to deleted "
         request_body["status"] = "Deleted"
     informasjon = await TimeEventsAdapter().update_time_event(
         token, form["id"], request_body

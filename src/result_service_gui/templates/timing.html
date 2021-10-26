@@ -109,7 +109,7 @@
         </tr>
         {% for start in startlist %}
           <tr>
-            <td>{{ start.start_time }}</td>
+            <td>{{ start.scheduled_start_time }}</td>
             <td>{{ start.position }}</td>
             <td align=center>{{ start.bib }}</td>
             <td>
@@ -145,7 +145,7 @@
         </tr>
         {% for start in startlist %}
           <tr>
-            <td>{{ start.start_time }}</td>
+            <td>{{ start.scheduled_start_time }}</td>
             <td align=center>{{ start.bib }}</td>
             <td>
               <input type="text" name="form_place_{{ start.bib }}" value="" size="4">
@@ -207,5 +207,23 @@
         </tr>
       </table>
     </form>
+    <table>
+       <tr id=headerblue>
+        <td width=100>Starttid</td>
+        <td width=80>Startnr</td>
+        <td>Navn</td>
+        <td>Klubb</td>
+      </tr>
+      {% for start in startlist %}
+        <tr>
+          <td>{{ start.scheduled_start_time }}</td>
+          <td align=center>{{ start.bib }}</td>
+          <td>{{ start.name }}</td>
+          <td>{{ start.club }}</td>
+        </tr>
+      {% endfor %}
+      <tr id=spacer>
+      </tr>
+    </table>
   {% endif %}
 {% endblock %}

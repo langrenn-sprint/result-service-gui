@@ -16,13 +16,12 @@ RACE_SERVICE_URL = f"http://{RACE_HOST_SERVER}:{RACE_HOST_PORT}"
 class RaceplansAdapter:
     """Class representing raceplans."""
 
-    async def delete_raceplans(self, token: str, event_id: str) -> str:
+    async def delete_raceplans(self, token: str, id: str) -> str:
         """Delete all raceplans in one event function."""
         headers = {
             hdrs.AUTHORIZATION: f"Bearer {token}",
         }
-        # FIXME: get correct id
-        id = event_id
+        logging.info(f"delete raceplans, id: {id}")
         async with ClientSession() as session:
             async with session.delete(
                 f"{RACE_SERVICE_URL}/raceplans/{id}",
@@ -41,7 +40,7 @@ class RaceplansAdapter:
                     )
         return str(res)
 
-    async def generate_raceplans(self, token: str, event_id: str) -> str:
+    async def generate_raceplan(self, token: str, event_id: str) -> str:
         """Generate classes based upon registered contestants."""
         headers = MultiDict(
             {
@@ -66,7 +65,7 @@ class RaceplansAdapter:
         return res
 
     async def get_all_raceplans(self, token: str, event_id: str) -> List:
-        """Get all raceplans function."""
+        """Get all raceplans for event function."""
         headers = MultiDict(
             {
                 hdrs.AUTHORIZATION: f"Bearer {token}",
@@ -75,11 +74,17 @@ class RaceplansAdapter:
         raceplans = []
         async with ClientSession() as session:
             async with session.get(
-                f"{RACE_SERVICE_URL}/raceplans", headers=headers
+                f"{RACE_SERVICE_URL}/raceplans?event-id={event_id}", headers=headers
             ) as resp:
                 logging.debug(f"get_all_raceplans - got response {resp.status}")
                 if resp.status == 200:
                     raceplans = await resp.json()
+                    all_raceplans = await resp.json()
+                    for plan in all_raceplans:
+                        try:
+                            raceplans.append(plan)
+                        except Exception as e:
+                            logging.error(f"Error - data quality: {e}")
                 elif resp.status == 401:
                     raise Exception(f"Login expired: {resp}")
                 else:
@@ -91,12 +96,12 @@ class RaceplansAdapter:
                     )
         return raceplans
 
-    async def get_all_races(self, token: str, event_id: str) -> List:
-        """Get all races function."""
+    async def get_all_races(self, token: str, event_id: str) -> dict:
+        """Get all races for event function."""
         raceplans = await RaceplansAdapter().get_all_raceplans(token, event_id)
         logging.debug(f"Raceplans len {len(raceplans)}")
 
-        races = []
+        races = {}
         if len(raceplans) > 0:
             races = raceplans[0]["races"]
         return races

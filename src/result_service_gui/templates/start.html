@@ -26,33 +26,43 @@
   <li class=dropdown id=topborder>
     <a href="start?klasse=live&event_id={{ event_id }}" class=dropbtn alt="Se hvem som starter nå, viser de neste 8 heat">Starter nå</a>
   </li>
+  <li id=topborder>
+    <a href=/start?event_id={{ event_id }}&action=edit_mode class=dropbtn>Rediger</a>
+  </li>
 {% endblock %}
 
 {% block content %}
 
-  {% if valgt_klasse == "live" %}
-    <div class="w3-row-padding">
-      <div class="{{ colclass }}">
+  {% if  action == "edit_mode" %}
+    <table>
+      <tr id=headerblue align=right>
+        <td>
+          <form action=/start method=post>
+            <input type="hidden" name="event_id" value="{{ event_id }}">
+            <input type="submit" name="generate_startlist" value="  Generer startliste  ">
+          </form>
+        </td>
+    </table>
   {% endif %}
   {% if event.competition_format == "Interval Start" %}
     <table>
        <tr id=headerblue>
         <td>Startnummer</td>
+        <td>Tid</td>
         <td>Navn</td>
         <td>Klubb</td>
-        <td>Tid</td>
-        <td>Heat</td>
-        <td>Posisjon</td>
+        <td>Team</td>
+        <td>Klasse</td>
       </tr>
       {% for start in startliste %}
-        <tr>
-          <td>{{ start.bib }}</td>
-          <td>{{ start.name }}</td>
-          <td>{{ start.club }}</td>
-          <td>{{ start.starttime }}</td>
-          <td>{{ start.race }}</td>
-          <td>{{ start.pos }}</td>
-        </tr>
+          <tr>
+            <td>{{ start.bib }}</td>
+            <td>{{ start.scheduled_start_time[-8:] }}</td>
+            <td>{{ start.name }}</td>
+            <td>{{ start.club }}</td>
+            <td>{{ start.team }}</td>
+            <td>{{ start.ageclass }}</td>
+          </tr>
       {% endfor %}
       <tr>
         <td id=spacer colspan=4> </td>
@@ -68,26 +78,27 @@
       <table>
         <tr id=headerblue>
             {% if race.round == "Q" %}
-              <td colspan=2>{{ race.raceclass }} Kvartfinale {{ race.index }}{{ race.heat }}</td>
+              <td colspan=3>{{ race.raceclass }} Kvartfinale {{ race.index }}{{ race.heat }}</td>
             {% elif race.round == "S" %}
-              <td colspan=2>{{ race.raceclass }} Semifinale {{ race.index }}{{ race.heat }}</td>
+              <td colspan=3>{{ race.raceclass }} Semifinale {{ race.index }}{{ race.heat }}</td>
             {% elif race.round == "F" %}
-              <td colspan=2>{{ race.raceclass }} Finale {{ race.index }}</td>
+              <td colspan=3>{{ race.raceclass }} Finale {{ race.index }}</td>
             {% endif %}
           <td>Kl. {{ race.start_time }}</td>
-          <td>{% if race.round != "F" %}Neste heat: {{ race.next_race }}{% endif %}</td>
+          <td colspan=1>{% if race.round != "F" %}Neste heat: {{ race.next_race }}{% endif %}</td>
         </tr>
         <tr id=subheader>
-          <td><div id={{ race.heat }} >Pos</div></td>
-          <td>Nr</td>
-          <td>Todo: fix filter</td>
-          <td></td>
+          <td width=50><div id={{ race.heat }} >Pos</div></td>
+          <td width=50>Nr</td>
+          <td width=300>Navn</td>
+          <td>Klubb</td>
+          <td>Klasse</td>
         </tr>
         {% for loper in startliste %}
-          {% if loper.race_id == race.id[1] %}
+          {% if loper.race_id == race.id %}
             <tr>
-              <td>{{ loper.position }}</td>
-              <td><div id={{ loper.bib }}>{{ loper.bib }}</div></td>
+              <td>{{ loper.starting_position }}</td>
+              <td><div id={{ loper.bib }}></div>{{ loper.bib }}</td>
               <td>
                 {% if valgt_klasse != "live" %}
                   <a href=live?klasse={{ valgt_klasse }}&startnr={{ loper.bib }}>{{ loper.name }}</a>
@@ -96,6 +107,7 @@
                 {% endif %}
               </td>
               <td>{{ loper.club }}</td>
+              <td>{{ loper.ageclass }}</td>
             </tr>
           {% endif %}
         {% endfor %}
