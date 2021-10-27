@@ -8,6 +8,7 @@ from aiohttp_session import get_session
 from result_service_gui.services import (
     ContestantsAdapter,
     EventsAdapter,
+    RaceplansAdapter,
     StartAdapter,
     TimeEventsAdapter,
     UserAdapter,
@@ -48,14 +49,13 @@ async def create_time_event(token: str, action: str, form: dict) -> str:
         biblist = form["bib"].rsplit(" ")
         for bib in biblist:
             if bib.count("x") > 0:
-                request_body["rank"] = "DNS"
+                request_body["point"] = "DNS"
                 request_body[
                     "changelog"
                 ] = f"{time_now.strftime('%X')}: DNS registrert. "
                 request_body["bib"] = bib.replace("x", "")
                 informasjon += f" {request_body['bib']}-DNS "
             else:
-                request_body["rank"] = "Started"
                 request_body[
                     "changelog"
                 ] = f"{time_now.strftime('%X')}: Start registrert. "
@@ -67,23 +67,22 @@ async def create_time_event(token: str, action: str, form: dict) -> str:
         for x in form.keys():
             if x.startswith("form_start_"):
                 request_body["bib"] = x[11:]
-                request_body["point"] = "Start"
                 if form[x] == "DNS":
                     # register DNS
-                    request_body["rank"] = "DNS"
+                    request_body["point"] = "DNS"
                     request_body[
                         "changelog"
                     ] = f"{time_now.strftime('%X')}: DNS registrert. "
                 else:
                     # register normal start
-                    request_body["rank"] = "Started"
+                    request_body["point"] = "Start"
                     request_body[
                         "changelog"
                     ] = f"{time_now.strftime('%X')}: Start registrert. "
                 i += 1
                 id = await TimeEventsAdapter().create_time_event(token, request_body)
                 informasjon += f" {request_body['bib']}-{form[x]}. "
-    elif action == "finish_bib":
+    elif action == "finish_bib1":
         request_body["point"] = "Finish"
         request_body[
             "changelog"
@@ -94,21 +93,42 @@ async def create_time_event(token: str, action: str, form: dict) -> str:
             i += 1
             id = await TimeEventsAdapter().create_time_event(token, request_body)
             informasjon += f" {bib} "
+    elif action == "finish_bib2":
+        request_body["point"] = "Finish"
+        for x in form.keys():
+            if x.startswith("form_place_"):
+                _bib = form[x]
+                if _bib.isnumeric():
+                    request_body["bib"] = _bib
+                    request_body["rank"] = x[11:]
+                    request_body[
+                        "changelog"
+                    ] = f"{time_now.strftime('%X')}: {request_body['rank']} plass i mål. "
+                    i += 1
+                    id = await TimeEventsAdapter().create_time_event(
+                        token, request_body
+                    )
+                    informasjon += (
+                        f" {request_body['bib']}-{request_body['rank']} plass. "
+                    )
     elif action == "finish_place":
+        request_body["point"] = "Finish"
         for x in form.keys():
             if x.startswith("form_place_"):
                 _place = form[x]
                 if _place.isnumeric():
                     request_body["bib"] = x[11:]
-                    request_body["place"] = _place
+                    request_body["rank"] = _place
                     request_body[
                         "changelog"
-                    ] = f"{time_now.strftime('%X')}: {_place} plass i mål. "
+                    ] = f"{time_now.strftime('%X')}: {request_body['rank']} plass i mål. "
                     i += 1
                     id = await TimeEventsAdapter().create_time_event(
                         token, request_body
                     )
-                    informasjon += f" {request_body['bib']}-{_place} plass. "
+                    informasjon += (
+                        f" {request_body['bib']}-{request_body['rank']} plass. "
+                    )
     logging.debug(f"Registrations: {informasjon}, last id: {id}")
 
     return f"Utført {i} registreringer: {informasjon}"
@@ -176,19 +196,24 @@ def get_qualification_text(race: dict) -> str:
     return text
 
 
-def get_races_for_live_view(
-    token: str, event_id: str, number_of_races: int, races: list
+async def get_races_for_live_view(
+    token: str, event_id: str, number_of_races: int
 ) -> list:
     """Return races to display in live view."""
     filtered_racelist = []
     time_now = datetime.datetime.now().strftime("%X")
     i = 0
-    for race in races:
-        if (time_now < race["start_time"][-8:]) and (i < number_of_races):
-            race["next_race"] = get_qualification_text(race)
-            race["start_time"] = race["start_time"][-8:]
-            filtered_racelist.append(race)
-            i += 1
+    # get races
+    raceplans = await RaceplansAdapter().get_all_raceplans(token, event_id)
+    if len(raceplans) > 0:
+        races = raceplans[0]["races"]
+
+        for race in races:
+            if (time_now < race["start_time"][-8:]) and (i < number_of_races):
+                race["next_race"] = get_qualification_text(race)
+                race["start_time"] = race["start_time"][-8:]
+                filtered_racelist.append(race)
+                i += 1
     return filtered_racelist
 
 
@@ -214,4 +239,4 @@ async def update_time_event(token: str, action: str, form: dict) -> str:
     )
     logging.debug(f"Control result: {informasjon}")
 
-    return f"Control result: <br>{informasjon}"
+    return f"Control result: Oppdatert - {informasjon}"

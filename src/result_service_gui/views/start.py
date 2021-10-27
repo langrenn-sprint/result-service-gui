@@ -56,24 +56,18 @@ class Start(web.View):
                 user["token"], event_id
             )
 
-            # get startlister for klasse
-            raceplans = await RaceplansAdapter().get_all_raceplans(
-                user["token"], event_id
-            )
-            if len(raceplans) > 0:
-                _tmp_races = raceplans[0]["races"]
-                if len(_tmp_races) == 0:
-                    informasjon = f"{informasjon} Ingen kjøreplaner funnet."
-                else:
-                    startliste = await get_enchiced_startlist(
-                        user["token"], event_id, valgt_klasse
-                    )
-
-                    # get relevant races
-                    if "live" == valgt_klasse:
-                        races = get_races_for_live_view(
-                            user["token"], event_id, 8, _tmp_races
-                        )
+            # get relevant races
+            if "live" == valgt_klasse:
+                races = await get_races_for_live_view(user["token"], event_id, 8)
+            else:
+                # get startlister for klasse
+                raceplans = await RaceplansAdapter().get_all_raceplans(
+                    user["token"], event_id
+                )
+                if len(raceplans) > 0:
+                    _tmp_races = raceplans[0]["races"]
+                    if len(_tmp_races) == 0:
+                        informasjon = f"{informasjon} Ingen kjøreplaner funnet."
                     else:
                         for race in _tmp_races:
                             if race["raceclass"] == valgt_klasse:
@@ -81,6 +75,11 @@ class Start(web.View):
                                 race["start_time"] = race["start_time"][-8:]
                                 races.append(race)
                                 colseparators.append(race["round"])
+            # get start list
+            if len(races) > 0:
+                startliste = await get_enchiced_startlist(
+                    user["token"], event_id, valgt_klasse
+                )
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(

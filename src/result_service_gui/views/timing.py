@@ -13,6 +13,7 @@ from .utils import (
     create_time_event,
     get_enchiced_startlist,
     get_event,
+    get_races_for_live_view,
     update_time_event,
 )
 
@@ -49,6 +50,8 @@ class Timing(web.View):
                 user["token"], event_id
             )
 
+            races = await get_races_for_live_view(user["token"], event_id, 8)
+
             valgt_klasse = ""
             startlist = await get_enchiced_startlist(
                 user["token"], event_id, valgt_klasse
@@ -71,6 +74,7 @@ class Timing(web.View):
                     "informasjon": informasjon,
                     "passeringer": passeringer,
                     "raceclasses": raceclasses,
+                    "races": races,
                     "startlist": startlist,
                     "username": user["name"],
                     "valgt_klasse": valgt_klasse,
