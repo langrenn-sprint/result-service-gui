@@ -80,6 +80,7 @@ class Start(web.View):
                                 race["next_race"] = get_qualification_text(race)
                                 race["start_time"] = race["start_time"][-8:]
                                 races.append(race)
+                                colseparators.append(race["round"])
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
