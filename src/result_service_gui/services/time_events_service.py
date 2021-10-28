@@ -1,5 +1,6 @@
 """Module for time event service."""
 import logging
+from typing import List
 
 from result_service_gui.services import (
     RaceplansAdapter,
@@ -109,7 +110,7 @@ async def get_next_start_entry(token: str, time_event: dict) -> dict:
     for race_item in next_race:
         if (
             int(time_event["rank"])
-            <= race_item["contestants_qualified"] + i_aggregate_qualification_place
+            <= int(race_item["contestants_qualified"]) + i_aggregate_qualification_place
         ):
             race_item["current_contestant_qualified"] = True
             # now we have next round - get race id
@@ -118,7 +119,7 @@ async def get_next_start_entry(token: str, time_event: dict) -> dict:
             # )
             break
         else:
-            i_aggregate_qualification_place += race_item["contestants_qualified"]
+            i_aggregate_qualification_place += int(race_item["contestants_qualified"])
 
     logging.info(f"Race item: {next_race}")
     return start_entry
@@ -133,9 +134,7 @@ def find_race_id_from_round_and_time_event(
     for race in races:
         if race["id"] == time_event["race_id"]:
             previous_race = race
-        elif race["round"] == round:
-            next_race_candidates.append[race]
-
+    logging.info(next_race_candidates)
     # 2. Select the right next_race based upon last heat and rank
     race_id = previous_race["id"]
 
