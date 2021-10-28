@@ -85,24 +85,21 @@ async def get_next_start_entry(token: str, time_event: dict) -> dict:
         races = raceplans[0]["races"]
         for race in races:
             if race["id"] == time_event["race_id"]:
-                next_race_rule = race["rule"]
-
-    # interpret rule part 1 - number of racers qualified to next round
-    for key, value in next_race_rule.items():
-        if key == "S":
-            for x, y in value.items():
-                if x == "A" and y > 0:
-                    next_race[0]["contestants_qualified"] = y
-                elif x == "C" and y > 0:
-                    next_race[1]["contestants_qualified"] = y
-        elif key == "F":
-            for x, y in value.items():
-                if x == "A":
-                    next_race[2]["contestants_qualified"] = y
-                elif x == "B" and y > 8:
-                    next_race[3]["contestants_qualified"] = y
-                elif x == "C":
-                    next_race[4]["contestants_qualified"] = y
+                for key, value in race["rule"].items():
+                    if key == "S":
+                        for x, y in value.items():
+                            if x == "A" and y > 0:
+                                next_race[0]["contestants_qualified"] = y
+                            elif x == "C" and y > 0:
+                                next_race[1]["contestants_qualified"] = y
+                    elif key == "F":
+                        for x, y in value.items():
+                            if x == "A":
+                                next_race[2]["contestants_qualified"] = y
+                            elif x == "B" and y > 8:
+                                next_race[3]["contestants_qualified"] = y
+                            elif x == "C":
+                                next_race[4]["contestants_qualified"] = y
 
     # interpret rule part 2 - find next round and get race id
     i_aggregate_qualification_place = 0
@@ -118,7 +115,7 @@ async def get_next_start_entry(token: str, time_event: dict) -> dict:
             # )
             break
         else:
-            i_aggregate_qualification_place += int(race_item["contestants_qualified"])
+            i_aggregate_qualification_place += race_item["contestants_qualified"]
 
     logging.info(f"Race item: {next_race}")
     return start_entry
