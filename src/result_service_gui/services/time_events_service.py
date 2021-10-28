@@ -109,7 +109,7 @@ async def get_next_start_entry(token: str, time_event: dict) -> dict:
     for race_item in next_race:
         if (
             int(time_event["rank"])
-            <= int(race_item["contestants_qualified"]) + i_aggregate_qualification_place
+            <= race_item["contestants_qualified"] + i_aggregate_qualification_place
         ):
             race_item["current_contestant_qualified"] = True
             # now we have next round - get race id
