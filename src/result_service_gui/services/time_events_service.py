@@ -1,6 +1,5 @@
 """Module for time event service."""
 import logging
-from typing import List
 
 from result_service_gui.services import (
     RaceplansAdapter,
