@@ -58,7 +58,7 @@ class Start(web.View):
 
             # get relevant races
             if "live" == valgt_klasse:
-                races = await get_races_for_live_view(user["token"], event_id, 8)
+                races = await get_races_for_live_view(user["token"], event_id, 0, 8)
             else:
                 # get startlister for klasse
                 raceplans = await RaceplansAdapter().get_all_raceplans(

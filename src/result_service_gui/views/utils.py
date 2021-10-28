@@ -198,7 +198,7 @@ def get_qualification_text(race: dict) -> str:
 
 
 async def get_races_for_live_view(
-    token: str, event_id: str, number_of_races: int
+    token: str, event_id: str, valgt_heat: int, number_of_races: int
 ) -> list:
     """Return races to display in live view."""
     filtered_racelist = []
@@ -208,13 +208,24 @@ async def get_races_for_live_view(
     raceplans = await RaceplansAdapter().get_all_raceplans(token, event_id)
     if len(raceplans) > 0:
         races = raceplans[0]["races"]
-
         for race in races:
-            if (time_now < race["start_time"][-8:]) and (i < number_of_races):
+            # from heat number (order) if selected
+            if (
+                (valgt_heat != 0)
+                and (race["order"] > valgt_heat)
+                and (i < number_of_races)
+            ):
                 race["next_race"] = get_qualification_text(race)
                 race["start_time"] = race["start_time"][-8:]
                 filtered_racelist.append(race)
                 i += 1
+            # show upcoming heats from now
+            elif (time_now < race["start_time"][-8:]) and (i < number_of_races):
+                race["next_race"] = get_qualification_text(race)
+                race["start_time"] = race["start_time"][-8:]
+                filtered_racelist.append(race)
+                i += 1
+
     return filtered_racelist
 
 

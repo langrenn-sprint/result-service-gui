@@ -37,6 +37,10 @@ class Timing(web.View):
         except Exception:
             action = ""
             informasjon = f"Velg modus for å se passeringer. {informasjon}"
+        try:
+            valgt_heat = int(self.request.rel_url.query["heat"])
+        except Exception:
+            valgt_heat = 0
 
         try:
             user = await check_login(self)
@@ -50,7 +54,11 @@ class Timing(web.View):
                 user["token"], event_id
             )
 
-            races = await get_races_for_live_view(user["token"], event_id, 8)
+            races = await get_races_for_live_view(
+                user["token"], event_id, valgt_heat, 8
+            )
+            if (len(races) > 0) and (valgt_heat == 0):
+                valgt_heat = int(races[0]["order"])
 
             valgt_klasse = ""
             startlist = await get_enchiced_startlist(
@@ -77,6 +85,7 @@ class Timing(web.View):
                     "races": races,
                     "startlist": startlist,
                     "username": user["name"],
+                    "valgt_heat": valgt_heat,
                     "valgt_klasse": valgt_klasse,
                 },
             )

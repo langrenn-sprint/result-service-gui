@@ -37,6 +37,15 @@
         {% endfor %}
       </div>
     </li>
+  {% elif action != "" %}
+    <li class=dropdown id=topborder>
+      <a href=javascript:void(0) class=dropbtn>Velg heat</a>
+      <div class=dropdown-content>
+        <a href=timing?&event_id={{ event_id }}&action={{ action }}&heat={{ valgt_heat - 8 }}>Tidligere heat</a>
+        <a href=timing?&event_id={{ event_id }}&action={{ action }}&heat=>Starter nå</a>
+        <a href=timing?&event_id={{ event_id }}&action={{ action }}&heat={{ valgt_heat + 8 }}>Senere heat</a>
+      </div>
+    </li>
   {% endif %}
 {% endblock %}
 
