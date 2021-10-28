@@ -48,7 +48,6 @@ async def get_next_start_entry(token: str, time_event: dict) -> dict:
         "scheduled_start_time": "",
     }
 
-    next_race_rule = []
     next_race = [
         {
             "round": "SA",
@@ -104,10 +103,10 @@ async def get_next_start_entry(token: str, time_event: dict) -> dict:
     # interpret rule part 2 - find next round and get race id
     i_aggregate_qualification_place = 0
     for race_item in next_race:
-        if (
-            int(time_event["rank"])
-            <= race_item["contestants_qualified"] + i_aggregate_qualification_place
-        ):
+        limit_rank = (
+            race_item["contestants_qualified"] + i_aggregate_qualification_place
+        )
+        if int(time_event["rank"]) <= limit_rank:
             race_item["current_contestant_qualified"] = True
             # now we have next round - get race id
             # start_entry["race_id"] = find_race_id_from_round_and_time_event(
@@ -115,7 +114,7 @@ async def get_next_start_entry(token: str, time_event: dict) -> dict:
             # )
             break
         else:
-            i_aggregate_qualification_place += race_item["contestants_qualified"]
+            i_aggregate_qualification_place = limit_rank
 
     logging.info(f"Race item: {next_race}")
     return start_entry
@@ -126,11 +125,9 @@ def find_race_id_from_round_and_time_event(
 ) -> str:
     """Identify next race_id given round."""
     # 1. Get previous race and all possible next race candidates
-    next_race_candidates = []
     for race in races:
         if race["id"] == time_event["race_id"]:
             previous_race = race
-    logging.info(next_race_candidates)
     # 2. Select the right next_race based upon last heat and rank
     race_id = previous_race["id"]
 
