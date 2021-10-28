@@ -172,7 +172,7 @@ async def find_info_from_startnummer(
     foundheat = ""
     funnetdeltaker = {}
 
-    starter = await StartAdapter().get_startliste_by_nr(token, event["id"], startnummer)
+    starter = await StartAdapter().get_startlist_by_bib(token, event["id"], startnummer)
     if len(starter) > 0:
         nye_tags["Numbers"] = startnummer
         for start in starter:

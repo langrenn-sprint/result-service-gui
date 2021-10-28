@@ -11,6 +11,7 @@ from result_service_gui.services import (
     RaceplansAdapter,
     StartAdapter,
     TimeEventsAdapter,
+    TimeEventsService,
     UserAdapter,
 )
 
@@ -34,7 +35,7 @@ async def create_time_event(token: str, action: str, form: dict) -> str:
     request_body = {
         "bib": "",
         "event_id": form["event_id"],
-        "race_id": "",
+        "race_id": form["race_id"],
         "point": "",
         "rank": "",
         "registration_time": time_now.strftime("%X"),
@@ -62,7 +63,7 @@ async def create_time_event(token: str, action: str, form: dict) -> str:
                 request_body["bib"] = bib
                 informasjon += f" {bib}-OK "
             i += 1
-            id = await TimeEventsAdapter().create_time_event(token, request_body)
+            id = await TimeEventsService().create_time_event(token, request_body)
     elif action == "start_check":
         for x in form.keys():
             if x.startswith("form_start_"):
@@ -80,7 +81,7 @@ async def create_time_event(token: str, action: str, form: dict) -> str:
                         "changelog"
                     ] = f"{time_now.strftime('%X')}: Start registrert. "
                 i += 1
-                id = await TimeEventsAdapter().create_time_event(token, request_body)
+                id = await TimeEventsService().create_time_event(token, request_body)
                 informasjon += f" {request_body['bib']}-{form[x]}. "
     elif action == "finish_bib1":
         request_body["point"] = "Finish"
@@ -91,7 +92,7 @@ async def create_time_event(token: str, action: str, form: dict) -> str:
         for bib in biblist:
             request_body["bib"] = bib
             i += 1
-            id = await TimeEventsAdapter().create_time_event(token, request_body)
+            id = await TimeEventsService().create_time_event(token, request_body)
             informasjon += f" {bib} "
     elif action == "finish_bib2":
         request_body["point"] = "Finish"
@@ -105,7 +106,7 @@ async def create_time_event(token: str, action: str, form: dict) -> str:
                         "changelog"
                     ] = f"{time_now.strftime('%X')}: {request_body['rank']} plass i mål. "
                     i += 1
-                    id = await TimeEventsAdapter().create_time_event(
+                    id = await TimeEventsService().create_time_event(
                         token, request_body
                     )
                     informasjon += (
@@ -123,7 +124,7 @@ async def create_time_event(token: str, action: str, form: dict) -> str:
                         "changelog"
                     ] = f"{time_now.strftime('%X')}: {request_body['rank']} plass i mål. "
                     i += 1
-                    id = await TimeEventsAdapter().create_time_event(
+                    id = await TimeEventsService().create_time_event(
                         token, request_body
                     )
                     informasjon += (
@@ -234,7 +235,7 @@ async def update_time_event(token: str, action: str, form: dict) -> str:
             "changelog"
         ] += f"{time_now.strftime('%X')}: Status set to deleted "
         request_body["status"] = "Deleted"
-    informasjon = await TimeEventsAdapter().update_time_event(
+    informasjon = await TimeEventsService().update_time_event(
         token, form["id"], request_body
     )
     logging.debug(f"Control result: {informasjon}")

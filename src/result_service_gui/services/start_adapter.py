@@ -1,4 +1,4 @@
-"""Module for raceplans adapter."""
+"""Module for start adapter."""
 import logging
 import os
 from typing import List
@@ -78,7 +78,7 @@ class StartAdapter:
         return raceplans
 
     # todo: update
-    async def get_startliste_by_nr(
+    async def get_startlist_by_bib(
         self, token: str, event_id: str, start_bib: str
     ) -> List:
         """Get all raceplans function."""
@@ -133,3 +133,29 @@ class StartAdapter:
                         reason=f"Error - {resp.status}: {body['detail']}."
                     )
         return starts
+
+    async def add_one_start(self, token: str, event_id: str, new_start: dict) -> str:
+        """Add one start to the start_list."""
+        headers = {
+            hdrs.CONTENT_TYPE: "application/json",
+            hdrs.AUTHORIZATION: f"Bearer {token}",
+        }
+        async with ClientSession() as session:
+            async with session.put(
+                f"{RACE_SERVICE_URL}/startlists?event-id={event_id}",
+                headers=headers,
+                data=new_start,
+            ) as resp:
+                logging.debug(f"add_one_start - got response {resp.status}")
+                if resp.status == 204:
+                    pass
+                elif resp.status == 401:
+                    raise Exception(f"Login expired: {resp}")
+                else:
+                    servicename = "add_one_start"
+                    body = await resp.json()
+                    logging.error(f"{servicename} failed - {resp.status} - {body}")
+                    raise web.HTTPBadRequest(
+                        reason=f"Error - {resp.status}: {body['detail']}."
+                    )
+        return resp.status

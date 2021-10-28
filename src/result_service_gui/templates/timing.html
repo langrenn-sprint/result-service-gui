@@ -129,6 +129,7 @@
           <tr>
               <td></td>
               <td colspan=2>
+                <input type="hidden" name="race_id" value="">
                 <input type="hidden" name="event_id" value="{{ event_id }}">
                 <input type="hidden" name="action" value="{{ action }}">
                 <input type="submit" name="{{ action }}" value="  Oppdater  ">
@@ -144,7 +145,7 @@
         {% for race in races %}
         <form action=/timing method=post>
           <tr id=headerblue>
-            <td width=100>Starttid</td>
+            <td width=100>{{ race.order }}</td>
             <td>Pos</td>
             <td width=80>Startnr</td>
             <td width=150>
@@ -154,7 +155,7 @@
                 Plass
               {% endif %}
             </td>
-            <td><b>{{ race.raceclass }} {{ race.round }} {{ race.heat }}</b></td>
+            <td><b>{{ race.raceclass }}{{ race.round }}{{ race.heat }} kl:{{ race.start_time }}</b></td>
             <td>Videre til: {{ race.next_race }}</td>
             {% if action == "finish_bib2" %}
               <td>Plass</td>

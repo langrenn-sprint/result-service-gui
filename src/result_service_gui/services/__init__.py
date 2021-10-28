@@ -12,4 +12,5 @@ from .resultat_heat_service import ResultatHeatService
 from .resultat_service import ResultatService
 from .start_adapter import StartAdapter
 from .time_events_adapter import TimeEventsAdapter
+from .time_events_service import TimeEventsService
 from .user_adapter import UserAdapter

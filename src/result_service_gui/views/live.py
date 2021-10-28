@@ -95,7 +95,7 @@ class Live(web.View):
                 # only selected racer
                 logging.debug(valgt_startnr)
 
-                startliste = await StartAdapter().get_startliste_by_nr(
+                startliste = await StartAdapter().get_startlist_by_bib(
                     user["token"],
                     event_id,
                     valgt_startnr,
