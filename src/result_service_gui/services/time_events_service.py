@@ -47,34 +47,7 @@ async def get_next_start_entry(token: str, time_event: dict) -> dict:
         "starting_position": 1,
         "scheduled_start_time": "",
     }
-
-    next_race = [
-        {
-            "round": "SA",
-            "contestants_qualified": 0,
-            "current_contestant_qualified": False,
-        },
-        {
-            "round": "SC",
-            "contestants_qualified": 0,
-            "current_contestant_qualified": False,
-        },
-        {
-            "round": "FA",
-            "contestants_qualified": 0,
-            "current_contestant_qualified": False,
-        },
-        {
-            "round": "FB",
-            "contestants_qualified": 0,
-            "current_contestant_qualified": False,
-        },
-        {
-            "round": "FC",
-            "contestants_qualified": 0,
-            "current_contestant_qualified": False,
-        },
-    ]
+    next_race = next_race_template()
 
     # find relevant race and get next race rule
     raceplans = await RaceplansAdapter().get_all_raceplans(
@@ -88,24 +61,24 @@ async def get_next_start_entry(token: str, time_event: dict) -> dict:
                     if key == "S":
                         for x, y in value.items():
                             if x == "A" and y > 0:
-                                next_race[0]["contestants_qualified"] = y
+                                next_race[0]["qualified"] = y
                             elif x == "C" and y > 0:
-                                next_race[1]["contestants_qualified"] = y
+                                next_race[1]["qualified"] = y
                     elif key == "F":
                         for x, y in value.items():
                             if x == "A":
-                                next_race[2]["contestants_qualified"] = y
+                                next_race[2]["qualified"] = y
                             elif x == "B" and y > 8:
-                                next_race[3]["contestants_qualified"] = y
+                                next_race[3]["qualified"] = y
                             elif x == "C":
-                                next_race[4]["contestants_qualified"] = y
+                                next_race[4]["qualified"] = y
 
     # interpret rule part 2 - find next round and get race id
-    i_aggregate_qualification_place = 0
+    ilimitplace = 0
+    ilimitcurrent = 0
     for race_item in next_race:
-        limit_rank = (
-            race_item["contestants_qualified"] + i_aggregate_qualification_place
-        )
+        ilimitcurrent = race_item["qualified"]
+        limit_rank = ilimitcurrent + ilimitplace
         if int(time_event["rank"]) <= limit_rank:
             race_item["current_contestant_qualified"] = True
             # now we have next round - get race id
@@ -114,7 +87,7 @@ async def get_next_start_entry(token: str, time_event: dict) -> dict:
             # )
             break
         else:
-            i_aggregate_qualification_place = limit_rank
+            ilimitplace = limit_rank
 
     logging.info(f"Race item: {next_race}")
     return start_entry
@@ -142,3 +115,34 @@ async def find_race_id_from_time_event(token: str, time_event: dict) -> str:
 
     # validate registration time_for confirmation
     return race_id
+
+
+def next_race_template() -> list:
+    """Return template settings for next race."""
+    return [
+        {
+            "round": "SA",
+            "qualified": 0,
+            "current_contestant_qualified": False,
+        },
+        {
+            "round": "SC",
+            "qualified": 0,
+            "current_contestant_qualified": False,
+        },
+        {
+            "round": "FA",
+            "qualified": 0,
+            "current_contestant_qualified": False,
+        },
+        {
+            "round": "FB",
+            "qualified": 0,
+            "current_contestant_qualified": False,
+        },
+        {
+            "round": "FC",
+            "qualified": 0,
+            "current_contestant_qualified": False,
+        },
+    ]
