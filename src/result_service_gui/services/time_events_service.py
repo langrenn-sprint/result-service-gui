@@ -3,6 +3,7 @@ import logging
 
 from result_service_gui.services import (
     RaceplansAdapter,
+    StartAdapter,
     TimeEventsAdapter,
 )
 
@@ -28,8 +29,11 @@ class TimeEventsService:
 
         # 4. Calculate next race and position
         next_start_entry = await get_next_start_entry(token, time_event)
-        logging.info(next_start_entry)
+        logging.info(f"{next_start_entry}")
         # 5. Create new start event
+        id = await StartAdapter().add_one_start(
+            token, time_event["event_id"], next_start_entry
+        )
 
         return id
 
@@ -41,12 +45,7 @@ class TimeEventsService:
 
 async def get_next_start_entry(token: str, time_event: dict) -> dict:
     """Generate start_entry - based upon a time_event."""
-    start_entry = {
-        "race_id": "",
-        "bib": 1,
-        "starting_position": 1,
-        "scheduled_start_time": "",
-    }
+    start_entry = {}
     next_race = next_race_template()
 
     # find relevant race and get next race rule
@@ -82,30 +81,41 @@ async def get_next_start_entry(token: str, time_event: dict) -> dict:
         if int(time_event["rank"]) <= limit_rank:
             race_item["current_contestant_qualified"] = True
             # now we have next round - get race id
-            # start_entry["race_id"] = find_race_id_from_round_and_time_event(
-            #    token, race_item["round"], time_event["event_id"], races
-            # )
+            start_entry = await generate_new_start_entry(
+                token, race_item["round"], time_event, races
+            )
             break
         else:
             ilimitplace = limit_rank
-
-    logging.info(f"Race item: {next_race}")
     return start_entry
 
 
-def find_race_id_from_round_and_time_event(
+async def generate_new_start_entry(
     token: str, round: str, time_event: dict, races: list
-) -> str:
-    """Identify next race_id given round."""
+) -> dict:
+    """Identify next race_id and generate start entry data."""
+    start_entry = {
+        "race_id": "",
+        "bib": time_event["bib"],
+        "starting_position": time_event["rank"],
+        "scheduled_start_time": "",
+    }
+    previous_race = {}
+    next_race_candidates = []
     # 1. Get previous race and all possible next race candidates
     for race in races:
-        if race["id"] == time_event["race_id"]:
+        if race.get("id") == time_event.get("race_id"):
             previous_race = race
-    # 2. Select the right next_race based upon last heat and rank
-    race_id = previous_race["id"]
+        elif f"{race.get('round')}{race.get('index')}" == round:
+            if previous_race.get("raceclass") == race.get("raceclass"):
+                next_race_candidates.append(race)
 
-    # validate registration time_for confirmation
-    return race_id
+    # 2. pick a next race - initial rule is to always use first
+    if len(next_race_candidates) > 0:
+        start_entry["race_id"] = next_race_candidates[0].get("id")
+        start_entry["scheduled_start_time"] = next_race_candidates[0].get("start_time")
+
+    return start_entry
 
 
 async def find_race_id_from_time_event(token: str, time_event: dict) -> str:
