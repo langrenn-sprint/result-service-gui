@@ -3,7 +3,6 @@ import logging
 
 from result_service_gui.services import (
     RaceplansAdapter,
-    StartAdapter,
     TimeEventsAdapter,
 )
 
@@ -13,7 +12,7 @@ class TimeEventsService:
 
     async def create_time_event(self, token: str, time_event: dict) -> str:
         """Validate, enrich and create new start and time_event."""
-        logging.info(f"Got time-event: {time_event}")
+        logging.debug(f"Got time-event: {time_event}")
         # 1. First enrich data
         # check if race_id exists
         if time_event["race_id"] == "":
@@ -29,11 +28,12 @@ class TimeEventsService:
 
         # 4. Calculate next race and position
         next_start_entry = await get_next_start_entry(token, time_event)
-        logging.info(f"{next_start_entry}")
+        logging.debug(f"Start_entry: {next_start_entry}")
+
         # 5. Create new start event
-        id = await StartAdapter().add_one_start(
-            token, time_event["event_id"], next_start_entry
-        )
+        # id = await StartAdapter().add_one_start(
+        #    token, time_event["event_id"], next_start_entry
+        # )
 
         return id
 
@@ -101,20 +101,46 @@ async def generate_new_start_entry(
         "scheduled_start_time": "",
     }
     previous_race = {}
+    previous_heat_count = 0
     next_race_candidates = []
     # 1. Get previous race and all possible next race candidates
     for race in races:
         if race.get("id") == time_event.get("race_id"):
             previous_race = race
+            previous_heat_count = race.get("heat")
+            logging.info(race)
+        elif (
+            len(previous_race) > 0
+            and previous_race.get("round") == race.get("round")
+            and previous_race.get("raceclass") == race.get("raceclass")
+        ):
+            previous_heat_count = race.get("heat")
         elif f"{race.get('round')}{race.get('index')}" == round:
             if previous_race.get("raceclass") == race.get("raceclass"):
                 next_race_candidates.append(race)
 
-    # 2. pick a next race - initial rule is to always use first
+    # 2. pick a next race
     if len(next_race_candidates) > 0:
-        start_entry["race_id"] = next_race_candidates[0].get("id")
-        start_entry["scheduled_start_time"] = next_race_candidates[0].get("start_time")
+        # estimated rank from previous round is:
+        # no_of_previous_heat*(rank-1) + prank
+        previous_round_rank = previous_heat_count * (
+            int(time_event.get("rank")) - 1
+        ) + int(previous_race.get("heat"))
 
+        # distribute contestants evenly in next round, winners in pos 1 osv.
+        next_race_position = previous_round_rank / len(next_race_candidates)
+        next_race_heat = previous_round_rank % len(next_race_candidates)
+        for race in next_race_candidates:
+            if race.get("heat") == next_race_heat:
+                start_entry["race_id"] = race.get("id")
+                start_entry["scheduled_start_time"] = race.get("start_time")
+        # todo: must fix
+        start_entry["starting_position"] = 1
+
+        logging.info(
+            f"Previous heats: {previous_heat_count} rank: {previous_round_rank}"
+        )
+        logging.info(f"Start heat: {next_race_heat} pos: {next_race_position}")
     return start_entry
 
 
