@@ -82,7 +82,7 @@ async def get_next_start_entry(token: str, time_event: dict) -> dict:
             race_item["current_contestant_qualified"] = True
             # now we have next round - get race id
             start_entry = await generate_new_start_entry(
-                token, race_item["round"], time_event, races
+                token, race_item, time_event, races
             )
             break
         else:
@@ -91,7 +91,7 @@ async def get_next_start_entry(token: str, time_event: dict) -> dict:
 
 
 async def generate_new_start_entry(
-    token: str, round: str, time_event: dict, races: list
+    token: str, race_item: dict, time_event: dict, races: list
 ) -> dict:
     """Identify next race_id and generate start entry data."""
     start_entry = {
@@ -103,44 +103,48 @@ async def generate_new_start_entry(
     previous_race = {}
     previous_heat_count = 0
     next_race_candidates = []
+    next_race_count = 0
     # 1. Get previous race and all possible next race candidates
     for race in races:
         if race.get("id") == time_event.get("race_id"):
             previous_race = race
             previous_heat_count = race.get("heat")
-            logging.info(race)
         elif (
             len(previous_race) > 0
             and previous_race.get("round") == race.get("round")
             and previous_race.get("raceclass") == race.get("raceclass")
         ):
             previous_heat_count = race.get("heat")
-        elif f"{race.get('round')}{race.get('index')}" == round:
+        elif f"{race.get('round')}{race.get('index')}" == race_item["round"]:
             if previous_race.get("raceclass") == race.get("raceclass"):
                 next_race_candidates.append(race)
 
     # 2. pick a next race
-    if len(next_race_candidates) > 0:
+    next_race_count = len(next_race_candidates)
+    if next_race_count > 0:
         # estimated rank from previous round is:
         # no_of_previous_heat*(rank-1) + prank
-        previous_round_rank = previous_heat_count * (
+        previous_round_rank = int(previous_heat_count) * (
             int(time_event.get("rank")) - 1
         ) + int(previous_race.get("heat"))
 
         # distribute contestants evenly in next round, winners in pos 1 osv.
-        next_race_position = previous_round_rank / len(next_race_candidates)
-        next_race_heat = previous_round_rank % len(next_race_candidates)
+        next_race_tuple = divmod(previous_round_rank, next_race_count)
+        # quotient gives the position
+        next_race_position = next_race_tuple[0]
+        # remainder gives the heat, need to add one as heat number starts on 1
+        next_race_heat = next_race_tuple[1] + 1
+
         for race in next_race_candidates:
             if race.get("heat") == next_race_heat:
                 start_entry["race_id"] = race.get("id")
                 start_entry["scheduled_start_time"] = race.get("start_time")
         # todo: must fix
-        start_entry["starting_position"] = 1
+        start_entry["starting_position"] = next_race_position
 
         logging.info(
-            f"Previous heats: {previous_heat_count} rank: {previous_round_rank}"
+            f"Next:{next_race_heat} pos:{next_race_position}, id: {start_entry['race_id']}"
         )
-        logging.info(f"Start heat: {next_race_heat} pos: {next_race_position}")
     return start_entry
 
 
