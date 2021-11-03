@@ -123,10 +123,12 @@ async def generate_new_start_entry(
     next_race_count = len(next_race_candidates)
     if next_race_count > 0:
         # estimated rank from previous round is:
-        # no_of_previous_heat*(rank-1) + prank
-        previous_round_rank = int(previous_heat_count) * (
-            int(time_event.get("rank")) - 1
-        ) + int(previous_race.get("heat"))
+        # no_of_previous_heat*(rank-1) + rank
+        previous_heat_rank = int(time_event["rank"])
+        previous_heat_number = int(previous_race["heat"])
+        previous_round_rank = (
+            previous_heat_count * (previous_heat_rank - 1) + previous_heat_number
+        )
 
         # distribute contestants evenly in next round, winners in pos 1 osv.
         next_race_tuple = divmod(previous_round_rank, next_race_count)
