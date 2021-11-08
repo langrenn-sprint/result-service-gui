@@ -47,7 +47,6 @@ class Timing(web.View):
             event = await get_event(user["token"], event_id)
 
             passeringer = []
-            startlist = []
             colclass = "w3-half"
 
             raceclasses = await RaceclassesAdapter().get_raceclasses(
@@ -57,13 +56,18 @@ class Timing(web.View):
             races = await get_races_for_live_view(
                 user["token"], event_id, valgt_heat, 8
             )
-            if (len(races) > 0) and (valgt_heat == 0):
-                valgt_heat = int(races[0]["order"])
+
+            if len(races) > 0:
+                for race in races:
+                    # get start list details
+                    race["startliste"] = await get_enchiced_startlist(
+                        user["token"], race["id"], race["start_entries"]
+                    )
+
+                if valgt_heat == 0:
+                    valgt_heat = int(races[0]["order"])
 
             valgt_klasse = ""
-            startlist = await get_enchiced_startlist(
-                user["token"], event_id, valgt_klasse
-            )
 
             # get passeringer for klasse
             passeringer = await TimeEventsAdapter().get_time_events_by_event_id(
@@ -83,7 +87,6 @@ class Timing(web.View):
                     "passeringer": passeringer,
                     "raceclasses": raceclasses,
                     "races": races,
-                    "startlist": startlist,
                     "username": user["name"],
                     "valgt_heat": valgt_heat,
                     "valgt_klasse": valgt_klasse,

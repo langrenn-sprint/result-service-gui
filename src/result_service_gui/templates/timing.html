@@ -173,8 +173,7 @@
               <td>Startnummer</td>
             {% endif %}
           </tr>
-          {% for start in startlist %}
-            {% if start.race_id == race.id %}
+          {% for start in race.startliste %}
               <tr>
                 <td>{{ start.scheduled_start_time }}</td>
                 <td>{{ start.starting_position }}</td>
@@ -192,7 +191,6 @@
                 {% if action == "finish_bib2" %}
                   <td>{{ start.starting_position }}</td>
                   <td><input type="text" name="form_place_{{ start.starting_position }}" value="" size="4"></td>
-                {% endif %}
               </tr>
             {% endif %}
           {% endfor %}
