@@ -70,6 +70,7 @@
           <td>Passeringspunkt</td>
           <td>Passeringstid</td>
           <td>Plass</td>
+          <td>Videre til</td>
           <td>Status</td>
           <td></td>
           <td></td>
@@ -79,10 +80,11 @@
           <tr>
             <form action=/timing method=post>
               <td align=right>{{ passering.bib }}</td>
-              <td>{{ passering.race_id }}</td>
+              <td>{{ passering.race }}</td>
               <td><input type=text name="point" value="{{ passering.point }}" size=7></td>
               <td><input type=text name="registration_time" value="{{ passering.registration_time }}" size=7></td>
               <td><input type=text name="rank" value="{{ passering.rank }}" size=7></td>
+              <td>{{ passering.next_race }}-{{ passering.next_race_position }}</td>
               <td>{{ passering.status }}</td>
               <td align=right>
                 <input type="hidden" name="event_id" value="{{ event_id }}">

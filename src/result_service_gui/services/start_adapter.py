@@ -36,7 +36,6 @@ class StartAdapter:
                     location = resp.headers[hdrs.LOCATION]
                     id = location.split(os.path.sep)[-1]
                 else:
-                    breakpoint()
                     logging.error(
                         f"generate_startlist_for_event failed - {resp.status}"
                     )
@@ -45,6 +44,35 @@ class StartAdapter:
                     )
 
         return id
+
+    async def get_start_entry_by_id(
+        self, token: str, race_id: str, start_id: str
+    ) -> dict:
+        """Get one start_entry - lap time or heat place function."""
+        headers = MultiDict(
+            {
+                hdrs.AUTHORIZATION: f"Bearer {token}",
+            }
+        )
+        start_entry = {}
+        async with ClientSession() as session:
+            async with session.get(
+                f"{RACE_SERVICE_URL}/races/{race_id}/start-entries/{start_id}",
+                headers=headers,
+            ) as resp:
+                logging.debug(f"get_start_entry_by_id - got response {resp.status}")
+                if resp.status == 200:
+                    start_entry = await resp.json()
+                elif resp.status == 401:
+                    raise Exception(f"Login expired: {resp}")
+                else:
+                    servicename = "get_start_entry_by_id"
+                    body = await resp.json()
+                    logging.error(f"{servicename} failed - {resp.status} - {body}")
+                    raise web.HTTPBadRequest(
+                        reason=f"Error - {resp.status}: {body['detail']}."
+                    )
+        return start_entry
 
     # todo: update
     async def get_startliste_by_lopsklasse(
@@ -134,25 +162,26 @@ class StartAdapter:
                     )
         return starts
 
-    async def add_one_start(self, token: str, event_id: str, new_start: dict) -> str:
+    async def create_start_entry(self, token: str, new_start: dict) -> str:
         """Add one start to the start_list."""
         headers = {
             hdrs.CONTENT_TYPE: "application/json",
             hdrs.AUTHORIZATION: f"Bearer {token}",
         }
+        logging.info(f"New start: {new_start}")
         async with ClientSession() as session:
             async with session.put(
-                f"{RACE_SERVICE_URL}/startlists?event-id={event_id}",
+                f"{RACE_SERVICE_URL}/races/{new_start['race-id']}/start-entries",
                 headers=headers,
-                data=new_start,
+                json=new_start,
             ) as resp:
-                logging.debug(f"add_one_start - got response {resp.status}")
+                logging.debug(f"add_one_start_entry - got response {resp.status}")
                 if resp.status == 204:
                     pass
                 elif resp.status == 401:
                     raise Exception(f"Login expired: {resp}")
                 else:
-                    servicename = "add_one_start"
+                    servicename = "add_one_start_entry"
                     body = await resp.json()
                     logging.error(f"{servicename} failed - {resp.status} - {body}")
                     raise web.HTTPBadRequest(

@@ -36,12 +36,7 @@
   {% if  action == "edit_mode" %}
     <table>
       <tr id=headerblue align=right>
-        <td>
-          <form action=/start method=post>
-            <input type="hidden" name="event_id" value="{{ event_id }}">
-            <input type="submit" name="generate_startlist" value="  Generer startliste  ">
-          </form>
-        </td>
+      </tr>
     </table>
   {% endif %}
   {% if event.competition_format == "Interval Start" %}
@@ -54,7 +49,7 @@
         <td>Team</td>
         <td>Klasse</td>
       </tr>
-      {% for start in startliste %}
+      {% for start in races.startliste %}
           <tr>
             <td>{{ start.bib }}</td>
             <td>{{ start.scheduled_start_time[-8:] }}</td>
@@ -85,17 +80,17 @@
               <td colspan=3>{{ race.raceclass }} Finale {{ race.index }}</td>
             {% endif %}
           <td>Kl. {{ race.start_time }}</td>
-          <td colspan=1>{% if race.round != "F" %}Neste heat: {{ race.next_race }}{% endif %}</td>
+          <td colspan=2>{% if race.round != "F" %}Neste heat: {{ race.next_race }}{% endif %}</td>
         </tr>
         <tr id=subheader>
           <td width=50><div id={{ race.heat }} >Pos</div></td>
           <td width=50>Nr</td>
           <td width=300>Navn</td>
           <td>Klubb</td>
-          <td>Klasse</td>
+          <td width=50>Plass</td>
+          <td>Videre til</td>
         </tr>
-        {% for loper in startliste %}
-          {% if loper.race_id == race.id %}
+        {% for loper in race.startliste %}
             <tr>
               <td>{{ loper.starting_position }}</td>
               <td><div id={{ loper.bib }}></div>{{ loper.bib }}</td>
@@ -106,10 +101,10 @@
                   {{ loper.name }}
                 {% endif %}
               </td>
-              <td>{{ loper.club }}</td>
-              <td>{{ loper.ageclass }}</td>
+              <td></td>
+              <td>{{ loper.starting_position }}</td>
+              <td>{{ loper.next_race }}</td>
             </tr>
-          {% endif %}
         {% endfor %}
       </table>
       <div id=spacer></div>

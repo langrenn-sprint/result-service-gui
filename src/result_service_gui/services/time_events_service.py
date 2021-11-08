@@ -1,4 +1,5 @@
 """Module for time event service."""
+import datetime
 import logging
 
 from result_service_gui.services import (
@@ -9,6 +10,55 @@ from result_service_gui.services import (
 
 class TimeEventsService:
     """Class representing service layer for time_events."""
+
+    async def generate_next_race_templates(self, token: str, event_id: str) -> str:
+        """Calculate next race for the entire team."""
+        informasjon = ""
+        i = 0
+        time_now = datetime.datetime.now()
+        time_event = {
+            "bib": "",
+            "event_id": event_id,
+            "race": "",
+            "race_id": "",
+            "point": "Template",
+            "rank": "",
+            "registration_time": time_now.strftime("%X"),
+            "next_race": "",
+            "next_race_id": "",
+            "next_race_position": 0,
+            "status": "OK",
+            "changelog": "Next race registration",
+        }
+        # get list of all races and loop, except finals.
+        races = await RaceplansAdapter().get_all_races(token, event_id)
+        if len(races) == 0:
+            informasjon = f"{informasjon} Ingen kjøreplaner funnet."
+        else:
+            for race in races:
+                if race["round"] != "F":
+                    time_event["race_id"] = race["id"]
+
+                    # loop and simulate result for pos 1 to 8
+                    for x in range(1, 9):
+                        time_event["rank"] = x
+                        next_start_entry = await get_next_start_entry(token, time_event)
+                        logging.debug(f"Time_event: {time_event}")
+                        logging.debug(f"Start_entry: {next_start_entry}")
+                        if len(next_start_entry) > 0:
+                            time_event["next_race"] = next_start_entry["race_round"]
+                            time_event["next_race_id"] = next_start_entry["race_id"]
+                            time_event["next_race_position"] = next_start_entry[
+                                "starting_position"
+                            ]
+
+                            id = await TimeEventsAdapter().create_time_event(
+                                token, time_event
+                            )
+                            logging.debug(f"Created template: {id}")
+                            i += 1
+        informasjon = f"Opprettet {i} templates"
+        return informasjon
 
     async def create_time_event(self, token: str, time_event: dict) -> str:
         """Validate, enrich and create new start and time_event."""
@@ -28,11 +78,11 @@ class TimeEventsService:
 
         # 4. Calculate next race and position
         next_start_entry = await get_next_start_entry(token, time_event)
-        logging.debug(f"Start_entry: {next_start_entry}")
+        logging.info(f"Start_entry - not yet stored: {next_start_entry}")
 
         # 5. Create new start event
-        # id = await StartAdapter().add_one_start(
-        #    token, time_event["event_id"], next_start_entry
+        # id = await StartAdapter().add_one_start_entry(
+        #    token, next_start_entry
         # )
 
         return id
@@ -44,33 +94,29 @@ class TimeEventsService:
 
 
 async def get_next_start_entry(token: str, time_event: dict) -> dict:
-    """Generate start_entry - based upon a time_event."""
+    """Generate start_entry - empty result if not qualified."""
     start_entry = {}
     next_race = next_race_template()
 
     # find relevant race and get next race rule
-    raceplans = await RaceplansAdapter().get_all_raceplans(
-        token, time_event["event_id"]
-    )
-    if len(raceplans) > 0:
-        races = raceplans[0]["races"]
-        for race in races:
-            if race["id"] == time_event["race_id"]:
-                for key, value in race["rule"].items():
-                    if key == "S":
-                        for x, y in value.items():
-                            if x == "A" and y > 0:
-                                next_race[0]["qualified"] = y
-                            elif x == "C" and y > 0:
-                                next_race[1]["qualified"] = y
-                    elif key == "F":
-                        for x, y in value.items():
-                            if x == "A":
-                                next_race[2]["qualified"] = y
-                            elif x == "B" and y > 8:
-                                next_race[3]["qualified"] = y
-                            elif x == "C":
-                                next_race[4]["qualified"] = y
+    races = await RaceplansAdapter().get_all_races(token, time_event["event_id"])
+    for race in races:
+        if race["id"] == time_event["race_id"]:
+            for key, value in race["rule"].items():
+                if key == "S":
+                    for x, y in value.items():
+                        if x == "A" and y > 0:
+                            next_race[0]["qualified"] = y
+                        elif x == "C" and y > 0:
+                            next_race[1]["qualified"] = y
+                elif key == "F":
+                    for x, y in value.items():
+                        if x == "A":
+                            next_race[2]["qualified"] = y
+                        elif x == "B" and y > 8:
+                            next_race[3]["qualified"] = y
+                        elif x == "C":
+                            next_race[4]["qualified"] = y
 
     # interpret rule part 2 - find next round and get race id
     ilimitplace = 0
@@ -81,7 +127,7 @@ async def get_next_start_entry(token: str, time_event: dict) -> dict:
         if int(time_event["rank"]) <= limit_rank:
             race_item["current_contestant_qualified"] = True
             # now we have next round - get race id
-            start_entry = await generate_new_start_entry(
+            start_entry = await calculate_next_start_entry(
                 token, race_item, time_event, races
             )
             break
@@ -90,15 +136,16 @@ async def get_next_start_entry(token: str, time_event: dict) -> dict:
     return start_entry
 
 
-async def generate_new_start_entry(
+async def calculate_next_start_entry(
     token: str, race_item: dict, time_event: dict, races: list
 ) -> dict:
     """Identify next race_id and generate start entry data."""
     start_entry = {
-        "race_id": "",
         "bib": time_event["bib"],
-        "starting_position": time_event["rank"],
+        "race_id": "",
+        "race_round": "",
         "scheduled_start_time": "",
+        "starting_position": time_event["rank"],
     }
     previous_race = {}
     previous_heat_count = 0
@@ -131,7 +178,7 @@ async def generate_new_start_entry(
         )
 
         # distribute contestants evenly in next round, winners in pos 1 osv.
-        next_race_tuple = divmod(previous_round_rank, next_race_count)
+        next_race_tuple = divmod(previous_round_rank + 1, next_race_count)
         # quotient gives the position
         next_race_position = next_race_tuple[0]
         # remainder gives the heat, need to add one as heat number starts on 1
@@ -139,12 +186,19 @@ async def generate_new_start_entry(
 
         for race in next_race_candidates:
             if race.get("heat") == next_race_heat:
+                logging.debug(f"Found next race: {race}")
                 start_entry["race_id"] = race.get("id")
                 start_entry["scheduled_start_time"] = race.get("start_time")
+                start_entry[
+                    "race_round"
+                ] = f"{race.get('round')}{race.get('index')}{race.get('heat')}"
         # todo: must fix
         start_entry["starting_position"] = next_race_position
 
-        logging.info(
+        logging.debug(
+            f"Next round:{next_race_count} current rank:{previous_round_rank}"
+        )
+        logging.debug(
             f"Next:{next_race_heat} pos:{next_race_position}, id: {start_entry['race_id']}"
         )
     return start_entry

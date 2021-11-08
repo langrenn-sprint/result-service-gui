@@ -6,7 +6,6 @@ from aiohttp import web
 from aiohttp_session import get_session
 
 from result_service_gui.services import (
-    ContestantsAdapter,
     EventsAdapter,
     RaceplansAdapter,
     StartAdapter,
@@ -135,27 +134,26 @@ async def create_time_event(token: str, action: str, form: dict) -> str:
     return f"Utført {i} registreringer: {informasjon}"
 
 
-async def get_enchiced_startlist(token: str, event_id: str, valgt_klasse: str) -> list:
+async def get_enchiced_startlist(token: str, race_id: str, start_entries: list) -> list:
     """Enrich startlist information."""
     startlist = []
-    _startlist = await StartAdapter().get_all_starts_by_event(token, event_id)
-    if len(_startlist) > 0:
-        # add name and club
-        contestants = await ContestantsAdapter().get_all_contestants(
-            token, event_id, ""
-        )
-        for start in _startlist[0]["start_entries"]:
-            for contestant in contestants:
-                if start["bib"] == contestant["bib"]:
-                    start[
-                        "name"
-                    ] = f"{contestant['first_name']} {contestant['last_name']}"
-                    start["club"] = contestant["club"]
-                    start["ageclass"] = contestant["ageclass"]
-                    start["team"] = contestant["team"]
-                    start["region"] = contestant["region"]
-                    start["scheduled_start_time"] = start["scheduled_start_time"][-8:]
-                    startlist.append(start)
+    # get template time-events - for next race
+    next_race_templates = await TimeEventsAdapter().get_time_events_by_race_id(
+        token, race_id
+    )
+
+    if len(start_entries) > 0:
+        for start_id in start_entries:
+            start_entry = await StartAdapter().get_start_entry_by_id(
+                token, race_id, start_id
+            )
+            for template in next_race_templates:
+                if template["point"] == "Template":
+                    if template["rank"] == start_entry["starting_position"]:
+                        start_entry[
+                            "next_race"
+                        ] = f"{template['next_race']}-{template['next_race_position']}"
+            startlist.append(start_entry)
     return startlist
 
 
@@ -205,26 +203,20 @@ async def get_races_for_live_view(
     time_now = datetime.datetime.now().strftime("%X")
     i = 0
     # get races
-    raceplans = await RaceplansAdapter().get_all_raceplans(token, event_id)
-    if len(raceplans) > 0:
-        races = raceplans[0]["races"]
-        for race in races:
-            # from heat number (order) if selected
-            if (
-                (valgt_heat != 0)
-                and (race["order"] > valgt_heat)
-                and (i < number_of_races)
-            ):
-                race["next_race"] = get_qualification_text(race)
-                race["start_time"] = race["start_time"][-8:]
-                filtered_racelist.append(race)
-                i += 1
-            # show upcoming heats from now
-            elif (time_now < race["start_time"][-8:]) and (i < number_of_races):
-                race["next_race"] = get_qualification_text(race)
-                race["start_time"] = race["start_time"][-8:]
-                filtered_racelist.append(race)
-                i += 1
+    races = await RaceplansAdapter().get_all_races(token, event_id)
+    for race in races:
+        # from heat number (order) if selected
+        if (valgt_heat != 0) and (race["order"] > valgt_heat) and (i < number_of_races):
+            race["next_race"] = get_qualification_text(race)
+            race["start_time"] = race["start_time"][-8:]
+            filtered_racelist.append(race)
+            i += 1
+        # show upcoming heats from now
+        elif (time_now < race["start_time"][-8:]) and (i < number_of_races):
+            race["next_race"] = get_qualification_text(race)
+            race["start_time"] = race["start_time"][-8:]
+            filtered_racelist.append(race)
+            i += 1
 
     return filtered_racelist
 

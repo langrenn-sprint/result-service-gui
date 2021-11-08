@@ -8,6 +8,7 @@ from result_service_gui.services import (
     RaceclassesAdapter,
     RaceplansAdapter,
     StartAdapter,
+    TimeEventsService,
 )
 from .utils import (
     check_login,
@@ -41,7 +42,6 @@ class Start(web.View):
             user = await check_login(self)
             event = await get_event(user["token"], event_id)
 
-            startliste = []
             races = []
             colseparators = []
             colclass = "w3-half"
@@ -51,7 +51,6 @@ class Start(web.View):
             except Exception:
                 valgt_klasse = ""  # noqa: F841
                 informasjon += "Velg klasse for å se startlister."
-
             raceclasses = await RaceclassesAdapter().get_raceclasses(
                 user["token"], event_id
             )
@@ -61,25 +60,22 @@ class Start(web.View):
                 races = await get_races_for_live_view(user["token"], event_id, 0, 8)
             else:
                 # get startlister for klasse
-                raceplans = await RaceplansAdapter().get_all_raceplans(
+                _tmp_races = await RaceplansAdapter().get_all_races(
                     user["token"], event_id
                 )
-                if len(raceplans) > 0:
-                    _tmp_races = raceplans[0]["races"]
-                    if len(_tmp_races) == 0:
-                        informasjon = f"{informasjon} Ingen kjøreplaner funnet."
-                    else:
-                        for race in _tmp_races:
-                            if race["raceclass"] == valgt_klasse:
-                                race["next_race"] = get_qualification_text(race)
-                                race["start_time"] = race["start_time"][-8:]
-                                races.append(race)
-                                colseparators.append(race["round"])
-            # get start list
-            if len(races) > 0:
-                startliste = await get_enchiced_startlist(
-                    user["token"], event_id, valgt_klasse
-                )
+                if len(_tmp_races) == 0:
+                    informasjon = f"{informasjon} Ingen kjøreplaner funnet."
+                else:
+                    for race in _tmp_races:
+                        if race["raceclass"] == valgt_klasse:
+                            race["next_race"] = get_qualification_text(race)
+                            race["start_time"] = race["start_time"][-8:]
+                            colseparators.append(race["round"])
+                            # get start list details
+                            race["startliste"] = await get_enchiced_startlist(
+                                user["token"], race["id"], race["start_entries"]
+                            )
+                            races.append(race)
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
@@ -96,7 +92,6 @@ class Start(web.View):
                     "raceclasses": raceclasses,
                     "races": races,
                     "kjoreplan": [],
-                    "startliste": startliste,
                     "username": user["name"],
                 },
             )
@@ -117,6 +112,10 @@ class Start(web.View):
         try:
             if "generate_startlist" in form.keys():
                 informasjon = await StartAdapter().generate_startlist_for_event(
+                    user["token"], event_id
+                )
+            elif "generate_next_race" in form.keys():
+                informasjon = await TimeEventsService().generate_next_race_templates(
                     user["token"], event_id
                 )
 
