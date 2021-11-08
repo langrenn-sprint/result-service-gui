@@ -37,6 +37,9 @@ class TimeEventsService:
         else:
             for race in races:
                 if race["round"] != "F":
+                    time_event[
+                        "race"
+                    ] = f"{race['raceclass']}-{race['round']}{race['heat']}{race['index']}"
                     time_event["race_id"] = race["id"]
 
                     # loop and simulate result for pos 1 to 8
@@ -127,6 +130,7 @@ async def get_next_start_entry(token: str, time_event: dict) -> dict:
         if int(time_event["rank"]) <= limit_rank:
             race_item["current_contestant_qualified"] = True
             # now we have next round - get race id
+            time_event["rank_qualified"] = time_event["rank"] - ilimitplace
             start_entry = await calculate_next_start_entry(
                 token, race_item, time_event, races
             )
@@ -145,7 +149,7 @@ async def calculate_next_start_entry(
         "race_id": "",
         "race_round": "",
         "scheduled_start_time": "",
-        "starting_position": time_event["rank"],
+        "starting_position": time_event["rank_qualified"],
     }
     previous_race = {}
     previous_heat_count = 0
@@ -171,14 +175,16 @@ async def calculate_next_start_entry(
     if next_race_count > 0:
         # estimated rank from previous round is:
         # no_of_previous_heat*(rank-1) + rank
-        previous_heat_rank = int(time_event["rank"])
+        previous_heat_rank = int(time_event["rank_qualified"])
         previous_heat_number = int(previous_race["heat"])
         previous_round_rank = (
             previous_heat_count * (previous_heat_rank - 1) + previous_heat_number
         )
 
         # distribute contestants evenly in next round, winners in pos 1 osv.
-        next_race_tuple = divmod(previous_round_rank + 1, next_race_count)
+        next_race_tuple = divmod(
+            previous_round_rank + (next_race_count - 1), next_race_count
+        )
         # quotient gives the position
         next_race_position = next_race_tuple[0]
         # remainder gives the heat, need to add one as heat number starts on 1

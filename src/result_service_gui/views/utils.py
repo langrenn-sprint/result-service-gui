@@ -34,6 +34,7 @@ async def create_time_event(token: str, action: str, form: dict) -> str:
     request_body = {
         "bib": "",
         "event_id": form["event_id"],
+        "race": form["race"],
         "race_id": form["race_id"],
         "point": "",
         "rank": "",

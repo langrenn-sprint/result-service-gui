@@ -67,6 +67,7 @@ class Start(web.View):
                     informasjon = f"{informasjon} Ingen kjøreplaner funnet."
                 else:
                     for race in _tmp_races:
+                        # todo - bruk get_all_races_by_event_id_and_raceclass
                         if race["raceclass"] == valgt_klasse:
                             race["next_race"] = get_qualification_text(race)
                             race["start_time"] = race["start_time"][-8:]

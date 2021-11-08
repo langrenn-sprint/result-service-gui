@@ -68,7 +68,7 @@
           <td>Startnr</td>
           <td>Heat</td>
           <td>Passeringspunkt</td>
-          <td>Passeringstid</td>
+          <td>Tid</td>
           <td>Plass</td>
           <td>Videre til</td>
           <td>Status</td>
@@ -140,6 +140,7 @@
           <tr>
               <td></td>
               <td colspan=2>
+                <input type="hidden" name="race" value="">
                 <input type="hidden" name="race_id" value="">
                 <input type="hidden" name="event_id" value="{{ event_id }}">
                 <input type="hidden" name="action" value="{{ action }}">
@@ -200,6 +201,7 @@
             <tr>
                 <td colspan=3></td>
                 <td colspan=3>
+                  <input type="hidden" name="race" value="{{ race.raceclass }}-{{ race.round }}{{ race.heat }}{{ race.index }}">
                   <input type="hidden" name="race_id" value="{{ race.id }}">
                   <input type="hidden" name="event_id" value="{{ event_id }}">
                   <input type="hidden" name="action" value="{{ action }}">
@@ -210,6 +212,7 @@
           <tr>
               <td colspan=6></td>
               <td colspan=2>
+                <input type="hidden" name="race" value="{{ race.raceclass }}-{{ race.round }}{{ race.heat }}{{ race.index }}">
                 <input type="hidden" name="race_id" value="{{ race.id }}">
                 <input type="hidden" name="event_id" value="{{ event_id }}">
                 <input type="hidden" name="action" value="{{ action }}">
