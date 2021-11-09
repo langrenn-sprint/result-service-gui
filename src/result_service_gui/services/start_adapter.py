@@ -168,7 +168,7 @@ class StartAdapter:
             hdrs.CONTENT_TYPE: "application/json",
             hdrs.AUTHORIZATION: f"Bearer {token}",
         }
-        logging.info(f"New start: {new_start}")
+        logging.debug(f"New start: {new_start}")
         async with ClientSession() as session:
             async with session.put(
                 f"{RACE_SERVICE_URL}/races/{new_start['race_id']}/start-entries",
