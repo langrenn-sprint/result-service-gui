@@ -1,5 +1,5 @@
 """Module for time event service."""
-from datetime import datetime
+import datetime
 import logging
 
 from result_service_gui.services import (
@@ -109,9 +109,7 @@ class TimeEventsService:
                     "bib": time_event["bib"],
                     "name": f"{contestant['first_name']} {contestant['last_name']}",
                     "club": contestant["club"],
-                    "scheduled_start_time": datetime.fromisoformat(
-                        "2021-08-31 12:15:00"
-                    ).isoformat(),
+                    "scheduled_start_time": "2029-01-01T01:00:00",
                     "starting_position": time_event["next_race_position"],
                     "status": "OK",
                 }
