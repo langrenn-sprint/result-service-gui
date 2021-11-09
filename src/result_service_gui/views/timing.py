@@ -64,9 +64,6 @@ class Timing(web.View):
                         user["token"], race["id"], race["start_entries"]
                     )
 
-                if valgt_heat == 0:
-                    valgt_heat = int(races[0]["order"])
-
             valgt_klasse = ""
 
             # get passeringer for klasse

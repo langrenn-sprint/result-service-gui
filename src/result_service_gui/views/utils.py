@@ -39,7 +39,9 @@ async def create_time_event(token: str, action: str, form: dict) -> str:
         "point": "",
         "rank": "",
         "registration_time": time_now.strftime("%X"),
+        "next_race": "",
         "next_race_id": "",
+        "next_race_position": 0,
         "status": "OK",
         "changelog": "",
     }
@@ -213,7 +215,11 @@ async def get_races_for_live_view(
             filtered_racelist.append(race)
             i += 1
         # show upcoming heats from now
-        elif (time_now < race["start_time"][-8:]) and (i < number_of_races):
+        elif (
+            (valgt_heat == 0)
+            and (time_now < race["start_time"][-8:])
+            and (i < number_of_races)
+        ):
             race["next_race"] = get_qualification_text(race)
             race["start_time"] = race["start_time"][-8:]
             filtered_racelist.append(race)

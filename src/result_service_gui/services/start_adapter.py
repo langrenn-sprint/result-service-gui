@@ -171,17 +171,17 @@ class StartAdapter:
         logging.info(f"New start: {new_start}")
         async with ClientSession() as session:
             async with session.put(
-                f"{RACE_SERVICE_URL}/races/{new_start['race-id']}/start-entries",
+                f"{RACE_SERVICE_URL}/races/{new_start['race_id']}/start-entries",
                 headers=headers,
                 json=new_start,
             ) as resp:
-                logging.debug(f"add_one_start_entry - got response {resp.status}")
+                logging.debug(f"create_start_entry - got response {resp.status}")
                 if resp.status == 204:
                     pass
                 elif resp.status == 401:
                     raise Exception(f"Login expired: {resp}")
                 else:
-                    servicename = "add_one_start_entry"
+                    servicename = "create_start_entry"
                     body = await resp.json()
                     logging.error(f"{servicename} failed - {resp.status} - {body}")
                     raise web.HTTPBadRequest(
