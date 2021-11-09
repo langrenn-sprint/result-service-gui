@@ -1,5 +1,5 @@
 """Module for time event service."""
-import datetime
+from datetime import datetime
 import logging
 
 from result_service_gui.services import (
@@ -67,9 +67,7 @@ class TimeEventsService:
 
     async def create_time_event(self, token: str, time_event: dict) -> str:
         """Validate, enrich and create new start and time_event."""
-        logging.info(f"Got time-event: {time_event}")
         # 1. First enrich data
-        # check if race_id exists
         if time_event["race_id"] == "":
             time_event["race_id"] = await find_race_id_from_time_event(
                 token, time_event
@@ -77,33 +75,51 @@ class TimeEventsService:
 
         # 2. Check for duplicate time events
         # TODO
-
-        # 3. Calculate next race and position
-        next_start_entry = await get_next_start_entry(token, time_event)
+        # 3. Get next race from template
+        id2 = ""
+        next_start_template = {}
+        next_start_entries = await TimeEventsAdapter().get_time_events_by_race_id(
+            token, time_event["race_id"]
+        )
+        for entry in next_start_entries:
+            if (entry["point"] == "Template") and (
+                entry["rank"] == int(time_event["rank"])
+            ):
+                next_start_template = entry
 
         # 4. Create or update time event
-        if len(next_start_entry) > 0:
-            time_event["next_race"] = next_start_entry["race_round"]
-            time_event["next_race_id"] = next_start_entry["race_id"]
-            time_event["next_race_position"] = next_start_entry["starting_position"]
-            contestants = await ContestantsAdapter().get_contestants_by_bib(
-                token, time_event["event_id"], next_start_entry["bib"]
+        if len(next_start_template) > 0:
+            time_event["next_race"] = next_start_template["next_race"]
+            time_event["next_race_id"] = next_start_template["next_race_id"]
+            time_event["next_race_position"] = next_start_template["next_race_position"]
+
+            start_list = await StartAdapter().get_all_starts_by_event(
+                token, time_event["event_id"]
             )
-            breakpoint()
+
+            contestants = await ContestantsAdapter().get_contestants_by_bib(
+                token, time_event["event_id"], time_event["bib"]
+            )
             if len(contestants) == 1:
                 contestant = contestants[0]
-                next_start_entry[
-                    "name"
-                ] = f"{contestant['first_name']} {contestant['last_name']}"
-                next_start_entry["club"] = contestant["club"]
+                # create next start entry
+                next_start_entry = {
+                    "race_id": time_event["next_race_id"],
+                    "startlist_id": start_list[0]["id"],
+                    "bib": time_event["bib"],
+                    "name": f"{contestant['first_name']} {contestant['last_name']}",
+                    "club": contestant["club"],
+                    "scheduled_start_time": datetime.fromisoformat(
+                        "2021-08-31 12:15:00"
+                    ).isoformat(),
+                    "starting_position": time_event["next_race_position"],
+                    "status": "OK",
+                }
+                id2 = await StartAdapter().create_start_entry(token, next_start_entry)
 
-        id = await TimeEventsAdapter().create_time_event(token, time_event)
+        id1 = await TimeEventsAdapter().create_time_event(token, time_event)
 
-        logging.info(f"Start_entry - not yet stored: {next_start_entry}")
-        # 5. Create new start event
-        id = await StartAdapter().create_start_entry(token, next_start_entry)
-
-        return id
+        return f"Created time event {id1} and start event {id2} "
 
     async def update_time_event(self, token: str, id: str, time_event: dict) -> str:
         """Validate, enrich and update start and time_event."""
@@ -131,7 +147,7 @@ async def get_next_start_entry(token: str, time_event: dict) -> dict:
                     for x, y in value.items():
                         if x == "A":
                             next_race[2]["qualified"] = y
-                        elif x == "B" and y > 8:
+                        elif x == "B":
                             next_race[3]["qualified"] = y
                         elif x == "C":
                             next_race[4]["qualified"] = y
@@ -178,6 +194,7 @@ async def calculate_next_start_entry(
         elif (
             len(previous_race) > 0
             and previous_race.get("round") == race.get("round")
+            and previous_race.get("index") == race.get("index")
             and previous_race.get("raceclass") == race.get("raceclass")
         ):
             previous_heat_count = race.get("heat")

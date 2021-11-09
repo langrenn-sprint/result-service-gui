@@ -15,6 +15,7 @@ from .utils import (
     get_enchiced_startlist,
     get_event,
     get_qualification_text,
+    get_raceplan_summary,
     get_races_for_live_view,
 )
 
@@ -43,6 +44,7 @@ class Start(web.View):
             event = await get_event(user["token"], event_id)
 
             races = []
+            raceplan_summary = []
             colseparators = []
             colclass = "w3-half"
 
@@ -77,6 +79,7 @@ class Start(web.View):
                                 user["token"], race["id"], race["start_entries"]
                             )
                             races.append(race)
+                raceplan_summary = get_raceplan_summary(_tmp_races, raceclasses)
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
@@ -92,7 +95,7 @@ class Start(web.View):
                     "colclass": colclass,
                     "raceclasses": raceclasses,
                     "races": races,
-                    "kjoreplan": [],
+                    "raceplan_summary": raceplan_summary,
                     "username": user["name"],
                 },
             )

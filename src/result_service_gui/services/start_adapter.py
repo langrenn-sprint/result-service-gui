@@ -148,13 +148,13 @@ class StartAdapter:
             async with session.get(
                 f"{RACE_SERVICE_URL}/startlists?event-id={event_id}", headers=headers
             ) as resp:
-                logging.debug(f"get_all_starts - got response {resp.status}")
+                logging.debug(f"get_all_starts_by_event - got response {resp.status}")
                 if resp.status == 200:
                     starts = await resp.json()
                 elif resp.status == 401:
                     raise Exception(f"Login expired: {resp}")
                 else:
-                    servicename = "get_all_starts"
+                    servicename = "get_all_starts_by_event"
                     body = await resp.json()
                     logging.error(f"{servicename} failed - {resp.status} - {body}")
                     raise web.HTTPBadRequest(
@@ -170,13 +170,13 @@ class StartAdapter:
         }
         logging.debug(f"New start: {new_start}")
         async with ClientSession() as session:
-            async with session.put(
+            async with session.post(
                 f"{RACE_SERVICE_URL}/races/{new_start['race_id']}/start-entries",
                 headers=headers,
                 json=new_start,
             ) as resp:
                 logging.debug(f"create_start_entry - got response {resp.status}")
-                if resp.status == 204:
+                if resp.status == 201:
                     pass
                 elif resp.status == 401:
                     raise Exception(f"Login expired: {resp}")

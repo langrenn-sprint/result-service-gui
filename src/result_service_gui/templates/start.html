@@ -65,12 +65,37 @@
     </table>
     <div id=spacer></div>
   {% else %}
+    {% if  (valgt_klasse == "") %}
+
+      <table>
+        <tr id=spacer></tr>
+        <tr id=headerblue>
+          <td>Løpsklasse</td>
+          <td>Kvartfinale start</td>
+          <td>Semifinaler</td>
+          <td>Finaler</td>
+          <td>Antall deltakere</td>
+        </tr>
+        {% for raceclass in raceplan_summary %}
+          <tr>
+            <td>{{ raceclass.name }}</td>
+            <td>{{ raceclass.timeQ }}</td>
+            <td>{{ raceclass.timeS }}</td>
+            <td>{{ raceclass.timeF }}</td>
+            <td>{{ raceclass.no_of_contestants }}</td>
+          </tr>
+        {% endfor %}
+      </table>
+    {% endif %}
+
+    <table>
     {% for race in races %}
       {% if race.Heat in colseparators %}
-        </div>
-        <div class="{{ colclass }}">
+        </table>
+          </div>
+          <div class="{{ colclass }}">
+        <table>
       {% endif %}
-      <table>
         <tr id=headerblue>
             {% if race.round == "Q" %}
               <td colspan=3>{{ race.raceclass }} Kvartfinale {{ race.index }}{{ race.heat }}</td>
@@ -85,7 +110,7 @@
         <tr id=subheader>
           <td width=50><div id={{ race.heat }} >Pos</div></td>
           <td width=50>Nr</td>
-          <td width=300>Navn</td>
+          <td>Navn</td>
           <td>Klubb</td>
           <td width=50>Plass</td>
           <td>Videre til</td>
@@ -101,14 +126,14 @@
                   {{ loper.name }}
                 {% endif %}
               </td>
-              <td></td>
+              <td>{{ loper.club }}</td>
               <td>{{ loper.starting_position }}</td>
               <td>{{ loper.next_race }}</td>
             </tr>
         {% endfor %}
-      </table>
-      <div id=spacer></div>
     {% endfor %}
+  </table>
+  <div id=spacer></div>
   {% endif %} {# note: end competition_format #}
   {% if valgt_klasse == "live" %}
       </div>

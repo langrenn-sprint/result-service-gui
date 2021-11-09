@@ -157,6 +157,19 @@ async def get_enchiced_startlist(token: str, race_id: str, start_entries: list) 
                             "next_race"
                         ] = f"{template['next_race']}-{template['next_race_position']}"
             startlist.append(start_entry)
+    else:
+        # get videre til information - loop and simulate result for pos 1 to 8
+        for x in range(1, 9):
+            for template in next_race_templates:
+                start_entry = {}
+                if template["point"] == "Template":
+                    if int(template["rank"]) == x:
+                        start_entry["race_id"] = race_id
+                        start_entry["starting_position"] = x
+                        start_entry[
+                            "next_race"
+                        ] = f"{template['next_race']}-{template['next_race_position']}"
+                        startlist.append(start_entry)
     return startlist
 
 
@@ -196,6 +209,29 @@ def get_qualification_text(race: dict) -> str:
                 text += "Resten er ute. "
     logging.debug(f"Regel hele: {text}")
     return text
+
+
+def get_raceplan_summary(races: list, raceclasses: list) -> list:
+    """Generate a summary with key timing for the raceplan."""
+    summary = []
+    # create a dict of all raceclasses and populate
+    # loop raceclasses and find key parameters
+    for raceclass in raceclasses:
+        class_summary = {"name": raceclass["name"]}
+        class_summary["no_of_contestants"] = raceclass["no_of_contestants"]
+        # loop through races - update start time pr round pr class
+        for race in reversed(races):
+            if race["raceclass"] == raceclass["name"]:
+                if race["datatype"] == "individual_sprint":
+                    if race["round"] == "Q":
+                        class_summary["timeQ"] = race["start_time"][-8:]
+                    elif race["round"] == "S":
+                        class_summary["timeS"] = race["start_time"][-8:]
+                    elif race["round"] == "F":
+                        class_summary["timeF"] = race["start_time"][-8:]
+        summary.append(class_summary)
+    logging.debug(summary)
+    return summary
 
 
 async def get_races_for_live_view(
