@@ -24,6 +24,7 @@ class StartAdapter:
                 hdrs.AUTHORIZATION: f"Bearer {token}",
             }
         )
+        breakpoint()
         request_body = {"event_id": event_id}
         async with ClientSession() as session:
             async with session.post(

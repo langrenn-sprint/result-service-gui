@@ -116,6 +116,32 @@ class RaceplansAdapter:
                     )
         return races
 
+    async def get_race_by_id(self, token: str, race_id: str) -> dict:
+        """Get one race for event function."""
+        headers = MultiDict(
+            {
+                hdrs.AUTHORIZATION: f"Bearer {token}",
+            }
+        )
+        race = {}
+        async with ClientSession() as session:
+            async with session.get(
+                f"{RACE_SERVICE_URL}/races/{race_id}", headers=headers
+            ) as resp:
+                logging.debug(f"get_race_by_id - got response {resp.status}")
+                if resp.status == 200:
+                    race = await resp.json()
+                elif resp.status == 401:
+                    raise Exception(f"Login expired: {resp}")
+                else:
+                    servicename = "get_race_by_id"
+                    body = await resp.json()
+                    logging.error(f"{servicename} failed - {resp.status} - {body}")
+                    raise web.HTTPBadRequest(
+                        reason=f"Error - {resp.status}: {body['detail']}."
+                    )
+        return race
+
     async def get_race_by_class(
         self, token: str, event_id: str, valgt_klasse: str
     ) -> dict:

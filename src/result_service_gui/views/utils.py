@@ -153,9 +153,12 @@ async def get_enchiced_startlist(token: str, race_id: str, start_entries: list) 
             for template in next_race_templates:
                 if template["point"] == "Template":
                     if template["rank"] == start_entry["starting_position"]:
-                        start_entry[
-                            "next_race"
-                        ] = f"{template['next_race']}-{template['next_race_position']}"
+                        if template["next_race"].startswith("Ute"):
+                            start_entry["next_race"] = "Ute"
+                        else:
+                            start_entry[
+                                "next_race"
+                            ] = f"{template['next_race']}-{template['next_race_position']}"
             startlist.append(start_entry)
     else:
         # get videre til information - loop and simulate result for pos 1 to 8
@@ -166,9 +169,12 @@ async def get_enchiced_startlist(token: str, race_id: str, start_entries: list) 
                     if int(template["rank"]) == x:
                         start_entry["race_id"] = race_id
                         start_entry["starting_position"] = x
-                        start_entry[
-                            "next_race"
-                        ] = f"{template['next_race']}-{template['next_race_position']}"
+                        if template["next_race"].startswith("Ute"):
+                            start_entry["next_race"] = "Ute"
+                        else:
+                            start_entry[
+                                "next_race"
+                            ] = f"{template['next_race']}-{template['next_race_position']}"
                         startlist.append(start_entry)
     return startlist
 

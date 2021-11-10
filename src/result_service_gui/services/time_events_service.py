@@ -32,7 +32,17 @@ class TimeEventsService:
             "status": "OK",
             "changelog": "Next race registration",
         }
-        # get list of all races and loop, except finals.
+
+        # 1. delete all existing Template time events
+        current_templates = (
+            await TimeEventsAdapter().get_time_events_by_event_id_and_point(
+                token, event_id, "Template"
+            )
+        )
+        for template in current_templates:
+            id = await TimeEventsAdapter().delete_time_event(token, template["id"])
+
+        # 2. get list of all races and loop, except finals.
         races = await RaceplansAdapter().get_all_races(token, event_id)
         if len(races) == 0:
             informasjon = f"{informasjon} Ingen kjøreplaner funnet."
@@ -56,13 +66,16 @@ class TimeEventsService:
                             time_event["next_race_position"] = next_start_entry[
                                 "starting_position"
                             ]
+                        else:
+                            time_event["next_race"] = "Ute"
+                            time_event["next_race_position"] = 0
 
-                            id = await TimeEventsAdapter().create_time_event(
-                                token, time_event
-                            )
-                            logging.debug(f"Created template: {id}")
-                            i += 1
-        informasjon = f"Opprettet {i} templates"
+                        id = await TimeEventsAdapter().create_time_event(
+                            token, time_event
+                        )
+                        logging.debug(f"Created template: {id}")
+                        i += 1
+        informasjon = f"Opprettet {i} templates. "
         return informasjon
 
     async def create_time_event(self, token: str, time_event: dict) -> str:
@@ -97,6 +110,10 @@ class TimeEventsService:
                 token, time_event["event_id"]
             )
 
+            next_race = await RaceplansAdapter().get_race_by_id(
+                token, time_event["next_race_id"]
+            )
+
             contestants = await ContestantsAdapter().get_contestants_by_bib(
                 token, time_event["event_id"], time_event["bib"]
             )
@@ -109,7 +126,7 @@ class TimeEventsService:
                     "bib": time_event["bib"],
                     "name": f"{contestant['first_name']} {contestant['last_name']}",
                     "club": contestant["club"],
-                    "scheduled_start_time": "2029-01-01T01:00:00",
+                    "scheduled_start_time": next_race["start_time"],
                     "starting_position": time_event["next_race_position"],
                     "status": "OK",
                 }
@@ -228,7 +245,6 @@ async def calculate_next_start_entry(
                 start_entry[
                     "race_round"
                 ] = f"{race.get('round')}{race.get('index')}{race.get('heat')}"
-        # todo: must fix
         start_entry["starting_position"] = next_race_position
 
         logging.debug(

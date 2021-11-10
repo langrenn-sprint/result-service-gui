@@ -1,5 +1,6 @@
 """Resource module for start resources."""
 import logging
+import os
 
 from aiohttp import web
 import aiohttp_jinja2
@@ -18,6 +19,10 @@ from .utils import (
     get_raceplan_summary,
     get_races_for_live_view,
 )
+
+EVENT_GUI_HOST_SERVER = os.getenv("EVENT_GUI_HOST_SERVER", "localhost")
+EVENT_GUI_HOST_PORT = os.getenv("EVENT_GUI_HOST_PORT", "8080")
+EVENT_GUI_URL = f"http://{EVENT_GUI_HOST_SERVER}:{EVENT_GUI_HOST_PORT}"
 
 
 class Start(web.View):
@@ -128,4 +133,6 @@ class Start(web.View):
             informasjon = f"Det har oppstått en feil - {e.args}."
 
         info = f"action={action}&informasjon={informasjon}"
-        return web.HTTPSeeOther(location=f"/start?event_id={event_id}&{info}")
+        return web.HTTPSeeOther(
+            location=f"{EVENT_GUI_URL}/tasks?event_id={event_id}&{info}"
+        )

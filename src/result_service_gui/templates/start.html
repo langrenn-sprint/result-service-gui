@@ -112,8 +112,13 @@
           <td width=50>Nr</td>
           <td>Navn</td>
           <td>Klubb</td>
-          <td width=50>Plass</td>
-          <td>Videre til</td>
+          {% if race.round != "F" %}
+            <td width=50>Plass</td>
+            <td>Videre til (heat og startspor)</td>
+          {% else %}
+            <td></td>
+            <td></td>
+          {% endif %}
         </tr>
         {% for loper in race.startliste %}
             <tr>
@@ -127,8 +132,13 @@
                 {% endif %}
               </td>
               <td>{{ loper.club }}</td>
-              <td>{{ loper.starting_position }}</td>
-              <td>{{ loper.next_race }}</td>
+                {% if race.round != "F" %}
+                  <td>{{ loper.starting_position }}</td>
+                  <td>{{ loper.next_race }}</td>
+                {% else %}
+                  <td></td>
+                  <td></td>
+                {% endif %}
             </tr>
         {% endfor %}
     {% endfor %}
