@@ -41,7 +41,7 @@ class Dashboard(web.View):
                     "event": event,
                     "event_id": event_id,
                     "informasjon": informasjon,
-                    "username": user["name"],
+                    "username": user["username"],
                 },
             )
         except Exception as e:

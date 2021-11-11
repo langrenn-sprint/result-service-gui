@@ -23,7 +23,7 @@ class Events(web.View):
 
         try:
             user = await check_login(self)
-            event = await get_event(user["token"], event_id)
+            event = await get_event(user, event_id)
 
             return await aiohttp_jinja2.render_template_async(
                 "events.html",
@@ -33,7 +33,7 @@ class Events(web.View):
                     "event": event,
                     "event_id": event_id,
                     "informasjon": informasjon,
-                    "username": user["name"],
+                    "username": user["username"],
                 },
             )
         except Exception as e:

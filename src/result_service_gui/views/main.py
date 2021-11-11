@@ -34,7 +34,7 @@ class Main(web.View):
                     "event_id": "",
                     "events": events,
                     "informasjon": informasjon,
-                    "username": user["name"],
+                    "username": user["username"],
                 },
             )
         except Exception as e:

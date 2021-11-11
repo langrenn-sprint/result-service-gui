@@ -111,7 +111,7 @@ class Resultat(web.View):
                     "resultatliste": resultatliste,
                     "heatliste": heatliste,
                     "resultatheatliste": resultatheatliste,
-                    "username": user["name"],
+                    "username": user["username"],
                 },
             )
         except Exception as e:

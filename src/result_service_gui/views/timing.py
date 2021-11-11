@@ -44,7 +44,7 @@ class Timing(web.View):
 
         try:
             user = await check_login(self)
-            event = await get_event(user["token"], event_id)
+            event = await get_event(user, event_id)
 
             passeringer = []
             colclass = "w3-half"
@@ -53,15 +53,13 @@ class Timing(web.View):
                 user["token"], event_id
             )
 
-            races = await get_races_for_live_view(
-                user["token"], event_id, valgt_heat, 8
-            )
+            races = await get_races_for_live_view(user, event_id, valgt_heat, 8)
 
             if len(races) > 0:
                 for race in races:
                     # get start list details
                     race["startliste"] = await get_enchiced_startlist(
-                        user["token"], race["id"], race["start_entries"]
+                        user, race["id"], race["start_entries"]
                     )
 
             valgt_klasse = ""
@@ -84,7 +82,7 @@ class Timing(web.View):
                     "passeringer": passeringer,
                     "raceclasses": raceclasses,
                     "races": races,
-                    "username": user["name"],
+                    "username": user["username"],
                     "valgt_heat": valgt_heat,
                     "valgt_klasse": valgt_klasse,
                 },
@@ -97,8 +95,6 @@ class Timing(web.View):
         """Post route function that creates deltakerliste."""
         # check login
         user = await check_login(self)
-        logging.debug(user)
-
         informasjon = ""
         action = ""
         try:
@@ -109,9 +105,9 @@ class Timing(web.View):
 
             # Create new deltakere
             if "control" == action:
-                informasjon = await update_time_event(user["token"], action, form)
+                informasjon = await update_time_event(user, action, form)
             else:
-                informasjon = await create_time_event(user["token"], action, form)
+                informasjon = await create_time_event(user, action, form)
         except Exception as e:
             logging.error(f"Error: {e}")
             informasjon = f"Det har oppstått en feil - {e.args}."

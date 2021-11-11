@@ -145,8 +145,8 @@ class TimeEventsAdapter:
                     )
         return time_events
 
-    async def get_time_events_by_event_id_and_point(
-        self, token: str, event_id: str, point: str
+    async def get_time_events_by_event_id_and_timing_point(
+        self, token: str, event_id: str, timing_point: str
     ) -> List:
         """Get all time_events - lap time or heat place function."""
         headers = MultiDict(
@@ -157,7 +157,7 @@ class TimeEventsAdapter:
         time_events = []
         async with ClientSession() as session:
             async with session.get(
-                f"{RACE_SERVICE_URL}/time-events?eventId={event_id}&point={point}",
+                f"{RACE_SERVICE_URL}/time-events?eventId={event_id}&timingPoint={timing_point}",
                 headers=headers,
             ) as resp:
                 logging.debug(

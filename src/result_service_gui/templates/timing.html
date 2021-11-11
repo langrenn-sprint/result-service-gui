@@ -81,7 +81,7 @@
             <form action=/timing method=post>
               <td align=right>{{ passering.bib }}</td>
               <td>{{ passering.race }}</td>
-              <td><input type=text name="point" value="{{ passering.point }}" size=7></td>
+              <td><input type=text name="timing_point" value="{{ passering.timing_point }}" size=7></td>
               <td><input type=text name="registration_time" value="{{ passering.registration_time }}" size=7></td>
               <td><input type=text name="rank" value="{{ passering.rank }}" size=7></td>
               <td>{{ passering.next_race }}-{{ passering.next_race_position }}</td>
@@ -128,7 +128,7 @@
               {% elif action == "finish_bib1" %}
                 Mål
               {% else %}
-                <select name="point">
+                <select name="timing_point">
                     <option value="forvarsel_1">Forvarsel 1</option>
                     <option value="runde_1">Runde 1</option>
                 </select>

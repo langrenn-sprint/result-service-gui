@@ -137,7 +137,7 @@ class Live(web.View):
                     "kjoreplan": kjoreplan,
                     "resultatliste": resultatliste,
                     "startliste": startliste,
-                    "username": user["name"],
+                    "username": user["username"],
                 },
             )
         except Exception as e:

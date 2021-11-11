@@ -23,19 +23,18 @@ class TimeEventsService:
             "event_id": event_id,
             "race": "",
             "race_id": "",
-            "point": "Template",
+            "timing_point": "Template",
             "rank": "",
             "registration_time": time_now.strftime("%X"),
             "next_race": "",
             "next_race_id": "",
             "next_race_position": 0,
             "status": "OK",
-            "changelog": "Next race registration",
+            "changelog": [],
         }
-
         # 1. delete all existing Template time events
         current_templates = (
-            await TimeEventsAdapter().get_time_events_by_event_id_and_point(
+            await TimeEventsAdapter().get_time_events_by_event_id_and_timing_point(
                 token, event_id, "Template"
             )
         )
@@ -85,7 +84,6 @@ class TimeEventsService:
             time_event["race_id"] = await find_race_id_from_time_event(
                 token, time_event
             )
-
         # 2. Check for duplicate time events
         # TODO
         # 3. Get next race from template
@@ -95,7 +93,7 @@ class TimeEventsService:
             token, time_event["race_id"]
         )
         for entry in next_start_entries:
-            if (entry["point"] == "Template") and (
+            if (entry["timing_point"] == "Template") and (
                 entry["rank"] == int(time_event["rank"])
             ):
                 next_start_template = entry

@@ -46,7 +46,7 @@ class Start(web.View):
 
         try:
             user = await check_login(self)
-            event = await get_event(user["token"], event_id)
+            event = await get_event(user, event_id)
 
             races = []
             raceplan_summary = []
@@ -64,7 +64,7 @@ class Start(web.View):
 
             # get relevant races
             if "live" == valgt_klasse:
-                races = await get_races_for_live_view(user["token"], event_id, 0, 8)
+                races = await get_races_for_live_view(user, event_id, 0, 8)
             else:
                 # get startlister for klasse
                 _tmp_races = await RaceplansAdapter().get_all_races(
@@ -81,7 +81,7 @@ class Start(web.View):
                             colseparators.append(race["round"])
                             # get start list details
                             race["startliste"] = await get_enchiced_startlist(
-                                user["token"], race["id"], race["start_entries"]
+                                user, race["id"], race["start_entries"]
                             )
                             races.append(race)
                 raceplan_summary = get_raceplan_summary(_tmp_races, raceclasses)
@@ -101,7 +101,7 @@ class Start(web.View):
                     "raceclasses": raceclasses,
                     "races": races,
                     "raceplan_summary": raceplan_summary,
-                    "username": user["name"],
+                    "username": user["username"],
                 },
             )
         except Exception as e:
