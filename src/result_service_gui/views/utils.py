@@ -309,13 +309,6 @@ async def update_time_event(user: dict, action: str, form: dict) -> str:
     """Register time event - return information."""
     informasjon = ""
     time_now = datetime.datetime.now()
-    time_now["changelog"].append(
-        {
-            "timestamp": time_now.strftime("%X"),
-            "user_id": user["username"],
-            "comment": "",
-        }
-    )
     request_body = await TimeEventsAdapter().get_time_event_by_id(
         user["token"], form["id"]
     )
