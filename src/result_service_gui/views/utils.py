@@ -30,6 +30,7 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
     """Register time event - return information."""
     informasjon = ""
     time_now = datetime.datetime.now()
+    time_stamp_now = f"{time_now.strftime('%Y')}-{time_now.strftime('%m')}-{time_now.strftime('%d')}T{time_now.strftime('%X')}"
 
     request_body = {
         "bib": "",
@@ -56,7 +57,7 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
                 request_body["timing_point"] = "DNS"
                 request_body["changelog"].append(
                     {
-                        "timestamp": time_now.strftime("%X"),
+                        "timestamp": time_stamp_now,
                         "user_id": user["username"],
                         "comment": "DNS registrert.",
                     }
@@ -66,7 +67,7 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
             else:
                 request_body["changelog"].append(
                     {
-                        "timestamp": time_now.strftime("%X"),
+                        "timestamp": time_stamp_now,
                         "user_id": user["username"],
                         "comment": "Start registrert. ",
                     }
@@ -86,7 +87,7 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
                     request_body["timing_point"] = "DNS"
                     request_body["changelog"].append(
                         {
-                            "timestamp": time_now.strftime("%X"),
+                            "timestamp": time_stamp_now,
                             "user_id": user["username"],
                             "comment": "DNS registrert. ",
                         }
@@ -96,7 +97,7 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
                     request_body["timing_point"] = "Start"
                     request_body["changelog"].append(
                         {
-                            "timestamp": time_now.strftime("%X"),
+                            "timestamp": time_stamp_now,
                             "user_id": user["username"],
                             "comment": "Start registrert. ",
                         }
@@ -110,7 +111,7 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
         request_body["timing_point"] = "Finish"
         request_body["changelog"].append(
             {
-                "timestamp": time_now.strftime("%X"),
+                "timestamp": time_stamp_now,
                 "user_id": user["username"],
                 "comment": "Målpassering registrert. ",
             }
@@ -133,7 +134,7 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
                     request_body["rank"] = x[11:]
                     request_body["changelog"].append(
                         {
-                            "timestamp": time_now.strftime("%X"),
+                            "timestamp": time_stamp_now,
                             "user_id": user["username"],
                             "comment": "{request_body['rank']} plass i mål. ",
                         }
@@ -155,9 +156,9 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
                     request_body["rank"] = _place
                     request_body["changelog"].append(
                         {
-                            "timestamp": time_now.strftime("%X"),
+                            "timestamp": time_stamp_now,
                             "user_id": user["username"],
-                            "comment": " {request_body['rank']} plass i mål. ",
+                            "comment": f"{request_body['rank']} plass i mål. ",
                         }
                     )
                     i += 1
@@ -309,13 +310,14 @@ async def update_time_event(user: dict, action: str, form: dict) -> str:
     """Register time event - return information."""
     informasjon = ""
     time_now = datetime.datetime.now()
+    time_stamp_now = f"{time_now.strftime('%Y')}-{time_now.strftime('%m')}-{time_now.strftime('%d')}T{time_now.strftime('%X')}"
     request_body = await TimeEventsAdapter().get_time_event_by_id(
         user["token"], form["id"]
     )
     if "update" in form.keys():
         request_body["changelog"].append(
             {
-                "timestamp": time_now.strftime("%X"),
+                "timestamp": time_stamp_now,
                 "user_id": user["username"],
                 "comment": "Oppdatering - tidligere informasjon: {request_body}. ",
             }
@@ -326,7 +328,7 @@ async def update_time_event(user: dict, action: str, form: dict) -> str:
     elif "delete" in form.keys():
         request_body["changelog"].append(
             {
-                "timestamp": time_now.strftime("%X"),
+                "timestamp": time_stamp_now,
                 "user_id": user["username"],
                 "comment": "Status set to deleted . ",
             }

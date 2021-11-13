@@ -18,8 +18,8 @@
   <li class=dropdown id=topborder>
     <a href=javascript:void(0) class=dropbtn>Velg klasse</a>
     <div class=dropdown-content>
-      {% for klasse in klasser %}
-        <a href=live?klasse={{ klasse.raceclass }}&event_id={{ event_id }}>{{ klasse.name }}</a>
+      {% for klasse in raceclasses %}
+        <a href=live?klasse={{ klasse.name }}&event_id={{ event_id }}>{{ klasse.ageclass_name }}</a>
       {% endfor %}
     </div>
   </li>
@@ -42,61 +42,58 @@
   <div id=spacer></div>
   <div class="w3-row-padding">
     <div class="{{ colclass }}">
-        {% for heat in kjoreplan %}
-            {% if heat.Heat in colseparators %}
+        {% for heat in races %}
+            {% if heat.order in colseparators %}
               </div>
               <div class="{{ colclass }}">
             {% endif %}
             <table>
-            {% if heat.resultat_registrert %}
+              Results:  {{ heat.results }}
+            {% if heat.results|length > 0 %}
               <tr id=headerblack>
-                <td colspan=3>{{ heat.Runde }}</td>
+                <td colspan=3>{{ heat.raceclass }}-{{ heat.round }}{{ heat.index }}{{ heat.heat }}</td>
                 <td colspan=2>Resultater</td>
               </tr>
               <tr id=subheader>
-                <td><div id={{ heat.Heat[0] }} >Plass</div></td>
+                <td><div id={{ heat.order }} >Plass</div></td>
                 <td>Nr</td>
                 <td>Navn</td>
                 <td>Klubb</td>
-                {% if heat.Heat[0] == "F" %}
+                {% if heat.round == "F" %}
                   <td></td>
                 {% else %}
                   <td>Neste</td>
                 {% endif %}
               </tr>
-              {% for loper in resultatliste %}
-                {% if heat.Index == loper.Heat %}
+              {% for loper in heat.results %}
                     <tr>
-                      <td>{{ loper.Plass }}</td>
-                      <td>{{ loper.Nr }}</td>
-                      <td>{{ loper.Navn[:24] }}</td>
-                      <td>{{ loper.Klubb[:8] }}</td>
-                      <td>{{ loper.Videre_til }}</td>
+                      <td>{{ loper.place }}</td>
+                      <td>{{ loper.bib }}</td>
+                      <td>{{ loper.name[:24] }}</td>
+                      <td>{{ loper.club[:8] }}</td>
+                      <td>{{ loper.next_race }}</td>
                     </tr>
-                  {% endif %}
               {% endfor %}
             {% else %}
               <tr id=headerblue>
-                <td colspan=3>{{ heat.Runde }}</td>
-                <td colspan=2>Kl. {{ heat.Start }}</td>
+                <td colspan=3>{{ heat.raceclass }}-{{ heat.round }}{{ heat.index }}{{ heat.heat }}</td>
+                <td colspan=2>Kl. {{ heat.start_time }}</td>
               </tr>
               <tr id=subheader>
-                <td><div id={{ heat.Heat[0] }} >Pos</div></td>
+                <td><div id={{ heat.order }} >Pos</div></td>
                 <td>Nr</td>
                 <td>Navn</td>
                 <td>Klubb</td>
                 <td></td>
                </tr>
-               {% for loper in startliste %}
-                 {% if heat.Index == loper.Heat %}
+               {% for loper in heat.startliste %}
                      <tr>
-                       <td>{{ loper.Pos }}</td>
-                       <td>{{ loper.Nr }}</td>
-                       <td>{{ loper.Navn[:24] }}</td>
-                       <td>{{ loper.Klubb[:10] }}</td>
+                       <td>{{ loper.starting_position }}</td>
+                       <td>{{ loper.bib }}</td>
+                       <td>{{ loper.name }}</td>
+                       <td>{{ loper.club }}</td>
                        <td></td>
                      </tr>
-                   {% endif %}
                {% endfor %}
             {% endif %}
 
