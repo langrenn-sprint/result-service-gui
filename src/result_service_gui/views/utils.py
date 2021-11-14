@@ -60,6 +60,7 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
                 else:
                     request_body["timing_point"] = "Start"
                     changelog_comment = "Start registrert. "
+                    request_body["bib"] = bib
                 i += 1
                 request_body["changelog"] = [
                     {

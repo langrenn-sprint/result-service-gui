@@ -50,7 +50,7 @@
             {% if heat.finish_results|length > 0 %}
               <tr id=headerblack>
                 <td colspan=3>{{ heat.raceclass }}-{{ heat.round }}{{ heat.index }}{{ heat.heat }}</td>
-                <td colspan=2>Resultater {{ heat.id }}</td>
+                <td colspan=2>Resultater</td>
               </tr>
               <tr id=subheader>
                 <td><div id={{ heat.order }} >Plass</div></td>
@@ -75,7 +75,7 @@
             {% else %}
               <tr id=headerblue>
                 <td colspan=3>{{ heat.raceclass }}-{{ heat.round }}{{ heat.index }}{{ heat.heat }}</td>
-                <td colspan=2>Kl. {{ heat.start_time }} (Heat {{ heat.order }}) - {{ heat.id}}</td>
+                <td colspan=2>Kl. {{ heat.start_time }} (Heat {{ heat.order }})</td>
               </tr>
               <tr id=subheader>
                 <td><div id={{ heat.order }} >Pos</div></td>
