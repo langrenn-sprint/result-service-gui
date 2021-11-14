@@ -157,7 +157,6 @@
         {% for race in races %}
         <form action=/timing method=post>
           <tr id=headerblue>
-            <td width=100>{{ race.order }}</td>
             <td>Pos</td>
             <td width=80>Startnr</td>
             <td width=150>
@@ -167,7 +166,7 @@
                 Plass
               {% endif %}
             </td>
-            <td><b>{{ race.raceclass }}{{ race.round }}{{ race.heat }} kl:{{ race.start_time }}</b></td>
+            <td><b>{{ race.raceclass }}{{ race.round }}{{ race.index }}{{ race.heat }}  kl:{{ race.start_time }} (Heat {{ race.order }})</b></td>
             <td>Videre til: {{ race.next_race }}</td>
             {% if action == "finish_bib2" %}
               <td>Plass</td>
@@ -176,7 +175,6 @@
           </tr>
           {% for start in race.startliste %}
               <tr>
-                <td>{{ start.scheduled_start_time }}</td>
                 <td>{{ start.starting_position }}</td>
                 <td align=center>{{ start.bib }}</td>
                 <td>

@@ -55,29 +55,22 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
         for bib in biblist:
             if bib.count("x") > 0:
                 request_body["timing_point"] = "DNS"
-                request_body["changelog"].append(
-                    {
-                        "timestamp": time_stamp_now,
-                        "user_id": user["username"],
-                        "comment": "DNS registrert.",
-                    }
-                )
+                changelog_comment = "DNS registrert. "
                 request_body["bib"] = bib.replace("x", "")
-                informasjon += f" {request_body['bib']}-DNS "
             else:
-                request_body["changelog"].append(
-                    {
-                        "timestamp": time_stamp_now,
-                        "user_id": user["username"],
-                        "comment": "Start registrert. ",
-                    }
-                )
-                request_body["bib"] = bib
-                informasjon += f" {bib}-OK "
+                changelog_comment = "Start registrert. "
             i += 1
+            request_body["changelog"] = [
+                {
+                    "timestamp": time_stamp_now,
+                    "user_id": user["username"],
+                    "comment": changelog_comment,
+                }
+            ]
             id = await TimeEventsService().create_time_event(
                 user["token"], request_body
             )
+            informasjon += f" {request_body['bib']}-{changelog_comment}. "
     elif action == "start_check":
         for x in form.keys():
             if x.startswith("form_start_"):
@@ -85,38 +78,34 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
                 if form[x] == "DNS":
                     # register DNS
                     request_body["timing_point"] = "DNS"
-                    request_body["changelog"].append(
-                        {
-                            "timestamp": time_stamp_now,
-                            "user_id": user["username"],
-                            "comment": "DNS registrert. ",
-                        }
-                    )
+                    changelog_comment = "DNS registrert. "
                 else:
                     # register normal start
                     request_body["timing_point"] = "Start"
-                    request_body["changelog"].append(
-                        {
-                            "timestamp": time_stamp_now,
-                            "user_id": user["username"],
-                            "comment": "Start registrert. ",
-                        }
-                    )
+                    changelog_comment = "Start registrert. "
                 i += 1
+                request_body["changelog"] = [
+                    {
+                        "timestamp": time_stamp_now,
+                        "user_id": user["username"],
+                        "comment": changelog_comment,
+                    }
+                ]
                 id = await TimeEventsService().create_time_event(
                     user["token"], request_body
                 )
-                informasjon += f" {request_body['bib']}-{form[x]}. "
+                informasjon += f" {request_body['bib']}-{changelog_comment}. "
     elif action == "finish_bib1":
         request_body["timing_point"] = "Finish"
-        request_body["changelog"].append(
+        request_body["changelog"] = [
             {
                 "timestamp": time_stamp_now,
                 "user_id": user["username"],
                 "comment": "Målpassering registrert. ",
             }
-        )
+        ]
         biblist = form["bib"].rsplit(" ")
+        informasjon = "Målpassering registrert: "
         for bib in biblist:
             request_body["bib"] = bib
             i += 1
@@ -132,13 +121,13 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
                 if _bib.isnumeric():
                     request_body["bib"] = _bib
                     request_body["rank"] = x[11:]
-                    request_body["changelog"].append(
+                    request_body["changelog"] = [
                         {
                             "timestamp": time_stamp_now,
                             "user_id": user["username"],
                             "comment": "{request_body['rank']} plass i mål. ",
                         }
-                    )
+                    ]
                     i += 1
                     id = await TimeEventsService().create_time_event(
                         user["token"], request_body
@@ -154,13 +143,13 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
                 if _place.isnumeric():
                     request_body["bib"] = x[11:]
                     request_body["rank"] = _place
-                    request_body["changelog"].append(
+                    request_body["changelog"] = [
                         {
                             "timestamp": time_stamp_now,
                             "user_id": user["username"],
                             "comment": f"{request_body['rank']} plass i mål. ",
                         }
-                    )
+                    ]
                     i += 1
                     id = await TimeEventsService().create_time_event(
                         user["token"], request_body
@@ -315,24 +304,24 @@ async def update_time_event(user: dict, action: str, form: dict) -> str:
         user["token"], form["id"]
     )
     if "update" in form.keys():
-        request_body["changelog"].append(
+        request_body["changelog"] = [
             {
                 "timestamp": time_stamp_now,
                 "user_id": user["username"],
                 "comment": "Oppdatering - tidligere informasjon: {request_body}. ",
             }
-        )
+        ]
         request_body["timing_point"] = form["timing_point"]
         request_body["registration_time"] = form["registration_time"]
         request_body["rank"] = form["rank"]
     elif "delete" in form.keys():
-        request_body["changelog"].append(
+        request_body["changelog"] = [
             {
                 "timestamp": time_stamp_now,
                 "user_id": user["username"],
                 "comment": "Status set to deleted . ",
             }
-        )
+        ]
         request_body["status"] = "Deleted"
     informasjon = await TimeEventsService().update_time_event(
         user["token"], form["id"], request_body

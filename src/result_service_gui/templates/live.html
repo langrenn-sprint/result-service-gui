@@ -1,7 +1,6 @@
 {% extends "adm_base.html" %}
 {% block titlecontainer %}
-  <div class="w3-10"></div>
-  <div class="w3-80">
+  <div class="w3-container">
 {% endblock %}
 
 {% block titleheader %}
@@ -48,7 +47,6 @@
               <div class="{{ colclass }}">
             {% endif %}
             <table>
-              Results:  {{ heat.results }}
             {% if heat.results|length > 0 %}
               <tr id=headerblack>
                 <td colspan=3>{{ heat.raceclass }}-{{ heat.round }}{{ heat.index }}{{ heat.heat }}</td>
@@ -65,19 +63,19 @@
                   <td>Neste</td>
                 {% endif %}
               </tr>
-              {% for loper in heat.results %}
+              {% for loper in heat.finish_results %}
                     <tr>
-                      <td>{{ loper.place }}</td>
+                      <td>{{ loper.rank }}</td>
                       <td>{{ loper.bib }}</td>
-                      <td>{{ loper.name[:24] }}</td>
-                      <td>{{ loper.club[:8] }}</td>
-                      <td>{{ loper.next_race }}</td>
+                      <td>{{ loper.name }}</td>
+                      <td>{{ loper.club }}</td>
+                      <td>{{ loper.next_race }}-{{ loper.next_race_position }}</td>
                     </tr>
               {% endfor %}
             {% else %}
               <tr id=headerblue>
                 <td colspan=3>{{ heat.raceclass }}-{{ heat.round }}{{ heat.index }}{{ heat.heat }}</td>
-                <td colspan=2>Kl. {{ heat.start_time }}</td>
+                <td colspan=2>Kl. {{ heat.start_time }} (Heat {{ heat.order }})</td>
               </tr>
               <tr id=subheader>
                 <td><div id={{ heat.order }} >Pos</div></td>
@@ -86,7 +84,7 @@
                 <td>Klubb</td>
                 <td></td>
                </tr>
-               {% for loper in heat.startliste %}
+               {% for loper in heat.start_entries %}
                      <tr>
                        <td>{{ loper.starting_position }}</td>
                        <td>{{ loper.bib }}</td>

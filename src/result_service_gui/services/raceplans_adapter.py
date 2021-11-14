@@ -142,18 +142,15 @@ class RaceplansAdapter:
                     )
         return race
 
-    async def get_race_by_class(
+    async def get_races_by_racesclass(
         self, token: str, event_id: str, valgt_klasse: str
-    ) -> dict:
-        """Get all races function."""
-        races = await RaceplansAdapter().get_all_races(token, event_id)
-        for race in races:
+    ) -> list:
+        """Get all get_races_by_racesclass function."""
+        races = []
+        _tmp_races = await RaceplansAdapter().get_all_races(token, event_id)
+        for race in _tmp_races:
             if race["raceclass"] == valgt_klasse:
-                return race
-        # no match on class - raise error
-        logging.error(f"get_race_by_class, no races found for {valgt_klasse}")
-        raise web.HTTPBadRequest(reason=f"Ingen løp funnet for {valgt_klasse}.")
-
+                races.append(race)
         return races
 
     async def update_raceplan(self, token: str, id: str, new_data: dict) -> int:

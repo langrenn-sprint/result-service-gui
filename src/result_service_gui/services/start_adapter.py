@@ -18,7 +18,7 @@ class StartAdapter:
 
     async def generate_startlist_for_event(self, token: str, event_id: str) -> str:
         """Generate new start_list function."""
-        id = ""
+        informasjon = ""
         headers = MultiDict(
             {
                 hdrs.AUTHORIZATION: f"Bearer {token}",
@@ -35,6 +35,7 @@ class StartAdapter:
                     logging.debug(f"generate_startlist_for_event - got response {resp}")
                     location = resp.headers[hdrs.LOCATION]
                     id = location.split(os.path.sep)[-1]
+                    informasjon = f"Suksess! Opprettet startlister. Id: {id}"
                 else:
                     logging.error(
                         f"generate_startlist_for_event failed - {resp.status}"
@@ -43,7 +44,7 @@ class StartAdapter:
                         reason="Generate_startlist_for_event failed."
                     )
 
-        return id
+        return informasjon
 
     async def get_start_entry_by_id(
         self, token: str, race_id: str, start_id: str
