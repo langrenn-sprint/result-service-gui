@@ -86,7 +86,7 @@ class TimeEventsService:
                 token, time_event
             )
 
-        if time_event["timing_point"] == "Finish":
+        if time_event["timing_point"] == "Start":
             # just register start - nothing more to enrich
             pass
         elif time_event["timing_point"] == "Finish":
@@ -113,7 +113,7 @@ class TimeEventsService:
                 start_list = await StartAdapter().get_all_starts_by_event(
                     token, time_event["event_id"]
                 )
-
+                logging.info(f"Startlist id: {start_list[0]['id']}")
                 next_race = await RaceplansAdapter().get_race_by_id(
                     token, time_event["next_race_id"]
                 )

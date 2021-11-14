@@ -48,39 +48,16 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
     }
 
     i = 0
-    if action == "start_bib":
+    if action == "start":
         # register start
-        request_body["timing_point"] = "Start"
-        biblist = form["bib"].rsplit(" ")
-        for bib in biblist:
-            if bib.count("x") > 0:
-                request_body["timing_point"] = "DNS"
-                changelog_comment = "DNS registrert. "
-                request_body["bib"] = bib.replace("x", "")
-            else:
-                changelog_comment = "Start registrert. "
-            i += 1
-            request_body["changelog"] = [
-                {
-                    "timestamp": time_stamp_now,
-                    "user_id": user["username"],
-                    "comment": changelog_comment,
-                }
-            ]
-            id = await TimeEventsService().create_time_event(
-                user["token"], request_body
-            )
-            informasjon += f" {request_body['bib']}-{changelog_comment}. "
-    elif action == "start_check":
-        for x in form.keys():
-            if x.startswith("form_start_"):
-                request_body["bib"] = x[11:]
-                if form[x] == "DNS":
-                    # register DNS
+        if "bib" in form.keys():
+            biblist = form["bib"].rsplit(" ")
+            for bib in biblist:
+                if bib.count("x") > 0:
                     request_body["timing_point"] = "DNS"
                     changelog_comment = "DNS registrert. "
+                    request_body["bib"] = bib.replace("x", "")
                 else:
-                    # register normal start
                     request_body["timing_point"] = "Start"
                     changelog_comment = "Start registrert. "
                 i += 1
@@ -95,6 +72,30 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
                     user["token"], request_body
                 )
                 informasjon += f" {request_body['bib']}-{changelog_comment}. "
+        else:
+            for x in form.keys():
+                if x.startswith("form_start_"):
+                    request_body["bib"] = x[11:]
+                    if form[x] == "DNS":
+                        # register DNS
+                        request_body["timing_point"] = "DNS"
+                        changelog_comment = "DNS registrert. "
+                    else:
+                        # register normal start
+                        request_body["timing_point"] = "Start"
+                        changelog_comment = "Start registrert. "
+                    i += 1
+                    request_body["changelog"] = [
+                        {
+                            "timestamp": time_stamp_now,
+                            "user_id": user["username"],
+                            "comment": changelog_comment,
+                        }
+                    ]
+                    id = await TimeEventsService().create_time_event(
+                        user["token"], request_body
+                    )
+                    informasjon += f" {request_body['bib']}-{changelog_comment}. "
     elif action == "finish_bib1":
         request_body["timing_point"] = "Finish"
         request_body["changelog"] = [
@@ -276,7 +277,11 @@ async def get_races_for_live_view(
     races = await RaceplansAdapter().get_all_races(user["token"], event_id)
     for race in races:
         # from heat number (order) if selected
-        if (valgt_heat != 0) and (race["order"] > valgt_heat) and (i < number_of_races):
+        if (
+            (valgt_heat != 0)
+            and (race["order"] >= valgt_heat)
+            and (i < number_of_races)
+        ):
             race["next_race"] = get_qualification_text(race)
             race["start_time"] = race["start_time"][-8:]
             filtered_racelist.append(race)

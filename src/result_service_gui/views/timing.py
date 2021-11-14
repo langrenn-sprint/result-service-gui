@@ -40,7 +40,7 @@ class Timing(web.View):
         try:
             valgt_heat = int(self.request.rel_url.query["heat"])
         except Exception:
-            valgt_heat = 0
+            valgt_heat = 1
 
         try:
             user = await check_login(self)
@@ -53,14 +53,18 @@ class Timing(web.View):
                 user["token"], event_id
             )
 
-            races = await get_races_for_live_view(user, event_id, valgt_heat, 8)
+            races = await get_races_for_live_view(user, event_id, valgt_heat, 3)
 
             if len(races) > 0:
+                valgt_heat = races[0]["order"]
+                logging.info(races[0]["order"])
                 for race in races:
                     # get start list details
                     race["startliste"] = await get_enchiced_startlist(
                         user, race["id"], race["start_entries"]
                     )
+            else:
+                informasjon = "Fant ingen heat. Velg på nytt."
 
             valgt_klasse = ""
 
