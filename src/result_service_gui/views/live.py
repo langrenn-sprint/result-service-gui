@@ -33,8 +33,7 @@ class Live(web.View):
             event = await get_event(user, event_id)
 
             races = []
-            raceplan_summary = []
-            colseparators = []
+            colseparators = list[str]
             colclass = "w3-half"
 
             try:
@@ -96,7 +95,6 @@ class Live(web.View):
                     "colclass": colclass,
                     "raceclasses": raceclasses,
                     "races": races,
-                    "raceplan_summary": raceplan_summary,
                     "username": user["username"],
                 },
             )
