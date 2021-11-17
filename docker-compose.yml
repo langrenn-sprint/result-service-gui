@@ -2,11 +2,10 @@ version: '3'
 services:
   result-service-gui:
     build: .
-    image: gcr.io/langrenn-sprint/result-service-gui:test
+    image: ghcr.io/langrenn-sprint/result-service-gui:test
     ports:
       - "8090:8080"
     environment:
-      - JWT_SECRET=${JWT_SECRET}
       - ADMIN_USERNAME=${ADMIN_USERNAME}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - HOST_PORT=8080
@@ -21,7 +20,7 @@ services:
     depends_on:
       - "event-service"
   event-service:
-    image: gcr.io/langrenn-sprint/event-service:latest
+    image: ghcr.io/langrenn-sprint/event-service:latest
     ports:
       - "8082:8080"
     environment:
@@ -38,7 +37,7 @@ services:
     depends_on:
       - "mongodb"
   race-service:
-    image: gcr.io/langrenn-sprint/race-service:latest
+    image: ghcr.io/langrenn-sprint/race-service:latest
     ports:
       - "8088:8080"
     environment:
@@ -57,7 +56,7 @@ services:
     depends_on:
       - "mongodb"
   user-service:
-    image: gcr.io/langrenn-sprint/user-service:latest
+    image: ghcr.io/langrenn-sprint/user-service:latest
     ports:
       - "8086:8080"
     environment:
