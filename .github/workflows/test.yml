@@ -1,0 +1,36 @@
+name: Install, build and test
+
+on:
+  pull_request:
+    types: [ready_for_review, opened, reopened, synchronize]
+    branches:
+      - main
+
+jobs:
+  install-build-and-test:
+    name: Install, build and test
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.draft == false
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python 3.9
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.9
+          architecture: x64
+
+      - name: Install dependencies
+        run: |-
+          pipx install poetry==1.1.11
+          pipx install nox==2021.10.1
+          pipx inject nox nox-poetry
+
+      - name: Build image and test with nox
+        run: |-
+          nox
+        env:
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          ADMIN_USERNAME: ${{ secrets.ADMIN_USERNAME }}
+          ADMIN_PASSWORD: ${{ secrets.ADMIN_PASSWORD }}
