@@ -33,7 +33,7 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
     time_stamp_now = f"{time_now.strftime('%Y')}-{time_now.strftime('%m')}-{time_now.strftime('%d')}T{time_now.strftime('%X')}"
 
     request_body = {
-        "bib": "",
+        "bib": 0,
         "event_id": form["event_id"],
         "race": form["race"],
         "race_id": form["race_id"],
@@ -50,17 +50,17 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
     i = 0
     if action == "start":
         # register start
-        if "bib" in form.keys():
+        if p in form.keys():
             biblist = form["bib"].rsplit(" ")
             for bib in biblist:
                 if bib.count("x") > 0:
                     request_body["timing_point"] = "DNS"
                     changelog_comment = "DNS registrert. "
-                    request_body["bib"] = bib.replace("x", "")
+                    request_body["bib"] = int(bib.replace("x", ""))
                 else:
                     request_body["timing_point"] = "Start"
                     changelog_comment = "Start registrert. "
-                    request_body["bib"] = bib
+                    request_body["bib"] = int(bib)
                 i += 1
                 request_body["changelog"] = [
                     {
@@ -76,7 +76,7 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
         else:
             for x in form.keys():
                 if x.startswith("form_start_"):
-                    request_body["bib"] = x[11:]
+                    request_body["bib"] = int(x[11:])
                     if form[x] == "DNS":
                         # register DNS
                         request_body["timing_point"] = "DNS"
@@ -109,7 +109,7 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
         biblist = form["bib"].rsplit(" ")
         informasjon = "Målpassering registrert: "
         for bib in biblist:
-            request_body["bib"] = bib
+            request_body["bib"] = int(bib)
             i += 1
             id = await TimeEventsService().create_time_event(
                 user["token"], request_body
@@ -121,7 +121,7 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
             if x.startswith("form_place_"):
                 _bib = form[x]
                 if _bib.isnumeric():
-                    request_body["bib"] = _bib
+                    request_body["bib"] = int(_bib)
                     request_body["rank"] = x[11:]
                     request_body["changelog"] = [
                         {
@@ -143,7 +143,7 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
             if x.startswith("form_place_"):
                 _place = form[x]
                 if _place.isnumeric():
-                    request_body["bib"] = x[11:]
+                    request_body["bib"] = int(x[11:])
                     request_body["rank"] = _place
                     request_body["changelog"] = [
                         {

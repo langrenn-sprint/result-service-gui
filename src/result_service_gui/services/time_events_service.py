@@ -19,7 +19,7 @@ class TimeEventsService:
         i = 0
         time_now = datetime.datetime.now()
         time_event = {
-            "bib": "",
+            "bib": 0,
             "event_id": event_id,
             "race": "",
             "race_id": "",

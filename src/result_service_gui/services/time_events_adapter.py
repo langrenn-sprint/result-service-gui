@@ -26,14 +26,6 @@ class TimeEventsAdapter:
                 hdrs.AUTHORIZATION: f"Bearer {token}",
             }
         )
-        # ensure isnumeric
-        if time_event["bib"].isnumeric():
-            time_event["bib"] = int(time_event["bib"])
-        else:
-            logging.error("create_time_event failed  - BIB is not numeric.")
-            raise web.HTTPBadRequest(
-                reason="Create time_event failed - BIB is not numeric."
-            )
 
         request_body = copy.deepcopy(time_event)
 
