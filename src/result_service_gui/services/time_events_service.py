@@ -91,7 +91,7 @@ class TimeEventsService:
             pass
         elif time_event["timing_point"] == "Finish":
             # 3. Get next race from template
-            id2 = ""
+            id2 = 0
             next_start_template = {}
             next_start_entries = await TimeEventsAdapter().get_time_events_by_race_id(
                 token, time_event["race_id"]

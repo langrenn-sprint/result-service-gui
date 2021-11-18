@@ -163,7 +163,7 @@ class StartAdapter:
                     )
         return starts
 
-    async def create_start_entry(self, token: str, new_start: dict) -> str:
+    async def create_start_entry(self, token: str, new_start: dict) -> int:
         """Add one start to the start_list."""
         headers = {
             hdrs.CONTENT_TYPE: "application/json",

@@ -50,7 +50,7 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
     i = 0
     if action == "start":
         # register start
-        if p in form.keys():
+        if "bib" in form.keys():
             biblist = form["bib"].rsplit(" ")
             for bib in biblist:
                 if bib.count("x") > 0:
