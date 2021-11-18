@@ -1,68 +1,97 @@
 [tool.poetry]
-name = "result-service-gui"
-version = "0.1.0"
-description = "Webserver serving startlists and results"
 authors = ["Stig B. Dørmænen <stigbd@gmail.com>", "Heming Harnæs <heming.harnaes@gmail.com"]
-license = "Apache-2.0"
-readme = "README.md"
-homepage = "https://github.com/langrenn-sprint"
-repository = "https://github.com/langrenn-sprint/result-service-gui"
-classifiers=[
+classifiers = [
   "Programming Language :: Python :: 3",
   "License :: OSI Approved :: Apache Software License",
   "Operating System :: OS Independent",
 ]
+description = "An API for admin of sporting events"
+homepage = "https://github.com/langrenn-sprint/race-service"
+license = "Apache-2.0"
+name = "result_service_gui"
+readme = "README.md"
+repository = "https://github.com/langrenn-sprint/race-service"
+version = "0.1.0"
+
 [tool.poetry.dependencies]
-python = "^3.7  "
-gunicorn = "^20.0.4"
-aiohttp = "^3.7.2"
-python-dotenv = "^0.15.0"
-requests = "^2.25.0"
-aiohttp-jinja2 = "^1.4.2"
-motor = "^2.3.0"
-aioresponses = "^0.7.2"
 PyJWT = "^2.1.0"
-multidict = "^5.1.0"
-jwt = "^1.2.0"
+aiodns = "^3.0.0"
+aiohttp = "^3.7.2"
+aiohttp-jinja2 = "^1.4.2"
+aiohttp-middlewares = "^1.1.0"
 aiohttp-session = "^2.9.0"
+cchardet = "^2.1.7"
+certifi = "^2021.5.30"
+dataclasses-json = "^0.5.5"
+gunicorn = "^20.0.4"
+marshmallow = "^3.13.0"
+motor = "^2.4.0"
+multidict = "^5.2.0"
+python = ">=3.7,<3.11"
+python-dotenv = "^0.19.0"
+cryptography = "^35.0.0"
 
 [tool.poetry.dev-dependencies]
-pytest = "^6.1.1"
-coverage = {extras = ["toml"], version = "^5.3"}
-pytest-dotenv = "^0.5.2"
-pytest-docker = "^0.10.1"
-pytest-cov = "^2.10.1"
+Pygments = "^2.10.0"
+aiohttp-devtools = "^0.13.1"
+aioresponses = "^0.7.2"
+black = "^21.5b2"
+codecov = "^2.1.10"
+coverage = "^6.0.2"
+docker = "^5.0.0"
 docker-compose = "^1.27.4"
-black = "^20.8b1"
-flake8 = "^3.8.4"
+flake8 = "^4.0.1"
+flake8-annotations = "^2.4.1"
 flake8-bandit = "^2.1.2"
 flake8-black = "^0.2.1"
-flake8-bugbear = "^20.1.4"
+flake8-bugbear = "^21.4.3"
 flake8-docstrings = "^1.5.0"
+flake8-eradicate = "^1.2.0"
 flake8-import-order = "^0.18.1"
-pep8-naming = "^0.11.1"
-safety = "^1.9.0"
-mypy = "^0.790"
-flake8-annotations = "^2.4.1"
-codecov = "^2.1.10"
-pytest-mock = "^3.3.1"
+mypy = "^0.910"
+pep8-naming = "^0.12.1"
+pytest = "^6.1.1"
 pytest-aiohttp = "^0.3.0"
-aiohttp-devtools = "^0.13.1"
-pytest-asyncio = "^0.14.0"
-aioresponses = "^0.7.2"
+pytest-asyncio = "^0.16.0"
+pytest-cov = "^3.0.0"
+pytest-docker = "^0.10.1"
+pytest-mock = "^3.3.1"
+requests = "^2.25.1"
+safety = "^1.9.0"
 
 [tool.coverage.paths]
 source = ["src", "*/site-packages"]
 
 [tool.coverage.run]
 branch = false
+omit = [
+  "*gunicorn_config.py",
+]
+
 source = ["result_service_gui"]
-omit = ["*gunicorn_config.py"]
 
 [tool.coverage.report]
-show_missing = true
 fail_under = 100
+show_missing = true
+
+[tool.mypy]
+pretty = true
+show_column_numbers = true
+show_error_codes = true
+show_error_context = true
+strict = false
+warn_unreachable = true
+
+[[tool.mypy.overrides]]
+ignore_missing_imports = true
+module = [
+  "gunicorn.*",
+  "requests.*",
+  "motor.*",
+  "pytest_mock",
+  "aioresponses.*",
+]
 
 [build-system]
-requires = ["poetry>=0.12"]
-build-backend = "poetry.masonry.api"
+build-backend = "poetry.core.masonry.api"
+requires = ["poetry-core>=1.0.0"]

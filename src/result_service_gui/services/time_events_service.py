@@ -228,7 +228,6 @@ async def calculate_next_start_entry(
     next_race_count = len(next_race_candidates)
     if next_race_count > 0:
         # estimated rank from previous round is:
-        # no_of_previous_heat*(rank-1) + rank
         previous_heat_rank = int(time_event["rank_qualified"])
         previous_heat_number = int(previous_race["heat"])
         previous_round_rank = (

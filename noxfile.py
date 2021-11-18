@@ -1,23 +1,25 @@
 """Nox sessions."""
-import tempfile
+import sys
 
 import nox
-from nox.sessions import Session
-import nox_poetry  # noqa: F401
+from nox_poetry import Session, session
 
 package = "result_service_gui"
 locations = "src", "tests", "noxfile.py"
+nox.options.envdir = ".cache"
+nox.options.reuse_existing_virtualenvs = True
 nox.options.stop_on_first_error = True
 nox.options.sessions = (
-    "black",
     "lint",
     "mypy",
     "pytype",
+    "safety",
+    "integration_tests",
     "contract_tests",
 )
 
 
-@nox.session(python=["3.7", "3.9"])
+@session
 def integration_tests(session: Session) -> None:
     """Run the integration test suite."""
     args = session.posargs or ["--cov"]
@@ -28,19 +30,29 @@ def integration_tests(session: Session) -> None:
         "pytest-cov",
         "pytest-mock",
         "pytest-aiohttp",
-        "aioresponses",
         "requests",
+        "aioresponses",
+        "pygments",
     )
     session.run(
         "pytest",
         "-m integration",
-        "-rA",
+        "-rF",
         *args,
-        env={},
+        env={
+            "CONFIG": "test",
+            "JWT_SECRET": "secret",
+            "ADMIN_USERNAME": "admin",
+            "ADMIN_PASSWORD": "password",
+            "EVENTS_HOST_SERVER": "events.example.com",
+            "EVENTS_HOST_PORT": "8081",
+            "USERS_HOST_SERVER": "users.example.com",
+            "USERS_HOST_PORT": "8081",
+        },
     )
 
 
-@nox.session(python=["3.7", "3.9"])
+@session
 def contract_tests(session: Session) -> None:
     """Run the contract test suite."""
     args = session.posargs
@@ -51,17 +63,31 @@ def contract_tests(session: Session) -> None:
         "pytest_mock",
         "pytest-asyncio",
         "requests",
+        "aioresponses",
+        "pygments",
     )
     session.run(
         "pytest",
         "-m contract",
         "-rA",
         *args,
-        env={},
+        env={
+            "CONFIG": "test",
+            "ADMIN_USERNAME": "admin",
+            "ADMIN_PASSWORD": "password",
+            "EVENTS_HOST_SERVER": "localhost",
+            "EVENTS_HOST_PORT": "8081",
+            "USERS_HOST_SERVER": "localhost",
+            "USERS_HOST_PORT": "8082",
+            "JWT_EXP_DELTA_SECONDS": "60",
+            "DB_USER": "event-service",
+            "DB_PASSWORD": "password",
+            "LOGGING_LEVEL": "INFO",
+        },
     )
 
 
-@nox.session(python=["3.7", "3.9"])
+@session
 def black(session: Session) -> None:
     """Run black code formatter."""
     args = session.posargs or locations
@@ -69,7 +95,7 @@ def black(session: Session) -> None:
     session.run("black", *args)
 
 
-@nox.session(python=["3.7", "3.9"])
+@session
 def lint(session: Session) -> None:
     """Lint using flake8."""
     args = session.posargs or locations
@@ -83,37 +109,31 @@ def lint(session: Session) -> None:
         "flake8-import-order",
         "darglint",
         "flake8-assertive",
-        "pep8-naming",
+        "flake8-eradicate",
     )
     session.run("flake8", *args)
 
 
-@nox.session(python=["3.7", "3.9"])
+@session
 def safety(session: Session) -> None:
     """Scan dependencies for insecure packages."""
-    with tempfile.NamedTemporaryFile() as requirements:
-        session.run(
-            "poetry",
-            "export",
-            "--dev",
-            "--format=requirements.txt",
-            "--without-hashes",
-            f"--output={requirements.name}",
-            external=True,
-        )
-        session.install("safety")
-        session.run("safety", "check", f"--file={requirements.name}", "--full-report")
+    requirements = session.poetry.export_requirements()
+    session.install("safety")
+    session.run("safety", "check", "--full-report", f"--file={requirements}")
 
 
-@nox.session(python=["3.7", "3.9"])
+@session
 def mypy(session: Session) -> None:
     """Type-check using mypy."""
-    args = session.posargs or locations
-    session.install("mypy")
+    args = session.posargs or ["--install-types", "--non-interactive", "src", "tests"]
+    session.install(".")
+    session.install("mypy", "pytest")
     session.run("mypy", *args)
+    if not session.posargs:
+        session.run("mypy", f"--python-executable={sys.executable}", "noxfile.py")
 
 
-@nox.session(python="3.7")
+@session(python="3.7")
 def pytype(session: Session) -> None:
     """Run the static type checker using pytype."""
     args = session.posargs or ["--disable=import-error", *locations]
@@ -121,7 +141,7 @@ def pytype(session: Session) -> None:
     session.run("pytype", *args)
 
 
-@nox.session(python=["3.7", "3.9"])
+@session
 def coverage(session: Session) -> None:
     """Upload coverage data."""
     session.install("coverage[toml]", "codecov")
