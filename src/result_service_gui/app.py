@@ -57,9 +57,9 @@ async def create_app() -> web.Application:
     # Set up logging
     logging.basicConfig(level=LOGGING_LEVEL)
     # Set up static path
-    static_path = os.path.join(os.getcwd(), "result_service_gui/static")
+    static_path = os.path.join(os.getcwd(), "src/result_service_gui/static")
     # Set up template path
-    template_path = os.path.join(os.getcwd(), "result_service_gui/templates")
+    template_path = os.path.join(os.getcwd(), "src/result_service_gui/templates")
     aiohttp_jinja2.setup(
         app,
         enable_async=True,
