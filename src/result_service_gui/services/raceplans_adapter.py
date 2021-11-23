@@ -43,9 +43,9 @@ class RaceplansAdapter:
     async def generate_raceplan(self, token: str, event_id: str) -> int:
         """Generate classes based upon registered contestants."""
         headers = MultiDict(
-            {
-                hdrs.AUTHORIZATION: f"Bearer {token}",
-            }
+            [
+                (hdrs.AUTHORIZATION, f"Bearer {token}"),
+            ]
         )
         request_body = {"event_id": event_id}
         url = f"{RACE_SERVICE_URL}/raceplans/generate-raceplan-for-event"
@@ -67,9 +67,9 @@ class RaceplansAdapter:
     async def get_all_raceplans(self, token: str, event_id: str) -> List:
         """Get all raceplans for event function."""
         headers = MultiDict(
-            {
-                hdrs.AUTHORIZATION: f"Bearer {token}",
-            }
+            [
+                (hdrs.AUTHORIZATION, f"Bearer {token}"),
+            ]
         )
         raceplans = []
         async with ClientSession() as session:
@@ -93,9 +93,9 @@ class RaceplansAdapter:
     async def get_all_races(self, token: str, event_id: str) -> List:
         """Get all races for event function."""
         headers = MultiDict(
-            {
-                hdrs.AUTHORIZATION: f"Bearer {token}",
-            }
+            [
+                (hdrs.AUTHORIZATION, f"Bearer {token}"),
+            ]
         )
         races = []
         async with ClientSession() as session:
@@ -119,9 +119,9 @@ class RaceplansAdapter:
     async def get_race_by_id(self, token: str, race_id: str) -> dict:
         """Get one race for event function."""
         headers = MultiDict(
-            {
-                hdrs.AUTHORIZATION: f"Bearer {token}",
-            }
+            [
+                (hdrs.AUTHORIZATION, f"Bearer {token}"),
+            ]
         )
         race = {}
         async with ClientSession() as session:
@@ -157,10 +157,10 @@ class RaceplansAdapter:
         """Update klasser function."""
         returncode = 201
         headers = MultiDict(
-            {
-                hdrs.CONTENT_TYPE: "application/json",
-                hdrs.AUTHORIZATION: f"Bearer {token}",
-            }
+            [
+                (hdrs.CONTENT_TYPE, "application/json"),
+                (hdrs.AUTHORIZATION, f"Bearer {token}"),
+            ]
         )
         async with ClientSession() as session:
             async with session.put(

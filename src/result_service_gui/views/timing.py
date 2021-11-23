@@ -109,9 +109,13 @@ class Timing(web.View):
 
             # Create new deltakere
             if "control" == action:
-                informasjon = await update_time_event(user, action, form)
+                informasjon = await update_time_event(
+                    user, action, form  # type: ignore
+                )
             else:
-                informasjon = await create_time_event(user, action, form)
+                informasjon = await create_time_event(
+                    user, action, form  # type: ignore
+                )
         except Exception as e:
             logging.error(f"Error: {e}")
             informasjon = f"Det har oppstått en feil - {e.args}."

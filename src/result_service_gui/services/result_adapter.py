@@ -19,9 +19,9 @@ class ResultAdapter:
     async def get_all_results(self, token: str, event_id: str) -> List:
         """Get all results - lap time or heat place function."""
         headers = MultiDict(
-            {
-                hdrs.AUTHORIZATION: f"Bearer {token}",
-            }
+            [
+                (hdrs.AUTHORIZATION, f"Bearer {token}"),
+            ]
         )
         results = []
         async with ClientSession() as session:

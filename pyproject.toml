@@ -22,6 +22,7 @@ aiohttp-middlewares = "^1.1.0"
 aiohttp-session = "^2.9.0"
 cchardet = "^2.1.7"
 certifi = "^2021.5.30"
+cryptography = "^35.0.0"
 dataclasses-json = "^0.5.5"
 gunicorn = "^20.0.4"
 marshmallow = "^3.13.0"
@@ -29,7 +30,6 @@ motor = "^2.4.0"
 multidict = "^5.2.0"
 python = ">=3.7,<3.11"
 python-dotenv = "^0.19.0"
-cryptography = "^35.0.0"
 
 [tool.poetry.dev-dependencies]
 Pygments = "^2.10.0"
@@ -67,7 +67,6 @@ branch = false
 omit = [
   "*gunicorn_config.py",
 ]
-
 source = ["result_service_gui"]
 
 [tool.coverage.report]
@@ -90,6 +89,7 @@ module = [
   "motor.*",
   "pytest_mock",
   "aioresponses.*",
+  "aiohttp_session.*",
 ]
 
 [build-system]
