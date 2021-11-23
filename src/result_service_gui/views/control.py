@@ -1,4 +1,4 @@
-"""Resource module for start resources."""
+"""Resource module for control resources."""
 import logging
 import os
 
@@ -11,10 +11,8 @@ from result_service_gui.services import (
 )
 from .utils import (
     check_login,
-    create_time_event,
-    get_enchiced_startlist,
     get_event,
-    get_races_for_live_view,
+    update_time_event,
 )
 
 EVENT_GUI_HOST_SERVER = os.getenv("EVENT_GUI_HOST_SERVER", "localhost")
@@ -22,8 +20,8 @@ EVENT_GUI_HOST_PORT = os.getenv("EVENT_GUI_HOST_PORT", "8080")
 EVENT_GUI_URL = f"http://{EVENT_GUI_HOST_SERVER}:{EVENT_GUI_HOST_PORT}"
 
 
-class Timing(web.View):
-    """Class representing the start view."""
+class Control(web.View):
+    """Class representing the control view."""
 
     async def get(self) -> web.Response:
         """Get route function that return the passeringer page."""
@@ -56,26 +54,12 @@ class Timing(web.View):
                 user["token"], event_id
             )
 
-            races = await get_races_for_live_view(user, event_id, valgt_heat, 1)
-
-            if len(races) > 0:
-                valgt_heat = races[0]["order"]
-                for race in races:
-                    # get start list details
-                    race["startliste"] = await get_enchiced_startlist(
-                        user, race["id"], race["start_entries"]
-                    )
-            else:
-                informasjon = "Fant ingen heat. Velg på nytt."
-
-            valgt_klasse = ""
-
             # get passeringer
             passeringer = await get_passeringer(user["token"], event_id, action)
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
-                "timing.html",
+                "control.html",
                 self.request,
                 {
                     "action": action,
@@ -86,10 +70,8 @@ class Timing(web.View):
                     "informasjon": informasjon,
                     "passeringer": passeringer,
                     "raceclasses": raceclasses,
-                    "races": races,
                     "username": user["username"],
                     "valgt_heat": valgt_heat,
-                    "valgt_klasse": valgt_klasse,
                 },
             )
         except Exception as e:
@@ -108,7 +90,8 @@ class Timing(web.View):
             event_id = str(form["event_id"])
             action = str(form["action"])
             valgt_heat = str(form["heat"])
-            informasjon = await create_time_event(user, action, form)
+
+            informasjon = await update_time_event(user, action, form)
         except Exception as e:
             logging.error(f"Error: {e}")
             informasjon = f"Det har oppstått en feil - {e.args}."
