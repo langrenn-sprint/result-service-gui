@@ -5,14 +5,17 @@ Her finner du en enkel webserver som generer html basert på csv-filer i test-da
 ## Slik går du fram for å kjøre dette lokalt
 
 ## Utvikle og kjøre lokalt
+
 ### Krav til programvare
+
 - [pyenv](https://github.com/pyenv/pyenv) (recommended)
 - [poetry](https://python-poetry.org/)
 - [nox](https://nox.thea.codes/en/stable/)
 - [nox-poetry](https://pypi.org/project/nox-poetry/)
 
-### Installere programvare:
-```
+### Installere programvare
+
+```Shell
 % git clone https://github.com/langrenn-sprint/result-service-gui.git
 % cd evnt-service-gui
 % pyenv install 3.9.1
@@ -24,12 +27,14 @@ Her finner du en enkel webserver som generer html basert på csv-filer i test-da
 ```
 
 ## oppdatere
-```
+
+```Shell
 % poetry update / poetry add <module>
 ```
 
 ## Miljøvariable
-```
+
+```Shell
 Du må sette opp ei .env fil med miljøvariable. Eksempel:
 JWT_SECRET=secret
 ADMIN_USERNAME=admin
@@ -47,9 +52,9 @@ USER_SERVICE_HOST=localhost
 USER_SERVICE_PORT=8086
 ```
 
-
 ### Config gcloud
-```
+
+```Shell
 gcloud -v
 gcloud auth login
 gcloud config set project langrenn-sprint
@@ -64,19 +69,25 @@ Denne fila _skal_ ligge i .dockerignore og .gitignore
 ### Kjøre webserver lokalt
 ```
 
-## Start lokal webserver mha aiohttp-devtools(adev):
-```
+## Start lokal webserver mha aiohttp-devtools(adev)
+
+```Shell
 % source .env
 % cd src && poetry run adev runserver -p 8090 result_service_gui
 ```
+
 ### Teste manuelt
-Enten åpne din nettleser på http://localhost:8090/
+
+Enten åpne din nettleser på <http://localhost:8090/>
 
 Eller via curl:
-```
+
+```Shell
 % curl -i http://localhost:8090/
 ```
+
 Når du endrer koden i result_service_gui, vil webserveren laste applikasjonen på nytt autoamtisk ved lagring.
 
-# Referanser
-aiohttp: https://docs.aiohttp.org/
+## Referanser
+
+aiohttp: <https://docs.aiohttp.org/>
