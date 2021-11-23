@@ -15,6 +15,7 @@ nox.options.sessions = (
     "pytype",
     "safety",
     "integration_tests",
+    "contract_tests",
 )
 
 
