@@ -1,0 +1,130 @@
+{% extends "adm_base.html" %}
+{% block titlecontainer %}
+  <div class="w3-10"></div>
+  <div class="w3-80">
+{% endblock %}
+
+{% block titleheader %}
+  Passeringer {{ valgt_klasse }}
+{% endblock %}
+
+{% block refresh %}{% endblock %}
+
+{% block titlemain %}
+  Tidtaker funksjoner {{ action }}
+{% endblock %}
+
+{% block menuitems %}
+  <li class=dropdown id=topborder>
+    <a href=javascript:void(0) class=dropbtn>Velg funksjon</a>
+    <div class=dropdown-content>
+      <a href=timing?event_id={{ event_id }}>Oversikt</a>
+        <a href=timing?event_id={{ event_id }}&action=start>Start</a>
+        <a href=timing?event_id={{ event_id }}&action=lap>Mellomtid</a>
+        <a href=timing?event_id={{ event_id }}&action=finish_bib>Mål - bib</a>
+        <a href=timing?event_id={{ event_id }}&action=finish_place>Mål - place</a>
+        <a href=control?event_id={{ event_id }}&action=control>Kontroll</a>
+        <a href=control?event_id={{ event_id }}&action=template>Videre til</a>
+    </div>
+  </li>
+    <li class=dropdown id=topborder>
+      <a href=javascript:void(0) class=dropbtn>Velg klasse</a>
+      <div class=dropdown-content>
+        <a href=timing?&event_id={{ event_id }}&action={{ action }}>Alle</a>
+        {% for klasse in raceclasses %}
+          <a href=timing?klasse={{ klasse.name }}&event_id={{ event_id }}&action={{ action }}>{{ klasse.ageclass_name }}</a>
+        {% endfor %}
+      </div>
+    </li>
+{% endblock %}
+
+{% block content %}
+  {% if action == "template" %}
+    <div id=spacer></div>
+    <div class="w3-container" id=info>Funnet {{ passeringer|length }} template events</div>
+    <div id=spacer></div>
+      <table>
+         <tr id=headerblue>
+          <td>Heat</td>
+          <td width=60>Plass</td>
+          <td width=250 colspan=2>Videre til (heat - posisjon)</td>
+          <td></td>
+          <td></td>
+          <td>Changelog</td>
+        </tr>
+        {% for passering in passeringer %}
+          <tr>
+            <form action=/timing method=post>
+              <td>{{ passering.race }}</td>
+              <td align="center">{{ passering.rank }}</td>
+              <td align=right><input type=text name="next_race" value="{{ passering.next_race }}" size=4></td>
+              <td>-<input type=text name="next_race_position" value="{{ passering.next_race_position }}" size=2></td>
+              <td align=right>
+                <input type="hidden" name="event_id" value="{{ event_id }}">
+                <input type="hidden" name="id" value="{{ passering.id }}">
+                <input type="hidden" name="action" value="{{ action }}">
+                <input type="hidden" name="heat" value="{{ valgt_heat }}">
+                <input type="submit" name="update" value="Oppdater">
+              </td>
+            </form>
+            <td>&nbsp;</td>
+            <td>&nbsp;{{ passering.changelog }}</td>
+          </tr>
+        {% endfor %}
+        <tr>
+          <td id=spacer colspan=8> </td>
+        </tr>
+      </table>
+  {% elif action == "control" %}
+    <div id=spacer></div>
+    <div class="w3-container" id=info>Funnet {{ passeringer|length }} events med error</div>
+    <div id=spacer></div>
+      <table>
+         <tr id=headerblue>
+          <td>Startnr</td>
+          <td>Heat</td>
+          <td>Passeringspunkt</td>
+          <td>Tid</td>
+          <td>Plass</td>
+          <td>Videre til</td>
+          <td>Status</td>
+          <td></td>
+          <td></td>
+          <td>Changelog</td>
+        </tr>
+        {% for passering in passeringer %}
+          <tr>
+            <form action=/timing method=post>
+              <td align=right>{{ passering.bib }}</td>
+              <td>{{ passering.race }}</td>
+              <td><input type=text name="timing_point" value="{{ passering.timing_point }}" size=7></td>
+              <td><input type=text name="registration_time" value="{{ passering.registration_time }}" size=7></td>
+              <td><input type=text name="rank" value="{{ passering.rank }}" size=7></td>
+              <td>{{ passering.next_race }}-{{ passering.next_race_position }}</td>
+              <td>{{ passering.status }}</td>
+              <td align=right>
+                <input type="hidden" name="event_id" value="{{ event_id }}">
+                <input type="hidden" name="id" value="{{ passering.id }}">
+                <input type="hidden" name="action" value="{{ action }}">
+                <input type="hidden" name="heat" value="{{ valgt_heat }}">
+                <input type="submit" name="update" value="Oppdater">
+              </td>
+            </form>
+            <form action=/timing method=post>
+              <td>
+                <input type="hidden" name="event_id" value="{{ event_id }}">
+                <input type="hidden" name="id" value="{{ passering.id }}">
+                <input type="hidden" name="heat" value="{{ valgt_heat }}">
+                <input type="hidden" name="action" value="{{ action }}">
+                <input type="submit" name="delete" value="  Slett  ">
+              </td>
+            </form>
+              <td>&nbsp;{{ passering.changelog }}</td>
+          </tr>
+        {% endfor %}
+        <tr>
+          <td id=spacer colspan=8> </td>
+        </tr>
+      </table>
+  {% endif %}
+{% endblock %}
