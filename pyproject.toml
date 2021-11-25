@@ -5,12 +5,12 @@ classifiers = [
   "License :: OSI Approved :: Apache Software License",
   "Operating System :: OS Independent",
 ]
-description = "An API for admin of sporting events"
-homepage = "https://github.com/langrenn-sprint/race-service"
+description = "An GUI for admin of sporting events"
+homepage = "https://github.com/langrenn-sprint/result-service-gui"
 license = "Apache-2.0"
 name = "result_service_gui"
 readme = "README.md"
-repository = "https://github.com/langrenn-sprint/race-service"
+repository = "https://github.com/langrenn-sprint/result-service-gui"
 version = "0.1.0"
 
 [tool.poetry.dependencies]
