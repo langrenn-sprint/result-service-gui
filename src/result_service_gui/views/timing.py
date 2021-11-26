@@ -107,6 +107,7 @@ class Timing(web.View):
             logging.debug(f"Form {form}")
             event_id = str(form["event_id"])
             action = str(form["action"])
+            valgt_heat = str(form["heat"])
 
             informasjon = await create_time_event(user, action, form)  # type: ignore
         except Exception as e:
@@ -114,7 +115,7 @@ class Timing(web.View):
             informasjon = f"Det har oppstått en feil - {e.args}."
 
         return web.HTTPSeeOther(
-            location=f"/timing?event_id={event_id}&informasjon={informasjon}&action={action}&heat={form('heat')}"
+            location=f"/timing?event_id={event_id}&informasjon={informasjon}&action={action}&heat={valgt_heat}"
         )
 
 

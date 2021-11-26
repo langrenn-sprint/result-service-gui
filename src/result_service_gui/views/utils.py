@@ -97,7 +97,7 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
         request_body["timing_point"] = "Finish"
         # TODO find race id and rank
         if "race_id" not in form.keys():
-            request_body = get_race_info_from_timing(user["token"], request_body)
+            request_body = get_race_info_from_timing(user["token"], request_body)  # type: ignore
         for x in form.keys():
             if x.startswith("form_place_"):
                 _place = form[x]
@@ -112,9 +112,7 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
                         }
                     ]
                     i += 1
-                    id = await TimeEventsService().create_time_event(
-                        user["token"], request_body
-                    )
+                    id = await TimeEventsService().create_time_event(user["token"], request_body)  # type: ignore
                     informasjon += (
                         f" {request_body['bib']}-{request_body['rank']} plass. "
                     )
@@ -352,4 +350,5 @@ async def update_time_event(user: dict, action: str, form: dict) -> str:
 
 
 async def get_race_info_from_timing(token: str, time_event: dict) -> dict:
+    """Register race info event - return event."""
     return time_event
