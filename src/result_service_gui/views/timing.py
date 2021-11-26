@@ -108,21 +108,13 @@ class Timing(web.View):
             event_id = str(form["event_id"])
             action = str(form["action"])
 
-            # Create new deltakere
-            if "control" == action:
-                informasjon = await update_time_event(
-                    user, action, form  # type: ignore
-                )
-            else:
-                informasjon = await create_time_event(
-                    user, action, form  # type: ignore
-                )
+            informasjon = await create_time_event(user, action, form)  # type: ignore
         except Exception as e:
             logging.error(f"Error: {e}")
             informasjon = f"Det har oppstått en feil - {e.args}."
 
         return web.HTTPSeeOther(
-            location=f"/timing?event_id={event_id}&informasjon={informasjon}&action={action}&heat={valgt_heat}"
+            location=f"/timing?event_id={event_id}&informasjon={informasjon}&action={action}&heat={form('heat')}"
         )
 
 
