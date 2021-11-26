@@ -39,8 +39,6 @@ Du må sette opp ei .env fil med miljøvariable. Eksempel:
 JWT_SECRET=secret
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=password
-DB_USER=event-service
-DB_PASSWORD=secret
 EVENT_SERVICE_HOST=localhost
 EVENT_SERVICE_PORT=8082
 FERNET_KEY=23EHUWpP_tpleR_RjuX5hxndWqyc0vO-cjNUMSzbjN4=
