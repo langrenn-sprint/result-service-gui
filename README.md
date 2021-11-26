@@ -71,7 +71,7 @@ Denne fila _skal_ ligge i .dockerignore og .gitignore
 
 ```Shell
 % source .env
-% poetry run adev runserver -p 8090 src/result_service_gui
+% poetry run adev runserver -p 8090 result_service_gui
 ```
 
 ### Teste manuelt

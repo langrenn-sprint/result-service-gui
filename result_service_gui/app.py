@@ -29,6 +29,8 @@ from .views import (
 
 load_dotenv()
 LOGGING_LEVEL = os.getenv("LOGGING_LEVEL", "INFO")
+PROJECT_ROOT = os.path.join(os.getcwd(), "result_service_gui")
+logging.debug(f"PROJECT_ROOT: {PROJECT_ROOT}")
 
 
 async def handler(request) -> web.Response:
@@ -57,21 +59,14 @@ async def create_app() -> web.Application:
 
     # Set up logging
     logging.basicConfig(level=LOGGING_LEVEL)
-    # Set up static path
-    path_prefix = os.getcwd()
-    if path_prefix.find("src") == -1:
-        static_path = os.path.join(os.getcwd(), "src/result_service_gui/static")
-    else:
-        static_path = os.path.join(os.getcwd(), "result_service_gui/static")
     # Set up template path
-    template_path = os.path.join(os.getcwd(), "src/result_service_gui/templates")
+    template_path = os.path.join(PROJECT_ROOT, "templates")
     aiohttp_jinja2.setup(
         app,
         enable_async=True,
         loader=jinja2.FileSystemLoader(template_path),
     )
     logging.debug(f"template_path: {template_path}")
-    logging.debug(f"static_path: {static_path}")
 
     app.add_routes(
         [
@@ -87,7 +82,11 @@ async def create_app() -> web.Application:
             web.view("/resultat", Resultat),
             web.view("/resultat/heat", ResultatHeat),
             web.view("/start", Start),
-            web.static("/static", static_path),
         ]
     )
+    static_dir = os.path.join(PROJECT_ROOT, "static")
+    logging.debug(f"static_dir: {static_dir}")
+
+    app.router.add_static("/static/", path=static_dir, name="static")
+
     return app

@@ -5,7 +5,7 @@ import nox
 from nox_poetry import Session, session
 
 package = "result_service_gui"
-locations = "src", "tests", "noxfile.py"
+locations = "result_service_gui", "tests", "noxfile.py"
 nox.options.envdir = ".cache"
 nox.options.reuse_existing_virtualenvs = True
 nox.options.stop_on_first_error = True
@@ -125,7 +125,12 @@ def safety(session: Session) -> None:
 @session
 def mypy(session: Session) -> None:
     """Type-check using mypy."""
-    args = session.posargs or ["--install-types", "--non-interactive", "src", "tests"]
+    args = session.posargs or [
+        "--install-types",
+        "--non-interactive",
+        "result_service_gui",
+        "tests",
+    ]
     session.install(".")
     session.install("mypy", "pytest")
     session.run("mypy", *args)
