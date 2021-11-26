@@ -107,8 +107,16 @@ class Timing(web.View):
             logging.debug(f"Form {form}")
             event_id = str(form["event_id"])
             action = str(form["action"])
-            valgt_heat = str(form["heat"])
-            informasjon = await create_time_event(user, action, form)
+
+            # Create new deltakere
+            if "control" == action:
+                informasjon = await update_time_event(
+                    user, action, form  # type: ignore
+                )
+            else:
+                informasjon = await create_time_event(
+                    user, action, form  # type: ignore
+                )
         except Exception as e:
             logging.error(f"Error: {e}")
             informasjon = f"Det har oppstått en feil - {e.args}."

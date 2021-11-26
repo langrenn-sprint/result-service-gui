@@ -6,6 +6,7 @@ import time
 
 from aiohttp import web
 import aiohttp_jinja2
+from aiohttp_middlewares import cors_middleware, error_middleware
 from aiohttp_session import get_session, setup
 from aiohttp_session.cookie_storage import EncryptedCookieStorage
 from dotenv import load_dotenv
@@ -47,7 +48,12 @@ async def handler(request) -> web.Response:
 
 async def create_app() -> web.Application:
     """Create an web application."""
-    app = web.Application()
+    app = web.Application(
+        middlewares=[
+            cors_middleware(allow_all=True),
+            error_middleware(),  # default error handler for whole application
+        ]
+    )
 
     # sesson handling - secret_key must be 32 url-safe base64-encoded bytes
     fernet_key = os.getenv("FERNET_KEY", "23EHUWpP_tpleR_RjuX5hxndWqyc0vO-cjNUMSzbjN4=")
@@ -58,9 +64,9 @@ async def create_app() -> web.Application:
     # Set up logging
     logging.basicConfig(level=LOGGING_LEVEL)
     # Set up static path
-    static_path = os.path.join(os.getcwd(), "result_service_gui/static")
+    static_path = os.path.join(os.getcwd(), "src/result_service_gui/static")
     # Set up template path
-    template_path = os.path.join(os.getcwd(), "result_service_gui/templates")
+    template_path = os.path.join(os.getcwd(), "src/result_service_gui/templates")
     aiohttp_jinja2.setup(
         app,
         enable_async=True,

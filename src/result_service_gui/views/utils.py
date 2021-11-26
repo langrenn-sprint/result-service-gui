@@ -1,6 +1,7 @@
 """Utilities module for gui services."""
 import datetime
 import logging
+from typing import Any
 
 from aiohttp import web
 from aiohttp_session import get_session
@@ -15,7 +16,7 @@ from result_service_gui.services import (
 )
 
 
-async def check_login(self) -> dict:
+async def check_login(self) -> Any:
     """Check loging and return user credentials."""
     session = await get_session(self.request)
     loggedin = UserAdapter().isloggedin(session)

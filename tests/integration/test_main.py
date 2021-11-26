@@ -34,12 +34,12 @@ def mocks(mock_aioresponse: Any) -> Any:
 
 # --- Bad cases ---
 @pytest.mark.integration
-async def test_get_main_page_accept_header_not_supported(
+async def test_get_page_not_found(
     client: _TestClient,
 ) -> None:
     """Should return 406."""
     headers = {hdrs.ACCEPT: "doesnotexist"}
-    resp = await client.get("/", headers=headers)
-    assert resp.status == 406
+    resp = await client.get("/xwq12", headers=headers)
+    assert resp.status == 404
     body = await resp.text()
-    assert "406: Not Acceptable" in body
+    assert "Not Found" in body

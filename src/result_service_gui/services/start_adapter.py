@@ -20,9 +20,9 @@ class StartAdapter:
         """Generate new start_list function."""
         informasjon = ""
         headers = MultiDict(
-            {
-                hdrs.AUTHORIZATION: f"Bearer {token}",
-            }
+            [
+                (hdrs.AUTHORIZATION, f"Bearer {token}"),
+            ]
         )
         request_body = {"event_id": event_id}
         async with ClientSession() as session:
@@ -51,9 +51,9 @@ class StartAdapter:
     ) -> dict:
         """Get one start_entry - lap time or heat place function."""
         headers = MultiDict(
-            {
-                hdrs.AUTHORIZATION: f"Bearer {token}",
-            }
+            [
+                (hdrs.AUTHORIZATION, f"Bearer {token}"),
+            ]
         )
         start_entry = {}
         async with ClientSession() as session:
@@ -81,9 +81,9 @@ class StartAdapter:
     ) -> List:
         """Get all raceplans function."""
         headers = MultiDict(
-            {
-                hdrs.AUTHORIZATION: f"Bearer {token}",
-            }
+            [
+                (hdrs.AUTHORIZATION, f"Bearer {token}"),
+            ]
         )
         raceplans = []
         async with ClientSession() as session:
@@ -112,9 +112,9 @@ class StartAdapter:
     ) -> List:
         """Get all raceplans function."""
         headers = MultiDict(
-            {
-                hdrs.AUTHORIZATION: f"Bearer {token}",
-            }
+            [
+                (hdrs.AUTHORIZATION, f"Bearer {token}"),
+            ]
         )
         raceplans = []
         async with ClientSession() as session:
@@ -140,9 +140,9 @@ class StartAdapter:
     async def get_all_starts_by_event(self, token: str, event_id: str) -> List:
         """Get all starts function."""
         headers = MultiDict(
-            {
-                hdrs.AUTHORIZATION: f"Bearer {token}",
-            }
+            [
+                (hdrs.AUTHORIZATION, f"Bearer {token}"),
+            ]
         )
         starts = []
         async with ClientSession() as session:

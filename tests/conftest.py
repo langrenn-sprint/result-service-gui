@@ -5,12 +5,14 @@ import time
 from typing import Any
 
 from aiohttp.test_utils import TestClient as _TestClient
+from dotenv import load_dotenv
 import pytest
 import requests
 from requests.exceptions import ConnectionError
 
 from result_service_gui import create_app
 
+load_dotenv()
 HOST_PORT = int(env.get("HOST_PORT", "8080"))
 
 
