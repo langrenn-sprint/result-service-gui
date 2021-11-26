@@ -135,11 +135,11 @@ def get_finish_rank(race: dict) -> list:
     finish_rank = []
     results = race["results"]
     if len(results) > 0:
-        logging.info(f"Resultst: {results}")
+        logging.debug(f"Resultst: {results}")
         if "Finish" in results.keys():
             finish_results = results["Finish"]
             if len(finish_results) > 0:
-                logging.info(finish_results.keys())
+                logging.debug(finish_results.keys())
                 if "ranking_sequence" in finish_results.keys():
                     finish_ranks = finish_results["ranking_sequence"]
                     race["finish_results"] = []

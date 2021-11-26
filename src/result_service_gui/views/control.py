@@ -90,7 +90,6 @@ class Control(web.View):
             event_id = str(form["event_id"])
             action = str(form["action"])
             valgt_heat = str(form["heat"])
-
             informasjon = await update_time_event(user, action, form)  # type: ignore
         except Exception as e:
             logging.error(f"Error: {e}")

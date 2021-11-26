@@ -32,6 +32,8 @@
                 <a href="/start?event_id={{ event_id }}">&nbsp;&nbsp;&nbsp;Startlister</a>
                 <a href="/live?event_id={{ event_id }}">&nbsp;&nbsp;&nbsp;Live</a>
                 <a href="/resultat?event_id={{ event_id }}">&nbsp;&nbsp;&nbsp;Resultater</a>
+                <a href="/timing?event_id={{ event_id }}">&nbsp;&nbsp;&nbsp;Tidtaker</a>
+                <a href="/logout">Logg ut</a>
               {% endif %}
             </div>
           </li>
@@ -46,7 +48,6 @@
             <li class=dropdown style="float:right">
               <a href=javascript:void(0) class=dropbtn>{{ username }}</a>
               <div class=dropdown-content>
-                <a href="/timing?event_id={{ event_id }}">Registrer passering</a>
                 <a href="/logout">Logg ut</a>
               </div>
           {% endif %}

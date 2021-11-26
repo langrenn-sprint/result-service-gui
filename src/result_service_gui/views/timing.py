@@ -1,5 +1,6 @@
 """Resource module for start resources."""
 import logging
+import os
 
 from aiohttp import web
 import aiohttp_jinja2
@@ -14,8 +15,11 @@ from .utils import (
     get_enchiced_startlist,
     get_event,
     get_races_for_live_view,
-    update_time_event,
 )
+
+EVENT_GUI_HOST_SERVER = os.getenv("EVENT_GUI_HOST_SERVER", "localhost")
+EVENT_GUI_HOST_PORT = os.getenv("EVENT_GUI_HOST_PORT", "8080")
+EVENT_GUI_URL = f"http://{EVENT_GUI_HOST_SERVER}:{EVENT_GUI_HOST_PORT}"
 
 
 class Timing(web.View):
@@ -36,28 +40,26 @@ class Timing(web.View):
             action = self.request.rel_url.query["action"]
         except Exception:
             action = ""
-            informasjon = f"Velg modus for å se passeringer. {informasjon}"
+            informasjon = f"Velg funksjon. {informasjon}"
         try:
             valgt_heat = int(self.request.rel_url.query["heat"])
         except Exception:
-            valgt_heat = 1
+            valgt_heat = 0
 
         try:
             user = await check_login(self)
             event = await get_event(user, event_id)
 
-            passeringer = []
             colclass = "w3-half"
 
             raceclasses = await RaceclassesAdapter().get_raceclasses(
                 user["token"], event_id
             )
 
-            races = await get_races_for_live_view(user, event_id, valgt_heat, 3)
+            races = await get_races_for_live_view(user, event_id, valgt_heat, 1)
 
             if len(races) > 0:
                 valgt_heat = races[0]["order"]
-                logging.info(races[0]["order"])
                 for race in races:
                     # get start list details
                     race["startliste"] = await get_enchiced_startlist(
@@ -68,10 +70,8 @@ class Timing(web.View):
 
             valgt_klasse = ""
 
-            # get passeringer for klasse
-            passeringer = await TimeEventsAdapter().get_time_events_by_event_id(
-                user["token"], event_id
-            )
+            # get passeringer
+            passeringer = await get_passeringer(user["token"], event_id, action)
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
@@ -82,6 +82,7 @@ class Timing(web.View):
                     "colclass": colclass,
                     "event": event,
                     "event_id": event_id,
+                    "event_gui_url": EVENT_GUI_URL,
                     "informasjon": informasjon,
                     "passeringer": passeringer,
                     "raceclasses": raceclasses,
@@ -121,5 +122,23 @@ class Timing(web.View):
             informasjon = f"Det har oppstått en feil - {e.args}."
 
         return web.HTTPSeeOther(
-            location=f"/timing?event_id={event_id}&informasjon={informasjon}&action={action}"
+            location=f"/timing?event_id={event_id}&informasjon={informasjon}&action={action}&heat={valgt_heat}"
         )
+
+
+async def get_passeringer(token: str, event_id: str, action: str) -> list:
+    """Return list of passeringer for selected action."""
+    passeringer = []
+    if action == "control" or action == "template":
+        tmp_passeringer = await TimeEventsAdapter().get_time_events_by_event_id(
+            token, event_id
+        )
+        for passering in tmp_passeringer:
+            if passering["timing_point"] == "Template":
+                if action == "template":
+                    passeringer.append(passering)
+            elif passering["status"] == "Error":
+                if action == "control":
+                    passeringer.append(passering)
+
+    return passeringer
