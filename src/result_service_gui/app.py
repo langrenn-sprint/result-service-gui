@@ -5,8 +5,8 @@ import os
 import time
 
 from aiohttp import web
-from aiohttp_middlewares import cors_middleware, error_middleware
 import aiohttp_jinja2
+from aiohttp_middlewares import cors_middleware, error_middleware
 from aiohttp_session import get_session, setup
 from aiohttp_session.cookie_storage import EncryptedCookieStorage
 from dotenv import load_dotenv

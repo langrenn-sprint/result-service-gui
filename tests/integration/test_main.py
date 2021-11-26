@@ -42,4 +42,4 @@ async def test_get_page_not_found(
     resp = await client.get("/xwq12", headers=headers)
     assert resp.status == 404
     body = await resp.text()
-    assert "404: Not Found" in body
+    assert "Not Found" in body
