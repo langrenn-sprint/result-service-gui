@@ -1,7 +1,6 @@
 """Package for all services."""
 from .contestants_adapter import ContestantsAdapter
 from .dashboard_adapter import DashboardAdapter
-from .deltakere_service import DeltakereService
 from .events_adapter import EventsAdapter
 from .foto_service import FotoService
 from .kjoreplan_service import KjoreplanService

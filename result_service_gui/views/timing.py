@@ -45,6 +45,10 @@ class Timing(web.View):
             valgt_heat = int(self.request.rel_url.query["heat"])
         except Exception:
             valgt_heat = 0
+        try:
+            valgt_klasse = self.request.rel_url.query["valgt_klasse"]
+        except Exception:
+            valgt_klasse = ""
 
         try:
             user = await check_login(self)
@@ -67,8 +71,6 @@ class Timing(web.View):
                     )
             else:
                 informasjon = "Fant ingen heat. Velg på nytt."
-
-            valgt_klasse = ""
 
             # get passeringer
             passeringer = await get_passeringer(user["token"], event_id, action)

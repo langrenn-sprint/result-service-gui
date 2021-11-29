@@ -10,7 +10,7 @@
 {% block refresh %}60{% endblock %}
 
 {% block titlemain %}
-  Live scroll {{ valgt_startnr }}{{ valgt_klasse }}
+  Live scroll {{ valgt_startnr }} {{ valgt_klasse }}
 {% endblock %}
 
 {% block menuitems %}
@@ -29,8 +29,8 @@
         <a href=live>Velg klasse først</a>
       {% else %}
         <a href=live?klasse={{ valgt_klasse }}&event_id={{ event_id }}>Alle</a>
-        {% for deltaker in deltakere %}
-          <a href=live?klasse={{ valgt_klasse }}&startnr={{ deltaker.Startnr }}&event_id={{ event_id }}>{{ deltaker.Startnr }} {{ deltaker.Navn }}</a>
+        {% for deltaker in contestants %}
+          <a href=live?klasse={{ valgt_klasse }}&startnr={{ deltaker.bib }}&event_id={{ event_id }}>{{ deltaker.bib }} {{ deltaker.first_name }} {{ deltaker.last_name }}</a>
         {% endfor %}
       {% endif %}
     </div>
@@ -64,13 +64,13 @@
                 {% endif %}
               </tr>
               {% for loper in heat.finish_results %}
-                    <tr>
-                      <td>{{ loper.rank }}</td>
-                      <td>{{ loper.bib }}</td>
-                      <td>{{ loper.name }}</td>
-                      <td>{{ loper.club }}</td>
-                      <td>{{ loper.next_race }}-{{ loper.next_race_position }}</td>
-                    </tr>
+                  <tr>
+                    <td>{{ loper.rank }}</td>
+                    <td>{{ loper.bib }}</td>
+                    <td>{{ loper.name }}</td>
+                    <td>{{ loper.club }}</td>
+                    <td>{{ loper.next_race }}-{{ loper.next_race_position }}</td>
+                  </tr>
               {% endfor %}
             {% else %}
               <tr id=headerblue>

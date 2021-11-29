@@ -5,6 +5,7 @@ from aiohttp import web
 import aiohttp_jinja2
 
 from result_service_gui.services import (
+    ContestantsAdapter,
     RaceclassesAdapter,
     RaceplansAdapter,
 )
@@ -33,6 +34,7 @@ class Live(web.View):
             event = await get_event(user, event_id)
 
             races = []
+            contestants = []
             colclass = "w3-half"
 
             try:
@@ -40,18 +42,23 @@ class Live(web.View):
             except Exception:
                 valgt_klasse = ""  # noqa: F841
                 informasjon += "Velg klasse for å se live lister."
-            raceclasses = await RaceclassesAdapter().get_raceclasses(
-                user["token"], event_id
-            )
-
             try:
                 valgt_startnr = self.request.rel_url.query["startnr"]
             except Exception:
                 valgt_startnr = ""
 
+            raceclasses = await RaceclassesAdapter().get_raceclasses(
+                user["token"], event_id
+            )
+
             colseparators = []
             colclass = "w3-third"
-            if valgt_startnr == "" and valgt_klasse != "":
+            if valgt_klasse != "":
+                contestants = (
+                    await ContestantsAdapter().get_all_contestants_by_raceclass(
+                        user["token"], event_id, valgt_klasse
+                    )
+                )
                 # get startlister for klasse
                 _tmp_races = await RaceplansAdapter().get_races_by_racesclass(
                     user["token"], event_id, valgt_klasse
@@ -71,14 +78,10 @@ class Live(web.View):
                             colseparators.append(race["round"])
                             races.append(race)
                 colseparators = get_colseparators(races)
-                if len(races) == 3:
+                if len(colseparators) == 3:
                     colclass = "w3-quart"
                 else:
                     colclass = "w3-third"
-            else:
-                # only selected racer
-
-                valgt_startnr = "Startnr: " + valgt_startnr + ", "
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
@@ -92,6 +95,7 @@ class Live(web.View):
                     "valgt_startnr": valgt_startnr,
                     "colseparators": colseparators,
                     "colclass": colclass,
+                    "contestants": contestants,
                     "raceclasses": raceclasses,
                     "races": races,
                     "username": user["username"],

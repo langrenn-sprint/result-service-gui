@@ -139,22 +139,20 @@ class TimeEventsService:
                 token, time_event["next_race_id"]
             )
 
-            contestants = await ContestantsAdapter().get_contestants_by_bib(
+            contestant = await ContestantsAdapter().get_contestant_by_bib(
                 token, time_event["event_id"], time_event["bib"]
             )
-            if len(contestants) == 1:
-                contestant = contestants[0]
-                # create next start entry
-                next_start_entry = {
-                    "race_id": time_event["next_race_id"],
-                    "startlist_id": start_list[0]["id"],
-                    "bib": time_event["bib"],
-                    "name": f"{contestant['first_name']} {contestant['last_name']}",
-                    "club": contestant["club"],
-                    "scheduled_start_time": next_race["start_time"],
-                    "starting_position": time_event["next_race_position"],
-                    "status": "OK",
-                }
+            # create next start entry
+            next_start_entry = {
+                "race_id": time_event["next_race_id"],
+                "startlist_id": start_list[0]["id"],
+                "bib": time_event["bib"],
+                "name": f"{contestant['first_name']} {contestant['last_name']}",
+                "club": contestant["club"],
+                "scheduled_start_time": next_race["start_time"],
+                "starting_position": time_event["next_race_position"],
+                "status": "OK",
+            }
 
         if len(time_event["id"]) > 0:
             # update existing time event

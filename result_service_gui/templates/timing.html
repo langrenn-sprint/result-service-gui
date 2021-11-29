@@ -19,9 +19,9 @@
     <a href=javascript:void(0) class=dropbtn>Velg funksjon</a>
     <div class=dropdown-content>
       <a href=timing?event_id={{ event_id }}>Oversikt</a>
-        <a href=timing?event_id={{ event_id }}&action=start>Start</a>
-        <a href=timing?event_id={{ event_id }}&action=finish_bib>Mål - bib</a>
-        <a href=timing?event_id={{ event_id }}&action=finish_place>Mål - place</a>
+        <a href=timing?event_id={{ event_id }}&action=start&heat={{ valgt_heat }}>Start</a>
+        <a href=timing?event_id={{ event_id }}&action=finish_bib&heat={{ valgt_heat }}>Mål - bib</a>
+        <a href=timing?event_id={{ event_id }}&action=finish_place&heat={{ valgt_heat }}>Mål - place</a>
         <a href=control?event_id={{ event_id }}&action=control>Kontroll</a>
         <a href=control?event_id={{ event_id }}&action=template>Videre til</a>
     </div>
@@ -162,14 +162,15 @@
                       <input type="radio" name="form_start_{{ start.bib }}" value="DNS"><label for="OK">DNS</label>
                     </td>
                   {% elif action == "finish_place" %}
-                    <td></td>
+                    <td>{{ start.start_status }}</td>
                     <td align=center>{{ start.bib }}</td>
                     <td>
-                      <input type="text" name="form_place_{{ start.bib }}" value="{{ start.rank }}" size="4">
+                      <input type="number" name="form_place_{{ start.bib }}" value="{{ start.finish_rank }}" size="4">
+                      <input type="hidden" name="form_old_place_{{ start.bib }}" value="{{ start.finish_rank }}">
                       <input type="hidden" name="form_finish_event_id_{{ start.bib }}" value="{{ start.finish_event_id }}">
                     </td>
                   {% elif action == "finish_bib" %}
-                    <td></td>
+                    <td>{{ start.start_status }}</td>
                     <td align=center>{{ start.bib }}</td>
                     <td></td>
                   {% endif %}
@@ -178,7 +179,11 @@
                 <td>{{ start.info }}</td>
                 {% if action == "finish_bib" %}
                   <td>{{ start.starting_position }}</td>
-                  <td><input type="text" name="form_place_{{ start.starting_position }}" value="" size="4"></td>
+                  <td>
+                    <input type="number" name="form_rank_{{ start.starting_position }}" value="{{ start.finish_bib }}" size="4">
+                    <input type="hidden" name="form_old_rank_{{ start.starting_position }}" value="{{ start.finish_bib }}" size="4">
+                    <input type="hidden" name="form_finish_event_id_{{ start.starting_position }}" value="{{ start.finish_event_id }}">
+                  </td>
               </tr>
             {% endif %}
           {% endfor %}

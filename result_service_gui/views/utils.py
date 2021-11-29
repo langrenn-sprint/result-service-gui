@@ -48,11 +48,11 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
         "status": "OK",
         "changelog": [],
     }
-
     i = 0
     if action == "start":
-        informasjon += await create_time_event_for_start(user, form, request_body)
-    elif action == "finish_bib1":
+        informasjon += await create_start_time_event(user, form, request_body)
+    # finish "slengere"
+    elif action == "finish":
         request_body["timing_point"] = "Finish"
         request_body["changelog"] = [
             {
@@ -71,21 +71,23 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
             )
             informasjon += f" {bib} "
             logging.debug(f"Registrering: {id} - body: {request_body}")
-    elif action == "finish_bib2":
+    elif action == "finish_bib":
         request_body["timing_point"] = "Finish"
         # TODO - need to delete all old start events
         for x in form.keys():
-            if x.startswith("form_place_"):
-                _bib = form[x]
-                if _bib.isnumeric():
-                    request_body["id"] = form[f"form_finish_event_id_{_bib}"]
-                    request_body["bib"] = int(_bib)
-                    request_body["rank"] = x[11:]
+            if x.startswith("form_rank_"):
+                new_bib = form[x]
+                _rank = x[10:]
+                old_bib = form[f"form_old_rank_{_rank}"]
+                if new_bib.isnumeric() and new_bib != old_bib:
+                    request_body["id"] = form[f"form_finish_event_id_{_rank}"]
+                    request_body["bib"] = int(new_bib)
+                    request_body["rank"] = _rank
                     request_body["changelog"] = [
                         {
                             "timestamp": time_stamp_now,
                             "user_id": user["username"],
-                            "comment": "{request_body['rank']} plass i mål. ",
+                            "comment": f"{request_body['rank']} plass i mål. ",
                         }
                     ]
                     i += 1
@@ -98,15 +100,14 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
                     logging.debug(f"Registrering: {id} - body: {request_body}")
     elif action == "finish_place":
         request_body["timing_point"] = "Finish"
-        # TODO find race id and rank
-        if "race_id" not in form.keys():
-            request_body = await get_race_info_from_timing(user["token"], request_body)  # type: ignore
         for x in form.keys():
             if x.startswith("form_place_"):
-                _place = form[x]
-                if _place.isnumeric():
-                    request_body["bib"] = int(x[11:])
-                    request_body["rank"] = _place
+                _bib = int(x[11:])
+                old_rank = form[f"form_old_place_{_bib}"]
+                new_rank = form[x]
+                if new_rank.isnumeric() and old_rank != new_rank:
+                    request_body["bib"] = _bib
+                    request_body["rank"] = new_rank
                     request_body["changelog"] = [
                         {
                             "timestamp": time_stamp_now,
@@ -124,9 +125,7 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
     return f"Utført {i} registreringer: {informasjon}"
 
 
-async def create_time_event_for_start(
-    user: dict, form: dict, request_body: dict
-) -> str:
+async def create_start_time_event(user: dict, form: dict, request_body: dict) -> str:
     """Extract form data and create time_event for start."""
     i = 0
     informasjon = ""
@@ -192,7 +191,6 @@ async def get_enchiced_startlist(user: dict, race_id: str, start_entries: list) 
     next_race_time_events = await TimeEventsAdapter().get_time_events_by_race_id(
         user["token"], race_id
     )
-
     if len(start_entries) > 0:
         for start_id in start_entries:
             start_entry = await StartAdapter().get_start_entry_by_id(
@@ -210,8 +208,13 @@ async def get_enchiced_startlist(user: dict, race_id: str, start_entries: list) 
                             ] = f"{time_event['next_race']}-{time_event['next_race_position']}"
                 # check if result already registered
                 elif time_event["timing_point"] == "Finish":
+                    # case of register by rank
                     if time_event["bib"] == start_entry["bib"]:
-                        start_entry["rank"] = time_event["rank"]
+                        start_entry["finish_rank"] = time_event["rank"]
+                        start_entry["finish_event_id"] = time_event["id"]
+                    # case of register by bib
+                    if start_entry["starting_position"] == int(time_event["rank"]):
+                        start_entry["finish_bib"] = time_event["bib"]
                         start_entry["finish_event_id"] = time_event["id"]
                 # check if start or DNS is registered
                 elif time_event["timing_point"] == "Start":
@@ -221,26 +224,13 @@ async def get_enchiced_startlist(user: dict, race_id: str, start_entries: list) 
                         ] = f"Start registered at {time_event['registration_time']}"
                 elif time_event["timing_point"] == "DNS":
                     if time_event["bib"] == start_entry["bib"]:
+                        start_entry["start_status"] = "DNS"
                         start_entry[
                             "info"
                         ] = f"DNS registered at {time_event['registration_time']}"
             startlist.append(start_entry)
     else:
-        # get videre til information - loop and simulate result for pos 1 to 8
-        for x in range(1, 9):
-            for template in next_race_time_events:
-                start_entry = {}
-                if template["timing_point"] == "Template":
-                    if int(template["rank"]) == x:
-                        start_entry["race_id"] = race_id
-                        start_entry["starting_position"] = x
-                        if template["next_race"].startswith("Ute"):
-                            start_entry["next_race"] = "Ute"
-                        else:
-                            start_entry[
-                                "next_race"
-                            ] = f"{template['next_race']}-{template['next_race_position']}"
-                        startlist.append(start_entry)
+        startlist = get_next_race_info(next_race_time_events, race_id)
     return startlist
 
 
@@ -252,6 +242,28 @@ async def get_event(user: dict, event_id: str) -> dict:
         event = await EventsAdapter().get_event(user["token"], event_id)
 
     return event
+
+
+def get_next_race_info(next_race_time_events: list, race_id: str) -> list:
+    """Enrich start list with next race info."""
+    startlist = []
+    # get videre til information - loop and simulate result for pos 1 to 8
+    for x in range(1, 9):
+        for template in next_race_time_events:
+            start_entry = {}
+            _rank = template["rank"]
+            if template["timing_point"] == "Template" and _rank.isnumeric():
+                if int(_rank) == x:
+                    start_entry["race_id"] = race_id
+                    start_entry["starting_position"] = x  # type: ignore
+                    if template["next_race"].startswith("Ute"):
+                        start_entry["next_race"] = "Ute"
+                    else:
+                        start_entry[
+                            "next_race"
+                        ] = f"{template['next_race']}-{template['next_race_position']}"
+                    startlist.append(start_entry)
+    return startlist
 
 
 def get_qualification_text(race: dict) -> str:
@@ -367,8 +379,3 @@ async def update_time_event(user: dict, action: str, form: dict) -> str:
     logging.debug(f"Control result: {response}")
     informasjon = f"Control result: Oppdatert - {response}"
     return informasjon
-
-
-async def get_race_info_from_timing(token: str, time_event: dict) -> dict:
-    """Register race info event - return event."""
-    return time_event

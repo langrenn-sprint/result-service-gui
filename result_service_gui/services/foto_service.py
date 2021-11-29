@@ -3,7 +3,7 @@ import datetime
 import logging
 from typing import Any, List
 
-from .deltakere_service import DeltakereService
+from .contestants_adapter import ContestantsAdapter
 from .kjoreplan_service import KjoreplanService
 from .raceclasses_adapter import RaceclassesAdapter
 from .start_adapter import StartAdapter
@@ -186,8 +186,8 @@ async def find_info_from_startnummer(
                 if foundheat != "":
                     nye_tags["Heat"] = foundheat
         # Get klubb and klasse
-        funnetdeltaker = await DeltakereService().get_deltaker_by_startnr(
-            db, startnummer
+        funnetdeltaker = await ContestantsAdapter().get_contestant_by_bib(
+            token, event["id"], startnummer
         )
 
     if "Startnr" in funnetdeltaker:
