@@ -75,9 +75,9 @@
           <td id=spacer colspan=8> </td>
         </tr>
       </table>
-  {% elif action == "control" %}
+  {% elif action == "control" or action == "c" %}
     <div id=spacer></div>
-    <div class="w3-container" id=info>Funnet {{ passeringer|length }} events med error</div>
+    <div class="w3-container" id=info>Funnet {{ passeringer|length }} events med error. (Pro tip: Hvis du vil se alle passeringer, klikk <a href="control?event_id={{ event_id }}&action=c">her</a>)</div>
     <div id=spacer></div>
       <table>
          <tr id=headerblue>
@@ -91,6 +91,7 @@
           <td></td>
           <td></td>
           <td>Changelog</td>
+          <td>Details</td>
         </tr>
         {% for passering in passeringer %}
           <tr>
@@ -120,6 +121,7 @@
               </td>
             </form>
               <td>&nbsp;{{ passering.changelog }}</td>
+              <td>&nbsp;{{ passering }}</td>
           </tr>
         {% endfor %}
         <tr>

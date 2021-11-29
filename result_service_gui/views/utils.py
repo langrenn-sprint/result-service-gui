@@ -213,6 +213,17 @@ async def get_enchiced_startlist(user: dict, race_id: str, start_entries: list) 
                     if time_event["bib"] == start_entry["bib"]:
                         start_entry["rank"] = time_event["rank"]
                         start_entry["finish_event_id"] = time_event["id"]
+                # check if start or DNS is registered
+                elif time_event["timing_point"] == "Start":
+                    if time_event["bib"] == start_entry["bib"]:
+                        start_entry[
+                            "info"
+                        ] = f"Start registered at {time_event['registration_time']}"
+                elif time_event["timing_point"] == "DNS":
+                    if time_event["bib"] == start_entry["bib"]:
+                        start_entry[
+                            "info"
+                        ] = f"DNS registered at {time_event['registration_time']}"
             startlist.append(start_entry)
     else:
         # get videre til information - loop and simulate result for pos 1 to 8

@@ -103,16 +103,21 @@ class Control(web.View):
 async def get_passeringer(token: str, event_id: str, action: str) -> list:
     """Return list of passeringer for selected action."""
     passeringer = []
-    if action == "control" or action == "template":
-        tmp_passeringer = await TimeEventsAdapter().get_time_events_by_event_id(
-            token, event_id
-        )
+    tmp_passeringer = await TimeEventsAdapter().get_time_events_by_event_id(
+        token, event_id
+    )
+    if action == "control":
+        for passering in reversed(tmp_passeringer):
+            if passering["status"] == "Error":
+                if passering["timing_point"] != "Template":
+                    passeringer.append(passering)
+    elif action == "template":
         for passering in tmp_passeringer:
             if passering["timing_point"] == "Template":
-                if action == "template":
-                    passeringer.append(passering)
-            elif passering["status"] == "Error":
-                if action == "control":
-                    passeringer.append(passering)
+                passeringer.append(passering)
+    else:
+        for passering in reversed(tmp_passeringer):
+            if passering["timing_point"] != "Template":
+                passeringer.append(passering)
 
     return passeringer

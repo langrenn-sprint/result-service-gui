@@ -88,7 +88,9 @@ class TimeEventsService:
                 token, time_event
             )
 
-        if time_event["timing_point"] == "Start":
+        if (time_event["timing_point"] == "Start") or (
+            time_event["timing_point"] == "DNS"
+        ):
             # just register start - nothing more to enrich
             pass
         else:

@@ -92,7 +92,7 @@
             <td colspan=3 id=spacer></td>
           </tr>
           <tr>
-            <td>Feilretting (<a id=orange href=/timing?event_id={{ event_id }}&action=control class=dropbtn>se/endre</a>)</td>
+            <td>Feilretting (<a id=orange href=/control?event_id={{ event_id }}&action=control class=dropbtn>se/endre</a>)</td>
             <td></td>
             <td>Korringeringer og manglende registreringer</td>
           </tr>
@@ -117,7 +117,7 @@
           </tr>
           <tr>
             <td>
-              Videre til (<a id=orange href=/timing?event_id={{ event_id }}&action=template class=dropbtn>se/endre</a>)
+              Videre til (<a id=orange href=/control?event_id={{ event_id }}&action=template class=dropbtn>se/endre</a>)
             </td>
             <td></td>
             <td>
@@ -144,6 +144,7 @@
             {% elif action == "finish_bib" %}
             <td></td>
             {% endif %}
+            <td></td>
             <td><b>{{ race.raceclass }}{{ race.round }}{{ race.index }}{{ race.heat }}  kl:{{ race.start_time }} (Heat {{ race.order }})</b></td>
             <td>Videre til: {{ race.next_race }}</td>
             {% if action == "finish_bib" %}
@@ -174,6 +175,7 @@
                   {% endif %}
                 <td>{{ start.name }}</td>
                 <td>{{ start.club }}</td>
+                <td>{{ start.info }}</td>
                 {% if action == "finish_bib" %}
                   <td>{{ start.starting_position }}</td>
                   <td><input type="text" name="form_place_{{ start.starting_position }}" value="" size="4"></td>
