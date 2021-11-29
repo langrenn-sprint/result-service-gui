@@ -34,6 +34,7 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
     time_stamp_now = f"{time_now.strftime('%Y')}-{time_now.strftime('%m')}-{time_now.strftime('%d')}T{time_now.strftime('%X')}"
 
     request_body = {
+        "id": "",
         "bib": 0,
         "event_id": form["event_id"],
         "race": form["race"],
@@ -65,17 +66,19 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
         for bib in biblist:
             request_body["bib"] = int(bib)
             i += 1
-            id = await TimeEventsService().create_time_event(
+            id = await TimeEventsService().create_finish_time_event(
                 user["token"], request_body
             )
             informasjon += f" {bib} "
             logging.debug(f"Registrering: {id} - body: {request_body}")
     elif action == "finish_bib2":
         request_body["timing_point"] = "Finish"
+        # TODO - need to delete all old start events
         for x in form.keys():
             if x.startswith("form_place_"):
                 _bib = form[x]
                 if _bib.isnumeric():
+                    request_body["id"] = form[f"form_finish_event_id_{_bib}"]
                     request_body["bib"] = int(_bib)
                     request_body["rank"] = x[11:]
                     request_body["changelog"] = [
@@ -86,7 +89,7 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
                         }
                     ]
                     i += 1
-                    id = await TimeEventsService().create_time_event(
+                    id = await TimeEventsService().create_finish_time_event(
                         user["token"], request_body
                     )
                     informasjon += (
@@ -112,7 +115,7 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
                         }
                     ]
                     i += 1
-                    id = await TimeEventsService().create_time_event(user["token"], request_body)  # type: ignore
+                    id = await TimeEventsService().create_finish_time_event(user["token"], request_body)  # type: ignore
                     informasjon += (
                         f" {request_body['bib']}-{request_body['rank']} plass. "
                     )
@@ -149,7 +152,7 @@ async def create_time_event_for_start(
                     "comment": changelog_comment,
                 }
             ]
-            id = await TimeEventsService().create_time_event(
+            id = await TimeEventsService().create_start_time_event(
                 user["token"], request_body
             )
             informasjon += f" {request_body['bib']}-{changelog_comment}. "
@@ -174,7 +177,7 @@ async def create_time_event_for_start(
                         "comment": changelog_comment,
                     }
                 ]
-                id = await TimeEventsService().create_time_event(
+                id = await TimeEventsService().create_start_time_event(
                     user["token"], request_body
                 )
                 informasjon += f" {request_body['bib']}-{changelog_comment}. "
@@ -185,8 +188,8 @@ async def create_time_event_for_start(
 async def get_enchiced_startlist(user: dict, race_id: str, start_entries: list) -> list:
     """Enrich startlist information."""
     startlist = []
-    # get template time-events - for next race
-    next_race_templates = await TimeEventsAdapter().get_time_events_by_race_id(
+    # get time-events registered
+    next_race_time_events = await TimeEventsAdapter().get_time_events_by_race_id(
         user["token"], race_id
     )
 
@@ -195,20 +198,26 @@ async def get_enchiced_startlist(user: dict, race_id: str, start_entries: list) 
             start_entry = await StartAdapter().get_start_entry_by_id(
                 user["token"], race_id, start_id
             )
-            for template in next_race_templates:
-                if template["timing_point"] == "Template":
-                    if template["rank"] == start_entry["starting_position"]:
-                        if template["next_race"].startswith("Ute"):
+            for time_event in next_race_time_events:
+                # get next race info
+                if time_event["timing_point"] == "Template":
+                    if time_event["rank"] == start_entry["starting_position"]:
+                        if time_event["next_race"].startswith("Ute"):
                             start_entry["next_race"] = "Ute"
                         else:
                             start_entry[
                                 "next_race"
-                            ] = f"{template['next_race']}-{template['next_race_position']}"
+                            ] = f"{time_event['next_race']}-{time_event['next_race_position']}"
+                # check if result already registered
+                elif time_event["timing_point"] == "Finish":
+                    if time_event["bib"] == start_entry["bib"]:
+                        start_entry["rank"] = time_event["rank"]
+                        start_entry["finish_event_id"] = time_event["id"]
             startlist.append(start_entry)
     else:
         # get videre til information - loop and simulate result for pos 1 to 8
         for x in range(1, 9):
-            for template in next_race_templates:
+            for template in next_race_time_events:
                 start_entry = {}
                 if template["timing_point"] == "Template":
                     if int(template["rank"]) == x:
@@ -341,12 +350,12 @@ async def update_time_event(user: dict, action: str, form: dict) -> str:
             }
         ]
         request_body["status"] = "Deleted"
-    informasjon = await TimeEventsService().update_time_event(
+    response = await TimeEventsAdapter().update_time_event(
         user["token"], form["id"], request_body
     )
-    logging.debug(f"Control result: {informasjon}")
-
-    return f"Control result: Oppdatert - {informasjon}"
+    logging.debug(f"Control result: {response}")
+    informasjon = f"Control result: Oppdatert - {response}"
+    return informasjon
 
 
 async def get_race_info_from_timing(token: str, time_event: dict) -> dict:

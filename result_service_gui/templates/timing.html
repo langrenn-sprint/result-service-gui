@@ -164,7 +164,8 @@
                     <td></td>
                     <td align=center>{{ start.bib }}</td>
                     <td>
-                      <input type="text" name="form_place_{{ start.bib }}" value="" size="4">
+                      <input type="text" name="form_place_{{ start.bib }}" value="{{ start.rank }}" size="4">
+                      <input type="hidden" name="form_finish_event_id_{{ start.bib }}" value="{{ start.finish_event_id }}">
                     </td>
                   {% elif action == "finish_bib" %}
                     <td></td>

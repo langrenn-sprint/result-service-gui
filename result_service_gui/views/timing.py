@@ -61,7 +61,7 @@ class Timing(web.View):
             if len(races) > 0:
                 valgt_heat = races[0]["order"]
                 for race in races:
-                    # get start list details
+                    # get start list detail
                     race["startliste"] = await get_enchiced_startlist(
                         user, race["id"], race["start_entries"]
                     )

@@ -189,3 +189,30 @@ class StartAdapter:
                         reason=f"Error - {resp.status}: {body['detail']}."
                     )
         return resp.status
+
+    async def update_start_entry(self, token: str, id: str, new_start: dict) -> int:
+        """Update one start in the start_list."""
+        headers = {
+            hdrs.CONTENT_TYPE: "application/json",
+            hdrs.AUTHORIZATION: f"Bearer {token}",
+        }
+        logging.debug(f"New start: {new_start}")
+        async with ClientSession() as session:
+            async with session.put(
+                f"{RACE_SERVICE_URL}/races/{new_start['race_id']}/start-entries/{id}",
+                headers=headers,
+                json=new_start,
+            ) as resp:
+                logging.debug(f"update_start_entry - got response {resp.status}")
+                if resp.status == 201:
+                    pass
+                elif resp.status == 401:
+                    raise Exception(f"Login expired: {resp}")
+                else:
+                    servicename = "update_start_entry"
+                    body = await resp.json()
+                    logging.error(f"{servicename} failed - {resp.status} - {body}")
+                    raise web.HTTPBadRequest(
+                        reason=f"Error - {resp.status}: {body['detail']}."
+                    )
+        return resp.status
