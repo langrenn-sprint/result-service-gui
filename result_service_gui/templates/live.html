@@ -69,7 +69,11 @@
                     <td>{{ loper.bib }}</td>
                     <td>{{ loper.name }}</td>
                     <td>{{ loper.club }}</td>
-                    <td>{{ loper.next_race }}-{{ loper.next_race_position }}</td>
+                    {% if heat.round == "F" %}
+                      <td></td>
+                    {% else %}
+                      <td>{{ loper.next_race }}-{{ loper.next_race_position }}</td>
+                    {% endif %}
                   </tr>
               {% endfor %}
             {% else %}

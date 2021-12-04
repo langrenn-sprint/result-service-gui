@@ -77,7 +77,7 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
         for x in form.keys():
             if x.startswith("form_rank_"):
                 new_bib = form[x]
-                _rank = x[10:]
+                _rank = int(x[10:])
                 old_bib = form[f"form_old_rank_{_rank}"]
                 if new_bib.isnumeric() and new_bib != old_bib:
                     request_body["id"] = form[f"form_finish_event_id_{_rank}"]
@@ -107,7 +107,7 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
                 new_rank = form[x]
                 if new_rank.isnumeric() and old_rank != new_rank:
                     request_body["bib"] = _bib
-                    request_body["rank"] = new_rank
+                    request_body["rank"] = int(new_rank)
                     request_body["changelog"] = [
                         {
                             "timestamp": time_stamp_now,
@@ -213,7 +213,7 @@ async def get_enchiced_startlist(user: dict, race_id: str, start_entries: list) 
                         start_entry["finish_rank"] = time_event["rank"]
                         start_entry["finish_event_id"] = time_event["id"]
                     # case of register by bib
-                    if start_entry["starting_position"] == int(time_event["rank"]):
+                    if start_entry["starting_position"] == time_event["rank"]:
                         start_entry["finish_bib"] = time_event["bib"]
                         start_entry["finish_event_id"] = time_event["id"]
                 # check if start or DNS is registered
@@ -252,8 +252,8 @@ def get_next_race_info(next_race_time_events: list, race_id: str) -> list:
         for template in next_race_time_events:
             start_entry = {}
             _rank = template["rank"]
-            if template["timing_point"] == "Template" and _rank.isnumeric():
-                if int(_rank) == x:
+            if template["timing_point"] == "Template":
+                if _rank == x:
                     start_entry["race_id"] = race_id
                     start_entry["starting_position"] = x  # type: ignore
                     if template["next_race"].startswith("Ute"):

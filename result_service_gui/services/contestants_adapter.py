@@ -230,7 +230,7 @@ class ContestantsAdapter:
                 (hdrs.AUTHORIZATION, f"Bearer {token}"),
             ]
         )
-        contestant = {}
+        contestant = []
         async with ClientSession() as session:
             async with session.get(
                 f"{EVENT_SERVICE_URL}/events/{event_id}/contestants?bib={bib}",
@@ -248,7 +248,9 @@ class ContestantsAdapter:
                     raise web.HTTPBadRequest(
                         reason=f"Error - {resp.status}: {body['detail']}."
                     )
-        return contestant
+            if len(contestant) == 0:
+                return {}
+        return contestant[0]
 
     async def get_contestants_by_raceclass(
         self, token: str, event_id: str, raceclass: str

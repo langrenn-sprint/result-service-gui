@@ -147,7 +147,7 @@ class StartAdapter:
         starts = []
         async with ClientSession() as session:
             async with session.get(
-                f"{RACE_SERVICE_URL}/startlists?event-id={event_id}", headers=headers
+                f"{RACE_SERVICE_URL}/startlists?eventId={event_id}", headers=headers
             ) as resp:
                 logging.debug(f"get_all_starts_by_event - got response {resp.status}")
                 if resp.status == 200:
@@ -184,7 +184,9 @@ class StartAdapter:
                 else:
                     servicename = "create_start_entry"
                     body = await resp.json()
-                    logging.error(f"{servicename} failed - {resp.status} - {body}")
+                    logging.error(
+                        f"{servicename} failed - {resp.status} - {body} {new_start}"
+                    )
                     raise web.HTTPBadRequest(
                         reason=f"Error - {resp.status}: {body['detail']}."
                     )
@@ -211,7 +213,9 @@ class StartAdapter:
                 else:
                     servicename = "update_start_entry"
                     body = await resp.json()
-                    logging.error(f"{servicename} failed - {resp.status} - {body}")
+                    logging.error(
+                        f"{servicename} failed - {resp.status} - {body} {new_start}"
+                    )
                     raise web.HTTPBadRequest(
                         reason=f"Error - {resp.status}: {body['detail']}."
                     )

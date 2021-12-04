@@ -26,7 +26,7 @@ class TimeEventsService:
             "race": "",
             "race_id": "",
             "timing_point": "Template",
-            "rank": "",
+            "rank": 0,
             "registration_time": time_now.strftime("%X"),
             "next_race": "",
             "next_race_id": "",
@@ -67,15 +67,11 @@ class TimeEventsService:
                             time_event["next_race_position"] = next_start_entry[
                                 "starting_position"
                             ]
-                        else:
-                            time_event["next_race"] = "Ute"
-                            time_event["next_race_position"] = 0
-
-                        id = await TimeEventsAdapter().create_time_event(
-                            token, time_event
-                        )
-                        logging.debug(f"Created template: {id}")
-                        i += 1
+                            id = await TimeEventsAdapter().create_time_event(
+                                token, time_event
+                            )
+                            logging.debug(f"Created template: {id}")
+                            i += 1
         informasjon = f"Suksess! Opprettet {i} templates. "
         return informasjon
 
@@ -115,6 +111,9 @@ class TimeEventsService:
         # Get next race from template
         id = 0
         informasjon = ""
+        contestant = await ContestantsAdapter().get_contestant_by_bib(
+            token, time_event["event_id"], time_event["bib"]
+        )
         next_start_template = {}
         next_start_entry = {}
         next_start_entries = await TimeEventsAdapter().get_time_events_by_race_id(
@@ -122,10 +121,9 @@ class TimeEventsService:
         )
         for entry in next_start_entries:
             if (entry["timing_point"] == "Template") and (
-                entry["rank"] == int(time_event["rank"])
+                entry["rank"] == time_event["rank"]
             ):
                 next_start_template = entry
-
         # 4. Create or update time event
         if len(next_start_template) > 0:
             time_event["next_race"] = next_start_template["next_race"]
@@ -139,9 +137,6 @@ class TimeEventsService:
                 token, time_event["next_race_id"]
             )
 
-            contestant = await ContestantsAdapter().get_contestant_by_bib(
-                token, time_event["event_id"], time_event["bib"]
-            )
             # create next start entry
             next_start_entry = {
                 "race_id": time_event["next_race_id"],
@@ -153,6 +148,11 @@ class TimeEventsService:
                 "starting_position": time_event["next_race_position"],
                 "status": "OK",
             }
+        else:
+            time_event["next_race"] = "Ute"
+        # add name and club to time_event
+        time_event["name"] = f"{contestant['first_name']} {contestant['last_name']}"
+        time_event["club"] = contestant["club"]
 
         if len(time_event["id"]) > 0:
             # update existing time event
@@ -163,7 +163,7 @@ class TimeEventsService:
         else:
             id = await TimeEventsAdapter().create_time_event(token, time_event)
             informasjon += f" Created time event {id}. "
-        if len(next_start_entry) > 0:
+        if time_event["next_race"] != "Ute":
             id = await StartAdapter().create_start_entry(token, next_start_entry)
             informasjon += f" Created start event {id}. "
 
@@ -201,10 +201,10 @@ async def get_next_start_entry(token: str, time_event: dict) -> dict:
     for race_item in next_race:
         ilimitcurrent = race_item["qualified"]
         limit_rank = ilimitcurrent + ilimitplace
-        if int(time_event["rank"]) <= limit_rank:
+        if time_event["rank"] <= limit_rank:
             race_item["current_contestant_qualified"] = True
             # now we have next round - get race id
-            time_event["rank_qualified"] = int(time_event["rank"]) - ilimitplace
+            time_event["rank_qualified"] = time_event["rank"] - ilimitplace
             start_entry = await calculate_next_start_entry(
                 token, race_item, time_event, races
             )
@@ -249,7 +249,7 @@ async def calculate_next_start_entry(
     next_race_count = len(next_race_candidates)
     if next_race_count > 0:
         # estimated rank from previous round is:
-        previous_heat_rank = int(time_event["rank_qualified"])
+        previous_heat_rank = time_event["rank_qualified"]
         previous_heat_number = int(previous_race["heat"])
         previous_round_rank = (
             previous_heat_count * (previous_heat_rank - 1) + previous_heat_number

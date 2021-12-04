@@ -35,8 +35,12 @@ class TimeEventsAdapter:
                 if resp.status == 201:
                     logging.debug(f"time-event - got response {resp}")
                 else:
-                    logging.error(f"create_time_event failed - {resp.status}, {resp}")
-                    raise web.HTTPBadRequest(reason="Create time_event failed.")
+                    logging.error(
+                        f"create_time_event failed - {resp.status}, {resp} input data: {time_event}"
+                    )
+                    raise web.HTTPBadRequest(
+                        reason=f"Create time_event failed. Input data: {time_event}"
+                    )
 
         return resp.status
 
@@ -64,7 +68,7 @@ class TimeEventsAdapter:
                 )
         return response.status
 
-    async def update_time_event(self, token: str, id: str, request_body: dict) -> int:
+    async def update_time_event(self, token: str, id: str, time_event: dict) -> int:
         """Update time_event function."""
         headers = MultiDict(
             [
@@ -77,14 +81,16 @@ class TimeEventsAdapter:
             async with session.put(
                 f"{RACE_SERVICE_URL}/time-events/{id}",
                 headers=headers,
-                json=request_body,
+                json=time_event,
             ) as resp:
                 if resp.status == 204:
                     logging.debug(f"update time_event - got response {resp}")
                 else:
-                    logging.error(f"update_time_event failed - {resp.status}")
+                    logging.error(
+                        f"update_time_event failed - {resp.status} input data: {time_event}"
+                    )
                     raise web.HTTPBadRequest(
-                        reason=f"Update time_event failed - {resp.status}."
+                        reason=f"Update time_event failed - {resp.status} input data: {time_event}."
                     )
             logging.debug(f"Updated time_event: {id} - res {resp.status}")
         return resp.status

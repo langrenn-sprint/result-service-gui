@@ -74,7 +74,7 @@ class RaceplansAdapter:
         raceplans = []
         async with ClientSession() as session:
             async with session.get(
-                f"{RACE_SERVICE_URL}/raceplans?event-id={event_id}", headers=headers
+                f"{RACE_SERVICE_URL}/raceplans?eventId={event_id}", headers=headers
             ) as resp:
                 logging.debug(f"get_all_raceplans - got response {resp.status}")
                 if resp.status == 200:
@@ -100,7 +100,7 @@ class RaceplansAdapter:
         races = []
         async with ClientSession() as session:
             async with session.get(
-                f"{RACE_SERVICE_URL}/races?event-id={event_id}", headers=headers
+                f"{RACE_SERVICE_URL}/races?eventId={event_id}", headers=headers
             ) as resp:
                 logging.debug(f"get_all_races - got response {resp.status}")
                 if resp.status == 200:
