@@ -31,6 +31,10 @@ class Control(web.View):
         except Exception:
             event_id = ""
         try:
+            valgt_klasse = self.request.rel_url.query["valgt_klasse"]
+        except Exception:
+            valgt_klasse = ""
+        try:
             informasjon = self.request.rel_url.query["informasjon"]
         except Exception:
             informasjon = ""
@@ -55,7 +59,9 @@ class Control(web.View):
             )
 
             # get passeringer
-            passeringer = await get_passeringer(user["token"], event_id, action)
+            passeringer = await get_passeringer(
+                user["token"], event_id, action, valgt_klasse
+            )
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
@@ -72,6 +78,7 @@ class Control(web.View):
                     "raceclasses": raceclasses,
                     "username": user["username"],
                     "valgt_heat": valgt_heat,
+                    "valgt_klasse": valgt_klasse,
                 },
             )
         except Exception as e:
@@ -100,7 +107,9 @@ class Control(web.View):
         )
 
 
-async def get_passeringer(token: str, event_id: str, action: str) -> list:
+async def get_passeringer(
+    token: str, event_id: str, action: str, valgt_klasse: str
+) -> list:
     """Return list of passeringer for selected action."""
     passeringer = []
     tmp_passeringer = await TimeEventsAdapter().get_time_events_by_event_id(
@@ -114,7 +123,8 @@ async def get_passeringer(token: str, event_id: str, action: str) -> list:
     elif action == "template":
         for passering in tmp_passeringer:
             if passering["timing_point"] == "Template":
-                passeringer.append(passering)
+                if valgt_klasse == "" or valgt_klasse in passering["race"]:
+                    passeringer.append(passering)
     else:
         for passering in reversed(tmp_passeringer):
             if passering["timing_point"] != "Template":

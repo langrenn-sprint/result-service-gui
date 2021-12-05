@@ -39,172 +39,72 @@
 {% endblock %}
 
 {% block content %}
-  {% if action == "" %}
   <div id=spacer></div>
-  <table cellpadding=4>
-    <tr>
-      <td valign=top>
-        <table>
-          <tr id=subheader id=black>
-            <td width=200 id=black>Arbeidsflyt - under rennet</td>
-            <td width=50></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td><b>1. Oversikt</b></td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>Neste start: </td>
-            <td></td>
-            <td>
-              {% for race in races %}
-                {{ race.raceclass }}-{{ race.round }}{{ race.index }}{{ race.heat }} kl. {{ race.start_time }} (heat nr. {{ race.order }})<br>
-              {% endfor %}
-            </td>
-          </tr>
-          <tr>
-            <td colspan=3 id=spacer></td>
-          </tr>
-          <tr>
-            <td colspan=3 id=spacer>&nbsp;</td>
-          </tr>
-          <tr>
-            <td><b>2. Passeringer</b></td>
-            <td id=green></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>Start (<a id=orange href=/timing?event_id={{ event_id }}&action=start class=dropbtn>registrer</a>)</td>
-            <td></td>
-            <td>Registrere starter, krysse av på liste eller skrive startnummer</td>
-          </tr>
-          <tr>
-            <td colspan=3 id=spacer></td>
-          </tr>
-          <tr>
-            <td>Mål (<a id=orange href=/timing?event_id={{ event_id }}&action=finish_place class=dropbtn>registrer</a>)</td>
-            <td></td>
-            <td>Registrere målpassering, skrive inn startnummer (bib) eller plassering (place) i et oppsett med heat-plassering eller enkeltnummer</td>
-          </tr>
-          <tr>
-            <td colspan=3 id=spacer></td>
-          </tr>
-          <tr>
-            <td>Feilretting (<a id=orange href=/control?event_id={{ event_id }}&action=control class=dropbtn>se/endre</a>)</td>
-            <td></td>
-            <td>Korringeringer og manglende registreringer</td>
-          </tr>
-          <tr>
-            <td colspan=3 id=spacer></td>
-          </tr>
-          <tr>
-            <td colspan=3 id=spacer>&nbsp;</td>
-          </tr>
-          <tr>
-            <td><b>3. Oppsett</b></td>
-            <td></td>
-            <td></td>
-          </tr>
-          <tr>
-            <td>Tidskjema (<a id=orange href={{ event_gui_url }}/raceplans?event_id={{ event_id }}&action=edit_time class=dropbtn>se/endre</a>)</td>
-            <td></td>
-            <td>Utsette (eller forsere) kjøreplanen</td>
-          </tr>
-          <tr>
-            <td colspan=3 id=spacer></td>
-          </tr>
-          <tr>
-            <td>
-              Videre til (<a id=orange href=/control?event_id={{ event_id }}&action=template class=dropbtn>se/endre</a>)
-            </td>
-            <td></td>
-            <td>
-              Manuelt redigere sprintens oppsett - kvalifisering til neste heat
-            </td>
-          </tr>
-          <tr>
-            <td colspan=3 id=spacer></td>
-          </tr>
-      </table>
-  {% else %}
-    <div id=spacer></div>
-      <table>
-      {% if action != "lap" %}
-        {% for race in races %}
-        <form action=/timing method=post>
-          <tr id=headerblue>
-            <td>Pos</td>
-            <td width=80>Startnr</td>
-            {% if action == "start" %}
-              <td width=150>Startet</td>
-            {% elif action == "finish_place" %}
-              <td width=150>Plass</td>
-            {% elif action == "finish_bib" %}
-            <td></td>
-            {% endif %}
-            <td></td>
-            <td><b>{{ race.raceclass }}{{ race.round }}{{ race.index }}{{ race.heat }}  kl:{{ race.start_time }} (Heat {{ race.order }})</b></td>
-            <td>Videre til: {{ race.next_race }}</td>
-            {% if action == "finish_bib" %}
-              <td>Plass</td>
-              <td>Startnummer</td>
-            {% endif %}
-          </tr>
-          {% for start in race.startliste %}
-              <tr>
-                  {% if action == "start" %}
-                    <td>{{ start.starting_position }}</td>
-                    <td align=center>{{ start.bib }}</td>
-                    <td>
-                      <input type="radio" name="form_start_{{ start.bib }}" value="OK"><label for="OK">OK</label>
-                      <input type="radio" name="form_start_{{ start.bib }}" value="DNS"><label for="OK">DNS</label>
-                    </td>
-                  {% elif action == "finish_place" %}
-                    <td>{{ start.start_status }}</td>
-                    <td align=center>{{ start.bib }}</td>
-                    <td>
-                      <input type="number" name="form_place_{{ start.bib }}" value="{{ start.finish_rank }}" min=1 max=99>
-                      <input type="hidden" name="form_old_place_{{ start.bib }}" value="{{ start.finish_rank }}">
-                      <input type="hidden" name="form_finish_event_id_{{ start.bib }}" value="{{ start.finish_event_id }}">
-                    </td>
-                  {% elif action == "finish_bib" %}
-                    <td>{{ start.start_status }}</td>
-                    <td align=center>{{ start.bib }}</td>
-                    <td></td>
-                  {% endif %}
-                <td>{{ start.name }}</td>
-                <td>{{ start.club }}</td>
-                <td>{{ start.info }}</td>
-                {% if action == "finish_bib" %}
-                  <td>{{ start.starting_position }}</td>
-                  <td>
-                    <input type="number" name="form_rank_{{ start.starting_position }}" value="{{ start.finish_bib }}" min=1 max=9999>
-                    <input type="hidden" name="form_old_rank_{{ start.starting_position }}" value="{{ start.finish_bib }}">
-                    <input type="hidden" name="form_finish_event_id_{{ start.starting_position }}" value="{{ start.finish_event_id }}">
-                  </td>
-              </tr>
-            {% endif %}
-          {% endfor %}
-          <tr id=spacer>
-          </tr>
-          {% if action == "start" or action == "finish_place" %}
+    <table>
+    {% if action == "" %}
+      &nbsp;<br>
+    {% elif action != "lap" %}
+      {% for race in races %}
+      <form action=/timing method=post>
+        <tr id=headerblue>
+          <td>Pos</td>
+          <td width=80>Startnr</td>
+          {% if action == "start" %}
+            <td width=150>Startet</td>
+          {% elif action == "finish_place" %}
+            <td width=150>Plass</td>
+          {% elif action == "finish_bib" %}
+          <td></td>
+          {% endif %}
+          <td></td>
+          <td><b>{{ race.raceclass }}{{ race.round }}{{ race.index }}{{ race.heat }}  kl:{{ race.start_time }} (Heat {{ race.order }})</b></td>
+          <td>Videre til: {{ race.next_race }}</td>
+          {% if action == "finish_bib" %}
+            <td>Plass</td>
+            <td>Startnummer</td>
+          {% endif %}
+        </tr>
+        {% for start in race.startliste %}
             <tr>
-                <td colspan=2></td>
-                <td colspan=4>
-                  <input type="hidden" name="race" value="{{ race.raceclass }}-{{ race.round }}{{ race.heat }}{{ race.index }}">
-                  <input type="hidden" name="race_id" value="{{ race.id }}">
-                  <input type="hidden" name="event_id" value="{{ event_id }}">
-                  <input type="hidden" name="action" value="{{ action }}">
-                  <input type="hidden" name="heat" value="{{ valgt_heat }}">
-                  <input type="submit" name="{{ action }}" value="  Oppdater  ">
+                {% if action == "start" %}
+                  <td>{{ start.starting_position }}</td>
+                  <td align=center>{{ start.bib }}</td>
+                  <td>
+                    <input type="radio" name="form_start_{{ start.bib }}" value="OK"><label for="OK">OK</label>
+                    <input type="radio" name="form_start_{{ start.bib }}" value="DNS"><label for="OK">DNS</label>
+                  </td>
+                {% elif action == "finish_place" %}
+                  <td>{{ start.start_status }}</td>
+                  <td align=center>{{ start.bib }}</td>
+                  <td>
+                    <input type="number" name="form_place_{{ start.bib }}" value="{{ start.finish_rank }}" min=1 max=99>
+                    <input type="hidden" name="form_old_place_{{ start.bib }}" value="{{ start.finish_rank }}">
+                    <input type="hidden" name="form_finish_event_id_{{ start.bib }}" value="{{ start.finish_event_id }}">
+                  </td>
+                {% elif action == "finish_bib" %}
+                  <td>{{ start.start_status }}</td>
+                  <td align=center>{{ start.bib }}</td>
+                  <td></td>
+                {% endif %}
+              <td>{{ start.name }}</td>
+              <td>{{ start.club }}</td>
+              <td>{{ start.info }}</td>
+              {% if action == "finish_bib" %}
+                <td>{{ start.starting_position }}</td>
+                <td>
+                  <input type="number" name="form_rank_{{ start.starting_position }}" value="{{ start.finish_bib }}" min=1 max=9999>
+                  <input type="hidden" name="form_old_rank_{{ start.starting_position }}" value="{{ start.finish_bib }}">
+                  <input type="hidden" name="form_finish_event_id_{{ start.starting_position }}" value="{{ start.finish_event_id }}">
                 </td>
             </tr>
-          {% elif action == "finish_bib" %}
+          {% endif %}
+        {% endfor %}
+        <tr id=spacer>
+        </tr>
+        {% if action == "start" or action == "finish_place" %}
           <tr>
-              <td colspan=6></td>
-              <td colspan=2>
+              <td colspan=2></td>
+              <td colspan=4>
                 <input type="hidden" name="race" value="{{ race.raceclass }}-{{ race.round }}{{ race.heat }}{{ race.index }}">
                 <input type="hidden" name="race_id" value="{{ race.id }}">
                 <input type="hidden" name="event_id" value="{{ event_id }}">
@@ -213,61 +113,71 @@
                 <input type="submit" name="{{ action }}" value="  Oppdater  ">
               </td>
           </tr>
-          {% endif %}
-          <tr id=spacer>
-          </tr>
-        </form>
-        {% endfor %}
-      </table>
-    {% endif %}
-
-    {% if action == "start" or action == "finish_bib" or action == "finish_place" or action == "lap" %}
-    <form action=/timing method=post>
-      <table>
+        {% elif action == "finish_bib" %}
         <tr>
-          <td id=spacer colspan=3>&nbsp;</td>
-        </tr>
-        <tr id=headerblue>
-          <td id=spacer colspan=3>Registrer 'slengere' - løpere som ikke kan knyttes til et heat</td>
-        </tr>
-        <tr id=subheader>
-          <td width=100>Punkt</td>
-          <td>Startnummer</td>
-          <td></td>
-        </tr>
-        <tr>
-          <td>
-            {% if action == "start" %}
-              Start
-            {% elif action == "lap" %}
-              <select name="timing_point">
-                  <option value="forvarsel_1">Forvarsel 1</option>
-                  <option value="runde_1">Runde 1</option>
-              </select>
-            {% else %}
-              Mål
-            {% endif %}
-          </td>
-          <td><input type=text name="bib" value=""></td>
-          <td>Tips: Ved flere passeringer, bruk space mellom startnummer. x før eller etter startnummer indikerer at løper ikke startet. Eksempel: 2 3x 4</td>
-        </tr>
-        <tr>
-            <td></td>
+            <td colspan=6></td>
             <td colspan=2>
-              <input type="hidden" name="race" value="">
-              <input type="hidden" name="race_id" value="">
+              <input type="hidden" name="race" value="{{ race.raceclass }}-{{ race.round }}{{ race.heat }}{{ race.index }}">
+              <input type="hidden" name="race_id" value="{{ race.id }}">
               <input type="hidden" name="event_id" value="{{ event_id }}">
-              <input type="hidden" name="heat" value="{{ valgt_heat }}">
               <input type="hidden" name="action" value="{{ action }}">
+              <input type="hidden" name="heat" value="{{ valgt_heat }}">
               <input type="submit" name="{{ action }}" value="  Oppdater  ">
             </td>
         </tr>
-        <tr>
-          <td id=spacer colspan=3>&nbsp;</td>
+        {% endif %}
+        <tr id=spacer>
         </tr>
-      </table>
-    </form>
-    {% endif %}
+      </form>
+      {% endfor %}
+    </table>
+  {% endif %}
 
+  {% if action == "start" or action == "finish_bib" or action == "finish_place" or action == "lap" %}
+  <form action=/timing method=post>
+    <table>
+      <tr>
+        <td id=spacer colspan=3>&nbsp;</td>
+      </tr>
+      <tr id=headerblue>
+        <td id=spacer colspan=3>Registrer 'slengere' - løpere som ikke kan knyttes til et heat</td>
+      </tr>
+      <tr id=subheader>
+        <td width=100>Punkt</td>
+        <td>Startnummer</td>
+        <td></td>
+      </tr>
+      <tr>
+        <td>
+          {% if action == "start" %}
+            Start
+          {% elif action == "lap" %}
+            <select name="timing_point">
+                <option value="forvarsel_1">Forvarsel 1</option>
+                <option value="runde_1">Runde 1</option>
+            </select>
+          {% else %}
+            Mål
+          {% endif %}
+        </td>
+        <td><input type=text name="bib" value=""></td>
+        <td>Tips: Ved flere passeringer, bruk space mellom startnummer. x før eller etter startnummer indikerer at løper ikke startet. Eksempel: 2 3x 4</td>
+      </tr>
+      <tr>
+          <td></td>
+          <td colspan=2>
+            <input type="hidden" name="race" value="">
+            <input type="hidden" name="race_id" value="">
+            <input type="hidden" name="event_id" value="{{ event_id }}">
+            <input type="hidden" name="heat" value="{{ valgt_heat }}">
+            <input type="hidden" name="action" value="{{ action }}">
+            <input type="submit" name="{{ action }}" value="  Oppdater  ">
+          </td>
+      </tr>
+      <tr>
+        <td id=spacer colspan=3>&nbsp;</td>
+      </tr>
+    </table>
+  </form>
   {% endif %}
 {% endblock %}

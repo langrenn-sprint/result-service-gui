@@ -1,10 +1,20 @@
 """Resource module for main view."""
 import logging
+import os
 
 from aiohttp import web
 import aiohttp_jinja2
 
-from .utils import check_login, get_event
+from .utils import (
+    check_login,
+    get_event,
+    get_races_for_live_view,
+)
+
+
+EVENT_GUI_HOST_SERVER = os.getenv("EVENT_GUI_HOST_SERVER", "localhost")
+EVENT_GUI_HOST_PORT = os.getenv("EVENT_GUI_HOST_PORT", "8080")
+EVENT_GUI_URL = f"http://{EVENT_GUI_HOST_SERVER}:{EVENT_GUI_HOST_PORT}"
 
 
 class Dashboard(web.View):
@@ -20,28 +30,26 @@ class Dashboard(web.View):
             informasjon = self.request.rel_url.query["informasjon"]
         except Exception:
             informasjon = ""
-        try:
-            create_new = False
-            new = self.request.rel_url.query["new"]
-            if new != "":
-                create_new = True
-        except Exception:
-            create_new = False
+        valgt_heat = 0
 
         try:
             user = await check_login(self)
-            event = await get_event(user["token"], event_id)
+            event = await get_event(user, event_id)
+
+            races = await get_races_for_live_view(user, event_id, valgt_heat, 1)
 
             return await aiohttp_jinja2.render_template_async(
                 "dashboard.html",
                 self.request,
                 {
-                    "create_new": create_new,
-                    "lopsinfo": "Dashboard",
+                    "lopsinfo": "Dashboard - under rennet",
                     "event": event,
+                    "event_gui_url": EVENT_GUI_URL,
                     "event_id": event_id,
                     "informasjon": informasjon,
+                    "races": races,
                     "username": user["username"],
+                    "valgt_heat": valgt_heat,
                 },
             )
         except Exception as e:

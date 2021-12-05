@@ -7,6 +7,20 @@
 {% block titleheader %}{{ lopsinfo }}{% endblock %}
 {% block refresh %}{% endblock %}
 {% block titlemain %}{{ lopsinfo }}{% endblock %}
+{% block menuitems %}
+  <li class=dropdown id=topborder>
+    <a href=javascript:void(0) class=dropbtn>Velg funksjon</a>
+    <div class=dropdown-content>
+      <a href=timing?event_id={{ event_id }}>Oversikt</a>
+        <a href=timing?event_id={{ event_id }}&action=start&heat={{ valgt_heat }}>Start</a>
+        <a href=timing?event_id={{ event_id }}&action=finish_bib&heat={{ valgt_heat }}>Mål - bib</a>
+        <a href=timing?event_id={{ event_id }}&action=finish_place&heat={{ valgt_heat }}>Mål - place</a>
+        <a href=control?event_id={{ event_id }}&action=control>Kontroll</a>
+        <a href=control?event_id={{ event_id }}&action=template>Videre til</a>
+    </div>
+  </li>
+{% endblock %}
+
 {% block content %}
   <div id=spacer></div>
   <table cellpadding=4>
@@ -14,43 +28,118 @@
       <td valign=top>
         <table>
           <tr id=subheader id=black>
-            <td id=black>1. Start</td><td width=100>Status</td>
+            <td width=200 id=black>Arbeidsflyt - under rennet</td>
+            <td width=50></td>
+            <td></td>
           </tr>
           <tr>
-            <td>Neste start: G16K2 - kl 12:05.</td><td id=green>OK</td>
+            <td><b>1. Oversikt</b></td>
+            <td></td>
+            <td></td>
           </tr>
           <tr>
-            <td>Antall startet: 34 startet / 3 DNS / 2 ukjent.</td><td id=orange>Bør sjekkes</td>
-          </tr>
-        </table>
-      </td>
-      <td valign=top>
-        <table>
-          <tr id=subheader>
-            <td id=black>2. Mål</td><td width=100>Status</td>
-          </tr>
-          <tr>
-            <td>Siste målpassering: G16K1 - 2 av 7 registrert i mål.</td><td id=orange>Delvis</td>
-          </tr>
-        </table>
-      </td>
-    </tr>
-    <tr id=tablespacer>
-      <td>&nbsp;</td>
-    </tr>
-    <tr>
-      <td valign=top>
-      </td>
-      <td valign=top>
-        <table>
-          <tr id=subheader>
-            <td id=black></td><td width=100>Status</td>
+            <td>Neste start: </td>
+            <td></td>
+            <td>
+              {% for race in races %}
+                {{ race.raceclass }}-{{ race.round }}{{ race.index }}{{ race.heat }} kl. {{ race.start_time }} (heat nr. {{ race.order }})<br>
+              {% endfor %}
+            </td>
           </tr>
           <tr>
-            <td></td><td></td>
+            <td colspan=3 id=spacer></td>
           </tr>
-        </table>
-      </td>
-    </tr>
-  </table>
+          <tr>
+            <td colspan=3 id=spacer>&nbsp;</td>
+          </tr>
+          <tr>
+            <td><b>2. Passeringer</b></td>
+            <td id=green></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Start (<a id=orange href=/timing?event_id={{ event_id }}&action=start class=dropbtn>registrer</a>)</td>
+            <td></td>
+            <td>Registrere starter, krysse av på liste eller skrive startnummer</td>
+          </tr>
+          <tr>
+            <td colspan=3 id=spacer></td>
+          </tr>
+          <tr>
+            <td>Mål (<a id=orange href=/timing?event_id={{ event_id }}&action=finish_place class=dropbtn>registrer</a>)</td>
+            <td></td>
+            <td>Registrere målpassering, skrive inn startnummer (bib) eller plassering (place) i et oppsett med heat-plassering eller enkeltnummer</td>
+          </tr>
+          <tr>
+            <td colspan=3 id=spacer></td>
+          </tr>
+          <tr>
+            <td>Feilretting (<a id=orange href=/control?event_id={{ event_id }}&action=control class=dropbtn>se/endre</a>)</td>
+            <td></td>
+            <td>Korringeringer og manglende registreringer</td>
+          </tr>
+          <tr>
+            <td colspan=3 id=spacer></td>
+          </tr>
+          <tr>
+            <td colspan=3 id=spacer>&nbsp;</td>
+          </tr>
+          <tr>
+            <td><b>3. Oppsett</b></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Tidskjema (<a id=orange href={{ event_gui_url }}/raceplans?event_id={{ event_id }}&action=edit_time class=dropbtn>se/endre</a>)</td>
+            <td></td>
+            <td>Utsette (eller forsere) kjøreplanen</td>
+          </tr>
+          <tr>
+            <td colspan=3 id=spacer></td>
+          </tr>
+          <tr>
+            <td>
+              Videre til (<a id=orange href=/control?event_id={{ event_id }}&action=template class=dropbtn>se/endre</a>)
+            </td>
+            <td></td>
+            <td>
+              Manuelt redigere sprintens oppsett - kvalifisering til neste heat
+            </td>
+          </tr>
+          <tr>
+            <td colspan=3 id=spacer></td>
+          </tr>
+          <tr>
+            <td colspan=3 id=spacer>&nbsp;</td>
+          </tr>
+          <tr>
+            <td><b>4. Utskrifter</b></td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td>Startlister</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td colspan=3 id=spacer></td>
+          </tr>
+          <tr>
+            <td>Heat resultater</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td colspan=3 id=spacer></td>
+          </tr>
+          <tr>
+            <td>Sluttresultater</td>
+            <td></td>
+            <td></td>
+          </tr>
+          <tr>
+            <td colspan=3 id=spacer></td>
+          </tr>
+      </table>
 {% endblock %}

@@ -126,7 +126,7 @@
               <td><div id={{ loper.bib }}></div>{{ loper.bib }}</td>
               <td>
                 {% if valgt_klasse != "live" %}
-                  <a href=live?klasse={{ valgt_klasse }}&startnr={{ loper.bib }}>{{ loper.name }}</a>
+                  <a href=live?event_id={{ event_id }}&klasse={{ valgt_klasse }}&startnr={{ loper.bib }}>{{ loper.name }}</a>
                 {% else %}
                   {{ loper.name }}
                 {% endif %}

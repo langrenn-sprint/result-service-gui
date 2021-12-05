@@ -32,12 +32,11 @@
       <div class=dropdown-content>
         <a href=timing?&event_id={{ event_id }}&action={{ action }}>Alle</a>
         {% for klasse in raceclasses %}
-          <a href=timing?klasse={{ klasse.name }}&event_id={{ event_id }}&action={{ action }}>{{ klasse.ageclass_name }}</a>
+          <a href=control?valgt_klasse={{ klasse.name }}&event_id={{ event_id }}&action={{ action }}>{{ klasse.ageclass_name }}</a>
         {% endfor %}
       </div>
     </li>
 {% endblock %}
-
 {% block content %}
   {% if action == "template" %}
     <div id=spacer></div>
@@ -53,23 +52,23 @@
           <td>Changelog</td>
         </tr>
         {% for passering in passeringer %}
-          <tr>
-            <form action=/timing method=post>
-              <td>{{ passering.race }}</td>
-              <td align="center">{{ passering.rank }}</td>
-              <td align=right><input type=text name="next_race" value="{{ passering.next_race }}" size=4></td>
-              <td>-<input type=text name="next_race_position" value="{{ passering.next_race_position }}" size=2></td>
-              <td align=right>
-                <input type="hidden" name="event_id" value="{{ event_id }}">
-                <input type="hidden" name="id" value="{{ passering.id }}">
-                <input type="hidden" name="action" value="{{ action }}">
-                <input type="hidden" name="heat" value="{{ valgt_heat }}">
-                <input type="submit" name="update" value="Oppdater">
-              </td>
-            </form>
-            <td>&nbsp;</td>
-            <td>&nbsp;{{ passering.changelog }}</td>
-          </tr>
+            <tr>
+              <form action=/timing method=post>
+                <td>{{ passering.race }}</td>
+                <td align="center">{{ passering.rank }}</td>
+                <td align=right><input type=text name="next_race" value="{{ passering.next_race }}" size=4></td>
+                <td>-<input type=text name="next_race_position" value="{{ passering.next_race_position }}" size=2></td>
+                <td align=right>
+                  <input type="hidden" name="event_id" value="{{ event_id }}">
+                  <input type="hidden" name="id" value="{{ passering.id }}">
+                  <input type="hidden" name="action" value="{{ action }}">
+                  <input type="hidden" name="heat" value="{{ valgt_heat }}">
+                  <input type="submit" name="update" value="Oppdater">
+                </td>
+              </form>
+              <td>&nbsp;</td>
+              <td>&nbsp;{{ passering.changelog }}</td>
+            </tr>
         {% endfor %}
         <tr>
           <td id=spacer colspan=8> </td>

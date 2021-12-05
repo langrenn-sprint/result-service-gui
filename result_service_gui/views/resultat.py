@@ -45,7 +45,6 @@ class Resultat(web.View):
 
             try:
                 valgt_klasse = self.request.rel_url.query["klasse"]
-                logging.debug(valgt_klasse)
             except Exception:
                 valgt_klasse = ""  # noqa: F841
             try:

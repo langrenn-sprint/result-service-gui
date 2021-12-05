@@ -1,6 +1,5 @@
 """Resource module for start resources."""
 import logging
-import os
 
 from aiohttp import web
 import aiohttp_jinja2
@@ -16,10 +15,6 @@ from .utils import (
     get_event,
     get_races_for_live_view,
 )
-
-EVENT_GUI_HOST_SERVER = os.getenv("EVENT_GUI_HOST_SERVER", "localhost")
-EVENT_GUI_HOST_PORT = os.getenv("EVENT_GUI_HOST_PORT", "8080")
-EVENT_GUI_URL = f"http://{EVENT_GUI_HOST_SERVER}:{EVENT_GUI_HOST_PORT}"
 
 
 class Timing(web.View):
@@ -40,7 +35,7 @@ class Timing(web.View):
             action = self.request.rel_url.query["action"]
         except Exception:
             action = ""
-            informasjon = f"Velg funksjon. {informasjon}"
+            informasjon = f"Velg funksjon i menyen. {informasjon}"
         try:
             valgt_heat = int(self.request.rel_url.query["heat"])
         except Exception:
@@ -84,7 +79,6 @@ class Timing(web.View):
                     "colclass": colclass,
                     "event": event,
                     "event_id": event_id,
-                    "event_gui_url": EVENT_GUI_URL,
                     "informasjon": informasjon,
                     "passeringer": passeringer,
                     "raceclasses": raceclasses,
