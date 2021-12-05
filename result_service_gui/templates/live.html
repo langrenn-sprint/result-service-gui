@@ -64,7 +64,7 @@
                 {% endif %}
               </tr>
               {% for loper in heat.finish_results %}
-                  <tr>
+                  <tr{% if loper.bib == valgt_startnr %} id=black{% endif %}>
                     <td>{{ loper.rank }}</td>
                     <td>{{ loper.bib }}</td>
                     <td>{{ loper.name }}</td>
@@ -89,13 +89,13 @@
                 <td></td>
                </tr>
                {% for loper in heat.start_entries %}
-                     <tr>
-                       <td>{{ loper.starting_position }}</td>
-                       <td>{{ loper.bib }}</td>
-                       <td>{{ loper.name }}</td>
-                       <td>{{ loper.club }}</td>
-                       <td></td>
-                     </tr>
+                  <tr{% if loper.bib == valgt_startnr %} id=black{% endif %}>
+                     <td>{{ loper.starting_position }}</td>
+                     <td>{{ loper.bib }}</td>
+                     <td>{{ loper.name }}</td>
+                     <td>{{ loper.club }}</td>
+                     <td></td>
+                   </tr>
                {% endfor %}
             {% endif %}
 

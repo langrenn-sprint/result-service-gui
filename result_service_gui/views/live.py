@@ -43,9 +43,9 @@ class Live(web.View):
                 valgt_klasse = ""  # noqa: F841
                 informasjon += "Velg klasse for å se live lister."
             try:
-                valgt_startnr = self.request.rel_url.query["startnr"]
+                valgt_startnr = int(self.request.rel_url.query["startnr"])
             except Exception:
-                valgt_startnr = ""
+                valgt_startnr = 0
 
             raceclasses = await RaceclassesAdapter().get_raceclasses(
                 user["token"], event_id
@@ -59,24 +59,13 @@ class Live(web.View):
                         user["token"], event_id, valgt_klasse
                     )
                 )
-                # get startlister for klasse
-                _tmp_races = await RaceplansAdapter().get_races_by_racesclass(
-                    user["token"], event_id, valgt_klasse
+
+                races = await get_races_for_live(
+                    user["token"], event_id, valgt_klasse, valgt_startnr
                 )
-                if len(_tmp_races) == 0:
+                if len(races) == 0:
                     informasjon = f"{informasjon} Ingen kjøreplaner funnet."
-                else:
-                    for _tmp_race in _tmp_races:
-                        # todo - bruk get_all_races_by_event_id_and_raceclass
-                        if _tmp_race["raceclass"] == valgt_klasse:
-                            race = await RaceplansAdapter().get_race_by_id(
-                                user["token"], _tmp_race["id"]
-                            )
-                            race["finish_results"] = get_finish_rank(race)
-                            race["next_race"] = get_qualification_text(race)
-                            race["start_time"] = race["start_time"][-8:]
-                            colseparators.append(race["round"])
-                            races.append(race)
+
                 colseparators = get_colseparators(races)
                 if len(colseparators) == 3:
                     colclass = "w3-quart"
@@ -150,3 +139,33 @@ def get_finish_rank(race: dict) -> list:
                     for rank_event in finish_ranks:
                         finish_rank.append(rank_event)
     return finish_rank
+
+
+async def get_races_for_live(
+    token: str, event_id: str, valgt_klasse: str, valgt_startnr: int
+) -> list:
+    """Extract races with enriched content for live view."""
+    races = []
+    _tmp_races = await RaceplansAdapter().get_races_by_racesclass(
+        token, event_id, valgt_klasse
+    )
+    for _tmp_race in _tmp_races:
+        if _tmp_race["raceclass"] == valgt_klasse:
+            race = await RaceplansAdapter().get_race_by_id(token, _tmp_race["id"])
+            race["finish_results"] = get_finish_rank(race)
+            race["next_race"] = get_qualification_text(race)
+            race["start_time"] = race["start_time"][-8:]
+            # append race if selected starter is inside or not selected
+            if valgt_startnr == 0:
+                races.append(race)
+            else:
+                appended = False
+                for entry in race["start_entries"]:
+                    if entry["bib"] == valgt_startnr:
+                        races.append(race)
+                        appended = True
+                if not appended:
+                    for entry in race["finish_results"]:
+                        if entry["bib"] == valgt_startnr:
+                            races.append(race)
+    return races
