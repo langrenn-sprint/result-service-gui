@@ -1,6 +1,5 @@
 """Resource module for control resources."""
 import logging
-import os
 
 from aiohttp import web
 import aiohttp_jinja2
@@ -15,25 +14,13 @@ from .utils import (
     update_time_event,
 )
 
-EVENT_GUI_HOST_SERVER = os.getenv("EVENT_GUI_HOST_SERVER", "localhost")
-EVENT_GUI_HOST_PORT = os.getenv("EVENT_GUI_HOST_PORT", "8080")
-EVENT_GUI_URL = f"http://{EVENT_GUI_HOST_SERVER}:{EVENT_GUI_HOST_PORT}"
-
 
 class Control(web.View):
     """Class representing the control view."""
 
     async def get(self) -> web.Response:
         """Get route function that return the passeringer page."""
-        informasjon = ""
-        try:
-            event_id = self.request.rel_url.query["event_id"]
-        except Exception:
-            event_id = ""
-        try:
-            valgt_klasse = self.request.rel_url.query["valgt_klasse"]
-        except Exception:
-            valgt_klasse = ""
+        event_id = self.request.rel_url.query["event_id"]
         try:
             informasjon = self.request.rel_url.query["informasjon"]
         except Exception:
@@ -43,25 +30,17 @@ class Control(web.View):
         except Exception:
             action = ""
             informasjon = f"Velg funksjon. {informasjon}"
-        try:
-            valgt_heat = int(self.request.rel_url.query["heat"])
-        except Exception:
-            valgt_heat = 0
 
         try:
             user = await check_login(self)
             event = await get_event(user, event_id)
-
-            colclass = "w3-half"
 
             raceclasses = await RaceclassesAdapter().get_raceclasses(
                 user["token"], event_id
             )
 
             # get passeringer
-            passeringer = await get_passeringer(
-                user["token"], event_id, action, valgt_klasse
-            )
+            passeringer = await get_passeringer(user["token"], event_id, action, "")
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
@@ -69,16 +48,12 @@ class Control(web.View):
                 self.request,
                 {
                     "action": action,
-                    "colclass": colclass,
                     "event": event,
                     "event_id": event_id,
-                    "event_gui_url": EVENT_GUI_URL,
                     "informasjon": informasjon,
                     "passeringer": passeringer,
                     "raceclasses": raceclasses,
                     "username": user["username"],
-                    "valgt_heat": valgt_heat,
-                    "valgt_klasse": valgt_klasse,
                 },
             )
         except Exception as e:

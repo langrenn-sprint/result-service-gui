@@ -25,6 +25,7 @@ from .views import (
     ResultatHeat,
     Start,
     Timing,
+    TimingVerify,
 )
 
 load_dotenv()
@@ -77,11 +78,12 @@ async def create_app() -> web.Application:
             web.view("/live", Live),
             web.view("/login", Login),
             web.view("/logout", Logout),
-            web.view("/timing", Timing),
             web.view("/ping", Ping),
             web.view("/resultat", Resultat),
             web.view("/resultat/heat", ResultatHeat),
             web.view("/start", Start),
+            web.view("/timing", Timing),
+            web.view("/timing_verify", TimingVerify),
         ]
     )
     static_dir = os.path.join(PROJECT_ROOT, "static")

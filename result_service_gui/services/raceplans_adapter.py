@@ -16,15 +16,18 @@ RACE_SERVICE_URL = f"http://{RACE_HOST_SERVER}:{RACE_HOST_PORT}"
 class RaceplansAdapter:
     """Class representing raceplans."""
 
-    async def delete_raceplans(self, token: str, id: str) -> str:
+    async def delete_raceplans(self, token: str, event_id: str) -> str:
         """Delete all raceplans in one event function."""
+        raceplans = await RaceplansAdapter().get_all_raceplans(token, event_id)
+        raceplan = raceplans[0]
+
         headers = {
             hdrs.AUTHORIZATION: f"Bearer {token}",
         }
-        logging.info(f"delete raceplans, id: {id}")
+        logging.info(f"delete raceplans, id: {raceplan['id']}")
         async with ClientSession() as session:
             async with session.delete(
-                f"{RACE_SERVICE_URL}/raceplans/{id}",
+                f"{RACE_SERVICE_URL}/raceplans/{raceplan['id']}",
                 headers=headers,
             ) as resp:
                 res = resp.status
@@ -153,6 +156,18 @@ class RaceplansAdapter:
                 races.append(race)
         return races
 
+    async def get_race_by_class(
+        self, token: str, event_id: str, valgt_klasse: str
+    ) -> dict:
+        """Get all races function."""
+        races = await RaceplansAdapter().get_all_races(token, event_id)
+        for race in races:
+            if race["raceclass"] == valgt_klasse:
+                return race
+        # no match on class - raise error
+        logging.error(f"get_race_by_class, no races found for {valgt_klasse}")
+        raise web.HTTPBadRequest(reason=f"Ingen løp funnet for {valgt_klasse}.")
+
     async def update_raceplan(self, token: str, id: str, new_data: dict) -> int:
         """Update klasser function."""
         returncode = 201
@@ -181,3 +196,41 @@ class RaceplansAdapter:
                     )
 
         return returncode
+
+    async def update_race_start_time(
+        self, token: str, event_id: str, order: str, new_time: str
+    ) -> str:
+        """Update race start-time function."""
+        returncode = 0
+        headers = MultiDict(
+            [
+                (hdrs.CONTENT_TYPE, "application/json"),
+                (hdrs.AUTHORIZATION, f"Bearer {token}"),
+            ]
+        )
+        new_data = {
+            "order": order,
+            "new_time": new_time,
+        }
+        logging.info(f"New data - update time: {new_data}")
+
+        async with ClientSession() as session:
+            async with session.put(
+                f"{RACE_SERVICE_URL}/raceplans/update-start-time/{event_id}",
+                headers=headers,
+                json=new_data,
+            ) as resp:
+                returncode = resp.status
+                logging.debug(f"update_race_start_time - got response {resp.status}")
+                if resp.status == 204:
+                    pass
+                else:
+                    servicename = "update_race_start_time"
+                    body = await resp.json()
+                    logging.error(f"{servicename} failed - {resp.status} - {body}")
+                    raise web.HTTPBadRequest(
+                        reason=f"Error - {resp.status}: {body['detail']}."
+                    )
+        informasjon = f"Tidplan er oppdatert {returncode}"
+
+        return informasjon

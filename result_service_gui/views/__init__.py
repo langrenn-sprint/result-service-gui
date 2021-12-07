@@ -10,3 +10,4 @@ from .main import Main
 from .resultat import Resultat, ResultatHeat
 from .start import Start
 from .timing import Timing
+from .timing_verify import TimingVerify

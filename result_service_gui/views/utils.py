@@ -203,9 +203,7 @@ async def get_enchiced_startlist(user: dict, race_id: str, start_entries: list) 
                         if time_event["next_race"].startswith("Ute"):
                             start_entry["next_race"] = "Ute"
                         else:
-                            start_entry[
-                                "next_race"
-                            ] = f"{time_event['next_race']}-{time_event['next_race_position']}"
+                            start_entry["next_race"] = time_event["next_race"]
                 # check if result already registered
                 elif time_event["timing_point"] == "Finish":
                     # case of register by rank
@@ -259,9 +257,7 @@ def get_next_race_info(next_race_time_events: list, race_id: str) -> list:
                     if template["next_race"].startswith("Ute"):
                         start_entry["next_race"] = "Ute"
                     else:
-                        start_entry[
-                            "next_race"
-                        ] = f"{template['next_race']}-{template['next_race_position']}"
+                        start_entry["next_race"] = template["next_race"]
                     startlist.append(start_entry)
     return startlist
 
@@ -308,10 +304,13 @@ def get_raceplan_summary(races: list, raceclasses: list) -> list:
                 if race["datatype"] == "individual_sprint":
                     if race["round"] == "Q":
                         class_summary["timeQ"] = race["start_time"][-8:]
+                        class_summary["orderQ"] = race["order"]
                     elif race["round"] == "S":
                         class_summary["timeS"] = race["start_time"][-8:]
+                        class_summary["orderS"] = race["order"]
                     elif race["round"] == "F":
                         class_summary["timeF"] = race["start_time"][-8:]
+                        class_summary["orderF"] = race["order"]
         summary.append(class_summary)
     logging.debug(summary)
     return summary
