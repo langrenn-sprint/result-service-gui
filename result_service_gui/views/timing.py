@@ -10,7 +10,7 @@ from result_service_gui.services import (
 )
 from .utils import (
     check_login,
-    create_time_event,
+    create_time_events,
     get_enchiced_startlist,
     get_event,
     get_races_for_live_view,
@@ -40,10 +40,6 @@ class Timing(web.View):
             valgt_heat = int(self.request.rel_url.query["heat"])
         except Exception:
             valgt_heat = 0
-        try:
-            valgt_klasse = self.request.rel_url.query["valgt_klasse"]
-        except Exception:
-            valgt_klasse = ""
 
         try:
             user = await check_login(self)
@@ -80,7 +76,6 @@ class Timing(web.View):
                     "races": races,
                     "username": user["username"],
                     "valgt_heat": valgt_heat,
-                    "valgt_klasse": valgt_klasse,
                 },
             )
         except Exception as e:
@@ -100,7 +95,7 @@ class Timing(web.View):
             action = str(form["action"])
             valgt_heat = str(form["heat"])
 
-            informasjon = await create_time_event(user, action, form)  # type: ignore
+            informasjon = await create_time_events(user, action, form)  # type: ignore
         except Exception as e:
             logging.error(f"Error: {e}")
             informasjon = f"Det har oppstått en feil - {e.args}."

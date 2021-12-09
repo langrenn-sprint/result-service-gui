@@ -27,8 +27,8 @@ async def check_login(self) -> Any:
     return {"username": session["username"], "token": session["token"]}
 
 
-async def create_time_event(user: dict, action: str, form: dict) -> str:
-    """Register time event - return information."""
+async def create_time_events(user: dict, action: str, form: dict) -> str:
+    """Register time events - return information."""
     informasjon = ""
     time_now = datetime.datetime.now()
     time_stamp_now = f"{time_now.strftime('%Y')}-{time_now.strftime('%m')}-{time_now.strftime('%d')}T{time_now.strftime('%X')}"
@@ -126,7 +126,7 @@ async def create_time_event(user: dict, action: str, form: dict) -> str:
 
 
 async def create_start_time_event(user: dict, form: dict, request_body: dict) -> str:
-    """Extract form data and create time_event for start."""
+    """Extract form data and create time_events for start."""
     i = 0
     informasjon = ""
     time_now = datetime.datetime.now()
@@ -185,7 +185,7 @@ async def create_start_time_event(user: dict, form: dict, request_body: dict) ->
 
 
 async def get_enchiced_startlist(user: dict, race_id: str, start_entries: list) -> list:
-    """Enrich startlist information."""
+    """Enrich startlist information - including info if race result is registered."""
     startlist = []
     # get time-events registered
     next_race_time_events = await TimeEventsAdapter().get_time_events_by_race_id(

@@ -46,6 +46,32 @@ class StartAdapter:
 
         return informasjon
 
+    async def delete_start_entry(
+        self, token: str, race_id: str, start_entry_id: str
+    ) -> str:
+        """Delete one start_entry function."""
+        headers = {
+            hdrs.AUTHORIZATION: f"Bearer {token}",
+        }
+
+        async with ClientSession() as session:
+            async with session.delete(
+                f"{RACE_SERVICE_URL}/races/{race_id}/start-entries/{start_entry_id}",
+                headers=headers,
+            ) as resp:
+                res = resp.status
+                logging.debug(f"delete result - got response {resp}")
+                if res == 204:
+                    pass
+                else:
+                    servicename = "delete_start_entry"
+                    body = await resp.json()
+                    logging.error(f"{servicename} failed - {resp.status} - {body}")
+                    raise web.HTTPBadRequest(
+                        reason=f"Error - {resp.status}: {body['detail']}."
+                    )
+        return str(res)
+
     async def get_start_entry_by_id(
         self, token: str, race_id: str, start_id: str
     ) -> dict:

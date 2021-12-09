@@ -5,12 +5,13 @@ from aiohttp import web
 import aiohttp_jinja2
 
 from result_service_gui.services import (
+    ContestantsAdapter,
     RaceclassesAdapter,
     RaceplansAdapter,
+    StartAdapter,
 )
 from .utils import (
     check_login,
-    create_time_event,
     get_enchiced_startlist,
     get_event,
     get_qualification_text,
@@ -24,6 +25,7 @@ class TimingVerify(web.View):
     async def get(self) -> web.Response:
         """Get route function that return the passeringer page."""
         informasjon = ""
+        selected_races = []
         try:
             event_id = self.request.rel_url.query["event_id"]
         except Exception:
@@ -35,14 +37,12 @@ class TimingVerify(web.View):
         try:
             action = self.request.rel_url.query["action"]
         except Exception:
-            action = ""
-            informasjon = f"Velg funksjon i menyen. {informasjon}"
+            action = "result"
         try:
-            valgt_heat = self.request.rel_url.query["valgt_heat"]
             valgt_runde = self.request.rel_url.query["valgt_runde"]
         except Exception:
-            valgt_heat = ""
             valgt_runde = ""
+            informasjon = f"Velg runde i menyen. {informasjon}"
 
         try:
             user = await check_login(self)
@@ -50,24 +50,23 @@ class TimingVerify(web.View):
             raceclasses = await RaceclassesAdapter().get_raceclasses(
                 user["token"], event_id
             )
-            races = await RaceplansAdapter().get_all_races(user["token"], event_id)
+            all_races = await RaceplansAdapter().get_all_races(user["token"], event_id)
             raceplan_summary = []
-            if len(races) == 0:
+            if len(all_races) == 0:
                 informasjon = f"{informasjon} Ingen kjøreplaner funnet."
             else:
-                raceplan_summary = get_raceplan_summary(races, raceclasses)
-            # generate text explaining qualificatoin rule (videre til)
-            for race in races:
-                race["next_race"] = get_qualification_text(race)
+                raceplan_summary = get_raceplan_summary(all_races, raceclasses)
 
-            if len(races) > 0:
-                for race in races:
+            # filter for selected races and enrich
+            for race in all_races:
+                current_round = f"{race['raceclass']}{race['round']}"
+                if valgt_runde == current_round:
+                    race["next_race"] = get_qualification_text(race)
                     # get start list detail
                     race["startliste"] = await get_enchiced_startlist(
                         user, race["id"], race["start_entries"]
                     )
-            else:
-                informasjon = "Fant ingen heat. Velg på nytt."
+                    selected_races.append(race)
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
@@ -80,9 +79,8 @@ class TimingVerify(web.View):
                     "informasjon": informasjon,
                     "raceclasses": raceclasses,
                     "raceplan_summary": raceplan_summary,
-                    "races": races,
+                    "races": selected_races,
                     "username": user["username"],
-                    "valgt_heat": valgt_heat,
                     "valgt_runde": valgt_runde,
                 },
             )
@@ -101,13 +99,64 @@ class TimingVerify(web.View):
             logging.debug(f"Form {form}")
             event_id = str(form["event_id"])
             action = str(form["action"])
-            valgt_heat = str(form["heat"])
+            valgt_runde = str(form["valgt_runde"])
 
-            informasjon = await create_time_event(user, action, form)  # type: ignore
+            if "publish_results" in form.keys():
+                informasjon = "Resultater er publisert (TODO)"
+            elif "create_start" in form.keys():
+                informasjon = await create_start(user, form)  # type: ignore
+            elif "delete_result" in form.keys():
+                informasjon = await delete_result(user, form)  # type: ignore
+            elif "delete_start" in form.keys():
+                informasjon = await delete_start(user, form)  # type: ignore
+            elif "update_result" in form.keys():
+                informasjon = await update_result(user, form)  # type: ignore
         except Exception as e:
             logging.error(f"Error: {e}")
             informasjon = f"Det har oppstått en feil - {e.args}."
 
         return web.HTTPSeeOther(
-            location=f"/timing_verify?event_id={event_id}&informasjon={informasjon}&action={action}&heat={valgt_heat}"
+            location=f"/timing_verify?event_id={event_id}&informasjon={informasjon}&action={action}&valgt_runde={valgt_runde}"
         )
+
+
+async def create_start(user: dict, form: dict) -> str:
+    """Extract form data and create one start."""
+    contestant = await ContestantsAdapter().get_contestant_by_bib(
+        user["token"], form["event_id"], form["bib"]
+    )
+
+    new_start = {
+        "startlist_id": form["startlist_id"],
+        "race_id": form["race_id"],
+        "bib": form["bib"],
+        "starting_position": form["starting_position"],
+        "scheduled_start_time": form["start_time"],
+        "name": f"{contestant['first_name']} {contestant['last_name']}",
+        "club": contestant["club"],
+    }
+    id = await StartAdapter().create_start_entry(user["token"], new_start)
+    informasjon = f"Opprettet ny start. Resultat: {id}"
+    return informasjon
+
+
+async def delete_result(user: dict, form: dict) -> str:
+    """Extract form data and delete one result and corresponding start event."""
+    informasjon = "delete_result"
+    return informasjon
+
+
+async def delete_start(user: dict, form: dict) -> str:
+    """Extract form data and delete one start event."""
+    informasjon = "delete_start"
+    id = await StartAdapter().delete_start_entry(
+        user["token"], form["race_id"], form["start_id"]
+    )
+    informasjon = f"Slettet start. Resultat: {id}"
+    return informasjon
+
+
+async def update_result(user: dict, form: dict) -> str:
+    """Extract form data and update one result and corresponding start event."""
+    informasjon = "update_result"
+    return informasjon
