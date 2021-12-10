@@ -28,11 +28,10 @@
               <a href="/">Hovedside</a>
               {% if event_id != "" %}
                 <a>{{ event.name }}</a>
-                <a href="/dashboard?event_id={{ event_id }}">&nbsp;&nbsp;&nbsp;Info</a>
                 <a href="/start?event_id={{ event_id }}">&nbsp;&nbsp;&nbsp;Startlister</a>
                 <a href="/live?event_id={{ event_id }}">&nbsp;&nbsp;&nbsp;Live</a>
                 <a href="/resultat?event_id={{ event_id }}">&nbsp;&nbsp;&nbsp;Resultater</a>
-                <a href="/timing?event_id={{ event_id }}">&nbsp;&nbsp;&nbsp;Tidtaker</a>
+                <a href="/dashboard?event_id={{ event_id }}">&nbsp;&nbsp;&nbsp;Administrasjon</a>
                 <a href="/logout">Logg ut</a>
               {% endif %}
             </div>

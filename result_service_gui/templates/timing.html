@@ -18,12 +18,10 @@
   <li class=dropdown id=topborder>
     <a href=javascript:void(0) class=dropbtn>Velg funksjon</a>
     <div class=dropdown-content>
-      <a href=timing?event_id={{ event_id }}>Oversikt</a>
-        <a href=timing?event_id={{ event_id }}&action=start&heat={{ valgt_heat }}>Start</a>
-        <a href=timing?event_id={{ event_id }}&action=finish_bib&heat={{ valgt_heat }}>Mål - bib</a>
-        <a href=timing?event_id={{ event_id }}&action=finish_place&heat={{ valgt_heat }}>Mål - place</a>
-        <a href=control?event_id={{ event_id }}&action=control>Kontroll</a>
-        <a href=control?event_id={{ event_id }}&action=template>Videre til</a>
+        <a href=timing?event_id={{ event_id }}&action=start>Start - registrer DNS</a>
+        <a href=timing?event_id={{ event_id }}&action=finish_bib&heat={{ valgt_heat }}>Mål - skriv startnummer</a>
+        <a href=timing?event_id={{ event_id }}&action=finish_place&heat={{ valgt_heat }}>Mål - skriv plassering</a>
+        <a href="/dashboard?event_id={{ event_id }}">Oversikt</a>
     </div>
   </li>
   {% if action != "" %}

@@ -9,6 +9,7 @@ from result_service_gui.services import (
     RaceclassesAdapter,
     RaceplansAdapter,
     StartAdapter,
+    TimeEventsAdapter,
 )
 from .utils import (
     check_login,
@@ -142,7 +143,26 @@ async def create_start(user: dict, form: dict) -> str:
 
 async def delete_result(user: dict, form: dict) -> str:
     """Extract form data and delete one result and corresponding start event."""
-    informasjon = "delete_result"
+    informasjon = ""
+
+    # get time event and delete next start if existing
+    time_event = await TimeEventsAdapter().get_time_event_by_id(
+        user["token"], form["time_event_id"]
+    )
+    if len(time_event["next_race_id"]) > 0:
+        start_entries = await StartAdapter().get_start_entries_by_race_id(
+            user["token"], time_event["next_race_id"]
+        )
+        for start_entry in start_entries:
+            if time_event["bib"] == start_entry["bib"]:
+                id = await StartAdapter().delete_start_entry(
+                    user["token"], start_entry["race_id"], start_entry["id"]
+                )
+                informasjon = f"Slettet start entry i neste heat. Resultat: {id}"
+    id2 = await TimeEventsAdapter().delete_time_event(
+        user["token"], form["time_event_id"]
+    )
+    informasjon = f"Slettet målpassering. Resultat: {id2}  {informasjon}"
     return informasjon
 
 

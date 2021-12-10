@@ -13,11 +13,9 @@
     <div class=dropdown-content>
       <a href=dashboard?event_id={{ event_id }}>Oversikt</a>
         <a href=timing?event_id={{ event_id }}&action=start&heat={{ valgt_heat }}>Start</a>
-        <a href=timing?event_id={{ event_id }}&action=finish_bib&heat={{ valgt_heat }}>Mål - bib</a>
-        <a href=timing?event_id={{ event_id }}&action=finish_place&heat={{ valgt_heat }}>Mål - place</a>
-        <a href=timing_verify?event_id={{ event_id }}>Verifikasjon</a>
+        <a href=timing?event_id={{ event_id }}&action=finish_place&heat={{ valgt_heat }}>Mål</a>
+        <a href=timing_verify?event_id={{ event_id }}&action=result>Redigere</a>
         <a href=control?event_id={{ event_id }}&action=control>Feilretting</a>
-        <a href=control?event_id={{ event_id }}&action=template>Videre til</a>
     </div>
   </li>
 {% endblock %}
@@ -54,7 +52,7 @@
             <td colspan=3 id=spacer>&nbsp;</td>
           </tr>
           <tr>
-            <td><b>2. Passeringer</b></td>
+            <td><b>2. Resultat og passeringer</b></td>
             <td id=green></td>
             <td></td>
           </tr>
@@ -75,9 +73,17 @@
             <td colspan=3 id=spacer></td>
           </tr>
           <tr>
-            <td>Feilretting (<a id=orange href=/control?event_id={{ event_id }}&action=control class=dropbtn>se/endre</a>)</td>
+            <td>Redigere (<a id=orange href=timing_verify?event_id={{ event_id }}&action=result>se/endre</a>)</td>
             <td></td>
             <td>Korringeringer og manglende registreringer</td>
+          </tr>
+          <tr>
+            <td colspan=3 id=spacer></td>
+          </tr>
+          <tr>
+            <td>Feilretting (<a id=orange href=/control?event_id={{ event_id }}&action=control class=dropbtn>se/endre</a>)</td>
+            <td></td>
+            <td>Registreringer har feilet i systemet</td>
           </tr>
           <tr>
             <td colspan=3 id=spacer></td>

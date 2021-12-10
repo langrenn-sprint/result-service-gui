@@ -72,6 +72,35 @@ class StartAdapter:
                     )
         return str(res)
 
+    async def get_start_entries_by_race_id(self, token: str, race_id: str) -> list:
+        """Get one start_entry - lap time or heat place function."""
+        headers = MultiDict(
+            [
+                (hdrs.AUTHORIZATION, f"Bearer {token}"),
+            ]
+        )
+        start_entries = []
+        async with ClientSession() as session:
+            async with session.get(
+                f"{RACE_SERVICE_URL}/races/{race_id}/start-entries",
+                headers=headers,
+            ) as resp:
+                logging.debug(
+                    f"get_start_entries_by_race_id - got response {resp.status}"
+                )
+                if resp.status == 200:
+                    start_entries = await resp.json()
+                elif resp.status == 401:
+                    raise Exception(f"Login expired: {resp}")
+                else:
+                    servicename = "get_start_entries_by_race_id"
+                    body = await resp.json()
+                    logging.error(f"{servicename} failed - {resp.status} - {body}")
+                    raise web.HTTPBadRequest(
+                        reason=f"Error - {resp.status}: {body['detail']}."
+                    )
+        return start_entries
+
     async def get_start_entry_by_id(
         self, token: str, race_id: str, start_id: str
     ) -> dict:
