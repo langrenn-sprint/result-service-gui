@@ -26,19 +26,9 @@
   <li class=dropdown id=topborder>
     <a href="start?klasse=live&event_id={{ event_id }}" class=dropbtn alt="Se hvem som starter nå, viser de neste 8 heat">Starter nå</a>
   </li>
-  <li id=topborder>
-    <a href=/start?event_id={{ event_id }}&action=edit_mode class=dropbtn>Rediger</a>
-  </li>
 {% endblock %}
 
 {% block content %}
-
-  {% if  action == "edit_mode" %}
-    <table>
-      <tr id=headerblue align=right>
-      </tr>
-    </table>
-  {% endif %}
   {% if event.competition_format == "Interval Start" %}
     <table>
        <tr id=headerblue>
@@ -89,13 +79,7 @@
     {% endif %}
 
     <table>
-    {% for race in races %}
-      {% if race.Heat in colseparators %}
-        </table>
-          </div>
-          <div class="{{ colclass }}">
-        <table>
-      {% endif %}
+      {% for race in races %}
         <tr id=headerblue>
             {% if race.round == "Q" %}
               <td colspan=3>{{ race.raceclass }} Kvartfinale {{ race.index }}{{ race.heat }}</td>
@@ -125,11 +109,7 @@
               <td>{{ loper.starting_position }}</td>
               <td><div id={{ loper.bib }}></div>{{ loper.bib }}</td>
               <td>
-                {% if valgt_klasse != "live" %}
-                  <a href=live?event_id={{ event_id }}&klasse={{ valgt_klasse }}&startnr={{ loper.bib }}>{{ loper.name }}</a>
-                {% else %}
-                  {{ loper.name }}
-                {% endif %}
+                <a href=live?event_id={{ event_id }}&klasse={{ valgt_klasse }}&startnr={{ loper.bib }}>{{ loper.name }}</a>
               </td>
               <td>{{ loper.club }}</td>
                 {% if race.round != "F" %}
@@ -145,8 +125,4 @@
   </table>
   <div id=spacer></div>
   {% endif %} {# note: end competition_format #}
-  {% if valgt_klasse == "live" %}
-      </div>
-    </div>
-  {% endif %}
 {% endblock %}

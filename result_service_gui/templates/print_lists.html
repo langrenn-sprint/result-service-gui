@@ -1,0 +1,69 @@
+{% extends "print_base.html" %}
+{% block titlecontainer %}
+  <div class="w3-10"></div>
+  <div class="w3-80">
+{% endblock %}
+
+{% block titleheader %}
+  Utskrift {{ valgt_klubb }}{{ valgt_klasse }}
+{% endblock %}
+
+{% block refresh %}0{% endblock %}
+
+{% block content %}
+  <table>
+    {% for race in races %}
+      {% if race.first_in_class %}
+        </table>
+          <div id=pagebreak></div>
+          <div id=adminpagetitle>Startliste {{ race.raceclass }}</div>
+          <div float:right class=dropbtn>{{ event.name }}, {{ event.date_of_event }}</div>
+        <table>
+      {% endif %}
+        <tr id=headerblue>
+            {% if race.round == "Q" %}
+              <td colspan=3>{{ race.raceclass }} Kvartfinale {{ race.index }}{{ race.heat }}</td>
+            {% elif race.round == "S" %}
+              <td colspan=3>{{ race.raceclass }} Semifinale {{ race.index }}{{ race.heat }}</td>
+            {% elif race.round == "F" %}
+              <td colspan=3>{{ race.raceclass }} Finale {{ race.index }}</td>
+            {% endif %}
+          <td>Kl. {{ race.start_time }} (heat: {{ race.order }})</td>
+          <td colspan=4>{% if race.round != "F" %}Neste heat: {{ race.next_race }}{% endif %}</td>
+        </tr>
+        <tr id=subheader>
+          <td width=50><div id={{ race.heat }} >Pos</div></td>
+          <td width=50>Nr</td>
+          <td>Navn</td>
+          <td>Klubb</td>
+          <td>Team</td>
+          {% if race.round != "F" %}
+            <td id=topborder width=50>Plass</td>
+            <td>Videre til (heat)</td>
+          {% else %}
+            <td></td>
+            <td></td>
+          {% endif %}
+        </tr>
+        {% for loper in race.startliste %}
+            <tr>
+              <td>{{ loper.starting_position }}</td>
+              <td><div id={{ loper.bib }}></div>{{ loper.bib }}</td>
+              <td>
+                <a href=live?event_id={{ event_id }}&klasse={{ valgt_klasse }}&startnr={{ loper.bib }}>{{ loper.name }}</a>
+              </td>
+              <td>{{ loper.club }}</td>
+              <td>{{ loper.team }}</td>
+              {% if race.round != "F" %}
+                <td align=center id=topborder>{{ loper.starting_position }}</td>
+                <td>{{ loper.next_race }}</td>
+              {% else %}
+                <td></td>
+                <td></td>
+              {% endif %}
+            </tr>
+        {% endfor %}
+        <tr id=tablespacer><td>&nbsp;</td></tr>
+    {% endfor %}
+  </table>
+{% endblock %}

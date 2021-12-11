@@ -5,6 +5,9 @@ import os
 from aiohttp import web
 import aiohttp_jinja2
 
+from result_service_gui.services import (
+    RaceclassesAdapter,
+)
 from .utils import (
     check_login,
     get_event,
@@ -36,6 +39,10 @@ class Dashboard(web.View):
             user = await check_login(self)
             event = await get_event(user, event_id)
 
+            raceclasses = await RaceclassesAdapter().get_raceclasses(
+                user["token"], event_id
+            )
+
             races = await get_races_for_live_view(user, event_id, valgt_heat, 1)
 
             return await aiohttp_jinja2.render_template_async(
@@ -47,6 +54,7 @@ class Dashboard(web.View):
                     "event_gui_url": EVENT_GUI_URL,
                     "event_id": event_id,
                     "informasjon": informasjon,
+                    "raceclasses": raceclasses,
                     "races": races,
                     "username": user["username"],
                     "valgt_heat": valgt_heat,

@@ -344,6 +344,26 @@ async def get_races_for_live_view(
     return filtered_racelist
 
 
+async def get_races_for_print(user: dict, _tmp_races: list, raceclasses: list) -> list:
+    """Get races with lists - formatted for print."""
+    races = []
+    for raceclass in raceclasses:
+        first_in_class = True
+        for race in _tmp_races:
+            if race["raceclass"] == raceclass["name"]:
+                race["first_in_class"] = first_in_class
+                race["next_race"] = get_qualification_text(race)
+                race["start_time"] = race["start_time"][-8:]
+                # get start list details
+                race["startliste"] = await get_enchiced_startlist(
+                    user, race["id"], race["start_entries"]
+                )
+                if first_in_class:
+                    first_in_class = False
+                races.append(race)
+    return races
+
+
 async def update_time_event(user: dict, action: str, form: dict) -> str:
     """Register time event - return information."""
     informasjon = ""
