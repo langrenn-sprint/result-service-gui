@@ -16,7 +16,7 @@ version = "0.1.0"
 [tool.poetry.dependencies]
 PyJWT = "^2.1.0"
 aiodns = "^3.0.0"
-aiohttp = "^3.7.2"
+aiohttp = "^3.8.0"
 aiohttp-jinja2 = "^1.4.2"
 aiohttp-middlewares = "^1.1.0"
 aiohttp-session = "^2.9.0"

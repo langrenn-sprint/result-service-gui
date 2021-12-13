@@ -55,8 +55,6 @@
     </table>
     <div id=spacer></div>
   {% else %}
-    {% if  (valgt_klasse == "") %}
-
       <table>
         <tr id=spacer></tr>
         <tr id=headerblue>
@@ -67,16 +65,17 @@
           <td>Antall deltakere</td>
         </tr>
         {% for raceclass in raceplan_summary %}
-          <tr>
-            <td>{{ raceclass.name }}</td>
-            <td>{{ raceclass.timeQ }}</td>
-            <td>{{ raceclass.timeS }}</td>
-            <td>{{ raceclass.timeF }}</td>
-            <td>{{ raceclass.no_of_contestants }}</td>
-          </tr>
+          {% if (valgt_klasse == "") or valgt_klasse == raceclass.name %}
+            <tr>
+              <td>{{ raceclass.name }}</td>
+              <td>{{ raceclass.timeQ }}</td>
+              <td>{{ raceclass.timeS }}</td>
+              <td>{{ raceclass.timeF }}</td>
+              <td>{{ raceclass.no_of_contestants }}</td>
+            </tr>
+          {% endif %}
         {% endfor %}
       </table>
-    {% endif %}
 
     <table>
       {% for race in races %}

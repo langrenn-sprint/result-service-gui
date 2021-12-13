@@ -159,8 +159,19 @@
         <td colspan=3 id=spacer></td>
       </tr>
       <tr>
-        <td>Heat resultater</td>
-        <td></td>
+        <td>Live resultater</td>
+        <td>
+          <ul>
+            <li class=dropdown id=topborder>
+              <a href=javascript:void(0) class=dropbtn>Velg klasse</a>
+              <div class=dropdown-content>
+                {% for klasse in raceclasses %}
+                  <a target=_new href=live?klasse={{ klasse.name }}&event_id={{ event_id }}&action=print>{{ klasse.ageclass_name }}</a>
+                {% endfor %}
+              </div>
+            </li>
+          </ul>
+        </td>
         <td></td>
       </tr>
       <tr>

@@ -12,7 +12,9 @@ from result_service_gui.services import (
 from .utils import (
     check_login,
     get_event,
+    get_finish_rank,
     get_qualification_text,
+    get_races_for_print,
 )
 
 
@@ -35,7 +37,6 @@ class Live(web.View):
 
             races = []
             contestants = []
-            colclass = "w3-half"
 
             try:
                 valgt_klasse = self.request.rel_url.query["klasse"]
@@ -46,6 +47,13 @@ class Live(web.View):
                 valgt_startnr = int(self.request.rel_url.query["startnr"])
             except Exception:
                 valgt_startnr = 0
+            try:
+                action = self.request.rel_url.query["action"]
+            except Exception:
+                action = ""
+            template_page = "live.html"
+            if action == "print":
+                template_page = "print_lists.html"
 
             raceclasses = await RaceclassesAdapter().get_raceclasses(
                 user["token"], event_id
@@ -53,30 +61,38 @@ class Live(web.View):
 
             colseparators = []
             colclass = "w3-third"
-            if valgt_klasse != "":
+            if valgt_klasse != "" or action == "print":
                 contestants = (
                     await ContestantsAdapter().get_all_contestants_by_raceclass(
                         user["token"], event_id, valgt_klasse
                     )
                 )
-
-                races = await get_races_for_live(
-                    user["token"], event_id, valgt_klasse, valgt_startnr
-                )
-                if len(races) == 0:
-                    informasjon = f"{informasjon} Ingen kjøreplaner funnet."
-
-                colseparators = get_colseparators(races)
-                if len(colseparators) == 3:
-                    colclass = "w3-quart"
+                if "print" == action:
+                    _tmp_races = await RaceplansAdapter().get_races_by_racesclass(
+                        user["token"], event_id, valgt_klasse
+                    )
+                    races = await get_races_for_print(
+                        user, _tmp_races, raceclasses, valgt_klasse, "live"
+                    )
                 else:
-                    colclass = "w3-third"
+                    races = await get_races_for_live(
+                        user["token"], event_id, valgt_klasse, valgt_startnr
+                    )
+            if len(races) == 0:
+                informasjon = f"{informasjon} Ingen kjøreplaner funnet."
+
+            colseparators = get_colseparators(races)
+            if len(colseparators) == 3:
+                colclass = "w3-quart"
+            else:
+                colclass = "w3-third"
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
-                "live.html",
+                template_page,
                 self.request,
                 {
+                    "action": action,
                     "event": event,
                     "event_id": event_id,
                     "informasjon": informasjon,
@@ -86,6 +102,7 @@ class Live(web.View):
                     "colclass": colclass,
                     "contestants": contestants,
                     "raceclasses": raceclasses,
+                    "raceplan_summary": [],
                     "races": races,
                     "username": user["username"],
                 },
@@ -121,24 +138,6 @@ def get_colseparators(races: list) -> list:
             icolcount += 1
             colseparators.append(heat["order"])
     return colseparators
-
-
-def get_finish_rank(race: dict) -> list:
-    """Extract timing events from finish."""
-    finish_rank = []
-    results = race["results"]
-    if len(results) > 0:
-        logging.debug(f"Resultst: {results}")
-        if "Finish" in results.keys():
-            finish_results = results["Finish"]
-            if len(finish_results) > 0:
-                logging.debug(finish_results.keys())
-                if "ranking_sequence" in finish_results.keys():
-                    finish_ranks = finish_results["ranking_sequence"]
-                    race["finish_results"] = []
-                    for rank_event in finish_ranks:
-                        finish_rank.append(rank_event)
-    return finish_rank
 
 
 async def get_races_for_live(

@@ -15,21 +15,54 @@
     {% for race in races %}
       {% if race.first_in_class %}
         </table>
-          <div id=pagebreak></div>
-          <div id=adminpagetitle>Startliste {{ race.raceclass }}</div>
-          <div float:right class=dropbtn>{{ event.name }}, {{ event.date_of_event }}</div>
+          {% if not loop.first %}
+            <div id=pagebreak></div>
+          {% endif %}
+          <div id=adminpagetitle>
+            {% if race.list_type == "start" %}
+              Startliste {{ race.raceclass }}
+            {% elif race.list_type == "live" %}
+              Live resultater {{ race.raceclass }}
+            {% else %}
+              Resultater {{ race.raceclass }}
+            {% endif %}
+          </div>
+          <div align=right>{{ event.name }}, {{ event.date_of_event }}</div>
+          {% if raceplan_summary|length > 0 %}
+            <table>
+              <tr id=spacer></tr>
+              <tr id=headerblue>
+                <td>Løpsklasse</td>
+                <td>Kvartfinale start</td>
+                <td>Semifinaler</td>
+                <td>Finaler</td>
+                <td>Antall deltakere</td>
+              </tr>
+              {% for raceclass in raceplan_summary %}
+                {% if raceclass.name == race.raceclass %}
+                  <tr>
+                    <td>{{ raceclass.name }}</td>
+                    <td>{{ raceclass.timeQ }}</td>
+                    <td>{{ raceclass.timeS }}</td>
+                    <td>{{ raceclass.timeF }}</td>
+                    <td>{{ raceclass.no_of_contestants }}</td>
+                  </tr>
+                {% endif %}
+              {% endfor %}
+              <tr id=spacer></tr>
+            </table>
+          {% endif %}
         <table>
       {% endif %}
+      {% if race.list_type == "start" %}
         <tr id=headerblue>
-            {% if race.round == "Q" %}
-              <td colspan=3>{{ race.raceclass }} Kvartfinale {{ race.index }}{{ race.heat }}</td>
-            {% elif race.round == "S" %}
-              <td colspan=3>{{ race.raceclass }} Semifinale {{ race.index }}{{ race.heat }}</td>
-            {% elif race.round == "F" %}
-              <td colspan=3>{{ race.raceclass }} Finale {{ race.index }}</td>
+          <td colspan=3>{{ race.raceclass }} {{ race.round }}{{ race.index }}{{ race.heat }}
+            {% if race.round == "Q" %}Kvartfinale
+            {% elif race.round == "S" %}Semifinale
+            {% elif race.round == "F" %}Finale
             {% endif %}
-          <td>Kl. {{ race.start_time }} (heat: {{ race.order }})</td>
-          <td colspan=4>{% if race.round != "F" %}Neste heat: {{ race.next_race }}{% endif %}</td>
+          &nbsp; Kl. {{ race.start_time }} (Heat {{ race.order }})</td>
+          <td colspan=5>{% if race.round != "F" %}Neste heat: {{ race.next_race }}{% endif %}</td>
         </tr>
         <tr id=subheader>
           <td width=50><div id={{ race.heat }} >Pos</div></td>
@@ -39,7 +72,7 @@
           <td>Team</td>
           {% if race.round != "F" %}
             <td id=topborder width=50>Plass</td>
-            <td>Videre til (heat)</td>
+            <td>Videre til</td>
           {% else %}
             <td></td>
             <td></td>
@@ -64,6 +97,46 @@
             </tr>
         {% endfor %}
         <tr id=tablespacer><td>&nbsp;</td></tr>
+      {% else %} {# print results #}
+        <tr id=headerblack>
+          <td colspan=3>
+            {{ race.raceclass }}-{{ race.round }}{{ race.index }}{{ race.heat }}
+            {% if race.round == "Q" %}Kvartfinale
+            {% elif race.round == "S" %}Semifinale
+            {% elif race.round == "F" %}Finale
+            {% endif %}
+          </td>
+          <td colspan=4>Resultater</td>
+        </tr>
+        <tr id=subheader>
+          <td><div id={{ race.order }} >Plass</div></td>
+          <td>Nr</td>
+          <td>Navn</td>
+          <td>Klubb</td>
+          <td>Team</td>
+          <td></td>
+          {% if race.round == "F" %}
+            <td></td>
+          {% else %}
+            <td>Videre til</td>
+          {% endif %}
+        </tr>
+        {% for loper in race.finish_results %}
+            <tr{% if loper.bib == valgt_startnr %} id=black{% endif %}>
+              <td>{{ loper.rank }}</td>
+              <td>{{ loper.bib }}</td>
+              <td>{{ loper.name }}</td>
+              <td>{{ loper.club }}</td>
+              <td>{{ loper.team }}</td>
+              <td></td>
+              {% if race.round == "F" %}
+                <td></td>
+              {% else %}
+                <td>{{ loper.next_race }}-{{ loper.next_race_position }}</td>
+              {% endif %}
+            </tr>
+        {% endfor %}
+      {% endif %}
     {% endfor %}
   </table>
 {% endblock %}
