@@ -1302,7 +1302,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.11"
-content-hash = "7807b9cb1d70a0e6c9bbffece5442a6c31302ef807188855229b7e0dbc771de1"
+content-hash = "197d61793b1a2275af59cc625f3ca76a5519a52b26ead9612c9c0aa0dacf8818"
 
 [metadata.files]
 aiodns = [
