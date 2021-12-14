@@ -14,7 +14,6 @@ from .utils import (
     get_event,
     get_finish_rank,
     get_qualification_text,
-    get_races_for_print,
 )
 
 
@@ -47,13 +46,6 @@ class Live(web.View):
                 valgt_startnr = int(self.request.rel_url.query["startnr"])
             except Exception:
                 valgt_startnr = 0
-            try:
-                action = self.request.rel_url.query["action"]
-            except Exception:
-                action = ""
-            template_page = "live.html"
-            if action == "print":
-                template_page = "print_lists.html"
 
             raceclasses = await RaceclassesAdapter().get_raceclasses(
                 user["token"], event_id
@@ -61,23 +53,15 @@ class Live(web.View):
 
             colseparators = []
             colclass = "w3-third"
-            if valgt_klasse != "" or action == "print":
+            if valgt_klasse != "":
                 contestants = (
                     await ContestantsAdapter().get_all_contestants_by_raceclass(
                         user["token"], event_id, valgt_klasse
                     )
                 )
-                if "print" == action:
-                    _tmp_races = await RaceplansAdapter().get_races_by_racesclass(
-                        user["token"], event_id, valgt_klasse
-                    )
-                    races = await get_races_for_print(
-                        user, _tmp_races, raceclasses, valgt_klasse, "live"
-                    )
-                else:
-                    races = await get_races_for_live(
-                        user["token"], event_id, valgt_klasse, valgt_startnr
-                    )
+                races = await get_races_for_live(
+                    user["token"], event_id, valgt_klasse, valgt_startnr
+                )
             if len(races) == 0:
                 informasjon = f"{informasjon} Ingen kjøreplaner funnet."
 
@@ -89,10 +73,9 @@ class Live(web.View):
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
-                template_page,
+                "live.html",
                 self.request,
                 {
-                    "action": action,
                     "event": event,
                     "event_id": event_id,
                     "informasjon": informasjon,

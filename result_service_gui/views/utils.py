@@ -374,7 +374,9 @@ async def get_races_for_print(
                     race["next_race"] = get_qualification_text(race)
                     race["start_time"] = race["start_time"][-8:]
                     # get start list details
-                    if list_type == "start" or len(race["results"]) == 0:
+                    if (
+                        list_type == "start" or len(race["results"]) == 0
+                    ) and list_type != "result":
                         race["list_type"] = "start"
                         race["startliste"] = await get_enchiced_startlist(
                             user, race["id"], race["start_entries"]

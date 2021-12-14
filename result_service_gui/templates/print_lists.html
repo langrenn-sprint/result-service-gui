@@ -31,7 +31,7 @@
           {% if raceplan_summary|length > 0 %}
             <table>
               <tr id=spacer></tr>
-              <tr id=headerblue>
+              <tr id=headerprint>
                 <td>Løpsklasse</td>
                 <td>Kvartfinale start</td>
                 <td>Semifinaler</td>
@@ -55,7 +55,7 @@
         <table>
       {% endif %}
       {% if race.list_type == "start" %}
-        <tr id=headerblue>
+        <tr id=headerprint>
           <td colspan=3>{{ race.raceclass }} {{ race.round }}{{ race.index }}{{ race.heat }}
             {% if race.round == "Q" %}Kvartfinale
             {% elif race.round == "S" %}Semifinale
@@ -64,15 +64,15 @@
           &nbsp; Kl. {{ race.start_time }} (Heat {{ race.order }})</td>
           <td colspan=5>{% if race.round != "F" %}Neste heat: {{ race.next_race }}{% endif %}</td>
         </tr>
-        <tr id=subheader>
+        <tr>
           <td width=50><div id={{ race.heat }} >Pos</div></td>
           <td width=50>Nr</td>
           <td>Navn</td>
           <td>Klubb</td>
           <td>Team</td>
           {% if race.round != "F" %}
-            <td id=topborder width=50>Plass</td>
-            <td>Videre til</td>
+            <td id=subheader width=50>Plass</td>
+            <td id=subheader>Videre til</td>
           {% else %}
             <td></td>
             <td></td>
@@ -82,9 +82,7 @@
             <tr>
               <td>{{ loper.starting_position }}</td>
               <td><div id={{ loper.bib }}></div>{{ loper.bib }}</td>
-              <td>
-                <a href=live?event_id={{ event_id }}&klasse={{ valgt_klasse }}&startnr={{ loper.bib }}>{{ loper.name }}</a>
-              </td>
+              <td>{{ loper.name }}</td>
               <td>{{ loper.club }}</td>
               <td>{{ loper.team }}</td>
               {% if race.round != "F" %}
@@ -108,7 +106,7 @@
           </td>
           <td colspan=4>Resultater</td>
         </tr>
-        <tr id=subheader>
+        <tr>
           <td><div id={{ race.order }} >Plass</div></td>
           <td>Nr</td>
           <td>Navn</td>

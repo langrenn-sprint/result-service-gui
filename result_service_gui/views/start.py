@@ -18,7 +18,6 @@ from .utils import (
     get_qualification_text,
     get_raceplan_summary,
     get_races_for_live_view,
-    get_races_for_print,
 )
 
 EVENT_GUI_HOST_SERVER = os.getenv("EVENT_GUI_HOST_SERVER", "localhost")
@@ -47,9 +46,6 @@ class Start(web.View):
 
             races = []
             raceplan_summary = []
-            template_page = "start.html"
-            if action == "print":
-                template_page = "print_lists.html"
 
             try:
                 valgt_klasse = self.request.rel_url.query["klasse"]
@@ -70,29 +66,21 @@ class Start(web.View):
                 )
             if len(_tmp_races) == 0:
                 informasjon = f"{informasjon} Ingen kjøreplaner funnet."
-            else:
-                if "print" == action:
-                    races = await get_races_for_print(
-                        user, _tmp_races, raceclasses, valgt_klasse, "start"
-                    )
-                else:
-                    for race in _tmp_races:
-                        if (race["raceclass"] == valgt_klasse) or (
-                            "live" == valgt_klasse
-                        ):
-                            race["next_race"] = get_qualification_text(race)
-                            race["start_time"] = race["start_time"][-8:]
-                            # get start list details
-                            race["startliste"] = await get_enchiced_startlist(
-                                user, race["id"], race["start_entries"]
-                            )
-                            races.append(race)
+                for race in _tmp_races:
+                    if (race["raceclass"] == valgt_klasse) or ("live" == valgt_klasse):
+                        race["next_race"] = get_qualification_text(race)
+                        race["start_time"] = race["start_time"][-8:]
+                        # get start list details
+                        race["startliste"] = await get_enchiced_startlist(
+                            user, race["id"], race["start_entries"]
+                        )
+                        races.append(race)
 
             raceplan_summary = get_raceplan_summary(_tmp_races, raceclasses)
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
-                template_page,
+                "start.html",
                 self.request,
                 {
                     "action": action,

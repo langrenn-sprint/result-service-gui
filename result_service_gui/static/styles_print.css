@@ -9,93 +9,27 @@ body {
     background-size: cover;
 }
 
-ul {
-  	list-style-type: none;
-    margin: 0px;
-    padding: 0px;
+table {
+  width: 100%;
+}
+
+tr:nth-child(even){background-color: #f2f2f2;}
+
+td {
+	padding: 3px;
 }
 
 a {
   color: black;
 }
 
-li, .dropbtn {
-  display: inline-block;
-  color: black;
-  padding: 2px 2px 2px 2px;
-  text-align: center;
-  text-decoration: none;
-}
-
-.dropbtnactive {
-  background-color: grey;
-}
-
-li.dropdown {
-  display: inline-block;
-}
-
-.dropdown-content {
-  display: none;
-  position: absolute;
-  background-color: #grey;
-  min-width: 160px;
-  box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.2);
-  z-index: 1;
-}
-
-.dropdown-content a {
-  color: #3D3D3D;
-  padding: 2px 2px;
-  text-decoration: none;
-  display: block;
-  text-align: left;
-}
-
-.dropdown-content a:hover {
-  background-color: #f0f0f0;
-}
-
-.dropdown:hover .dropdown-content {
-  display: block;
-}
-
-.img_desi {
-  width: auto;
-  height: 100px;
-}
-
-.img_kvart {
-  width: 24%;
-  height: auto;
-}
-
-.img_tredje {
-  width: 32.5%;
-  height: auto;
-}
-
-table {
-  width: 100%;
-	border-spacing: 5;
-}
-
-tr:nth-child(even){background-color: #f2f2f2;}
-
 #topborder {
   border-left: 1px solid grey;
 }
 
-#headerblue {
-    color: white;
-    font-weight: bold;
-    background-color: black;
-}
-
-#headerblack {
-    color: white;
-    font-weight: bold;
-    background-color: #1f3d8e;
+#headerprint {
+  background-color: lightgrey;
+  font-weight: bold;
 }
 
 #adminpagetitle {
@@ -157,26 +91,6 @@ tr:nth-child(even){background-color: #f2f2f2;}
 
 #tablespacer {
     background-color: white;
-}
-
-function naviger(id) {
-  var elmnt = document.getElementById(id);
-  elmnt.scrollIntoView();
-}
-
-async function savefile(inp)
-{
-    let formData = new FormData();
-    let file = inp.files[0];
-
-    formData.append("file", file);
-
-    const ctrl = new AbortController()    // timeout
-    setTimeout(() => ctrl.abort(), 5000);
-
-    let r = await fetch('/contestants',
-      {method: "POST", body: formData, signal: ctrl.signal});
-
 }
 
 /**** Responsivt design ****/
