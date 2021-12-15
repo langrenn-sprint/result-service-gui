@@ -7,10 +7,7 @@ import aiohttp_jinja2
 
 from result_service_gui.services import (
     FotoService,
-    KjoreplanService,
     RaceclassesAdapter,
-    ResultatHeatService,
-    ResultatService,
 )
 from .utils import check_login, get_event
 
@@ -35,9 +32,8 @@ class Resultat(web.View):
 
             foto = []
             informasjon = ""
-            resultatliste = []
-            heatliste = []
-            resultatheatliste = []
+            resultatliste = []  # type: ignore
+            heatliste = []  # type: ignore
             valgt_bildevisning = ""
 
             sportsclubs = str(os.getenv("SPORTS_CLUBS"))
@@ -63,31 +59,13 @@ class Resultat(web.View):
                 informasjon = "Velg klasse eller klubb for å vise resultater"
             elif valgt_klasse == "":
                 # get resultat by klubb
-                resultatliste = await ResultatService().get_resultatliste_by_klubb(
-                    self.request.app["db"],
-                    valgt_klubb,
-                )
                 foto = await FotoService().get_foto_by_klubb(
                     self.request.app["db"], valgt_klubb, event
                 )
                 valgt_bildevisning = "klubb=" + valgt_klubb
             else:
                 # get resultat by klasse - sluttresultat
-                resultatliste = await ResultatService().get_resultatliste_by_klasse(
-                    self.request.app["db"],
-                    valgt_klasse,
-                )
                 # heatresultater
-                heatliste = await KjoreplanService().get_heat_by_klasse(
-                    self.request.app["db"],
-                    valgt_klasse,
-                )
-                resultatheatliste = (
-                    await ResultatHeatService().get_resultatheat_by_klasse(
-                        self.request.app["db"],
-                        valgt_klasse,
-                    )
-                )
                 foto = await FotoService().get_foto_by_klasse(
                     self.request.app["db"], valgt_klasse, event
                 )
@@ -109,32 +87,9 @@ class Resultat(web.View):
                     "clubs": clubs,
                     "resultatliste": resultatliste,
                     "heatliste": heatliste,
-                    "resultatheatliste": resultatheatliste,
                     "username": user["username"],
                 },
             )
         except Exception as e:
             logging.error(f"Error: {e}. Redirect to main page.")
             return web.HTTPSeeOther(location=f"/?informasjon={e}")
-
-    async def post(self) -> web.Response:
-        """Post route function that creates a collection of athletes."""
-        body = await self.request.json()
-        logging.debug(f"Got request-body {body} of type {type(body)}")
-        result = await ResultatService().create_resultatliste(
-            self.request.app["db"], body
-        )
-        return web.Response(status=result)
-
-
-class ResultatHeat(web.View):
-    """Class representing the resultat heat view."""
-
-    async def post(self) -> web.Response:
-        """Post route function that creates a collection of athletes."""
-        body = await self.request.json()
-        logging.debug(f"Got request-body {body} of type {type(body)}")
-        result = await ResultatHeatService().create_resultatheat(
-            self.request.app["db"], body
-        )
-        return web.Response(status=result)

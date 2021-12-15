@@ -361,7 +361,7 @@ async def get_races_for_live_view(
 
 
 async def get_races_for_print(
-    user: dict, _tmp_races: list, raceclasses: list, valgt_klasse: str, list_type: str
+    user: dict, _tmp_races: list, raceclasses: list, valgt_klasse: str, action: str
 ) -> list:
     """Get races with lists - formatted for print."""
     races = []
@@ -369,20 +369,20 @@ async def get_races_for_print(
         first_in_class = True
         for race in _tmp_races:
             if race["raceclass"] == raceclass["name"]:
-                if (race["raceclass"] == valgt_klasse) or ("alle" == valgt_klasse):
+                if (race["raceclass"] == valgt_klasse) or ("" == valgt_klasse):
                     race["first_in_class"] = first_in_class
                     race["next_race"] = get_qualification_text(race)
                     race["start_time"] = race["start_time"][-8:]
                     # get start list details
                     if (
-                        list_type == "start" or len(race["results"]) == 0
-                    ) and list_type != "result":
+                        action == "start" or len(race["results"]) == 0
+                    ) and action != "result":
                         race["list_type"] = "start"
                         race["startliste"] = await get_enchiced_startlist(
                             user, race["id"], race["start_entries"]
                         )
                     else:
-                        race["list_type"] = list_type
+                        race["list_type"] = action
                         race_details = await RaceplansAdapter().get_race_by_id(
                             user["token"], race["id"]
                         )

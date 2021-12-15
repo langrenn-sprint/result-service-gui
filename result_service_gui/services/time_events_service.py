@@ -58,7 +58,9 @@ class TimeEventsService:
                     # loop and simulate result for pos 1 to 8
                     for x in range(1, 9):
                         time_event["rank"] = x
-                        next_start_entry = await get_next_start_entry(token, time_event)
+                        next_start_entry = get_next_start_entry(
+                            token, time_event, races
+                        )
                         logging.debug(f"Time_event: {time_event}")
                         logging.debug(f"Start_entry: {next_start_entry}")
                         if len(next_start_entry) > 0:
@@ -170,13 +172,12 @@ class TimeEventsService:
         return informasjon
 
 
-async def get_next_start_entry(token: str, time_event: dict) -> dict:
+def get_next_start_entry(token: str, time_event: dict, races: list) -> dict:
     """Generate start_entry - empty result if not qualified."""
     start_entry = {}
     next_race = next_race_template()
 
     # find relevant race and get next race rule
-    races = await RaceplansAdapter().get_all_races(token, time_event["event_id"])
     for race in races:
         if race["id"] == time_event["race_id"]:
             for key, value in race["rule"].items():
@@ -205,7 +206,7 @@ async def get_next_start_entry(token: str, time_event: dict) -> dict:
             race_item["current_contestant_qualified"] = True
             # now we have next round - get race id
             time_event["rank_qualified"] = time_event["rank"] - ilimitplace
-            start_entry = await calculate_next_start_entry(
+            start_entry = calculate_next_start_entry(
                 token, race_item, time_event, races
             )
             break
@@ -214,7 +215,7 @@ async def get_next_start_entry(token: str, time_event: dict) -> dict:
     return start_entry
 
 
-async def calculate_next_start_entry(
+def calculate_next_start_entry(
     token: str, race_item: dict, time_event: dict, races: list
 ) -> dict:
     """Identify next race_id and generate start entry data."""

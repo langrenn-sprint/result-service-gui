@@ -1,0 +1,64 @@
+{% extends "print_base.html" %}
+{% block titlecontainer %}
+  <div class="w3-10"></div>
+  <div class="w3-80">
+{% endblock %}
+
+{% block titleheader %}
+  Kjøreplan {{ event.name }} {{ valgt_klasse }}
+{% endblock %}
+
+{% block refresh %}0{% endblock %}
+
+{% block content %}
+  <div id=adminpagetitle>Kjøreplan {{ valgt_klasse }}</div>
+  <div align=right>{{ event.name }}, {{ event.date_of_event }}</div>
+  {% if raceplan_summary|length > 0 %}
+    <table>
+      <tr id=spacer></tr>
+      <tr id=headerprint>
+        <td>Løpsklasse</td>
+        <td>Kvartfinale start</td>
+        <td>Semifinaler</td>
+        <td>Finaler</td>
+        <td>Antall deltakere</td>
+      </tr>
+      {% for raceclass in raceplan_summary %}
+        {% if raceclass.name == valgt_klasse or "" == valgt_klasse %}
+          <tr>
+            <td>{{ raceclass.name }}</td>
+            <td>{{ raceclass.timeQ }}</td>
+            <td>{{ raceclass.timeS }}</td>
+            <td>{{ raceclass.timeF }}</td>
+            <td>{{ raceclass.no_of_contestants }}</td>
+          </tr>
+        {% endif %}
+      {% endfor %}
+      <tr id=spacer></tr>
+    </table>
+  {% endif %}
+
+  <table>
+    <tr id=headerprint>
+      <td>Tid</td>
+      <td>Klasse</td>
+      <td>Runde</td>
+      <td>Videre til</td>
+      <td>Heat</td>
+    </tr>
+    {% for race in races %}
+        <tr>
+          <td align=center>{{ race.start_time }}</td>
+          <td align=center>{{ race.raceclass }}</td>
+          <td> {{ race.round }}{{ race.index }}{{ race.heat }}
+            {% if race.round == "Q" %}Kvartfinale
+            {% elif race.round == "S" %}Semifinale
+            {% elif race.round == "F" %}Finale
+            {% endif %}
+          </td>
+          <td>{% if race.round != "F" %}Neste heat: {{ race.next_race }}{% endif %}</td>
+          <td align=center>{{ race.order }}</td>
+        </tr>
+    {% endfor %}
+  </table>
+{% endblock %}

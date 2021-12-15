@@ -11,6 +11,8 @@ from result_service_gui.services import (
 from .utils import (
     check_login,
     get_event,
+    get_qualification_text,
+    get_raceplan_summary,
     get_races_for_print,
 )
 
@@ -35,6 +37,8 @@ class PrintLists(web.View):
             event = await get_event(user, event_id)
 
             races = []
+            raceplan_summary = []
+            html_template = "print_lists.html"
 
             try:
                 valgt_klasse = self.request.rel_url.query["klasse"]
@@ -48,15 +52,25 @@ class PrintLists(web.View):
             _tmp_races = await RaceplansAdapter().get_races_by_racesclass(
                 user["token"], event_id, valgt_klasse
             )
-            races = await get_races_for_print(
-                user, _tmp_races, raceclasses, valgt_klasse, action
-            )
+            if action == "raceplan":
+                html_template = "print_raceplan.html"
+                for race in _tmp_races:
+                    if (race["raceclass"] == valgt_klasse) or ("" == valgt_klasse):
+                        race["next_race"] = get_qualification_text(race)
+                        race["start_time"] = race["start_time"][-8:]
+                        races.append(race)
+                raceplan_summary = get_raceplan_summary(_tmp_races, raceclasses)
+
+            else:
+                races = await get_races_for_print(
+                    user, _tmp_races, raceclasses, valgt_klasse, action
+                )
             if len(races) == 0:
                 informasjon = "Ingen kjøreplaner funnet."
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
-                "print_lists.html",
+                html_template,
                 self.request,
                 {
                     "event": event,
@@ -64,7 +78,7 @@ class PrintLists(web.View):
                     "informasjon": informasjon,
                     "valgt_klasse": valgt_klasse,
                     "raceclasses": raceclasses,
-                    "raceplan_summary": [],
+                    "raceplan_summary": raceplan_summary,
                     "races": races,
                     "username": user["username"],
                 },

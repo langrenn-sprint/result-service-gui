@@ -65,7 +65,8 @@ class Start(web.View):
                     user["token"], event_id
                 )
             if len(_tmp_races) == 0:
-                informasjon = f"{informasjon} Ingen kjøreplaner funnet."
+                informasjon = f"{informasjon} Ingen løp funnet."
+            else:
                 for race in _tmp_races:
                     if (race["raceclass"] == valgt_klasse) or ("live" == valgt_klasse):
                         race["next_race"] = get_qualification_text(race)
@@ -75,8 +76,7 @@ class Start(web.View):
                             user, race["id"], race["start_entries"]
                         )
                         races.append(race)
-
-            raceplan_summary = get_raceplan_summary(_tmp_races, raceclasses)
+                raceplan_summary = get_raceplan_summary(_tmp_races, raceclasses)
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(

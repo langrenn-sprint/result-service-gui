@@ -4,8 +4,8 @@ import logging
 from typing import Any, List
 
 from .contestants_adapter import ContestantsAdapter
-from .kjoreplan_service import KjoreplanService
 from .raceclasses_adapter import RaceclassesAdapter
+from .raceplans_adapter import RaceplansAdapter
 from .start_adapter import StartAdapter
 
 klubber = [
@@ -211,10 +211,10 @@ async def find_lopsklasse(token: str, tags: dict, event_id: str) -> str:
 
 
 async def verify_heat(
-    db: Any,
+    token: str,
     datetime_foto: str,
     raceduration: int,
-    heat_index: str,
+    race_id: str,
     event: dict,
 ) -> str:
     """Analyse photo tags and identify heat."""
@@ -222,7 +222,7 @@ async def verify_heat(
     racedate = event["date"]
 
     if datetime_foto is not None:
-        heat = await KjoreplanService().get_heat_by_index(db, heat_index)
+        heat = await RaceplansAdapter().get_race_by_id(token, race_id)
         if heat is not None:
             seconds = get_seconds_diff(datetime_foto, racedate + " " + heat["Start"])
             logging.debug(
