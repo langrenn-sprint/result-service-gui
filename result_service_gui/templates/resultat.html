@@ -18,9 +18,8 @@
   <li class=dropdown id=topborder>
     <a href=javascript:void(0) class=dropbtn>Velg klasse</a>
     <div class=dropdown-content>
-      <a href=resultat>Alle</a>
       {% for klasse in klasser %}
-        <a href=resultat?klasse={{ klasse.raceclass }}&event_id={{ event_id }}>{{ klasse.name }}</a>
+        <a href=resultat?klasse={{ klasse.name }}&event_id={{ event_id }}>{{ klasse.ageclass_name }}</a>
       {% endfor %}
     </div>
   </li>
@@ -53,54 +52,19 @@
     <table>
       <tr id=headerblack>
         <td>Plass</td>
+        <td></td>
         <td>Startnr</td>
         <td>Navn</td>
         <td>Klubb</td>
-        <td>Klasse</td>
       </tr>
-        {% for deltaker in resultatliste %}
-          {% if (deltaker.Navn != "-") %}
-                <tr>
-                  <td>{{ deltaker.Plass }}</td>
-                  <td>{{ deltaker.Nr }}</td>
-                  <td><a alt="Heat resultater" href=live?startnr={{ deltaker.Nr }}>{{ deltaker.Navn }}</a></td>
-                  <td>{{ deltaker.Klubb }}</td>
-                  <td>{{ deltaker.Klasse }}</td>
-                </tr>
-          {% endif %}
-        {% endfor %}
-        </table>
-        <div id=spacer> </div>
-        <div id=adminpagetitle>Heat resultater</div>
-      {% for heat in heatliste %}
-        <div id=spacer> </div>
-        <table>
-          <tr id=headerblack>
-            <td colspan=3>{{ heat.Runde }}</td>
-            <td colspan=2>Resultater</td>
-          </tr>
-          <tr id=subheader>
-            <td>Plass</td>
-            <td>Nr</td>
-            <td>Navn</td>
-            <td>Klubb</td>
-            {% if heat.Heat[0] == "F" %}
-              <td></td>
-            {% else %}
-              <td>Videre til</td>
-            {% endif %}
-          </tr>
-          {% for loper in resultatheatliste %}
-            {% if heat.Index == loper.Heat %}
-                <tr>
-                  <td>{{ loper.Plass }}</td>
-                  <td>{{ loper.Nr }}</td>
-                  <td>{{ loper.Navn }}</td>
-                  <td>{{ loper.Klubb }}</td>
-                  <td>{{ loper.Videre_til }}</td>
-                </tr>
-              {% endif %}
-          {% endfor %}
-        </table>
+      {% for deltaker in resultatliste %}
+        <tr>
+          <td align=center>{{ deltaker.rank }}</td>
+          <td>{{ deltaker.round }}</td>
+          <td align=center>{{ deltaker.time_event.bib }}</td>
+          <td><a alt="Live resultater" href=live?event_id={{ event_id }}&klasse={{ valgt_klasse }}&startnr={{ deltaker.time_event.bib }}>{{ deltaker.time_event.name }}</a></td>
+          <td>{{ deltaker.time_event.club }}</td>
+        </tr>
       {% endfor %}
+    </table>
 {% endblock %}

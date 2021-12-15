@@ -9,7 +9,7 @@ from result_service_gui.services import (
     FotoService,
     RaceclassesAdapter,
 )
-from .utils import check_login, get_event
+from .utils import check_login, get_event, get_results_by_raceclass
 
 
 class Resultat(web.View):
@@ -28,14 +28,12 @@ class Resultat(web.View):
 
         try:
             user = await check_login(self)
-            event = await get_event(user["token"], event_id)
+            event = await get_event(user, event_id)
 
             foto = []
             informasjon = ""
-            resultatliste = []  # type: ignore
-            heatliste = []  # type: ignore
+            resultlist = []  # type: ignore
             valgt_bildevisning = ""
-
             sportsclubs = str(os.getenv("SPORTS_CLUBS"))
             clubs = sportsclubs.split(",")
 
@@ -48,28 +46,31 @@ class Resultat(web.View):
             except Exception:
                 valgt_klubb = ""
 
-            klasser = await RaceclassesAdapter().get_raceclasses(
+            raceclasses = await RaceclassesAdapter().get_raceclasses(
                 user["token"], event_id
             )
             # ensure web safe urls
-            for klasse in klasser:
-                klasse["KlasseWeb"] = klasse["name"].replace(" ", "%20")
+            for klasse in raceclasses:
+                klasse["KlasseWeb"] = klasse["ageclass_name"].replace(" ", "%20")
 
             if (valgt_klasse == "") and (valgt_klubb == ""):
                 informasjon = "Velg klasse eller klubb for å vise resultater"
-            elif valgt_klasse == "":
-                # get resultat by klubb
-                foto = await FotoService().get_foto_by_klubb(
-                    self.request.app["db"], valgt_klubb, event
-                )
-                valgt_bildevisning = "klubb=" + valgt_klubb
             else:
-                # get resultat by klasse - sluttresultat
-                # heatresultater
-                foto = await FotoService().get_foto_by_klasse(
-                    self.request.app["db"], valgt_klasse, event
-                )
-                valgt_bildevisning = "klasse=" + valgt_klasse
+                if valgt_klubb != "":
+                    foto = await FotoService().get_foto_by_klubb(
+                        user, valgt_klubb, event_id
+                    )
+                    valgt_bildevisning = "klubb=" + valgt_klubb
+                else:
+                    resultlist = await get_results_by_raceclass(
+                        user, event_id, valgt_klasse
+                    )
+                    if len(resultlist) == 0:
+                        informasjon = "Resultatliste er ikke klar. Følg med på <a href=>live resultater</a>."
+                    foto = await FotoService().get_foto_by_klasse(
+                        user, valgt_klasse, event_id
+                    )
+                    valgt_bildevisning = "klasse=" + valgt_klasse
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
@@ -83,10 +84,9 @@ class Resultat(web.View):
                     "valgt_bildevisning": valgt_bildevisning,
                     "valgt_klasse": valgt_klasse,
                     "valgt_klubb": valgt_klubb,
-                    "klasser": klasser,
+                    "klasser": raceclasses,
                     "clubs": clubs,
-                    "resultatliste": resultatliste,
-                    "heatliste": heatliste,
+                    "resultatliste": resultlist,
                     "username": user["username"],
                 },
             )

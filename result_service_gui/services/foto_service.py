@@ -35,23 +35,16 @@ class FotoService:
             logging.debug(document)
         return foto
 
-    async def get_foto_by_klasse(self, db: Any, lopsklasse: str, event: dict) -> List:
+    async def get_foto_by_klasse(
+        self, user: dict, lopsklasse: str, event_id: str
+    ) -> List:
         """Get all foto for a given klasse."""
-        foto = []
-        cursor = db.foto_collection.find({"Løpsklasse": lopsklasse})
-        for document in await cursor.to_list(length=500):
-            foto.append(document)
-            logging.debug(document)
+        foto = []  # type: ignore
         return foto
 
-    async def get_foto_by_klubb(self, db: Any, klubb: str, event: dict) -> List:
+    async def get_foto_by_klubb(self, user: dict, klubb: str, event_id: str) -> List:
         """Get all foto for a given klubb."""
-        foto = []
-        myquery = ".*" + klubb + ".*"
-        cursor = db.foto_collection.find({"Klubb": {"$regex": myquery}})
-        for document in await cursor.to_list(length=500):
-            foto.append(document)
-            logging.debug(document)
+        foto = []  # type: ignore
         return foto
 
     async def create_foto(self, token: str, db: Any, body: Any, event: dict) -> int:

@@ -9,6 +9,7 @@ from aiohttp_session import get_session
 from result_service_gui.services import (
     EventsAdapter,
     RaceplansAdapter,
+    ResultAdapter,
     StartAdapter,
     TimeEventsAdapter,
     TimeEventsService,
@@ -391,6 +392,37 @@ async def get_races_for_print(
                         first_in_class = False
                     races.append(race)
     return races
+
+
+async def get_results_by_raceclass(
+    user: dict, event_id: str, valgt_klasse: str
+) -> list:
+    """Get results for raceclass - return sorted list."""
+    results = []
+    races = await RaceplansAdapter().get_races_by_racesclass(
+        user["token"], event_id, valgt_klasse
+    )
+    raceclass_rank = 1
+    for race in reversed(races):
+        if len(race["results"]) == 0:
+            # need results for all races - exit if not
+            return []
+        # skip results from qualification
+        if race["round"] != "Q":
+            _tmp_results = await ResultAdapter().get_race_results(
+                user["token"], race["id"]
+            )
+            for _tmp_result in _tmp_results[0]["ranking_sequence"]:
+                # skip results if racer has more races
+                if _tmp_result["next_race_id"] == "":
+                    new_result: dict = {
+                        "rank": raceclass_rank,
+                        "round": f"{race['round']}{race['index']}",
+                        "time_event": _tmp_result,
+                    }
+                    results.append(new_result)
+                    raceclass_rank += 1
+    return results
 
 
 async def update_time_event(user: dict, action: str, form: dict) -> str:

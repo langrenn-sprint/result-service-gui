@@ -152,6 +152,8 @@ class TimeEventsService:
             }
         else:
             time_event["next_race"] = "Ute"
+            time_event["next_race_id"] = ""
+
         # add name and club to time_event
         time_event["name"] = f"{contestant['first_name']} {contestant['last_name']}"
         time_event["club"] = contestant["club"]
