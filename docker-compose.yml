@@ -21,6 +21,25 @@ services:
       - "event-service"
       - "user-service"
       - "mongodb"
+  event-service-gui:
+    image: ghcr.io/langrenn-sprint/event-service-gui:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - ADMIN_USERNAME=${ADMIN_USERNAME}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - HOST_PORT=8080
+      - EVENTS_HOST_SERVER=event-service
+      - EVENTS_HOST_PORT=8080
+      - RACE_HOST_SERVER=race-service
+      - RACE_HOST_PORT=8080
+      - RESULT_GUI_HOST_SERVER=localhost
+      - RESULT_GUI_HOST_PORT=8090
+      - USERS_HOST_SERVER=user-service
+      - USERS_HOST_PORT=8080
+    depends_on:
+      - "event-service"
   event-service:
     image: ghcr.io/langrenn-sprint/event-service:latest
     ports:
