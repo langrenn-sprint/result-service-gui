@@ -13,6 +13,7 @@ services:
       - EVENT_GUI_HOST_PORT=8080
       - EVENTS_HOST_SERVER=event-service
       - EVENTS_HOST_PORT=8080
+      - LOGGING_LEVEL=${LOGGING_LEVEL}
       - RACE_HOST_SERVER=race-service
       - RACE_HOST_PORT=8080
       - USERS_HOST_SERVER=user-service
@@ -32,6 +33,7 @@ services:
       - HOST_PORT=8080
       - EVENTS_HOST_SERVER=event-service
       - EVENTS_HOST_PORT=8080
+      - LOGGING_LEVEL=${LOGGING_LEVEL}
       - RACE_HOST_SERVER=race-service
       - RACE_HOST_PORT=8080
       - RESULT_GUI_HOST_SERVER=localhost
