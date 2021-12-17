@@ -1,6 +1,5 @@
 """Resource module for main view."""
 import logging
-import os
 
 from aiohttp import web
 import aiohttp_jinja2
@@ -13,11 +12,6 @@ from .utils import (
     get_event,
     get_races_for_live_view,
 )
-
-
-EVENT_GUI_HOST_SERVER = os.getenv("EVENT_GUI_HOST_SERVER", "localhost")
-EVENT_GUI_HOST_PORT = os.getenv("EVENT_GUI_HOST_PORT", "8080")
-EVENT_GUI_URL = f"http://{EVENT_GUI_HOST_SERVER}:{EVENT_GUI_HOST_PORT}"
 
 
 class Dashboard(web.View):
@@ -51,7 +45,6 @@ class Dashboard(web.View):
                 {
                     "lopsinfo": "Dashboard - under rennet",
                     "event": event,
-                    "event_gui_url": EVENT_GUI_URL,
                     "event_id": event_id,
                     "informasjon": informasjon,
                     "raceclasses": raceclasses,

@@ -59,7 +59,7 @@
         <td></td>
       </tr>
       <tr>
-        <td>Start (<a id=orange href=/timing?event_id={{ event_id }}&action=start class=dropbtn>registrer</a>)</td>
+        <td>Start (<a href=/timing?event_id={{ event_id }}&action=start>registrer</a>)</td>
         <td></td>
         <td>Registrere starter, krysse av på liste eller skrive startnummer</td>
       </tr>
@@ -67,7 +67,7 @@
         <td colspan=3 id=spacer></td>
       </tr>
       <tr>
-        <td>Mål (<a id=orange href=/timing?event_id={{ event_id }}&action=finish_place class=dropbtn>registrer</a>)</td>
+        <td>Mål (<a href=/timing?event_id={{ event_id }}&action=finish_place>registrer</a>)</td>
         <td></td>
         <td>Registrere målpassering, skrive inn startnummer eller plassering</td>
       </tr>
@@ -75,7 +75,7 @@
         <td colspan=3 id=spacer></td>
       </tr>
       <tr>
-        <td>Redigere (<a id=orange href=timing_verify?event_id={{ event_id }}&action=result>se/endre</a>)</td>
+        <td>Redigere (<a href=timing_verify?event_id={{ event_id }}&action=result>se/endre</a>)</td>
         <td></td>
         <td>Korringeringer og manglende registreringer</td>
       </tr>
@@ -83,7 +83,7 @@
         <td colspan=3 id=spacer></td>
       </tr>
       <tr>
-        <td>Feilretting (<a id=orange href=/control?event_id={{ event_id }}&action=control class=dropbtn>se/endre</a>)</td>
+        <td>Feilretting (<a href=/control?event_id={{ event_id }}&action=control>se/endre</a>)</td>
         <td></td>
         <td>Registreringer har feilet i systemet</td>
       </tr>
@@ -99,7 +99,7 @@
         <td></td>
       </tr>
       <tr>
-        <td>Tidskjema (<a id=orange href={{ event_gui_url }}/raceplans?event_id={{ event_id }}&action=edit_time class=dropbtn>se/endre</a>)</td>
+        <td>Tidskjema (<a id="mySeeTime" onclick="event_gui_href('mySeeTime', 'raceplans?event_id={{ event_id }}&action=edit_time')" href=>se/endre</a>)</td>
         <td></td>
         <td>Utsette (eller forsere) kjøreplanen</td>
       </tr>
@@ -108,7 +108,7 @@
       </tr>
       <tr>
         <td>
-          Videre til (<a id=orange href=/control?event_id={{ event_id }}&action=template class=dropbtn>se/endre</a>)
+          Videre til (<a href=/control?event_id={{ event_id }}&action=template>se/endre</a>)
         </td>
         <td></td>
         <td>
@@ -189,4 +189,9 @@
     </table>
   </div>
 </div>
+<script type="text/javascript">
+  function event_gui_href(my_element, path) {
+    document.getElementById(my_element).href = "http://" + window.location.hostname + ":8080/" + path;
+  }
+</script>
 {% endblock %}
