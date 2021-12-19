@@ -53,9 +53,7 @@ class Timing(web.View):
                 valgt_heat = races[0]["order"]
                 for race in races:
                     # get start list detail
-                    race["startliste"] = await get_enchiced_startlist(
-                        user, race["id"], race["start_entries"]
-                    )
+                    race["startliste"] = await get_enchiced_startlist(user, race["id"])
             else:
                 informasjon = "Fant ingen heat. Velg på nytt."
 

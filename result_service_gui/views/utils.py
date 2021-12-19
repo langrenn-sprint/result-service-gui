@@ -10,7 +10,6 @@ from result_service_gui.services import (
     EventsAdapter,
     RaceplansAdapter,
     ResultAdapter,
-    StartAdapter,
     TimeEventsAdapter,
     TimeEventsService,
     UserAdapter,
@@ -185,18 +184,17 @@ async def create_start_time_event(user: dict, form: dict, request_body: dict) ->
     return informasjon
 
 
-async def get_enchiced_startlist(user: dict, race_id: str, start_entries: list) -> list:
+async def get_enchiced_startlist(user: dict, race_id: str) -> list:
     """Enrich startlist information - including info if race result is registered."""
     startlist = []
     # get time-events registered
     next_race_time_events = await TimeEventsAdapter().get_time_events_by_race_id(
         user["token"], race_id
     )
-    if len(start_entries) > 0:
-        for start_id in start_entries:
-            start_entry = await StartAdapter().get_start_entry_by_id(
-                user["token"], race_id, start_id
-            )
+    race = await RaceplansAdapter().get_race_by_id(user["token"], race_id)
+    new_start_entries = race["start_entries"]
+    if len(new_start_entries) > 0:
+        for start_entry in new_start_entries:
             for time_event in next_race_time_events:
                 # get next race info
                 if time_event["timing_point"] == "Template":
@@ -228,6 +226,7 @@ async def get_enchiced_startlist(user: dict, race_id: str, start_entries: list) 
                             "info"
                         ] = f"DNS registered at {time_event['registration_time']}"
             startlist.append(start_entry)
+
     return startlist
 
 
@@ -380,7 +379,7 @@ async def get_races_for_print(
                     ) and action != "result":
                         race["list_type"] = "start"
                         race["startliste"] = await get_enchiced_startlist(
-                            user, race["id"], race["start_entries"]
+                            user, race["id"]
                         )
                     else:
                         race["list_type"] = action

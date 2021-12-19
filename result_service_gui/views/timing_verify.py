@@ -64,9 +64,7 @@ class TimingVerify(web.View):
                 if valgt_runde == current_round:
                     race["next_race"] = get_qualification_text(race)
                     # get start list detail
-                    race["startliste"] = await get_enchiced_startlist(
-                        user, race["id"], race["start_entries"]
-                    )
+                    race["startliste"] = await get_enchiced_startlist(user, race["id"])
                     selected_races.append(race)
 
             """Get route function."""

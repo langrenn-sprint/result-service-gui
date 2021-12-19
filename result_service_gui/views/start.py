@@ -8,8 +8,6 @@ import aiohttp_jinja2
 from result_service_gui.services import (
     RaceclassesAdapter,
     RaceplansAdapter,
-    StartAdapter,
-    TimeEventsService,
 )
 from .utils import (
     check_login,
@@ -73,7 +71,7 @@ class Start(web.View):
                         race["start_time"] = race["start_time"][-8:]
                         # get start list details
                         race["startliste"] = await get_enchiced_startlist(
-                            user, race["id"], race["start_entries"]
+                            user, race["id"]
                         )
                         races.append(race)
                 raceplan_summary = get_raceplan_summary(_tmp_races, raceclasses)
@@ -97,31 +95,3 @@ class Start(web.View):
         except Exception as e:
             logging.error(f"Error: {e}. Redirect to main page.")
             return web.HTTPSeeOther(location=f"/?informasjon={e}")
-
-    async def post(self) -> web.Response:
-        """Post route function that updates a collection of klasses."""
-        user = await check_login(self)
-
-        informasjon = ""
-        action = ""
-        form = await self.request.post()
-        event_id = str(form["event_id"])
-        logging.debug(f"Form {form}")
-
-        try:
-            if "generate_startlist" in form.keys():
-                informasjon = await StartAdapter().generate_startlist_for_event(
-                    user["token"], event_id
-                )
-            elif "generate_next_race" in form.keys():
-                informasjon = await TimeEventsService().generate_next_race_templates(
-                    user["token"], event_id
-                )
-        except Exception as e:
-            logging.error(f"Error: {e}")
-            informasjon = f"Det har oppstått en feil - {e.args}."
-
-        info = f"action={action}&informasjon={informasjon}"
-        return web.HTTPSeeOther(
-            location=f"{EVENT_GUI_URL}/tasks?event_id={event_id}&{info}"
-        )
