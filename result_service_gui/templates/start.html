@@ -80,13 +80,15 @@
     <table>
       {% for race in races %}
         <tr id=headerblue>
+          <td colspan=3>Startliste {{ race.raceclass }}
             {% if race.round == "Q" %}
-              <td colspan=3>{{ race.raceclass }} Kvartfinale {{ race.index }}{{ race.heat }}</td>
+              Kvartfinale {{ race.heat }}
             {% elif race.round == "S" %}
-              <td colspan=3>{{ race.raceclass }} Semifinale {{ race.index }}{{ race.heat }}</td>
+              Semifinale {{ race.index }}{{ race.heat }}
             {% elif race.round == "F" %}
-              <td colspan=3>{{ race.raceclass }} Finale {{ race.index }}</td>
+              Finale {{ race.index }}
             {% endif %}
+          </td>
           <td>Kl. {{ race.start_time }}</td>
           <td colspan=2>{% if race.round != "F" %}Neste heat: {{ race.next_race }}{% endif %}</td>
         </tr>

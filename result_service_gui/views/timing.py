@@ -10,7 +10,8 @@ from result_service_gui.services import (
 )
 from .utils import (
     check_login,
-    create_time_events,
+    create_finish_time_events,
+    create_start_time_events,
     get_enchiced_startlist,
     get_event,
     get_races_for_live_view,
@@ -93,7 +94,13 @@ class Timing(web.View):
             action = str(form["action"])
             valgt_heat = str(form["heat"])
 
-            informasjon = await create_time_events(user, action, form)  # type: ignore
+            if "finish" in action:
+                informasjon = await create_finish_time_events(user, action, form)  # type: ignore
+            elif "start" in action:
+                informasjon = await create_start_time_events(user, form)  # type: ignore
+            else:
+                informasjon = "Ugylding action - ingen endringer"
+
         except Exception as e:
             logging.error(f"Error: {e}")
             informasjon = f"Det har oppstått en feil - {e.args}."

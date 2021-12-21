@@ -13,6 +13,7 @@ from result_service_gui.services import (
 )
 from .utils import (
     check_login,
+    create_finish_time_events,
     get_enchiced_startlist,
     get_event,
     get_qualification_text,
@@ -176,5 +177,5 @@ async def delete_start(user: dict, form: dict) -> str:
 
 async def update_result(user: dict, form: dict) -> str:
     """Extract form data and update one result and corresponding start event."""
-    informasjon = "update_result"
+    informasjon = await create_finish_time_events(user, "finish_bib", form)  # type: ignore
     return informasjon

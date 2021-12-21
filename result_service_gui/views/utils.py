@@ -27,8 +27,8 @@ async def check_login(self) -> Any:
     return {"username": session["username"], "token": session["token"]}
 
 
-async def create_time_events(user: dict, action: str, form: dict) -> str:
-    """Register time events - return information."""
+async def create_finish_time_events(user: dict, action: str, form: dict) -> str:
+    """Register time events for finish- return information."""
     informasjon = ""
     time_now = datetime.datetime.now()
     time_stamp_now = f"{time_now.strftime('%Y')}-{time_now.strftime('%m')}-{time_now.strftime('%d')}T{time_now.strftime('%X')}"
@@ -49,10 +49,7 @@ async def create_time_events(user: dict, action: str, form: dict) -> str:
         "changelog": [],
     }
     i = 0
-    if action == "start":
-        informasjon += await create_start_time_event(user, form, request_body)
-    # finish "slengere"
-    elif action == "finish":
+    if "finish" in form.keys():
         request_body["timing_point"] = "Finish"
         request_body["changelog"] = [
             {
@@ -73,14 +70,11 @@ async def create_time_events(user: dict, action: str, form: dict) -> str:
             logging.debug(f"Registrering: {id} - body: {request_body}")
     elif action == "finish_bib":
         request_body["timing_point"] = "Finish"
-        # TODO - need to delete all old start events
         for x in form.keys():
             if x.startswith("form_rank_"):
                 new_bib = form[x]
                 _rank = int(x[10:])
-                old_bib = form[f"form_old_rank_{_rank}"]
-                if new_bib.isnumeric() and new_bib != old_bib:
-                    request_body["id"] = form[f"form_finish_event_id_{_rank}"]
+                if new_bib.isnumeric():
                     request_body["bib"] = int(new_bib)
                     request_body["rank"] = _rank
                     request_body["changelog"] = [
@@ -103,9 +97,8 @@ async def create_time_events(user: dict, action: str, form: dict) -> str:
         for x in form.keys():
             if x.startswith("form_place_"):
                 _bib = int(x[11:])
-                old_rank = form[f"form_old_place_{_bib}"]
                 new_rank = form[x]
-                if new_rank.isnumeric() and old_rank != new_rank:
+                if new_rank.isnumeric():
                     request_body["bib"] = _bib
                     request_body["rank"] = int(new_rank)
                     request_body["changelog"] = [
@@ -125,8 +118,27 @@ async def create_time_events(user: dict, action: str, form: dict) -> str:
     return f"Utført {i} registreringer: {informasjon}"
 
 
-async def create_start_time_event(user: dict, form: dict, request_body: dict) -> str:
+async def create_start_time_events(user: dict, form: dict) -> str:
     """Extract form data and create time_events for start."""
+    informasjon = ""
+    time_now = datetime.datetime.now()
+    time_stamp_now = f"{time_now.strftime('%Y')}-{time_now.strftime('%m')}-{time_now.strftime('%d')}T{time_now.strftime('%X')}"
+
+    request_body = {
+        "id": "",
+        "bib": 0,
+        "event_id": form["event_id"],
+        "race": form["race"],
+        "race_id": form["race_id"],
+        "timing_point": "",
+        "rank": "",
+        "registration_time": time_now.strftime("%X"),
+        "next_race": "",
+        "next_race_id": "",
+        "next_race_position": 0,
+        "status": "OK",
+        "changelog": [],
+    }
     i = 0
     informasjon = ""
     time_now = datetime.datetime.now()

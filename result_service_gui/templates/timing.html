@@ -45,18 +45,15 @@
       {% for race in races %}
       <form action=/timing method=post>
         <tr id=headerblue>
-          <td>Pos</td>
-          <td width=80>Startnr</td>
-          {% if action == "start" %}
-            <td width=150>Startet</td>
-          {% elif action == "finish_place" %}
-            <td width=150>Plass</td>
-          {% elif action == "finish_bib" %}
           <td></td>
+          <td width=50>Startnr</td>
+          {% if action == "finish_place" %}
+            <td width=150 align=center>Plass</td>
+          {% else %}
+            <td></td>
           {% endif %}
-          <td></td>
           <td><b>{{ race.raceclass }}{{ race.round }}{{ race.index }}{{ race.heat }}  kl:{{ race.start_time }} (Heat {{ race.order }})</b></td>
-          <td>Videre til: {{ race.next_race }}</td>
+          <td colspan=2>Videre til: {{ race.next_race }}</td>
           {% if action == "finish_bib" %}
             <td>Plass</td>
             <td>Startnummer</td>
@@ -68,16 +65,18 @@
                   <td>{{ start.starting_position }}</td>
                   <td align=center>{{ start.bib }}</td>
                   <td>
-                    <input type="radio" name="form_start_{{ start.bib }}" value="OK"><label for="OK">OK</label>
+                    <input type="radio" name="form_start_{{ start.bib }}" value="OK"><label for="OK">Startet</label>
                     <input type="radio" name="form_start_{{ start.bib }}" value="DNS"><label for="OK">DNS</label>
                   </td>
                 {% elif action == "finish_place" %}
                   <td>{{ start.start_status }}</td>
                   <td align=center>{{ start.bib }}</td>
-                  <td>
-                    <input type="number" name="form_place_{{ start.bib }}" value="{{ start.finish_rank }}" min=1 max=99>
-                    <input type="hidden" name="form_old_place_{{ start.bib }}" value="{{ start.finish_rank }}">
-                    <input type="hidden" name="form_finish_event_id_{{ start.bib }}" value="{{ start.finish_event_id }}">
+                  <td align=center>
+                    {% if start.finish_rank %}
+                      {{ start.finish_rank }}
+                    {% else %}
+                      <input type="number" name="form_place_{{ start.bib }}" value="{{ start.finish_rank }}" min=1 max=99>
+                    {% endif %}
                   </td>
                 {% elif action == "finish_bib" %}
                   <td>{{ start.start_status }}</td>
@@ -88,11 +87,13 @@
               <td>{{ start.club }}</td>
               <td>{{ start.info }}</td>
               {% if action == "finish_bib" %}
-                <td>{{ start.starting_position }}</td>
-                <td>
-                  <input type="number" name="form_rank_{{ start.starting_position }}" value="{{ start.finish_bib }}" min=1 max=9999>
-                  <input type="hidden" name="form_old_rank_{{ start.starting_position }}" value="{{ start.finish_bib }}">
-                  <input type="hidden" name="form_finish_event_id_{{ start.starting_position }}" value="{{ start.finish_event_id }}">
+                <td align=center>{{ start.starting_position }}</td>
+                <td align=center>
+                  {% if start.finish_bib %}
+                    {{ start.finish_bib }}
+                  {% else %}
+                    <input type="number" name="form_rank_{{ start.starting_position }}" value="{{ start.finish_bib }}" min=1 max=9999>
+                  {% endif %}
                 </td>
             </tr>
           {% endif %}
@@ -169,7 +170,7 @@
             <input type="hidden" name="event_id" value="{{ event_id }}">
             <input type="hidden" name="heat" value="{{ valgt_heat }}">
             <input type="hidden" name="action" value="{{ action }}">
-            <input type="submit" name="{{ action }}" value="  Oppdater  ">
+            <input type="submit" name="finish" value="  Oppdater  ">
           </td>
       </tr>
       <tr>
