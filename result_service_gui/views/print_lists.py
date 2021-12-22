@@ -14,6 +14,7 @@ from .utils import (
     get_qualification_text,
     get_raceplan_summary,
     get_races_for_print,
+    get_results_by_raceclass,
 )
 
 
@@ -38,6 +39,7 @@ class PrintLists(web.View):
 
             races = []
             raceplan_summary = []
+            resultlist = []
             html_template = "print_lists.html"
 
             try:
@@ -61,6 +63,11 @@ class PrintLists(web.View):
                         races.append(race)
                 raceplan_summary = get_raceplan_summary(_tmp_races, raceclasses)
 
+            elif action == "result":
+                html_template = "print_results.html"
+                resultlist = await get_results_by_raceclass(
+                    user, event_id, valgt_klasse
+                )
             else:
                 races = await get_races_for_print(
                     user, _tmp_races, raceclasses, valgt_klasse, action
@@ -80,6 +87,7 @@ class PrintLists(web.View):
                     "raceclasses": raceclasses,
                     "raceplan_summary": raceplan_summary,
                     "races": races,
+                    "resultlist": resultlist,
                     "username": user["username"],
                 },
             )

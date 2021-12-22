@@ -122,7 +122,16 @@
           </ul>
         </td>
         <td width=200>
-          Resultater (pr klasse)
+          <ul>
+            <li class=dropdown id=topborder>
+              <a href=javascript:void(0) class=dropbtn>Resultater (pr klasse)</a>
+              <div class=dropdown-content>
+                {% for klasse in raceclasses %}
+                  <a target=_new href=print_lists?klasse={{ klasse.name }}&event_id={{ event_id }}&action=result>{{ klasse.ageclass_name }}</a>
+                {% endfor %}
+              </div>
+            </li>
+          </ul>
         </td>
         <td colspan=2></td>
       </tr>
