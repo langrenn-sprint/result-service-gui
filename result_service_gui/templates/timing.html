@@ -87,16 +87,19 @@
               <td>{{ start.club }}</td>
               <td>{{ start.info }}</td>
               {% if action == "finish_bib" %}
-                <td align=center>{{ start.starting_position }}</td>
-                <td align=center>
-                  {% if start.finish_bib %}
+                {% if start.finish_bib %}
+                  <td align=center>{{ start.finish_rank }}</td>
+                  <td align=center>
                     {{ start.finish_bib }}
-                  {% else %}
-                    <input type="number" name="form_rank_{{ start.starting_position }}" value="{{ start.finish_bib }}" min=1 max=9999>
-                  {% endif %}
-                </td>
+                  </td>
+                {% else %}
+                  <td align=center>{{ loop.index }}</td>
+                  <td align=center>
+                    <input type="number" name="form_rank_{{ loop.index }}" value="{{ start.finish_bib }}" min=1 max=9999>
+                  </td>
+                {% endif %}
+              {% endif %}
             </tr>
-          {% endif %}
         {% endfor %}
         <tr id=spacer>
         </tr>

@@ -199,6 +199,7 @@ async def create_start_time_events(user: dict, form: dict) -> str:
 async def get_enchiced_startlist(user: dict, race_id: str) -> list:
     """Enrich startlist information - including info if race result is registered."""
     startlist = []
+    i = 0
     # get time-events registered
     next_race_time_events = await TimeEventsAdapter().get_time_events_by_race_id(
         user["token"], race_id
@@ -207,6 +208,7 @@ async def get_enchiced_startlist(user: dict, race_id: str) -> list:
     new_start_entries = race["start_entries"]
     if len(new_start_entries) > 0:
         for start_entry in new_start_entries:
+            i += 1
             for time_event in next_race_time_events:
                 # get next race info
                 if time_event["timing_point"] == "Template":
@@ -219,11 +221,13 @@ async def get_enchiced_startlist(user: dict, race_id: str) -> list:
                 elif time_event["timing_point"] == "Finish":
                     # case of register by rank
                     if time_event["bib"] == start_entry["bib"]:
+                        start_entry["finish_bib"] = time_event["bib"]
                         start_entry["finish_rank"] = time_event["rank"]
                         start_entry["finish_event_id"] = time_event["id"]
                     # case of register by bib
-                    if start_entry["starting_position"] == time_event["rank"]:
+                    if i == time_event["rank"]:
                         start_entry["finish_bib"] = time_event["bib"]
+                        start_entry["finish_rank"] = time_event["rank"]
                         start_entry["finish_event_id"] = time_event["id"]
                 # check if start or DNS is registered
                 elif time_event["timing_point"] == "Start":
