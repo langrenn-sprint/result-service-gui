@@ -10,7 +10,7 @@ from result_service_gui.services import (
     RaceplansAdapter,
 )
 from .utils import (
-    check_login,
+    check_login_open,
     get_enchiced_startlist,
     get_event,
     get_qualification_text,
@@ -29,7 +29,7 @@ class Start(web.View):
     async def get(self) -> web.Response:
         """Get route function that return the startlister page."""
         try:
-            user = await check_login(self)
+            user = await check_login_open(self)
             event_id = self.request.rel_url.query["event_id"]
             event = await get_event(user, event_id)
 
@@ -89,7 +89,7 @@ class Start(web.View):
                     "raceclasses": raceclasses,
                     "races": races,
                     "raceplan_summary": raceplan_summary,
-                    "username": user["username"],
+                    "username": user["name"],
                 },
             )
         except Exception as e:

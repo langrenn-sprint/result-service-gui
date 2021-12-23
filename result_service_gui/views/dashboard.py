@@ -49,7 +49,7 @@ class Dashboard(web.View):
                     "informasjon": informasjon,
                     "raceclasses": raceclasses,
                     "races": races,
-                    "username": user["username"],
+                    "username": user["name"],
                     "valgt_heat": valgt_heat,
                 },
             )

@@ -88,7 +88,7 @@ class PrintLists(web.View):
                     "raceplan_summary": raceplan_summary,
                     "races": races,
                     "resultlist": resultlist,
-                    "username": user["username"],
+                    "username": user["name"],
                 },
             )
         except Exception as e:

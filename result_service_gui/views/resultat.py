@@ -9,7 +9,7 @@ from result_service_gui.services import (
     FotoService,
     RaceclassesAdapter,
 )
-from .utils import check_login, get_event, get_results_by_raceclass
+from .utils import check_login_open, get_event, get_results_by_raceclass
 
 
 class Resultat(web.View):
@@ -27,7 +27,7 @@ class Resultat(web.View):
             informasjon = ""
 
         try:
-            user = await check_login(self)
+            user = await check_login_open(self)
             event = await get_event(user, event_id)
 
             foto = []
@@ -87,7 +87,7 @@ class Resultat(web.View):
                     "klasser": raceclasses,
                     "clubs": clubs,
                     "resultatliste": resultlist,
-                    "username": user["username"],
+                    "username": user["name"],
                 },
             )
         except Exception as e:

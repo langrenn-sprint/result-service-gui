@@ -1,7 +1,6 @@
 """Utilities module for gui services."""
 import datetime
 import logging
-from typing import Any
 
 from aiohttp import web
 from aiohttp_session import get_session
@@ -16,15 +15,34 @@ from result_service_gui.services import (
 )
 
 
-async def check_login(self) -> Any:
+async def check_login(self) -> dict:
     """Check loging and return user credentials."""
     session = await get_session(self.request)
     loggedin = UserAdapter().isloggedin(session)
     if not loggedin:
         informasjon = "Logg inn for å se denne siden"
-        return web.HTTPSeeOther(location=f"/login?informasjon={informasjon}")
+        return web.HTTPSeeOther(location=f"/login?informasjon={informasjon}")  # type: ignore
 
-    return {"username": session["username"], "token": session["token"]}
+    return {"name": session["username"], "token": session["token"]}
+
+
+async def check_login_open(self) -> dict:
+    """Check loging and return user credentials."""
+    user = {}
+    session = await get_session(self.request)
+    loggedin = UserAdapter().isloggedin(session)
+    if loggedin:
+        user = {
+            "name": session["username"],
+            "loggedin": True,
+            "token": session["token"],
+        }
+    else:
+        # get temp token
+        token = await UserAdapter().login_guest()
+        user = {"name": "Gjest", "loggedin": False, "token": token}
+
+    return user
 
 
 async def create_finish_time_events(user: dict, action: str, form: dict) -> str:
@@ -54,7 +72,7 @@ async def create_finish_time_events(user: dict, action: str, form: dict) -> str:
         request_body["changelog"] = [
             {
                 "timestamp": time_stamp_now,
-                "user_id": user["username"],
+                "user_id": user["name"],
                 "comment": "Målpassering registrert. ",
             }
         ]
@@ -80,7 +98,7 @@ async def create_finish_time_events(user: dict, action: str, form: dict) -> str:
                     request_body["changelog"] = [
                         {
                             "timestamp": time_stamp_now,
-                            "user_id": user["username"],
+                            "user_id": user["name"],
                             "comment": f"{request_body['rank']} plass i mål. ",
                         }
                     ]
@@ -104,7 +122,7 @@ async def create_finish_time_events(user: dict, action: str, form: dict) -> str:
                     request_body["changelog"] = [
                         {
                             "timestamp": time_stamp_now,
-                            "user_id": user["username"],
+                            "user_id": user["name"],
                             "comment": f"{request_body['rank']} plass i mål. ",
                         }
                     ]
@@ -159,7 +177,7 @@ async def create_start_time_events(user: dict, form: dict) -> str:
             request_body["changelog"] = [
                 {
                     "timestamp": time_stamp_now,
-                    "user_id": user["username"],
+                    "user_id": user["name"],
                     "comment": changelog_comment,
                 }
             ]
@@ -184,7 +202,7 @@ async def create_start_time_events(user: dict, form: dict) -> str:
                 request_body["changelog"] = [
                     {
                         "timestamp": time_stamp_now,
-                        "user_id": user["username"],
+                        "user_id": user["name"],
                         "comment": changelog_comment,
                     }
                 ]
@@ -452,7 +470,7 @@ async def update_time_event(user: dict, action: str, form: dict) -> str:
         request_body["changelog"] = [
             {
                 "timestamp": time_stamp_now,
-                "user_id": user["username"],
+                "user_id": user["name"],
                 "comment": "Oppdatering - tidligere informasjon: {request_body}. ",
             }
         ]
@@ -463,7 +481,7 @@ async def update_time_event(user: dict, action: str, form: dict) -> str:
         request_body["changelog"] = [
             {
                 "timestamp": time_stamp_now,
-                "user_id": user["username"],
+                "user_id": user["name"],
                 "comment": "Status set to deleted . ",
             }
         ]

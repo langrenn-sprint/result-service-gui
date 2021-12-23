@@ -10,7 +10,7 @@ from result_service_gui.services import (
     RaceplansAdapter,
 )
 from .utils import (
-    check_login,
+    check_login_open,
     get_event,
     get_finish_rank,
     get_qualification_text,
@@ -31,7 +31,7 @@ class Live(web.View):
         except Exception:
             informasjon = ""
         try:
-            user = await check_login(self)
+            user = await check_login_open(self)
             event = await get_event(user, event_id)
 
             races = []
@@ -87,7 +87,7 @@ class Live(web.View):
                     "raceclasses": raceclasses,
                     "raceplan_summary": [],
                     "races": races,
-                    "username": user["username"],
+                    "username": user["name"],
                 },
             )
         except Exception as e:

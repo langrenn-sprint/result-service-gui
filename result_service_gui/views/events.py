@@ -33,7 +33,7 @@ class Events(web.View):
                     "event": event,
                     "event_id": event_id,
                     "informasjon": informasjon,
-                    "username": user["username"],
+                    "username": user["name"],
                 },
             )
         except Exception as e:

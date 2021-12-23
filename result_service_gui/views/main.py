@@ -5,7 +5,7 @@ from aiohttp import web
 import aiohttp_jinja2
 
 from result_service_gui.services import EventsAdapter
-from .utils import check_login, get_event
+from .utils import check_login_open, get_event
 
 
 class Main(web.View):
@@ -18,15 +18,20 @@ class Main(web.View):
         except Exception:
             informasjon = ""
 
+        html_template = "index.html"
+
         try:
-            user = await check_login(self)
+            user = await check_login_open(self)
+            if user["name"] != "Gjest":
+                html_template = "index_adm.html"
+
             event = await get_event(user["token"], "")
 
             events = await EventsAdapter().get_all_events(user["token"])
             logging.debug(f"Events: {events}")
 
             return await aiohttp_jinja2.render_template_async(
-                "index.html",
+                html_template,
                 self.request,
                 {
                     "lopsinfo": "Startside",
@@ -34,7 +39,7 @@ class Main(web.View):
                     "event_id": "",
                     "events": events,
                     "informasjon": informasjon,
-                    "username": user["username"],
+                    "username": user["name"],
                 },
             )
         except Exception as e:

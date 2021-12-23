@@ -80,7 +80,7 @@ class TimingVerify(web.View):
                     "raceclasses": raceclasses,
                     "raceplan_summary": raceplan_summary,
                     "races": selected_races,
-                    "username": user["username"],
+                    "username": user["name"],
                     "valgt_runde": valgt_runde,
                 },
             )

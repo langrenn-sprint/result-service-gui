@@ -53,7 +53,7 @@ class Control(web.View):
                     "informasjon": informasjon,
                     "passeringer": passeringer,
                     "raceclasses": raceclasses,
-                    "username": user["username"],
+                    "username": user["name"],
                 },
             )
         except Exception as e:
