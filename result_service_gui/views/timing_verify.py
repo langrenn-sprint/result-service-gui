@@ -1,4 +1,5 @@
 """Resource module for verificatoin of timing registration."""
+import datetime
 import logging
 
 from aiohttp import web
@@ -141,8 +142,10 @@ async def create_start(user: dict, form: dict) -> str:
 
 
 async def delete_result(user: dict, form: dict) -> str:
-    """Extract form data and delete one result and corresponding start event."""
+    """Set time event to deleted and delete corresponding start event."""
     informasjon = ""
+    time_now = datetime.datetime.now()
+    time_stamp_now = f"{time_now.strftime('%Y')}-{time_now.strftime('%m')}-{time_now.strftime('%d')}T{time_now.strftime('%X')}"
 
     # get time event and delete next start if existing
     time_event = await TimeEventsAdapter().get_time_event_by_id(
@@ -158,10 +161,19 @@ async def delete_result(user: dict, form: dict) -> str:
                     user["token"], start_entry["race_id"], start_entry["id"]
                 )
                 informasjon = f"Slettet start entry i neste heat. Resultat: {id}"
-    id2 = await TimeEventsAdapter().delete_time_event(
-        user["token"], form["time_event_id"]
+    time_event["status"] = "Error"
+    change_info = {
+        "timestamp": time_stamp_now,
+        "user_id": user["name"],
+        "comment": f"Error - resultat slettet. Bib {time_event['bib']}",
+    }
+    time_event["changelog"].append(change_info)
+    id2 = await TimeEventsAdapter().update_time_event(
+        user["token"], form["time_event_id"], time_event
     )
-    informasjon = f"Slettet målpassering. Resultat: {id2}  {informasjon}"
+    informasjon = (
+        f"Registrert målpassering med error (slettet). Resultat: {id2}  {informasjon}"
+    )
     return informasjon
 
 

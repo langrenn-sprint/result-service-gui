@@ -236,7 +236,10 @@ async def get_enchiced_startlist(user: dict, race_id: str) -> list:
                         else:
                             start_entry["next_race"] = time_event["next_race"]
                 # check if result already registered
-                elif time_event["timing_point"] == "Finish":
+                elif (
+                    time_event["timing_point"] == "Finish"
+                    and time_event["status"] == "OK"
+                ):
                     # case of register by rank
                     if time_event["bib"] == start_entry["bib"]:
                         start_entry["finish_bib"] = time_event["bib"]
