@@ -12,7 +12,7 @@
     <div class=dropdown-content>
       <a href=dashboard?event_id={{ event_id }}>Oversikt</a>
         <a href=timing?event_id={{ event_id }}&action=start&heat={{ valgt_heat }}>Start - tidtaker</a>
-        <a href=timing?event_id={{ event_id }}&action=finish_place&heat={{ valgt_heat }}>Mål - tidtaker</a>
+        <a href=timing?event_id={{ event_id }}&action=finish_bib&heat={{ valgt_heat }}>Mål - tidtaker</a>
         <a href=timing_verify?event_id={{ event_id }}&action=result>Kontroll - tidtaker</a>
         <a href=control?event_id={{ event_id }}&action=control>Feilretting</a>
     </div>
@@ -62,8 +62,8 @@
         <td colspan=5 id=spacer></td>
       </tr>
       <tr>
-        <td>Mål (<a href=/timing?event_id={{ event_id }}&action=finish_place>registrer</a>)</td>
-        <td colspan=4>Registrere målpassering, skrive inn startnummer eller plassering</td>
+        <td>Mål (<a href=/timing?event_id={{ event_id }}&action=finish_bib>registrer</a>)</td>
+        <td colspan=4>Registrere målpassering, skrive inn startnummer</td>
       </tr>
       <tr>
         <td colspan=5 id=spacer></td>

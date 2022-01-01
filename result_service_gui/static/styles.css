@@ -132,6 +132,21 @@ tr:nth-child(even){background-color: #f2f2f2;}
     background-color: white;
 }
 
+#topborder {
+  border-left: 1px solid black;
+}
+
+#resultheader {
+  border-left: 4px solid white;
+  padding-left: 4px;
+  color: white;
+  background-color: grey;
+}
+
+#resultborder {
+  border-left: 4px solid white;
+}
+
 function naviger(id) {
   var elmnt = document.getElementById(id);
   elmnt.scrollIntoView();

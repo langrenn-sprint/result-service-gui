@@ -14,6 +14,7 @@ from .utils import (
     create_start_time_events,
     get_enchiced_startlist,
     get_event,
+    get_finish_timings,
     get_races_for_live_view,
 )
 
@@ -53,8 +54,9 @@ class Timing(web.View):
             if len(races) > 0:
                 valgt_heat = races[0]["order"]
                 for race in races:
-                    # get start list detail
+                    # get start and finish list detail
                     race["startliste"] = await get_enchiced_startlist(user, race["id"])
+                    race["finish_timings"] = await get_finish_timings(user, race["id"])
             else:
                 informasjon = "Fant ingen heat. Velg på nytt."
 

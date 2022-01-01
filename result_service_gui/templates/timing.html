@@ -19,8 +19,7 @@
     <a href=javascript:void(0) class=dropbtn>Velg funksjon</a>
     <div class=dropdown-content>
         <a href=timing?event_id={{ event_id }}&action=start>Start - registrer DNS</a>
-        <a href=timing?event_id={{ event_id }}&action=finish_bib&heat={{ valgt_heat }}>Mål - skriv startnummer</a>
-        <a href=timing?event_id={{ event_id }}&action=finish_place&heat={{ valgt_heat }}>Mål - skriv plassering</a>
+        <a href=timing?event_id={{ event_id }}&action=finish_bib&heat={{ valgt_heat }}>Målpassering</a>
         <a href="/dashboard?event_id={{ event_id }}">Oversikt</a>
     </div>
   </li>
@@ -46,16 +45,21 @@
       <form action=/timing method=post>
         <tr id=headerblue>
           <td></td>
-          <td width=50>Startnr</td>
-          {% if action == "finish_place" %}
-            <td width=150 align=center>Plass</td>
-          {% else %}
-            <td></td>
-          {% endif %}
-          <td><b>{{ race.raceclass }}{{ race.round }}{{ race.index }}{{ race.heat }}  kl:{{ race.start_time }} (Heat {{ race.order }})</b></td>
-          <td colspan=2>Videre til: {{ race.next_race }}</td>
+          <td colspan=3><b>{{ race.raceclass }}{{ race.round }}{{ race.index }}{{ race.heat }}  kl:{{ race.start_time }}</b></td>
+          <td>Heat {{ race.order }}</td>
+          <td>Videre til: {{ race.next_race }}</td>
           {% if action == "finish_bib" %}
-            <td>Plass</td>
+            <td colspan=2 id=resultheader>Resultat</td>
+          {% endif %}
+        </tr>
+        <tr>
+          <td></td>
+          <td width=50>Startnr</td>
+          <td>Navn</td>
+          <td>Klubb</td>
+          <td colspan=2></td>
+          {% if action == "finish_bib" %}
+            <td id=resultborder>Plass</td>
             <td>Startnummer</td>
           {% endif %}
         </tr>
@@ -68,16 +72,6 @@
                     <input type="radio" name="form_start_{{ start.bib }}" value="OK"><label for="OK">Startet</label>
                     <input type="radio" name="form_start_{{ start.bib }}" value="DNS"><label for="OK">DNS</label>
                   </td>
-                {% elif action == "finish_place" %}
-                  <td>{{ start.start_status }}</td>
-                  <td align=center>{{ start.bib }}</td>
-                  <td align=center>
-                    {% if start.finish_rank %}
-                      {{ start.finish_rank }}
-                    {% else %}
-                      <input type="number" name="form_place_{{ start.bib }}" value="{{ start.finish_rank }}" min=1 max=99>
-                    {% endif %}
-                  </td>
                 {% elif action == "finish_bib" %}
                   <td>{{ start.start_status }}</td>
                   <td align=center>{{ start.bib }}</td>
@@ -87,23 +81,21 @@
               <td>{{ start.club }}</td>
               <td>{{ start.info }}</td>
               {% if action == "finish_bib" %}
-                {% if start.finish_bib %}
-                  <td align=center>{{ start.finish_rank }}</td>
+                {% if race.finish_timings[loop.index0] and race.finish_timings[loop.index0].bib > 0 %}
+                  <td id=resultborder align=center>{{ race.finish_timings[loop.index0].rank }}</td>
                   <td align=center>
-                    {{ start.finish_bib }}
+                    {{ race.finish_timings[loop.index0].bib }}
                   </td>
                 {% else %}
-                  <td align=center>{{ loop.index }}</td>
+                  <td id=resultborder align=center>{{ loop.index }}</td>
                   <td align=center>
-                    <input type="number" name="form_rank_{{ loop.index }}" value="{{ start.finish_bib }}" min=1 max=9999>
+                    <input type="number" name="form_rank_{{ loop.index }}" value="" min=1 max=9999>
                   </td>
                 {% endif %}
               {% endif %}
             </tr>
         {% endfor %}
-        <tr id=spacer>
-        </tr>
-        {% if action == "start" or action == "finish_place" %}
+        {% if action == "start" %}
           <tr>
               <td colspan=2></td>
               <td colspan=4>
@@ -135,7 +127,7 @@
     </table>
   {% endif %}
 
-  {% if action == "start" or action == "finish_bib" or action == "finish_place" or action == "lap" %}
+  {% if action == "start" or action == "finish_bib" or action == "lap" %}
   <form action=/timing method=post>
     <table>
       <tr>

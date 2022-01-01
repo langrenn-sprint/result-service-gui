@@ -17,6 +17,7 @@ from .utils import (
     create_finish_time_events,
     get_enchiced_startlist,
     get_event,
+    get_finish_timings,
     get_qualification_text,
     get_raceplan_summary,
 )
@@ -28,7 +29,9 @@ class TimingVerify(web.View):
     async def get(self) -> web.Response:
         """Get route function that return the passeringer page."""
         informasjon = ""
-        selected_races = []
+        current_races = []
+        next_races = []
+        next_round = ""
         try:
             event_id = self.request.rel_url.query["event_id"]
         except Exception:
@@ -43,6 +46,12 @@ class TimingVerify(web.View):
             action = "result"
         try:
             valgt_runde = self.request.rel_url.query["valgt_runde"]
+            if valgt_runde.endswith("N"):
+                next_round = f"{valgt_runde[:-1]}Q"
+            if valgt_runde.endswith("Q"):
+                next_round = f"{valgt_runde[:-1]}S"
+            elif valgt_runde.endswith("S"):
+                next_round = f"{valgt_runde[:-1]}F"
         except Exception:
             valgt_runde = ""
             informasjon = f"Velg runde i menyen. {informasjon}"
@@ -67,7 +76,14 @@ class TimingVerify(web.View):
                     race["next_race"] = get_qualification_text(race)
                     # get start list detail
                     race["startliste"] = await get_enchiced_startlist(user, race["id"])
-                    selected_races.append(race)
+                    race["finish_timings"] = await get_finish_timings(user, race["id"])
+                    race["start_time"] = race["start_time"][-8:]
+                    current_races.append(race)
+                elif next_round == current_round:
+                    # get start list detail
+                    race["startliste"] = await get_enchiced_startlist(user, race["id"])
+                    race["start_time"] = race["start_time"][-8:]
+                    next_races.append(race)
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
@@ -78,9 +94,10 @@ class TimingVerify(web.View):
                     "event": event,
                     "event_id": event_id,
                     "informasjon": informasjon,
+                    "next_races": next_races,
                     "raceclasses": raceclasses,
                     "raceplan_summary": raceplan_summary,
-                    "races": selected_races,
+                    "current_races": current_races,
                     "username": user["name"],
                     "valgt_runde": valgt_runde,
                 },
@@ -104,6 +121,8 @@ class TimingVerify(web.View):
 
             if "publish_results" in form.keys():
                 informasjon = "Resultater er publisert (TODO)"
+            elif "add_result" in form.keys():
+                informasjon = await add_result(user, form)  # type: ignore
             elif "create_start" in form.keys():
                 informasjon = await create_start(user, form)  # type: ignore
             elif "delete_result" in form.keys():
@@ -184,6 +203,19 @@ async def delete_start(user: dict, form: dict) -> str:
         user["token"], form["race_id"], form["start_id"]
     )
     informasjon = f"Slettet start. Resultat: {id}"
+    return informasjon
+
+
+async def add_result(user: dict, form: dict) -> str:
+    """Extract form data and update one result and corresponding start event."""
+    rank_identifier = f"form_rank_{form['rank']}"
+    new_result = {
+        "event_id": form["event_id"],
+        "race": form["race"],
+        "race_id": form["race_id"],
+        rank_identifier: form["bib"],
+    }
+    informasjon = await create_finish_time_events(user, "finish_bib", new_result)  # type: ignore
     return informasjon
 
 

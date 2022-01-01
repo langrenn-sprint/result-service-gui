@@ -110,29 +110,6 @@ async def create_finish_time_events(user: dict, action: str, form: dict) -> str:
                         f" {request_body['bib']}-{request_body['rank']} plass. "
                     )
                     logging.debug(f"Registrering: {id} - body: {request_body}")
-    elif action == "finish_place":
-        request_body["timing_point"] = "Finish"
-        for x in form.keys():
-            if x.startswith("form_place_"):
-                _bib = int(x[11:])
-                new_rank = form[x]
-                if new_rank.isnumeric():
-                    request_body["bib"] = _bib
-                    request_body["rank"] = int(new_rank)
-                    request_body["changelog"] = [
-                        {
-                            "timestamp": time_stamp_now,
-                            "user_id": user["name"],
-                            "comment": f"{request_body['rank']} plass i mål. ",
-                        }
-                    ]
-                    i += 1
-                    id = await TimeEventsService().create_finish_time_event(user["token"], request_body)  # type: ignore
-                    informasjon += (
-                        f" {request_body['bib']}-{request_body['rank']} plass. "
-                    )
-                    logging.debug(f"Registrering: {id} - body: {request_body}")
-
     return f"Utført {i} registreringer: {informasjon}"
 
 
@@ -230,26 +207,11 @@ async def get_enchiced_startlist(user: dict, race_id: str) -> list:
             for time_event in next_race_time_events:
                 # get next race info
                 if time_event["timing_point"] == "Template":
-                    if time_event["rank"] == start_entry["starting_position"]:
+                    if i == time_event["rank"]:
                         if time_event["next_race"].startswith("Ute"):
                             start_entry["next_race"] = "Ute"
                         else:
                             start_entry["next_race"] = time_event["next_race"]
-                # check if result already registered
-                elif (
-                    time_event["timing_point"] == "Finish"
-                    and time_event["status"] == "OK"
-                ):
-                    # case of register by rank
-                    if time_event["bib"] == start_entry["bib"]:
-                        start_entry["finish_bib"] = time_event["bib"]
-                        start_entry["finish_rank"] = time_event["rank"]
-                        start_entry["finish_event_id"] = time_event["id"]
-                    # case of register by bib
-                    if i == time_event["rank"]:
-                        start_entry["finish_bib"] = time_event["bib"]
-                        start_entry["finish_rank"] = time_event["rank"]
-                        start_entry["finish_event_id"] = time_event["id"]
                 # check if start or DNS is registered
                 elif time_event["timing_point"] == "Start":
                     if time_event["bib"] == start_entry["bib"]:
@@ -265,6 +227,32 @@ async def get_enchiced_startlist(user: dict, race_id: str) -> list:
             startlist.append(start_entry)
 
     return startlist
+
+
+async def get_finish_timings(user: dict, race_id: str) -> list:
+    """Get finish events for race, template event if no result is registered."""
+    finish_events = []
+    # get time-events registered
+    time_events = await TimeEventsAdapter().get_time_events_by_race_id(
+        user["token"], race_id
+    )
+    for i in range(1, 11):
+        bfound_event = False
+        for time_event in time_events:
+            if time_event["timing_point"] == "Finish" and time_event["status"] == "OK":
+                if i == time_event["rank"]:
+                    bfound_event = True
+                    finish_events.append(time_event)
+                    break
+        if (not bfound_event) and (i < 9):
+            for time_event in time_events:
+                if (time_event["timing_point"] == "Template") and (
+                    i == time_event["rank"]
+                ):
+                    bfound_event = True
+                    finish_events.append(time_event)
+                    break
+    return finish_events
 
 
 async def get_event(user: dict, event_id: str) -> dict:
@@ -378,7 +366,6 @@ async def get_races_for_live_view(
     i = 0
     # get races
     races = await RaceplansAdapter().get_all_races(user["token"], event_id)
-
     # find next race on start
     if valgt_heat == 0:
         for race in races:
