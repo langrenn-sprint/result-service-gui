@@ -21,10 +21,17 @@
           <div id=adminpagetitle>
             {% if race.list_type == "start" %}
               Startliste {{ race.raceclass }}
+              {% if valgt_runde == "Q"%}semifinaler
+              {% elif valgt_runde == "S"%}finaler
+              {% endif %}
             {% elif race.list_type == "live" %}
               Live resultater {{ race.raceclass }}
             {% else %}
               Resultater {{ race.raceclass }}
+              {% if valgt_runde == "Q"%}kvartfinaler
+              {% elif valgt_runde == "S"%}semifinaler
+              {% elif valgt_runde == "F"%}finaler
+              {% endif %}
             {% endif %}
           </div>
           <div align=right>{{ event.name }}, {{ event.date_of_event }}</div>

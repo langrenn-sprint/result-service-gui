@@ -417,6 +417,43 @@ async def get_races_for_print(
     return races
 
 
+async def get_races_for_round_result(
+    user: dict, _tmp_races: list, valgt_runde: str, valgt_klasse: str
+) -> list:
+    """Get races for a given round - formatted for print."""
+    races = []
+    first_in_class = True
+    first_in_next_round = True
+    if valgt_runde == "Q":
+        next_round = "S"
+    elif valgt_runde == "S":
+        next_round = "F"
+    else:
+        next_round = "Ugyldig"
+
+    for race in _tmp_races:
+        if race["raceclass"] == valgt_klasse:
+            race["start_time"] = race["start_time"][-8:]
+            if race["round"] == valgt_runde:
+                race["first_in_class"] = first_in_class
+                first_in_class = False
+                race["next_race"] = get_qualification_text(race)
+                race["list_type"] = "result"
+                race_details = await RaceplansAdapter().get_race_by_id(
+                    user["token"], race["id"]
+                )
+                race["finish_results"] = get_finish_rank(race_details)
+                races.append(race)
+            elif race["round"] == next_round:
+                race["first_in_class"] = first_in_next_round
+                first_in_next_round = False
+                race["next_race"] = get_qualification_text(race)
+                race["list_type"] = "start"
+                race["startliste"] = await get_enchiced_startlist(user, race["id"])
+                races.append(race)
+    return races
+
+
 async def get_results_by_raceclass(
     user: dict, event_id: str, valgt_klasse: str
 ) -> list:

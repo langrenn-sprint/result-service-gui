@@ -4,13 +4,13 @@
 {% endblock %}
 
 {% block titleheader %}
-  Verifikasjon {{ action }} {{ valgt_runde }}
+  Verifikasjon {{ valgt_klasse }} {{ valgt_runde }}
 {% endblock %}
 
 {% block refresh %}{% endblock %}
 
 {% block titlemain %}
-  Verifikasjon {{ action }} {{ valgt_runde }}
+  Verifikasjon {{ valgt_klasse }} {{ valgt_runde }}
 {% endblock %}
 
 {% block menuitems %}
@@ -18,10 +18,9 @@
     <a href=javascript:void(0) class=dropbtn>Velg runde</a>
     <div class=dropdown-content>
       {% for round in raceplan_summary %}
-        <a href=timing_verify?event_id={{ event_id }}&action=result&valgt_runde={{ round.name}}N>{{ round.name}} start</a>
-        <a href=timing_verify?event_id={{ event_id }}&action=result&valgt_runde={{ round.name}}Q>{{ round.name}} kvart</a>
-        <a href=timing_verify?event_id={{ event_id }}&action=result&valgt_runde={{ round.name}}S>{{ round.name}} semi</a>
-        <a href=timing_verify?event_id={{ event_id }}&action=result&valgt_runde={{ round.name}}F>{{ round.name}} finaler</a>
+        <a href=timing_verify?event_id={{ event_id }}&valgt_klasse={{ round.name}}&valgt_runde=Q>{{ round.name}} kvart</a>
+        <a href=timing_verify?event_id={{ event_id }}&valgt_klasse={{ round.name}}&valgt_runde=S>{{ round.name}} semi</a>
+        <a href=timing_verify?event_id={{ event_id }}&valgt_klasse={{ round.name}}&valgt_runde=F>{{ round.name}} finaler</a>
       {% endfor %}
     </div>
   </li>
@@ -30,40 +29,61 @@
 {% block content %}
   <div id=spacer></div>
   <table>
-    <form action=/timing_verify method=post>
-      <tr>
-          <td align=right>
-            <input type="hidden" name=valgt_runde value="{{ valgt_runde }}">
-            <input type="hidden" name=event_id value="{{ event_id }}">
-            <input type="hidden" name=action value="{{ action }}">
-            <input type="submit" name="publish_results" value="  Publiser resultater  ">
-          </td>
-      </tr>
-    </form>
+    <tr>
+      <td></td>
+      <td width=100>
+        <form action=/print_lists method=get target=new>
+          <input type="hidden" name=valgt_runde value="{{ valgt_runde }}">
+          <input type="hidden" name=action value=round_result>
+          <input type="hidden" name=event_id value="{{ event_id }}">
+          <input type="hidden" name=klasse value="{{ valgt_klasse }}">
+          <input type="submit" name="publish_results" value="  Skriv ut  ">
+        </form>
+      </td>
+      <td width=100>
+        <form action=/timing_verify method=post>
+          <input type="hidden" name=valgt_runde value="{{ valgt_runde }}">
+          <input type="hidden" name=event_id value="{{ event_id }}">
+          <input type="hidden" name=valgt_klasse value="{{ valgt_klasse }}">
+          <input type="submit" name="publish_results" value="  Publiser resultater  ">
+        </form>
+      </td>
+    </tr>
   </table>
 <div class="w3-row-padding">
-    <div class="w3-half">
-      <div id=adminpagetitle>Resultater - redigere</div>
+    <div class="w3-twothird">
+      <div id=adminpagetitle>
+        {{ valgt_klasse }}
+        {% if valgt_runde == "Q" %}Kvartfinaler
+        {% elif valgt_runde == "S" %}Semifinaler
+        {% elif valgt_runde == "F" %}Finaler
+        {% endif %}
+      </div>
       <table>
-        <tr id=spacer></tr>
         {% for race in current_races %}
+          <tr>
+            <td colspan=5><b>{{ race.raceclass }} {{ race.round }}{{ race.index }}{{ race.heat }}</b></td>
+            <td colspan=5><b>{{ race.start_time[-8:] }}</b> (heat {{ race.order }})</td>
+          </tr>
           <tr id=headerblack>
-            <td colspan=2>{{ race.raceclass }}{{ race.round }}{{ race.index }}{{ race.heat }}  kl:{{ race.start_time }} (Heat {{ race.order }})</td>
-            <td colspan=2>Videre til: {{ race.next_race }}</td>
-            <td colspan=4 id=resultheader>Resultat</td>
+            <td colspan=5>Startliste</td>
+            <td colspan=5 id=resultheader>Resultat: {{ race.next_race }}</td>
           </tr>
           <tr>
+            <td>Pos</td>
             <td width=40>Nr</td>
             <td>Navn</td>
             <td>Klubb</td>
             <td></td>
             <td id=resultborder>Plass</td>
             <td colspan=2>Startnr</td>
+            <td>Navn</td>
             <td>Videre til</td>
           </tr>
           {% for start in race.startliste %}
               <tr>
                 <form action=/timing_verify method=post>
+                  <td>{{ start.starting_position }}</td>
                   <td align=center>{{ start.bib }}</td>
                   <td>{{ start.name }}</td>
                   <td>{{ start.club }}</td>
@@ -77,7 +97,7 @@
                         <input type="hidden" name="bib" value="{{ race.finish_timings[loop.index0].bib }}">
                         <input type="hidden" name="time_event_id" value="{{ race.finish_timings[loop.index0].id }}">
                         <input type="hidden" name=valgt_runde value="{{ valgt_runde }}">
-                        <input type="hidden" name=action value="{{ action }}">
+                        <input type="hidden" name=valgt_klasse value="{{ valgt_klasse }}">
                         <input type="hidden" name=event_id value="{{ event_id }}">
                       </td>
                     {% else %}
@@ -89,12 +109,13 @@
                         <input type="hidden" name="race" value="{{ race.raceclass }}-{{ race.round }}{{ race.heat }}{{ race.index }}">
                         <input type="hidden" name="race_id" value="{{ race.id }}">
                         <input type="hidden" name=valgt_runde value="{{ valgt_runde }}">
-                        <input type="hidden" name=action value="{{ action }}">
+                        <input type="hidden" name=valgt_klasse value="{{ valgt_klasse }}">
                         <input type="hidden" name=event_id value="{{ event_id }}">
                         <input type="submit" name=update_result value="  Oppdater ">
                       </td>
                     {% endif %}
-                    <td>{{ race.finish_timings[loop.index0].next_race }}</td>
+                    <td>{{ race.finish_timings[loop.index0].name }}</td>
+                    <td>{{ race.finish_timings[loop.index0].next_race }}-{{ race.finish_timings[loop.index0].next_race_position }}</td>
                   {% else %}
                     <td id=resultborder align=center>{{ loop.index }}</td>
                     <td align=center>
@@ -104,7 +125,7 @@
                       <input type="hidden" name="race" value="{{ race.raceclass }}-{{ race.round }}{{ race.heat }}{{ race.index }}">
                       <input type="hidden" name="race_id" value="{{ race.id }}">
                       <input type="hidden" name=valgt_runde value="{{ valgt_runde }}">
-                      <input type="hidden" name=action value="{{ action }}">
+                      <input type="hidden" name=valgt_klasse value="{{ valgt_klasse }}">
                       <input type="hidden" name=event_id value="{{ event_id }}">
                       <input type="submit" name=update_result value="  Oppdater ">
                     </td>
@@ -113,55 +134,72 @@
                 </form>
               </tr>
             {% endfor %}
-            <tr>
-              <form action=/timing_verify method=post>
-                <td colspan=4></td>
-                <td>
-                  <input type="number" name="rank" value="" min=1 max=99>
-                </td>
-                  <td>
-                    <input type="number" name="bib" value="" min=1 max=9999>
+            {% if race.startliste %}
+              <tr>
+                <form action=/timing_verify method=post>
+                  <td><input type="number" name="starting_position" value="" min=1 max=99></td>
+                  <td><input type="number" name="bib" value="" min=1 max=999></td>
+                  <td colspan=3>
+                      <input type="submit" name=create_start value=" Legg til ">
+                      <input type="hidden" name="race_id" value="{{ race.id }}">
+                      <input type="hidden" name="startlist_id" value="{{ race.startliste[0].startlist_id }}">
+                      <input type="hidden" name="start_time" value="{{ race.start_time }}">
+                      <input type="hidden" name=valgt_runde value="{{ valgt_runde }}">
+                      <input type="hidden" name=valgt_klasse value="{{ valgt_klasse }}">
+                      <input type="hidden" name=event_id value="{{ event_id }}">
                   </td>
+                </form>
+                <form action=/timing_verify method=post>
                   <td>
-                    <input type="hidden" name="race" value="{{ race.raceclass }}-{{ race.round }}{{ race.heat }}{{ race.index }}">
-                    <input type="hidden" name="race_id" value="{{ race.id }}">
-                    <input type="hidden" name=valgt_runde value="{{ valgt_runde }}">
-                    <input type="hidden" name=action value="{{ action }}">
-                    <input type="hidden" name=event_id value="{{ event_id }}">
-                    <input type="submit" name=add_result value="  Legg til ">
+                    <input type="number" name="rank" value="" min=1 max=99>
                   </td>
-                <td></td>
-              </form>
-            </tr>
+                    <td>
+                      <input type="number" name="bib" value="" min=1 max=9999>
+                    </td>
+                    <td>
+                      <input type="hidden" name="race" value="{{ race.raceclass }}-{{ race.round }}{{ race.heat }}{{ race.index }}">
+                      <input type="hidden" name="race_id" value="{{ race.id }}">
+                      <input type="hidden" name=valgt_runde value="{{ valgt_runde }}">
+                      <input type="hidden" name=valgt_klasse value="{{ valgt_klasse }}">
+                      <input type="hidden" name=event_id value="{{ event_id }}">
+                      <input type="submit" name=add_result value=" Legg til ">
+                    </td>
+                    <td></td>
+                  <td></td>
+                </form>
+              </tr>
+            {% endif %}
           {% endfor %}
         </table>
       </div>
-      <div class="w3-half">
-        <div id=adminpagetitle>Neste runde - startlister</div>
+      <div class="w3-third">
+        <div id=adminpagetitle>Neste runde</div>
         <table>
-          <tr id=spacer></tr>
           {% for race in next_races %}
+            <tr>
+              <td colspan=4><b>{{ race.raceclass }} {{ race.round }}{{ race.index }}{{ race.heat }}</b></td>
+              <td><b>{{ race.start_time[-8:] }}</b> (heat {{ race.order }})</td>
+            </tr>
             <tr id=headerblue>
-              <td colspan=4><b>{{ race.raceclass }}{{ race.round }}{{ race.index }}{{ race.heat }}  kl:{{ race.start_time }}</b></td>
-              <td>Heat {{ race.order }}</td>
+              <td colspan=5>Startliste</td>
             </tr>
             <tr>
               <td>Pos</td>
-              <td width=50>Startnr</td>
-              <td></td>
-              <td colspan=2>Navn</td>
+              <td colspan=2>Startnr</td>
+              <td>Navn</td>
+              <td>Klubb</td>
             </tr>
             {% for start in race.startliste %}
               <tr>
                 <td align=center>{{ start.starting_position }}</td>
-                <td align=center>{{ start.bib }}</td>
+                <td align=center width=50>{{ start.bib }}</td>
                 <td>
                   <form action=/timing_verify method=post>
-                    <input type="submit" name=delete_start value="  Slett start ">
+                    <input type="submit" name=delete_start value=" Slett ">
                     <input type="hidden" name="race_id" value="{{ race.id }}">
                     <input type="hidden" name=start_id value="{{ start.id }}">
                     <input type="hidden" name=valgt_runde value="{{ valgt_runde }}">
-                    <input type="hidden" name=action value="{{ action }}">
+                    <input type="hidden" name=valgt_klasse value="{{ valgt_klasse }}">
                     <input type="hidden" name=event_id value="{{ event_id }}">
                   </form>
                 </td>
@@ -175,19 +213,17 @@
           <tr>
             <form action=/timing_verify method=post>
               <td><input type="number" name="starting_position" value="" min=1 max=99></td>
-              <td align=center><input type="number" name="bib" value="" min=1 max=9999></td>
-              <td>
-                  <input type="submit" name=create_start value="  Legg til start ">
+              <td><input type="number" name="bib" value="" min=1 max=999></td>
+              <td colspan=2>
+                  <input type="submit" name=create_start value=" Legg til ">
                   <input type="hidden" name="race_id" value="{{ race.id }}">
                   <input type="hidden" name="startlist_id" value="{{ race.startliste[0].startlist_id }}">
                   <input type="hidden" name="start_time" value="{{ race.start_time }}">
                   <input type="hidden" name=valgt_runde value="{{ valgt_runde }}">
-                  <input type="hidden" name=action value="{{ action }}">
+                  <input type="hidden" name=valgt_klasse value="{{ valgt_klasse }}">
                   <input type="hidden" name=event_id value="{{ event_id }}">
               </td>
             </form>
-            <td></td>
-            <td></td>
             <td></td>
             <td></td>
             <td></td>

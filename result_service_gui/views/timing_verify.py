@@ -28,36 +28,31 @@ class TimingVerify(web.View):
 
     async def get(self) -> web.Response:
         """Get route function that return the passeringer page."""
-        informasjon = ""
         current_races = []
         next_races = []
         next_round = ""
-        try:
-            event_id = self.request.rel_url.query["event_id"]
-        except Exception:
-            event_id = ""
+
         try:
             informasjon = self.request.rel_url.query["informasjon"]
         except Exception:
             informasjon = ""
         try:
-            action = self.request.rel_url.query["action"]
+            valgt_klasse = self.request.rel_url.query["valgt_klasse"]
         except Exception:
-            action = "result"
+            valgt_klasse = ""
         try:
             valgt_runde = self.request.rel_url.query["valgt_runde"]
-            if valgt_runde.endswith("N"):
-                next_round = f"{valgt_runde[:-1]}Q"
-            if valgt_runde.endswith("Q"):
-                next_round = f"{valgt_runde[:-1]}S"
-            elif valgt_runde.endswith("S"):
-                next_round = f"{valgt_runde[:-1]}F"
+            if valgt_runde == "Q":
+                next_round = "S"
+            elif valgt_runde == "S":
+                next_round = "F"
         except Exception:
             valgt_runde = ""
             informasjon = f"Velg runde i menyen. {informasjon}"
 
         try:
             user = await check_login(self)
+            event_id = self.request.rel_url.query["event_id"]
             event = await get_event(user, event_id)
             raceclasses = await RaceclassesAdapter().get_raceclasses(
                 user["token"], event_id
@@ -71,26 +66,38 @@ class TimingVerify(web.View):
 
             # filter for selected races and enrich
             for race in all_races:
-                current_round = f"{race['raceclass']}{race['round']}"
-                if valgt_runde == current_round:
-                    race["next_race"] = get_qualification_text(race)
-                    # get start list detail
-                    race["startliste"] = await get_enchiced_startlist(user, race["id"])
-                    race["finish_timings"] = await get_finish_timings(user, race["id"])
-                    race["start_time"] = race["start_time"][-8:]
-                    current_races.append(race)
-                elif next_round == current_round:
-                    # get start list detail
-                    race["startliste"] = await get_enchiced_startlist(user, race["id"])
-                    race["start_time"] = race["start_time"][-8:]
-                    next_races.append(race)
+                if valgt_klasse == race["raceclass"]:
+                    if valgt_runde == race["round"]:
+                        race["next_race"] = get_qualification_text(race)
+                        # get start list detail
+                        race["startliste"] = await get_enchiced_startlist(
+                            user, race["id"]
+                        )
+                        race["finish_timings"] = await get_finish_timings(
+                            user, race["id"]
+                        )
+
+                        # ensure space for all results
+                        if len(race["startliste"]) < len(race["finish_timings"]):
+                            for x in range(
+                                len(race["startliste"]), len(race["finish_timings"])
+                            ):
+                                race["startliste"].append({})
+                                logging.debug(x)
+                        current_races.append(race)
+                    elif next_round == race["round"]:
+                        # get start list detail
+                        race["startliste"] = await get_enchiced_startlist(
+                            user, race["id"]
+                        )
+                        next_races.append(race)
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
                 "timing_verify.html",
                 self.request,
                 {
-                    "action": action,
+                    "valgt_klasse": valgt_klasse,
                     "event": event,
                     "event_id": event_id,
                     "informasjon": informasjon,
@@ -111,12 +118,12 @@ class TimingVerify(web.View):
         # check login
         user = await check_login(self)
         informasjon = ""
-        action = ""
+        valgt_klasse = ""
         try:
             form = await self.request.post()
             logging.debug(f"Form {form}")
             event_id = str(form["event_id"])
-            action = str(form["action"])
+            valgt_klasse = str(form["valgt_klasse"])
             valgt_runde = str(form["valgt_runde"])
 
             if "publish_results" in form.keys():
@@ -134,9 +141,9 @@ class TimingVerify(web.View):
         except Exception as e:
             logging.error(f"Error: {e}")
             informasjon = f"Det har oppstått en feil - {e.args}."
-
+        info = f"{informasjon}&valgt_klasse={valgt_klasse}&valgt_runde={valgt_runde}"
         return web.HTTPSeeOther(
-            location=f"/timing_verify?event_id={event_id}&informasjon={informasjon}&action={action}&valgt_runde={valgt_runde}"
+            location=f"/timing_verify?event_id={event_id}&informasjon={info}"
         )
 
 
