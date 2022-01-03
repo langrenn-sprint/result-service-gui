@@ -18,20 +18,15 @@ class Main(web.View):
         except Exception:
             informasjon = ""
 
-        html_template = "index.html"
-
         try:
             user = await check_login_open(self)
-            if user["name"] != "Gjest":
-                html_template = "index_adm.html"
-
             event = await get_event(user["token"], "")
 
             events = await EventsAdapter().get_all_events(user["token"])
             logging.debug(f"Events: {events}")
 
             return await aiohttp_jinja2.render_template_async(
-                html_template,
+                "index.html",
                 self.request,
                 {
                     "lopsinfo": "Startside",
