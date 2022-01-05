@@ -61,9 +61,13 @@
       </div>
       <table>
         {% for race in current_races %}
+        <tr>
+          <td colspan=10>&nbsp;</td>
+        </tr>
           <tr>
-            <td colspan=5><b>{{ race.raceclass }} {{ race.round }}{{ race.index }}{{ race.heat }}</b></td>
-            <td colspan=5><b>{{ race.start_time[-8:] }}</b> (heat {{ race.order }})</td>
+            <td colspan=3><b>{{ race.raceclass }} {{ race.round }}{{ race.index }}{{ race.heat }}</b></td>
+            <td colspan=6><b>{{ race.start_time[-8:] }}</b></td>
+            <td>Heat {{ race.order }}</td>
           </tr>
           <tr id=headerblack>
             <td colspan=5>Startliste</td>
@@ -177,8 +181,11 @@
         <table>
           {% for race in next_races %}
             <tr>
-              <td colspan=4><b>{{ race.raceclass }} {{ race.round }}{{ race.index }}{{ race.heat }}</b></td>
-              <td><b>{{ race.start_time[-8:] }}</b> (heat {{ race.order }})</td>
+              <td colspan=5>&nbsp;</td>
+            </tr>
+            <tr>
+              <td colspan=3><b>{{ race.raceclass }} {{ race.round }}{{ race.index }}{{ race.heat }}</b></td>
+              <td colspan=2><b>{{ race.start_time[-8:] }}</b> (heat {{ race.order }})</td>
             </tr>
             <tr id=headerblue>
               <td colspan=5>Startliste</td>
