@@ -78,7 +78,7 @@ class Control(web.View):
             informasjon = f"Det har oppstått en feil - {e.args}."
 
         return web.HTTPSeeOther(
-            location=f"/timing?event_id={event_id}&informasjon={informasjon}&action={action}&heat={valgt_heat}"
+            location=f"/control?event_id={event_id}&informasjon={informasjon}&action={action}&heat={valgt_heat}"
         )
 
 

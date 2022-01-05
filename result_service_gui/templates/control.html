@@ -26,7 +26,7 @@
     <li class=dropdown id=topborder>
       <a href=javascript:void(0) class=dropbtn>Velg klasse</a>
       <div class=dropdown-content>
-        <a href=timing?&event_id={{ event_id }}&action={{ action }}>Alle</a>
+        <a href=control?&event_id={{ event_id }}&action={{ action }}>Alle</a>
         {% for klasse in raceclasses %}
           <a href=control?valgt_klasse={{ klasse.name }}&event_id={{ event_id }}&action={{ action }}>{{ klasse.ageclass_name }}</a>
         {% endfor %}
@@ -49,17 +49,19 @@
         </tr>
         {% for passering in passeringer %}
             <tr>
-              <form action=/timing method=post>
+              <form action=/control method=post>
                 <td>{{ passering.race }}</td>
                 <td align="center">{{ passering.rank }}</td>
                 <td align=right><input type=text name="next_race" value="{{ passering.next_race }}" size=4></td>
                 <td>-<input type=text name="next_race_position" value="{{ passering.next_race_position }}" size=2></td>
                 <td align=right>
                   <input type="hidden" name="event_id" value="{{ event_id }}">
+                  <input type="hidden" name="race" value="{{ passering.race }}">
+                  <input type="hidden" name="timing_point" value="{{ passering.timing_point }}">
                   <input type="hidden" name="id" value="{{ passering.id }}">
                   <input type="hidden" name="action" value="{{ action }}">
                   <input type="hidden" name="heat" value="{{ valgt_heat }}">
-                  <input type="submit" name="update" value="Oppdater">
+                  <input type="submit" name="update_template" value="Oppdater">
                 </td>
               </form>
               <td>&nbsp;</td>

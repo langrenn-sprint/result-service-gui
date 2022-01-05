@@ -498,12 +498,26 @@ async def update_time_event(user: dict, action: str, form: dict) -> str:
             {
                 "timestamp": time_stamp_now,
                 "user_id": user["name"],
-                "comment": "Oppdatering - tidligere informasjon: {request_body}. ",
+                "comment": f"Oppdatering - tidligere informasjon: {request_body}. ",
             }
         ]
         request_body["timing_point"] = form["timing_point"]
         request_body["registration_time"] = form["registration_time"]
         request_body["rank"] = form["rank"]
+    elif "update_template" in form.keys():
+        request_body["changelog"] = [
+            {
+                "timestamp": time_stamp_now,
+                "user_id": user["name"],
+                "comment": f"Oppdatering - old info, next_race {request_body['next_race']}-{request_body['next_race_position']}. ",
+            }
+        ]
+        request_body["next_race_position"] = form["next_race_position"]
+        raceclass = form["race"].split("-")
+        request_body["next_race_id"] = await get_race_id_by_name(
+            user, form["event_id"], form["next_race"], raceclass[0]
+        )
+        request_body["next_race"] = form["next_race"]
     elif "delete" in form.keys():
         request_body["changelog"] = [
             {
@@ -519,3 +533,17 @@ async def update_time_event(user: dict, action: str, form: dict) -> str:
     logging.debug(f"Control result: {response}")
     informasjon = f"Control result: Oppdatert - {response}"
     return informasjon
+
+
+async def get_race_id_by_name(
+    user: dict, event_id: str, next_race: str, raceclass: str
+) -> str:
+    """Get race_id for a given race."""
+    race_id = ""
+    races = await RaceplansAdapter().get_all_races(user["token"], event_id)
+    for race in races:
+        if race["raceclass"] == raceclass:
+            tmp_next_race = f"{race['round']}{race['index']}{race['heat']}"
+            if next_race == tmp_next_race:
+                return race["id"]
+    return race_id
