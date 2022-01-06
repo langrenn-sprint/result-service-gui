@@ -18,6 +18,7 @@
     <a href=javascript:void(0) class=dropbtn>Velg runde</a>
     <div class=dropdown-content>
       {% for round in raceplan_summary %}
+        <a href=timing_verify?event_id={{ event_id }}&valgt_klasse={{ round.name}}&valgt_runde=N>{{ round.name}} start</a>
         <a href=timing_verify?event_id={{ event_id }}&valgt_klasse={{ round.name}}&valgt_runde=Q>{{ round.name}} kvart</a>
         <a href=timing_verify?event_id={{ event_id }}&valgt_klasse={{ round.name}}&valgt_runde=S>{{ round.name}} semi</a>
         <a href=timing_verify?event_id={{ event_id }}&valgt_klasse={{ round.name}}&valgt_runde=F>{{ round.name}} finaler</a>
@@ -30,7 +31,11 @@
   <div id=spacer></div>
   <table>
     <tr>
-      <td></td>
+      <td>
+        {% if error_passeringer|length > 0 %}
+        <div id=info>Funnet {{ error_passeringer|length }} events med error, <a href="control?event_id={{ event_id }}&action=control">kontroller</a>.</div>
+        {% endif %}
+      </td>
       <td width=100>
         <form action=/print_lists method=get target=new>
           <input type="hidden" name=valgt_runde value="{{ valgt_runde }}">

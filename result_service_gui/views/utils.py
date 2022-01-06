@@ -547,3 +547,30 @@ async def get_race_id_by_name(
             if next_race == tmp_next_race:
                 return race["id"]
     return race_id
+
+
+async def get_passeringer(
+    token: str, event_id: str, action: str, valgt_klasse: str
+) -> list:
+    """Return list of passeringer for selected action."""
+    passeringer = []
+    tmp_passeringer = await TimeEventsAdapter().get_time_events_by_event_id(
+        token, event_id
+    )
+    if action == "control":
+        for passering in reversed(tmp_passeringer):
+            if passering["status"] == "Error":
+                if passering["timing_point"] != "Template":
+                    if valgt_klasse == "" or valgt_klasse in passering["race"]:
+                        passeringer.append(passering)
+    elif action == "template":
+        for passering in tmp_passeringer:
+            if passering["timing_point"] == "Template":
+                if valgt_klasse == "" or valgt_klasse in passering["race"]:
+                    passeringer.append(passering)
+    else:
+        for passering in reversed(tmp_passeringer):
+            if passering["timing_point"] != "Template":
+                passeringer.append(passering)
+
+    return passeringer

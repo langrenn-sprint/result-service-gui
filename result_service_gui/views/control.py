@@ -6,11 +6,11 @@ import aiohttp_jinja2
 
 from result_service_gui.services import (
     RaceclassesAdapter,
-    TimeEventsAdapter,
 )
 from .utils import (
     check_login,
     get_event,
+    get_passeringer,
     update_time_event,
 )
 
@@ -80,29 +80,3 @@ class Control(web.View):
         return web.HTTPSeeOther(
             location=f"/control?event_id={event_id}&informasjon={informasjon}&action={action}&heat={valgt_heat}"
         )
-
-
-async def get_passeringer(
-    token: str, event_id: str, action: str, valgt_klasse: str
-) -> list:
-    """Return list of passeringer for selected action."""
-    passeringer = []
-    tmp_passeringer = await TimeEventsAdapter().get_time_events_by_event_id(
-        token, event_id
-    )
-    if action == "control":
-        for passering in reversed(tmp_passeringer):
-            if passering["status"] == "Error":
-                if passering["timing_point"] != "Template":
-                    passeringer.append(passering)
-    elif action == "template":
-        for passering in tmp_passeringer:
-            if passering["timing_point"] == "Template":
-                if valgt_klasse == "" or valgt_klasse in passering["race"]:
-                    passeringer.append(passering)
-    else:
-        for passering in reversed(tmp_passeringer):
-            if passering["timing_point"] != "Template":
-                passeringer.append(passering)
-
-    return passeringer

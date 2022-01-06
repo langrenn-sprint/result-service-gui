@@ -18,6 +18,7 @@ from .utils import (
     get_enchiced_startlist,
     get_event,
     get_finish_timings,
+    get_passeringer,
     get_qualification_text,
     get_raceplan_summary,
 )
@@ -38,15 +39,15 @@ class TimingVerify(web.View):
             informasjon = ""
         try:
             valgt_klasse = self.request.rel_url.query["valgt_klasse"]
-        except Exception:
-            valgt_klasse = ""
-        try:
             valgt_runde = self.request.rel_url.query["valgt_runde"]
             if valgt_runde == "Q":
                 next_round = "S"
             elif valgt_runde == "S":
                 next_round = "F"
+            elif valgt_runde == "N":
+                next_round = "Q"
         except Exception:
+            valgt_klasse = ""
             valgt_runde = ""
             informasjon = f"Velg runde i menyen. {informasjon}"
 
@@ -92,12 +93,18 @@ class TimingVerify(web.View):
                         )
                         next_races.append(race)
 
+            # get passeringer with error
+            error_passeringer = await get_passeringer(
+                user["token"], event_id, "control", valgt_klasse
+            )
+
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
                 "timing_verify.html",
                 self.request,
                 {
                     "valgt_klasse": valgt_klasse,
+                    "error_passeringer": error_passeringer,
                     "event": event,
                     "event_id": event_id,
                     "informasjon": informasjon,
