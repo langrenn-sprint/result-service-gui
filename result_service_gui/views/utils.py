@@ -485,7 +485,7 @@ async def get_results_by_raceclass(
     return results
 
 
-async def update_time_event(user: dict, action: str, form: dict) -> str:
+async def update_time_event(user: dict, form: dict) -> str:
     """Register time event - return information."""
     informasjon = ""
     time_now = datetime.datetime.now()
@@ -531,7 +531,7 @@ async def update_time_event(user: dict, action: str, form: dict) -> str:
         user["token"], form["id"], request_body
     )
     logging.debug(f"Control result: {response}")
-    informasjon = f"Control result: Oppdatert - {response}"
+    informasjon = f"Oppdatert - {response}  "
     return informasjon
 
 
@@ -572,5 +572,19 @@ async def get_passeringer(
         for passering in reversed(tmp_passeringer):
             if passering["timing_point"] != "Template":
                 passeringer.append(passering)
+
+    # indentify last passering in race
+    i = 0
+    last_race = ""
+    for passering in passeringer:
+        if i == 0:
+            passering["first_in_heat"] = True
+        elif last_race != passering["race"]:
+            passeringer[i - 1]["last_in_heat"] = True
+            passering["first_in_heat"] = True
+        i += 1
+        if i == len(passeringer):
+            passering["last_in_heat"] = True
+        last_race = passering["race"]
 
     return passeringer
