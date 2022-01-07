@@ -96,15 +96,16 @@ async def update_template_events(user: dict, form: dict) -> str:
     informasjon = "Control result: "
     for i in range(1, 11):
         if f"next_race_{i}" in form.keys():
-            request_body = {
-                "event_id": form["event_id"],
-                "id": form[f"id_{i}"],
-                "update_template": True,
-                "next_race": form[f"next_race_{i}"],
-                "next_race_position": form[f"next_race_position_{i}"],
-                "race": form["race"],
-            }
-            informasjon += await update_time_event(user, request_body)
+            if form[f"next_race_{i}"]:
+                request_body = {
+                    "event_id": form["event_id"],
+                    "id": form[f"id_{i}"],
+                    "update_template": True,
+                    "next_race": form[f"next_race_{i}"],
+                    "next_race_position": form[f"next_race_position_{i}"],
+                    "race": form["race"],
+                }
+                informasjon += await update_time_event(user, request_body)
     if form["rank_new"]:
         next_race_id = await get_race_id_by_name(
             user, form["event_id"], form["next_race_new"], form["valgt_klasse"]

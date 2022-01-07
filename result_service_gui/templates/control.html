@@ -41,8 +41,9 @@
       <table>
          <tr id=headerblue>
           <td>Heat</td>
-          <td width=60>Plass</td>
-          <td width=250 colspan=2>Videre til (heat - posisjon)</td>
+          <td width=50>Plass</td>
+          <td colspan=2>Videre til</td>
+          <td colspan=2>Ny verdi (heat - posisjon)</td>
           <td></td>
           <td></td>
           <td>Changelog</td>
@@ -55,8 +56,10 @@
               <tr>
                 <td>{{ passering.race }}</td>
                 <td align="center">{{ passering.rank }}</td>
-                <td align=right><input type=text name="next_race_{{ passering.rank }}" value="{{ passering.next_race }}" size=4></td>
-                <td>-<input type=number name="next_race_position_{{ passering.rank }}" value="{{ passering.next_race_position }}" size=2></td>
+                <td align=right>{{ passering.next_race }}</td>
+                <td>-{{ passering.next_race_position }}</td>
+                <td align=right><input type=text name="next_race_{{ passering.rank }}" value="" size=4></td>
+                <td>-<input type=number name="next_race_position_{{ passering.rank }}" value="" max=99 min=0></td>
                 <td align=right>
                   <input type="hidden" name="id_{{ passering.rank }}" value="{{ passering.id }}">
                 </td>
@@ -70,16 +73,17 @@
             {% if passering.last_in_heat %}
               <tr>
                 <td>{{ passering.race }}</td>
-                <td align=right><input type=number name="rank_new" value="" max=99></td>
+                <td align=right><input type=number name="rank_new" value="" max=99 min=0></td>
+                <td colspan=2></td>
                 <td align=right><input type=text name="next_race_new" value="" size=4></td>
-                <td>-<input type=number name="next_race_position_new" value="" max=99></td>
+                <td>-<input type=number name="next_race_position_new" value="" max=99 min=0></td>
                 <td align=right>
                 </td>
-              <td>&nbsp;</td>
-              <td>Ny time event</td>
+              <td>Opprett ny time event</td>
+              <td></td>
             </tr>
               <tr>
-                <td colspan=3></td>
+                <td colspan=5></td>
                 <td colspan=5>
                   <input type="hidden" name="action" value="{{ action }}">
                   <input type="hidden" name="event_id" value="{{ event_id }}">
@@ -92,7 +96,7 @@
               </tr>
             </form>
               <tr>
-                <td id=spacer colspan=8>&nbsp;</td>
+                <td id=spacer colspan=10>&nbsp;</td>
               </tr>
             {% endif %}
           {% endif %}
