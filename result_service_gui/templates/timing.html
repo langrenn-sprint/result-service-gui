@@ -107,6 +107,32 @@
                 <input type="submit" name="{{ action }}" value="  Oppdater  ">
               </td>
           </tr>
+          <form action=/timing method=post>
+              <tr>
+                <td id=spacer colspan=6>&nbsp;</td>
+              </tr>
+              <tr id=headerblue>
+                <td id=spacer colspan=6>Registrer startnummer - merk at løpere som ikke er i startlista blir registrert som en error</td>
+              </tr>
+              <tr>
+                <td colspan=2>
+                    Startnr
+                </td>
+                <td colspan=1><input type=number name="bib" value="" max=9999 min=1></td>
+                <td colspan=3>Tips: Ved flere passeringer, bruk space mellom startnummer. Eksempel: 2 4</td>
+              </tr>
+              <tr>
+                  <td colspan=2></td>
+                  <td colspan=4>
+                    <input type="hidden" name="race" value="">
+                    <input type="hidden" name="race_id" value="{{ race.id }}">
+                    <input type="hidden" name="event_id" value="{{ event_id }}">
+                    <input type="hidden" name="heat" value="{{ valgt_heat }}">
+                    <input type="hidden" name="action" value="{{ action }}">
+                    <input type="submit" name="finish" value="  Oppdater  ">
+                  </td>
+              </tr>
+          </form>
         {% elif action == "finish_bib" %}
         <tr>
             <td colspan=6></td>
@@ -127,7 +153,7 @@
     </table>
   {% endif %}
 
-  {% if action == "start" or action == "finish_bib" or action == "lap" %}
+  {% if action == "finish_bib" or action == "lap" %}
   <form action=/timing method=post>
     <table>
       <tr>
@@ -143,9 +169,7 @@
       </tr>
       <tr>
         <td>
-          {% if action == "start" %}
-            Start
-          {% elif action == "lap" %}
+          {% if action == "lap" %}
             <select name="timing_point">
                 <option value="forvarsel_1">Forvarsel 1</option>
                 <option value="runde_1">Runde 1</option>
