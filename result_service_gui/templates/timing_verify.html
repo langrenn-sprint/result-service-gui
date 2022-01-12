@@ -85,64 +85,52 @@
             <td>Klubb</td>
             <td></td>
             <td id=resultborder>Plass</td>
-            <td colspan=2>Startnr</td>
+            <td colspan=2 align=center>Startnr</td>
             <td>Navn</td>
             <td>Videre til</td>
           </tr>
-          {% for start in race.startliste %}
+          <form action=/timing_verify method=post>
+            {% for start in race.startliste %}
               <tr>
-                <form action=/timing_verify method=post>
                   <td>{{ start.starting_position }}</td>
                   <td align=center>{{ start.bib }}</td>
                   <td>{{ start.name }}</td>
                   <td>{{ start.club }}</td>
                   <td>{{ start.info }}</td>
+                  <td id=resultborder align=center>{{ loop.index }}</td>
                   {% if race.finish_timings[loop.index0] %}
-                    {% if race.finish_timings[loop.index0].bib > 0 %}
-                      <td id=resultborder align=center>{{ race.finish_timings[loop.index0].rank }}</td>
-                      <td align=center>{{ race.finish_timings[loop.index0].bib }}</td>
-                      <td>
-                        <input type="submit" name=delete_result value="  Slett  ">
-                        <input type="hidden" name="bib" value="{{ race.finish_timings[loop.index0].bib }}">
-                        <input type="hidden" name="time_event_id" value="{{ race.finish_timings[loop.index0].id }}">
-                        <input type="hidden" name=valgt_runde value="{{ valgt_runde }}">
-                        <input type="hidden" name=valgt_klasse value="{{ valgt_klasse }}">
-                        <input type="hidden" name=event_id value="{{ event_id }}">
-                      </td>
-                    {% else %}
-                      <td id=resultborder align=center>{{ race.finish_timings[loop.index0].rank }}</td>
-                      <td align=center>
-                        <input type="number" name="form_rank_{{ race.finish_timings[loop.index0].rank }}" value="" min=1 max=9999>
-                      </td>
-                      <td>
-                        <input type="hidden" name="race" value="{{ race.raceclass }}-{{ race.round }}{{ race.heat }}{{ race.index }}">
-                        <input type="hidden" name="race_id" value="{{ race.id }}">
-                        <input type="hidden" name=valgt_runde value="{{ valgt_runde }}">
-                        <input type="hidden" name=valgt_klasse value="{{ valgt_klasse }}">
-                        <input type="hidden" name=event_id value="{{ event_id }}">
-                        <input type="submit" name=update_result value="  Oppdater ">
-                      </td>
-                    {% endif %}
+                    <td></td>
+                    <td align=center>
+                      <input type="number" name="form_rank_{{ loop.index }}" value="{% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}" min=1 max=9999>
+                      <input type="hidden" name="old_form_rank_{{ loop.index }}" value="{% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}">
+                      <input type="hidden" name="time_event_id_{{ loop.index }}" value="{{ race.finish_timings[loop.index0].id }}">
+                    </td>
                     <td>{{ race.finish_timings[loop.index0].name }}</td>
                     <td>{{ race.finish_timings[loop.index0].next_race }}-{{ race.finish_timings[loop.index0].next_race_position }}</td>
+                    <td>
                   {% else %}
-                    <td id=resultborder align=center>{{ loop.index }}</td>
+                    <td></td>
                     <td align=center>
                       <input type="number" name="form_rank_{{ loop.index }}" value="" min=1 max=9999>
-                    </td>
-                    <td>
-                      <input type="hidden" name="race" value="{{ race.raceclass }}-{{ race.round }}{{ race.heat }}{{ race.index }}">
-                      <input type="hidden" name="race_id" value="{{ race.id }}">
-                      <input type="hidden" name=valgt_runde value="{{ valgt_runde }}">
-                      <input type="hidden" name=valgt_klasse value="{{ valgt_klasse }}">
-                      <input type="hidden" name=event_id value="{{ event_id }}">
-                      <input type="submit" name=update_result value="  Oppdater ">
+                      <input type="hidden" name="old_form_rank_{{ loop.index }}" value="" min=1 max=9999>
                     </td>
                     <td></td>
+                    <td></td>
                   {% endif %}
-                </form>
               </tr>
             {% endfor %}
+              <tr>
+                <td colspan=7></td>
+                <td colspan=3>
+                  <input type="hidden" name="race" value="{{ race.raceclass }}-{{ race.round }}{{ race.heat }}{{ race.index }}">
+                  <input type="hidden" name="race_id" value="{{ race.id }}">
+                  <input type="hidden" name=valgt_runde value="{{ valgt_runde }}">
+                  <input type="hidden" name=valgt_klasse value="{{ valgt_klasse }}">
+                  <input type="hidden" name=event_id value="{{ event_id }}">
+                  <input type="submit" name=update_result value="  Oppdater ">
+                </td>
+              </tr>
+            </form>
             {% if race.startliste %}
               <tr>
                 <form action=/timing_verify method=post>
@@ -158,24 +146,7 @@
                       <input type="hidden" name=event_id value="{{ event_id }}">
                   </td>
                 </form>
-                <form action=/timing_verify method=post>
-                  <td>
-                    <input type="number" name="rank" value="" min=1 max=99>
-                  </td>
-                    <td>
-                      <input type="number" name="bib" value="" min=1 max=9999>
-                    </td>
-                    <td>
-                      <input type="hidden" name="race" value="{{ race.raceclass }}-{{ race.round }}{{ race.heat }}{{ race.index }}">
-                      <input type="hidden" name="race_id" value="{{ race.id }}">
-                      <input type="hidden" name=valgt_runde value="{{ valgt_runde }}">
-                      <input type="hidden" name=valgt_klasse value="{{ valgt_klasse }}">
-                      <input type="hidden" name=event_id value="{{ event_id }}">
-                      <input type="submit" name=add_result value=" Legg til ">
-                    </td>
-                    <td></td>
-                  <td></td>
-                </form>
+                <td colspan=5>&nbsp;</td>
               </tr>
             {% endif %}
           {% endfor %}

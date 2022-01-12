@@ -9,6 +9,7 @@ from result_service_gui.services import (
     EventsAdapter,
     RaceplansAdapter,
     ResultAdapter,
+    StartAdapter,
     TimeEventsAdapter,
     TimeEventsService,
     UserAdapter,
@@ -89,10 +90,22 @@ async def create_finish_time_events(user: dict, action: str, form: dict) -> str:
     elif action == "finish_bib":
         request_body["timing_point"] = "Finish"
         for x in form.keys():
+            no_change = False
             if x.startswith("form_rank_"):
                 new_bib = form[x]
                 _rank = int(x[10:])
-                if new_bib.isnumeric():
+                # check if anything is changed and delete old registration
+                if form[f"old_form_rank_{_rank}"]:
+                    old_bib = form[f"old_form_rank_{_rank}"]
+                    if old_bib == new_bib:
+                        no_change = True
+                    else:
+                        new_form = {
+                            "time_event_id": form[f"time_event_id_{_rank}"],
+                        }
+                        informasjon = await delete_result(user, new_form)
+                        logging.debug(f"Deleted result: {informasjon}")
+                if new_bib.isnumeric() and not no_change:
                     request_body["bib"] = int(new_bib)
                     request_body["rank"] = _rank
                     request_body["changelog"] = [
@@ -191,6 +204,42 @@ async def create_start_time_events(user: dict, form: dict) -> str:
     return informasjon
 
 
+async def delete_result(user: dict, form: dict) -> str:
+    """Set time event to deleted and delete corresponding start event."""
+    informasjon = ""
+    time_now = datetime.datetime.now()
+    time_stamp_now = f"{time_now.strftime('%Y')}-{time_now.strftime('%m')}-{time_now.strftime('%d')}T{time_now.strftime('%X')}"
+
+    # get time event and delete next start if existing
+    time_event = await TimeEventsAdapter().get_time_event_by_id(
+        user["token"], form["time_event_id"]
+    )
+    if len(time_event["next_race_id"]) > 0:
+        start_entries = await StartAdapter().get_start_entries_by_race_id(
+            user["token"], time_event["next_race_id"]
+        )
+        for start_entry in start_entries:
+            if time_event["bib"] == start_entry["bib"]:
+                id = await StartAdapter().delete_start_entry(
+                    user["token"], start_entry["race_id"], start_entry["id"]
+                )
+                informasjon = f"Slettet start entry i neste heat. Resultat: {id}"
+    time_event["status"] = "Error"
+    change_info = {
+        "timestamp": time_stamp_now,
+        "user_id": user["name"],
+        "comment": f"Error - resultat slettet. Bib {time_event['bib']}",
+    }
+    time_event["changelog"].append(change_info)
+    id2 = await TimeEventsAdapter().update_time_event(
+        user["token"], form["time_event_id"], time_event
+    )
+    informasjon = (
+        f"Registrert målpassering med error (slettet). Resultat: {id2}  {informasjon}"
+    )
+    return informasjon
+
+
 async def get_enchiced_startlist(user: dict, race_id: str) -> list:
     """Enrich startlist information - including info if race result is registered."""
     startlist = []
@@ -244,7 +293,7 @@ async def get_finish_timings(user: dict, race_id: str) -> list:
                     bfound_event = True
                     finish_events.append(time_event)
                     break
-        if (not bfound_event) and (i < 9):
+        if (not bfound_event) and (i < 11):
             for time_event in time_events:
                 if (time_event["timing_point"] == "Template") and (
                     i == time_event["rank"]
