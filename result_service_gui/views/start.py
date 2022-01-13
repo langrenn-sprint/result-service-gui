@@ -37,10 +37,6 @@ class Start(web.View):
                 informasjon = self.request.rel_url.query["informasjon"]
             except Exception:
                 informasjon = ""
-            try:
-                action = self.request.rel_url.query["action"]
-            except Exception:
-                action = ""
 
             races = []
             raceplan_summary = []
@@ -81,7 +77,6 @@ class Start(web.View):
                 "start.html",
                 self.request,
                 {
-                    "action": action,
                     "event": event,
                     "event_id": event_id,
                     "informasjon": informasjon,

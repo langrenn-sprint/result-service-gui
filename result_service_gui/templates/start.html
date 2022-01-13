@@ -8,7 +8,7 @@
   Startlister {{ valgt_klubb }}{{ valgt_klasse }}
 {% endblock %}
 
-{% block refresh %}300{% endblock %}
+{% block refresh %}{% if valgt_klasse == "live" %}60{% endif %}{% endblock %}
 
 {% block titlemain %}
   Startlister {{ valgt_klubb }}{{ valgt_klasse }}
@@ -29,6 +29,14 @@
 {% endblock %}
 
 {% block content %}
+  {% if valgt_klasse == "live" %}
+  <div id="tid" class=timetitle></div>
+    <script>
+      const d = new Date();
+      document.getElementById("tid").innerHTML = "Tid nå: " + d.getHours() + ":" + d.getUTCMinutes();
+    </script>
+  {% endif %}
+
   {% if event.competition_format == "Interval Start" %}
     <table>
        <tr id=headerblue>
@@ -55,6 +63,7 @@
     </table>
     <div id=spacer></div>
   {% else %}
+    {% if valgt_klasse != "live" %}
       <table>
         <tr id=spacer></tr>
         <tr id=headerblue>
@@ -76,7 +85,7 @@
           {% endif %}
         {% endfor %}
       </table>
-
+    {% endif %}
     <table>
       {% for race in races %}
         <tr id=headerblue>
@@ -89,15 +98,15 @@
               Finale {{ race.index }}
             {% endif %}
           </td>
-          <td>Kl. {{ race.start_time }}</td>
-          <td colspan=2>{% if race.round != "F" %}Neste heat: {{ race.next_race }}{% endif %}</td>
+          <td><b>Kl. {{ race.start_time }}</b></td>
+            <td colspan=2>{% if race.round != "F" and (valgt_klasse != "live") %}Neste heat: {{ race.next_race }}{% endif %}</td>
         </tr>
         <tr id=subheader>
           <td width=50><div id={{ race.heat }} >Pos</div></td>
           <td width=50>Nr</td>
           <td>Navn</td>
           <td>Klubb</td>
-          {% if race.round != "F" %}
+          {% if race.round != "F" and (valgt_klasse != "live") %}
             <td width=50>Plass</td>
             <td>Videre til (heat)</td>
           {% else %}
@@ -113,7 +122,7 @@
                 <a href=live?event_id={{ event_id }}&klasse={{ valgt_klasse }}&startnr={{ loper.bib }}>{{ loper.name }}</a>
               </td>
               <td>{{ loper.club }}</td>
-                {% if race.round != "F" %}
+                {% if race.round != "F" and (valgt_klasse != "live") %}
                   <td>{{ loper.starting_position }}</td>
                   <td>{{ loper.next_race }}</td>
                 {% else %}
