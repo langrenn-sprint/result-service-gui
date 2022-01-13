@@ -42,7 +42,6 @@
       &nbsp;<br>
     {% elif action != "lap" %}
       {% for race in races %}
-      <form action=/timing method=post>
         <tr id=headerblue>
           <td></td>
           <td colspan=3><b>{{ race.raceclass }}{{ race.round }}{{ race.index }}{{ race.heat }}  kl:{{ race.start_time }}</b></td>
@@ -63,6 +62,7 @@
             <td>Startnummer</td>
           {% endif %}
         </tr>
+        <form action=/timing method=post>
         {% for start in race.startliste %}
             <tr>
                 {% if action == "start" %}
@@ -107,6 +107,7 @@
                 <input type="submit" name="{{ action }}" value="  Oppdater  ">
               </td>
           </tr>
+          </form>
           <form action=/timing method=post>
               <tr>
                 <td id=spacer colspan=6>&nbsp;</td>
@@ -124,7 +125,7 @@
               <tr>
                   <td colspan=2></td>
                   <td colspan=4>
-                    <input type="hidden" name="race" value="">
+                    <input type="hidden" name="race" value="{{ race.raceclass }}-{{ race.round }}{{ race.heat }}{{ race.index }}">
                     <input type="hidden" name="race_id" value="{{ race.id }}">
                     <input type="hidden" name="event_id" value="{{ event_id }}">
                     <input type="hidden" name="heat" value="{{ valgt_heat }}">
@@ -132,7 +133,6 @@
                     <input type="submit" name="finish" value="  Oppdater  ">
                   </td>
               </tr>
-          </form>
         {% elif action == "finish_bib" %}
         <tr>
             <td colspan=6></td>
@@ -146,9 +146,9 @@
             </td>
         </tr>
         {% endif %}
+      </form>
         <tr id=spacer>
         </tr>
-      </form>
       {% endfor %}
     </table>
   {% endif %}

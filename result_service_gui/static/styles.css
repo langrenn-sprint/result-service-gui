@@ -111,6 +111,10 @@ tr:nth-child(even){background-color: #f2f2f2;}
     font-weight: bold;
 }
 
+#white {
+    background-color: white;
+}
+
 
 #spacer {
   height: 4px;
