@@ -40,6 +40,8 @@ class Start(web.View):
 
             races = []
             raceplan_summary = []
+            colseparators = []
+            colclass = "w3-container"
 
             try:
                 valgt_klasse = self.request.rel_url.query["klasse"]
@@ -52,7 +54,9 @@ class Start(web.View):
             # get relevant races
             _tmp_races = []
             if "live" == valgt_klasse:
-                _tmp_races = await get_races_for_live_view(user, event_id, 0, 8)
+                _tmp_races = await get_races_for_live_view(user, event_id, 0, 9)
+                colseparators = [3, 6]
+                colclass = "w3-third"
             else:
                 # get startlister for klasse
                 _tmp_races = await RaceplansAdapter().get_all_races(
@@ -77,6 +81,8 @@ class Start(web.View):
                 "start.html",
                 self.request,
                 {
+                    "colclass": colclass,
+                    "colseparators": colseparators,
                     "event": event,
                     "event_id": event_id,
                     "informasjon": informasjon,

@@ -1,7 +1,6 @@
 {% extends "open_base.html" %}
 {% block titlecontainer %}
-  <div class="w3-10"></div>
-  <div class="w3-80">
+  <div class="w3-container">
 {% endblock %}
 
 {% block titleheader %}
@@ -86,8 +85,17 @@
         {% endfor %}
       </table>
     {% endif %}
-    <table>
+    <div id=spacer></div>
+    <div class="w3-row-padding">
+      <div class="{{ colclass }}">
+        <table>
       {% for race in races %}
+        {% if loop.index0 in colseparators %}
+            </table>
+          </div>
+          <div class="{{ colclass }}">
+            <table>
+        {% endif %}
         <tr id=headerblue>
           <td colspan=3>Startliste {{ race.raceclass }}
             {% if race.round == "Q" %}
@@ -133,6 +141,7 @@
         {% endfor %}
     {% endfor %}
   </table>
-  <div id=spacer></div>
   {% endif %} {# note: end competition_format #}
+    </div>
+  </div>
 {% endblock %}
