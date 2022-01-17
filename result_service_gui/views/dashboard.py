@@ -10,6 +10,7 @@ from result_service_gui.services import (
 from .utils import (
     check_login,
     get_event,
+    get_local_time,
     get_races_for_live_view,
 )
 
@@ -47,6 +48,7 @@ class Dashboard(web.View):
                     "event": event,
                     "event_id": event_id,
                     "informasjon": informasjon,
+                    "local_time_now": get_local_time("HH:MM"),
                     "raceclasses": raceclasses,
                     "races": races,
                     "username": user["name"],

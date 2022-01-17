@@ -39,15 +39,23 @@ Du må sette opp ei .env fil med miljøvariable. Eksempel:
 JWT_SECRET=secret
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=password
-EVENT_SERVICE_HOST=localhost
-EVENT_SERVICE_PORT=8082
+DB_USER=admin
+DB_PASSWORD=password
+EVENTS_HOST_SERVER=localhost
+EVENTS_HOST_PORT=8082
 FERNET_KEY=23EHUWpP_tpleR_RjuX5hxndWqyc0vO-cjNUMSzbjN4=
 JWT_EXP_DELTA_SECONDS=3600
 LOGGING_LEVEL=INFO
 RACE_HOST_SERVER=localhost
-RACE_HOST_PORT=8088
+RACE_SERVICE_PORT=8088
+SPORTS_CLUBS=Bækkelaget,Heming,Kjelsås,Koll,Lillomarka,Lyn,Njård,Rustad,Røa,Try,Årvoll
+TIME_ZONE_OFFSET=0
+USERS_HOST_SERVER=localhost
+USERS_HOST_PORT=8086
 USER_SERVICE_HOST=localhost
 USER_SERVICE_PORT=8086
+DB_USER=admin
+DB_PASSWORD=password
 ```
 
 ### Config gcloud

@@ -13,6 +13,7 @@ from .utils import (
     check_login_open,
     get_enchiced_startlist,
     get_event,
+    get_local_time,
     get_qualification_text,
     get_raceplan_summary,
     get_races_for_live_view,
@@ -90,6 +91,7 @@ class Start(web.View):
                     "raceclasses": raceclasses,
                     "races": races,
                     "raceplan_summary": raceplan_summary,
+                    "local_time_now": get_local_time("HH:MM"),
                     "username": user["name"],
                 },
             )

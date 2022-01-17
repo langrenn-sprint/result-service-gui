@@ -29,11 +29,7 @@
 
 {% block content %}
   {% if valgt_klasse == "live" %}
-  <div id="tid" class=timetitle></div>
-    <script>
-      const d = new Date();
-      document.getElementById("tid").innerHTML = "Tid nå: " + d.getHours() + ":" + d.getUTCMinutes();
-    </script>
+  <div id="tid" class=timetitle>Klokken er {{ local_time_now }}</div>
   {% endif %}
 
   {% if event.competition_format == "Interval Start" %}
@@ -96,7 +92,11 @@
           <div class="{{ colclass }}">
             <table>
         {% endif %}
-        <tr id=headerblue>
+        {% if valgt_klasse == "live" %}
+          <tr id={{ race.display_color }}>
+        {% else %}
+          <tr id=headerblue>
+        {% endif %}
           <td colspan=3>Startliste {{ race.raceclass }}
             {% if race.round == "Q" %}
               Kvartfinale {{ race.heat }}

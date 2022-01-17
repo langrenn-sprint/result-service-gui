@@ -37,7 +37,16 @@
         <td colspan=4></td>
       </tr>
       <tr>
-        <td>Neste start: </td>
+        <td>Lokal tid er <b>{{ local_time_now }}</b></td>
+        <td colspan=4>
+          Gjelder for visning av "Starter nå". Tidssone kan endres i .env ved behov.
+        </td>
+      </tr>
+      <tr>
+        <td colspan=5 id=spacer></td>
+      </tr>
+      <tr>
+        <td>Neste start </td>
         <td colspan=4>
           {% for race in races %}
             {{ race.raceclass }}-{{ race.round }}{{ race.index }}{{ race.heat }} kl. {{ race.start_time }} (heat nr. {{ race.order }})<br>
@@ -55,28 +64,28 @@
         <td colspan=4></td>
       </tr>
       <tr>
-        <td>Start (<a href=/timing?event_id={{ event_id }}&action=start>registrer</a>)</td>
-        <td colspan=4>Registrere starter, krysse av på liste eller skrive startnummer</td>
+        <td><a href=timing_verify?event_id={{ event_id }}&action=result>Oversikt</a></td>
+        <td colspan=4>Hovedside for tidtaker. Registrering og korringeringer</td>
       </tr>
       <tr>
         <td colspan=5 id=spacer></td>
       </tr>
       <tr>
-        <td>Mål (<a href=/timing?event_id={{ event_id }}&action=finish_bib>registrer</a>)</td>
-        <td colspan=4>Registrere målpassering, skrive inn startnummer</td>
+        <td><a href=/timing?event_id={{ event_id }}&action=start>Start</a></td>
+        <td colspan=4>For starter. Krysse av start og DNS på liste eller skrive startnummer</td>
       </tr>
       <tr>
         <td colspan=5 id=spacer></td>
       </tr>
       <tr>
-        <td>Redigere (<a href=timing_verify?event_id={{ event_id }}&action=result>se/endre</a>)</td>
-        <td colspan=4>Korringeringer og manglende registreringer</td>
+        <td><a href=/timing?event_id={{ event_id }}&action=finish_bib>Mål</a></td>
+        <td colspan=4>Enkel side for å registrere målpassering, skrive inn startnummer</td>
       </tr>
       <tr>
         <td colspan=5 id=spacer></td>
       </tr>
       <tr>
-        <td>Feilretting (<a href=/control?event_id={{ event_id }}&action=control>se/endre</a>)</td>
+        <td><a href=/control?event_id={{ event_id }}&action=control>Feil</a></td>
         <td colspan=4>Registreringer har feilet i systemet</td>
       </tr>
       <tr>
@@ -152,7 +161,7 @@
         <td colspan=4></td>
       </tr>
       <tr>
-        <td>Tidskjema (<a id="mySeeTime" onclick="event_gui_href('mySeeTime', 'raceplans?event_id={{ event_id }}&action=edit_time')" href=>se/endre</a>)</td>
+        <td><a id="mySeeTime" onclick="event_gui_href('mySeeTime', 'raceplans?event_id={{ event_id }}&action=edit_time')" href=>Tidskjema</a></td>
         <td colspan=4>Utsette (eller forsere) kjøreplanen</td>
       </tr>
       <tr>
@@ -160,7 +169,7 @@
       </tr>
       <tr>
         <td>
-          Videre til (<a href=/control?event_id={{ event_id }}&action=template>se/endre</a>)
+          <a href=/control?event_id={{ event_id }}&action=template>Videre til</a>
         </td>
         <td colspan=4>
           Manuelt redigere sprintens oppsett - kvalifisering til neste heat

@@ -1,6 +1,7 @@
 """Utilities module for gui services."""
 import datetime
 import logging
+import os
 
 from aiohttp import web
 from aiohttp_session import get_session
@@ -240,6 +241,22 @@ async def delete_result(user: dict, form: dict) -> str:
     return informasjon
 
 
+def get_display_style(start_time: str) -> str:
+    """Calculate time remaining to start and return table header style."""
+    start_time_obj = datetime.datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%S")
+    delta_time = start_time_obj - datetime.datetime.now()
+    delta_seconds = delta_time.total_seconds()
+    display_style = ""
+    if delta_seconds < 240:
+        display_style = "table_header_red"
+    elif delta_seconds < 480:
+        display_style = "table_header_orange"
+    else:
+        display_style = "table_header_green"
+
+    return display_style
+
+
 async def get_enchiced_startlist(user: dict, race_id: str) -> list:
     """Enrich startlist information - including info if race result is registered."""
     startlist = []
@@ -332,6 +349,20 @@ def get_finish_rank(race: dict) -> list:
     return finish_rank
 
 
+def get_local_time(format: str) -> str:
+    """Return local time, time zone adjusted from .env file."""
+    TIME_ZONE_OFFSET = int(os.getenv("TIME_ZONE_OFFSET", 0))
+    # calculate new time
+    delta_seconds = TIME_ZONE_OFFSET * 3600
+    local_time_obj = datetime.datetime.now() + datetime.timedelta(seconds=delta_seconds)
+    local_time = ""
+    if format == "HH:MM":
+        local_time = f"{local_time_obj.strftime('%H')}:{local_time_obj.strftime('%M')}"
+    else:
+        local_time = local_time_obj.strftime("%X")
+    return local_time
+
+
 def get_next_race_info(next_race_time_events: list, race_id: str) -> list:
     """Enrich start list with next race info."""
     startlist = []
@@ -411,7 +442,7 @@ async def get_races_for_live_view(
 ) -> list:
     """Return races to display in live view."""
     filtered_racelist = []
-    time_now = datetime.datetime.now().strftime("%X")
+    time_now = get_local_time("HH:MM:SS")
     i = 0
     # get races
     races = await RaceplansAdapter().get_all_races(user["token"], event_id)
@@ -426,6 +457,7 @@ async def get_races_for_live_view(
         # from heat number (order) if selected
         if (race["order"] >= valgt_heat) and (i < number_of_races):
             race["next_race"] = get_qualification_text(race)
+            race["display_color"] = get_display_style(race["start_time"])
             race["start_time"] = race["start_time"][-8:]
             filtered_racelist.append(race)
             i += 1
