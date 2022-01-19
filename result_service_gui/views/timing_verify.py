@@ -29,7 +29,7 @@ class TimingVerify(web.View):
         """Get route function that return the passeringer page."""
         current_races = []
         next_races = []
-        next_round = ""
+        next_round = []
 
         try:
             informasjon = self.request.rel_url.query["informasjon"]
@@ -39,11 +39,11 @@ class TimingVerify(web.View):
             valgt_klasse = self.request.rel_url.query["valgt_klasse"]
             valgt_runde = self.request.rel_url.query["valgt_runde"]
             if valgt_runde == "Q":
-                next_round = "S"
+                next_round = ["S", "F"]
             elif valgt_runde == "S":
-                next_round = "F"
+                next_round = ["F"]
             elif valgt_runde == "N":
-                next_round = "Q"
+                next_round = ["Q"]
         except Exception:
             valgt_klasse = ""
             valgt_runde = ""
@@ -77,7 +77,7 @@ class TimingVerify(web.View):
                         )
 
                         current_races.append(race)
-                    elif next_round == race["round"]:
+                    elif race["round"] in next_round:
                         # get start list detail
                         race["startliste"] = await get_enchiced_startlist(
                             user, race["id"]

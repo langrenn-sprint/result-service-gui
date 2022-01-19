@@ -139,14 +139,18 @@ tr:nth-child(even){background-color: #f2f2f2;}
 
 #table_header_red {
     background-color: red;
+    font-weight: bold;
 }
 
 #table_header_orange {
     background-color: orange;
+    font-weight: bold;
 }
 
 #table_header_green {
     background-color: green;
+    font-weight: bold;
+    color: white;
 }
 
 #tablespacer {

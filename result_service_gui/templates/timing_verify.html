@@ -56,7 +56,11 @@
     </tr>
   </table>
 <div class="w3-row-padding">
-    <div class="w3-twothird">
+    {% if valgt_runde == "N" %}
+      <div class="w3-third">
+    {% else %}
+      <div class="w3-twothird">
+    {% endif %}
       <div id=adminpagetitle>
         {{ valgt_klasse }}
         {% if valgt_runde == "Q" %}Kvartfinaler
