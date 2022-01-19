@@ -107,7 +107,7 @@
                </tr>
                {% for loper in race.start_entries %}
                   <tr{% if loper.bib == valgt_startnr %} id=black{% endif %}>
-                     <td align=center>{{ loper.starting_position }}</td>
+                     <td align=center>{{ loop.index }}</td>
                      <td>{{ loper.bib }}</td>
                      <td>{{ loper.name }}</td>
                      <td colspan=2>{{ loper.club }}</td>
