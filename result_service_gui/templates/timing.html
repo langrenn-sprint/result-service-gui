@@ -37,6 +37,11 @@
 
 {% block content %}
   <div id=spacer></div>
+  <script>
+    function green_bg(id) {
+      document.getElementById(id).style.backgroundColor = "green";
+    }
+  </script>
     <table>
     {% if action == "" %}
       &nbsp;<br>
@@ -74,7 +79,7 @@
                   </td>
                 {% elif action == "finish_bib" %}
                   <td>{{ start.start_status }}</td>
-                  <td align=center>{{ start.bib }}</td>
+                  <td id={{ start.bib }} align=center>{{ start.bib }}</td>
                   <td></td>
                 {% endif %}
               <td>{{ start.name }}</td>
@@ -89,7 +94,7 @@
                 {% else %}
                   <td id=resultborder align=center>{{ loop.index }}</td>
                   <td align=center>
-                    <input type="number" name="form_rank_{{ loop.index }}" value="" min=1 max=9999>
+                    <input type="number" name="form_rank_{{ loop.index }}" value="" min=1 max=9999 onchange="green_bg(this.value)">
                   </td>
                 {% endif %}
               {% endif %}

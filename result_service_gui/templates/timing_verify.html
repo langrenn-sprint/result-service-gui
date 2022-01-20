@@ -29,6 +29,11 @@
 
 {% block content %}
   <div id=spacer></div>
+  <script>
+    function green_bg(id) {
+      document.getElementById(id).style.backgroundColor = "green";
+    }
+  </script>
   <table>
     <tr>
       <td>
@@ -97,7 +102,7 @@
             {% for start in race.startliste %}
               <tr>
                   <td>{{ start.starting_position }}</td>
-                  <td align=center>{{ start.bib }}</td>
+                  <td id={{ start.bib }} align=center>{{ start.bib }}</td>
                   <td>{{ start.name }}</td>
                   <td>{{ start.club }}</td>
                   <td>{{ start.info }}</td>
@@ -105,7 +110,7 @@
                   {% if race.finish_timings[loop.index0] %}
                     <td></td>
                     <td align=center>
-                      <input type="number" name="form_rank_{{ loop.index }}" value="{% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}" min=1 max=9999>
+                      <input type="number" name="form_rank_{{ loop.index }}" value="{% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}" min=1 max=9999 onchange="green_bg(this.value)">
                       <input type="hidden" name="old_form_rank_{{ loop.index }}" value="{% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}">
                       <input type="hidden" name="time_event_id_{{ loop.index }}" value="{{ race.finish_timings[loop.index0].id }}">
                     </td>
@@ -115,7 +120,7 @@
                   {% else %}
                     <td></td>
                     <td align=center>
-                      <input type="number" name="form_rank_{{ loop.index }}" value="" min=1 max=9999>
+                      <input type="number" name="form_rank_{{ loop.index }}" value="" min=1 max=9999 onchange="green_bg(this.value)">
                       <input type="hidden" name="old_form_rank_{{ loop.index }}" value="" min=1 max=9999>
                     </td>
                     <td></td>
