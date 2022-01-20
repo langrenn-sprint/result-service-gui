@@ -345,7 +345,8 @@ def get_finish_rank(race: dict) -> list:
                     finish_ranks = finish_results["ranking_sequence"]
                     race["finish_results"] = []
                     for rank_event in finish_ranks:
-                        finish_rank.append(rank_event)
+                        if rank_event["status"] == "OK":
+                            finish_rank.append(rank_event)
     return finish_rank
 
 
@@ -638,20 +639,30 @@ async def get_passeringer(
     tmp_passeringer = await TimeEventsAdapter().get_time_events_by_event_id(
         token, event_id
     )
-    if action == "control":
+    if action in [
+        "template",
+        "control",
+        "deleted",
+    ]:
         for passering in reversed(tmp_passeringer):
-            if passering["status"] == "Error":
-                if passering["timing_point"] != "Template":
-                    if valgt_klasse == "" or valgt_klasse in passering["race"]:
-                        passeringer.append(passering)
-    elif action == "template":
-        for passering in tmp_passeringer:
-            if passering["timing_point"] == "Template":
-                if valgt_klasse == "" or valgt_klasse in passering["race"]:
+            if valgt_klasse == "" or valgt_klasse in passering["race"]:
+                if passering["timing_point"] == "Template" and action == "template":
+                    passeringer.append(passering)
+                elif (
+                    passering["status"] == "Error"
+                    and passering["timing_point"] != "Template"
+                    and action == "control"
+                ):
+                    passeringer.append(passering)
+                elif passering["status"] == "Deleted" and action == "deleted":
                     passeringer.append(passering)
     else:
-        for passering in reversed(tmp_passeringer):
-            if passering["timing_point"] != "Template":
+        for passering in tmp_passeringer:
+            if passering["timing_point"] not in [
+                "Template",
+                "Error",
+                "Deleted",
+            ]:
                 passeringer.append(passering)
 
     # indentify last passering in race

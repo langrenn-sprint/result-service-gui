@@ -52,7 +52,7 @@ class TimeEventsService:
                 if race["round"] != "F":
                     time_event[
                         "race"
-                    ] = f"{race['raceclass']}-{race['round']}{race['heat']}{race['index']}"
+                    ] = f"{race['raceclass']}-{race['round']}{race['index']}{race['heat']}"
                     time_event["race_id"] = race["id"]
 
                     # loop and simulate result for pos 1 to 8
