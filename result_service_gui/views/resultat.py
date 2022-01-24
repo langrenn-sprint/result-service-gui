@@ -51,7 +51,8 @@ class Resultat(web.View):
             )
             # ensure web safe urls
             for klasse in raceclasses:
-                klasse["KlasseWeb"] = klasse["ageclass_name"].replace(" ", "%20")
+                for ac_name in klasse["ageclasses"]:
+                    klasse["KlasseWeb"] = ac_name.replace(" ", "%20")
 
             if (valgt_klasse == "") and (valgt_klubb == ""):
                 informasjon = "Velg klasse eller klubb for å vise resultater"

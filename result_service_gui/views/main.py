@@ -29,7 +29,7 @@ class Main(web.View):
                 "index.html",
                 self.request,
                 {
-                    "lopsinfo": "Startside",
+                    "lopsinfo": "Langrenn-sprint",
                     "event": event,
                     "event_id": "",
                     "events": events,

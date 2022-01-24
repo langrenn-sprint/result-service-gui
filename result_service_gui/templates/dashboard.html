@@ -112,7 +112,7 @@
               <a href=javascript:void(0) class=dropbtn>Startliste (pr klasse)</a>
               <div class=dropdown-content>
                 {% for klasse in raceclasses %}
-                  <a target=_new href=print_lists?klasse={{ klasse.name }}&event_id={{ event_id }}&action=start>{{ klasse.ageclass_name }}</a>
+                  <a target=_new href=print_lists?klasse={{ klasse.name }}&event_id={{ event_id }}&action=start>{{ klasse.name }}</a>
                 {% endfor %}
               </div>
             </li>
@@ -124,7 +124,7 @@
               <a href=javascript:void(0) class=dropbtn>Live (heat resultater)</a>
               <div class=dropdown-content>
                 {% for klasse in raceclasses %}
-                  <a target=_new href=print_lists?klasse={{ klasse.name }}&event_id={{ event_id }}&action=live>{{ klasse.ageclass_name }}</a>
+                  <a target=_new href=print_lists?klasse={{ klasse.name }}&event_id={{ event_id }}&action=live>{{ klasse.name }}</a>
                 {% endfor %}
               </div>
             </li>
@@ -136,7 +136,7 @@
               <a href=javascript:void(0) class=dropbtn>Resultater (pr klasse)</a>
               <div class=dropdown-content>
                 {% for klasse in raceclasses %}
-                  <a target=_new href=print_lists?klasse={{ klasse.name }}&event_id={{ event_id }}&action=result>{{ klasse.ageclass_name }}</a>
+                  <a target=_new href=print_lists?klasse={{ klasse.name }}&event_id={{ event_id }}&action=result>{{ klasse.name }}</a>
                 {% endfor %}
               </div>
             </li>

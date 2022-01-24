@@ -323,7 +323,7 @@ async def get_finish_timings(user: dict, race_id: str) -> list:
 
 async def get_event(user: dict, event_id: str) -> dict:
     """Get event - return new if no event found."""
-    event = {"id": event_id, "name": "Nytt arrangement", "organiser": "Ikke valgt"}
+    event = {"id": event_id, "name": "Langrenn-sprint", "organiser": "Ikke valgt"}
     if event_id != "":
         logging.debug(f"get_event {event_id}")
         event = await EventsAdapter().get_event(user["token"], event_id)

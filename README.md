@@ -83,7 +83,7 @@ Denne fila _skal_ ligge i .dockerignore og .gitignore
 ```
 
 ### Teste manuelt
-
+Brukermanualer finnes på https://langrenn-sprint.github.io/documentation/
 Enten åpne din nettleser på <http://localhost:8090/>
 
 Eller via curl:
