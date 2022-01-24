@@ -42,6 +42,7 @@ class PrintLists(web.View):
             raceplan_summary = []
             resultlist = []
             html_template = "print_lists.html"
+            valgt_runde = ""
 
             try:
                 valgt_klasse = self.request.rel_url.query["klasse"]
