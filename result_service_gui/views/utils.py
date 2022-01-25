@@ -438,15 +438,11 @@ def get_raceplan_summary(races: list, raceclasses: list) -> list:
     return summary
 
 
-async def get_races_for_live_view(
-    user: dict, event_id: str, valgt_heat: int, number_of_races: int
-) -> list:
+def get_races_for_live_view(races, valgt_heat: int, number_of_races: int) -> list:
     """Return races to display in live view."""
     filtered_racelist = []
     time_now = get_local_time("HH:MM:SS")
     i = 0
-    # get races
-    races = await RaceplansAdapter().get_all_races(user["token"], event_id)
     # find next race on start
     if valgt_heat == 0:
         for race in races:

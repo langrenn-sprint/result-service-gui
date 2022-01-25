@@ -53,16 +53,13 @@ class Start(web.View):
                 user["token"], event_id
             )
             # get relevant races
-            _tmp_races = []
+            # get startlister for klasse
+            _tmp_races = await RaceplansAdapter().get_all_races(user["token"], event_id)
             if "live" == valgt_klasse:
-                _tmp_races = await get_races_for_live_view(user, event_id, 0, 9)
+                _tmp_races = get_races_for_live_view(_tmp_races, 0, 9)
                 colseparators = [3, 6]
                 colclass = "w3-third"
-            else:
-                # get startlister for klasse
-                _tmp_races = await RaceplansAdapter().get_all_races(
-                    user["token"], event_id
-                )
+
             if len(_tmp_races) == 0:
                 informasjon = f"{informasjon} Ingen løp funnet."
             else:

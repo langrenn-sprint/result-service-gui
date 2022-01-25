@@ -6,6 +6,7 @@ import aiohttp_jinja2
 
 from result_service_gui.services import (
     RaceclassesAdapter,
+    RaceplansAdapter,
 )
 from .utils import (
     check_login,
@@ -28,7 +29,6 @@ class Dashboard(web.View):
             informasjon = self.request.rel_url.query["informasjon"]
         except Exception:
             informasjon = ""
-        valgt_heat = 0
 
         try:
             user = await check_login(self)
@@ -37,8 +37,9 @@ class Dashboard(web.View):
             raceclasses = await RaceclassesAdapter().get_raceclasses(
                 user["token"], event_id
             )
+            all_races = await RaceplansAdapter().get_all_races(user["token"], event_id)
 
-            races = await get_races_for_live_view(user, event_id, valgt_heat, 1)
+            races = get_races_for_live_view(all_races, 0, 1)
 
             return await aiohttp_jinja2.render_template_async(
                 "dashboard.html",
@@ -52,7 +53,6 @@ class Dashboard(web.View):
                     "raceclasses": raceclasses,
                     "races": races,
                     "username": user["name"],
-                    "valgt_heat": valgt_heat,
                 },
             )
         except Exception as e:

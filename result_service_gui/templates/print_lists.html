@@ -63,7 +63,7 @@
       {% endif %}
       {% if race.list_type == "start" %}
         <tr id=headerprint>
-          <td colspan=3>Startliste {{ race.raceclass }}
+          <td colspan=3>{{ race.raceclass }}
             {% if race.round == "Q" %}Kvartfinale {{ race.heat }}
             {% elif race.round == "S" %}Semifinale {{ race.index }}{{ race.heat }}
             {% elif race.round == "F" %}Finale {{ race.index }}
@@ -105,7 +105,7 @@
       {% else %} {# print results #}
         <tr id=headerprint>
           <td colspan=3>
-            Resultatliste {{ race.raceclass }}
+            {{ race.raceclass }}
             {% if race.round == "Q" %}Kvartfinale {{ race.heat }}
             {% elif race.round == "S" %}Semifinale {{ race.index }}{{ race.heat }}
             {% elif race.round == "F" %}Finale {{ race.index }}

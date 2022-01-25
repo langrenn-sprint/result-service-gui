@@ -6,6 +6,7 @@ import aiohttp_jinja2
 
 from result_service_gui.services import (
     RaceclassesAdapter,
+    RaceplansAdapter,
     TimeEventsAdapter,
 )
 from .utils import (
@@ -49,7 +50,9 @@ class Timing(web.View):
             raceclasses = await RaceclassesAdapter().get_raceclasses(
                 user["token"], event_id
             )
-            races = await get_races_for_live_view(user, event_id, valgt_heat, 1)
+            all_races = await RaceplansAdapter().get_all_races(user["token"], event_id)
+
+            races = get_races_for_live_view(all_races, valgt_heat, 1)
 
             if len(races) > 0:
                 valgt_heat = races[0]["order"]
