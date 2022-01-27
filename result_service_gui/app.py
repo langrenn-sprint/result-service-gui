@@ -23,6 +23,7 @@ from .views import (
     PrintLists,
     Resultat,
     Start,
+    StartEdit,
     Timing,
     TimingVerify,
 )
@@ -80,6 +81,7 @@ async def create_app() -> web.Application:
             web.view("/print_lists", PrintLists),
             web.view("/resultat", Resultat),
             web.view("/start", Start),
+            web.view("/start_edit", StartEdit),
             web.view("/timing", Timing),
             web.view("/timing_verify", TimingVerify),
         ]

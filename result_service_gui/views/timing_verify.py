@@ -24,7 +24,7 @@ from .utils import (
 
 
 class TimingVerify(web.View):
-    """Class representing the start view."""
+    """Class representing the timing admin view."""
 
     async def get(self) -> web.Response:
         """Get route function that return the passeringer page."""

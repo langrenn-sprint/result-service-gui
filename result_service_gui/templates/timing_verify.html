@@ -18,7 +18,6 @@
     <a href=javascript:void(0) class=dropbtn>Velg runde</a>
     <div class=dropdown-content>
       {% for round in raceplan_summary %}
-        <a href=timing_verify?event_id={{ event_id }}&klasse={{ round.name}}&runde=N>{{ round.name}} start</a>
         <a href=timing_verify?event_id={{ event_id }}&klasse={{ round.name}}&runde=Q>{{ round.name}} kvart</a>
         <a href=timing_verify?event_id={{ event_id }}&klasse={{ round.name}}&runde=S>{{ round.name}} semi</a>
         <a href=timing_verify?event_id={{ event_id }}&klasse={{ round.name}}&runde=F>{{ round.name}} finaler</a>
