@@ -42,8 +42,20 @@
 {% block content %}
   <div id=spacer></div>
   <script>
-    function green_bg(id) {
-      document.getElementById(id).style.backgroundColor = "green";
+    function green_bg(my_element) {
+      try {
+        document.getElementById(my_element.value).style.backgroundColor = "green";
+        document.getElementById(my_element.oldvalue).style.backgroundColor = "";
+      }
+      catch(err) {
+      }
+    }
+    function green_bg_init(id) {
+      try {
+        document.getElementById(id).style.backgroundColor = "green";
+      }
+      catch(err) {
+      }
     }
   </script>
   <table>
@@ -73,11 +85,7 @@
     </tr>
   </table>
 <div class="w3-row-padding">
-    {% if valgt_runde.runde == "N" %}
-      <div class="w3-third">
-    {% else %}
       <div class="w3-twothird">
-    {% endif %}
       <div id=adminpagetitle>
         {{ valgt_runde.klasse }}
         {% if valgt_runde.runde == "Q" %}Kvartfinaler
@@ -90,13 +98,9 @@
         <tr>
           <td colspan=10>&nbsp;</td>
         </tr>
-          <tr>
-            <td colspan=3><b>{{ race.raceclass }} {{ race.round }}{{ race.index }}{{ race.heat }}</b></td>
-            <td colspan=6><b>{{ race.start_time[-8:] }}</b></td>
-            <td>Heat {{ race.order }}</td>
-          </tr>
           <tr id=headerblack>
-            <td colspan=5>Startliste</td>
+            <td colspan=3>{{ race.raceclass }} {{ race.round }}{{ race.index }}{{ race.heat }}</td>
+            <td colspan=2><b>{{ race.start_time[-8:] }}</b> ({{ race.order }})</td>
             <td colspan=5 id=resultheader>Resultat: {{ race.next_race }}</td>
           </tr>
           <tr>
@@ -117,28 +121,34 @@
                   <td id={{ start.bib }} align=center>{{ start.bib }}</td>
                   <td>{{ start.name }}</td>
                   <td>{{ start.club }}</td>
-                  <td>{{ start.info }}</td>
+                  <td>{{ start.start_status }}</td>
                   <td id=resultborder align=center>{{ loop.index }}</td>
                   {% if race.finish_timings[loop.index0] %}
                     <td></td>
                     <td align=center>
-                      <input type="number" name="form_rank_{{ loop.index }}" value="{% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}" min=1 max=9999 onchange="green_bg(this.value)">
+                      <input type="number" name="form_rank_{{ loop.index }}" value="{% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}" min=1 max=9999 onfocus="this.oldvalue = this.value;" onchange="green_bg(this)">
                       <input type="hidden" name="old_form_rank_{{ loop.index }}" value="{% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}">
                       <input type="hidden" name="time_event_id_{{ loop.index }}" value="{{ race.finish_timings[loop.index0].id }}">
                     </td>
                     <td>{{ race.finish_timings[loop.index0].name }}</td>
                     <td>{{ race.finish_timings[loop.index0].next_race }}-{{ race.finish_timings[loop.index0].next_race_position }}</td>
-                    <td>
                   {% else %}
                     <td></td>
                     <td align=center>
-                      <input type="number" name="form_rank_{{ loop.index }}" value="" min=1 max=9999 onchange="green_bg(this.value)">
+                      <input type="number" name="form_rank_{{ loop.index }}" value="" min=1 max=9999 onfocus="this.oldvalue = this.value;" onchange="green_bg(this)">
                       <input type="hidden" name="old_form_rank_{{ loop.index }}" value="" min=1 max=9999>
                     </td>
                     <td></td>
                     <td></td>
                   {% endif %}
               </tr>
+            {% endfor %}
+            {% for start in race.startliste %}
+              {% if race.finish_timings[loop.index0] %}
+                <script>
+                  green_bg_init({{ race.finish_timings[loop.index0].bib }})
+                </script>
+              {% endif %}
             {% endfor %}
               <tr>
                 <td colspan=7></td>
@@ -155,16 +165,16 @@
             {% if race.startliste %}
               <tr>
                 <form action=/timing_verify method=post>
-                  <td><input type="number" name="starting_position" value="" min=1 max=99></td>
-                  <td><input type="number" name="bib" value="" min=1 max=999></td>
-                  <td colspan=3>
-                      <input type="submit" name=create_start value=" Legg til ">
-                      <input type="hidden" name="race_id" value="{{ race.id }}">
-                      <input type="hidden" name="startlist_id" value="{{ race.startliste[0].startlist_id }}">
-                      <input type="hidden" name="start_time" value="{{ race.start_time }}">
-                      <input type="hidden" name=runde value="{{ valgt_runde.runde }}">
-                      <input type="hidden" name=klasse value="{{ valgt_runde.klasse }}">
-                      <input type="hidden" name=event_id value="{{ event_id }}">
+                  <td colspan=5>
+                    <input type="number" name="starting_position" value="" min=1 max=99>
+                    <input type="number" name="bib" value="" min=1 max=9999>
+                    <input type="submit" name=create_start value=" Legg til ">
+                    <input type="hidden" name="race_id" value="{{ race.id }}">
+                    <input type="hidden" name="startlist_id" value="{{ race.startliste[0].startlist_id }}">
+                    <input type="hidden" name="start_time" value="{{ race.start_time }}">
+                    <input type="hidden" name=runde value="{{ valgt_runde.runde }}">
+                    <input type="hidden" name=klasse value="{{ valgt_runde.klasse }}">
+                    <input type="hidden" name=event_id value="{{ event_id }}">
                   </td>
                 </form>
                 <td colspan=5>&nbsp;</td>

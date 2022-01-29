@@ -40,9 +40,7 @@ async def check_login_open(self) -> dict:
             "token": session["token"],
         }
     else:
-        # get temp token
-        token = await UserAdapter().login_guest()
-        user = {"name": "Gjest", "loggedin": False, "token": token}
+        user = {"name": "Gjest", "loggedin": False, "token": ""}
 
     return user
 
@@ -281,9 +279,10 @@ async def get_enchiced_startlist(user: dict, race_id: str) -> list:
                 # check if start or DNS is registered
                 elif time_event["timing_point"] == "Start":
                     if time_event["bib"] == start_entry["bib"]:
+                        start_entry["start_status"] = "Started"
                         start_entry[
                             "info"
-                        ] = f"Start registered at {time_event['registration_time']}"
+                        ] = f"Started registered at {time_event['registration_time']}"
                 elif time_event["timing_point"] == "DNS":
                     if time_event["bib"] == start_entry["bib"]:
                         start_entry["start_status"] = "DNS"
