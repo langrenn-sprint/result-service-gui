@@ -351,7 +351,7 @@ def get_finish_rank(race: dict) -> list:
 
 def get_local_time(format: str) -> str:
     """Return local time, time zone adjusted from .env file."""
-    TIME_ZONE_OFFSET = int(os.getenv("TIME_ZONE_OFFSET", 0))
+    TIME_ZONE_OFFSET = int(os.getenv("TIME_ZONE_OFFSET", 1))
     # calculate new time
     delta_seconds = TIME_ZONE_OFFSET * 3600
     local_time_obj = datetime.datetime.now() + datetime.timedelta(seconds=delta_seconds)
