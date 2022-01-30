@@ -4,13 +4,13 @@
 {% endblock %}
 
 {% block titleheader %}
-  Live scroll {{ valgt_startnr }}{{ valgt_klasse }}
+  Live scroll {{ valgt_klasse }}
 {% endblock %}
 
 {% block refresh %}60{% endblock %}
 
 {% block titlemain %}
-  Live scroll {{ valgt_startnr }} {{ valgt_klasse }}
+  Live scroll {{ valgt_klasse }}
 {% endblock %}
 
 {% block menuitems %}
@@ -24,25 +24,15 @@
       {% endfor %}
     </div>
   </li>
-  <li class=dropdown id=topborder>
-    <a href=javascript:void(0) class=dropbtn>Velg løper</a>
-    <div class=dropdown-content>
-      {% if valgt_klasse == "" %}
-        <a href=live>Velg klasse først</a>
-      {% else %}
-        <a href=live?klasse={{ valgt_klasse }}&event_id={{ event_id }}>Alle</a>
-        {% for deltaker in contestants %}
-          <a href=live?klasse={{ valgt_klasse }}&startnr={{ deltaker.bib }}&event_id={{ event_id }}>{{ deltaker.bib }} {{ deltaker.first_name }} {{ deltaker.last_name }}</a>
-        {% endfor %}
-      {% endif %}
-    </div>
-  </li>
 {% endblock %}
 
 {% block content %}
   <div id=spacer></div>
   <div class="w3-row-padding">
     <div class="{{ colclass }}">
+      {% if valgt_startnr %}
+        <div align=center><b>Startnummer {{ valgt_startnr }}</b></div>
+      {% endif %}
       <table>
         {% for race in races %}
             {% if race.order in colseparators %}
@@ -59,7 +49,7 @@
                   {% elif race.round == "S" %}Semifinale {{ race.index }}{{ race.heat }}
                   {% elif race.round == "F" %}Finale {{ race.index }}
                   {% endif %}</b>
-                  ({{ race.order }})
+                  (heat {{ race.order }})
                 </td>
               </tr>
               <tr id=subheader>
@@ -77,7 +67,9 @@
                   <tr{% if loper.bib == valgt_startnr %} id=black{% endif %}>
                     <td align=center>{{ loper.rank }}</td>
                     <td>{{ loper.bib }}</td>
-                    <td>{{ loper.name }}</td>
+                    <td>
+                        <a href=live?klasse={{ valgt_klasse }}&startnr={{ loper.bib }}&event_id={{ event_id }}>{{ loper.name }}</a>
+                    </td>
                     <td>{{ loper.club }}</td>
                     {% if race.round == "F" %}
                       <td></td>
@@ -96,7 +88,7 @@
                   {% elif race.round == "F" %}
                     Finale {{ race.index }}
                   {% endif %}</b>
-                   ({{ race.order }})
+                   (heat {{ race.order }})
                 </td>
                 <td colspan=2>Kl. {{ race.start_time }}</td>
               </tr>
@@ -111,7 +103,9 @@
                   <tr{% if loper.bib == valgt_startnr %} id=black{% endif %}>
                      <td align=center>{{ loop.index }}</td>
                      <td>{{ loper.bib }}</td>
-                     <td>{{ loper.name }}</td>
+                     <td>
+                       <a href=live?klasse={{ valgt_klasse }}&startnr={{ loper.bib }}&event_id={{ event_id }}>{{ loper.name }}</a>
+                     </td>
                      <td colspan=2>{{ loper.club }}</td>
                    </tr>
                {% endfor %}
