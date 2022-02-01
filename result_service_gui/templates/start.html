@@ -99,7 +99,7 @@
         {% else %}
           <tr id=headerblue>
         {% endif %}
-          <td colspan=3>Startliste {{ race.raceclass }}
+          <td colspan=3><b>Kl. {{ race.start_time }}</b> {{ race.raceclass }}
             {% if race.round == "Q" %}
               Kvartfinale {{ race.heat }}
             {% elif race.round == "S" %}
@@ -108,21 +108,16 @@
               Finale {{ race.index }}
             {% endif %}
           </td>
-          <td><b>Kl. {{ race.start_time }}</b></td>
-            <td colspan=2>{% if race.round != "F" and (valgt_klasse != "live") %}Neste heat: {{ race.next_race }}{% endif %}</td>
+          <td colspan=2>{% if race.round != "F" and (valgt_klasse != "live") %}Neste heat: {{ race.next_race }}{% endif %}</td>
+          <td>(heat {{ race.order }})</td>
         </tr>
         <tr id=subheader>
           <td width=50><div id={{ race.heat }} >Pos</div></td>
           <td width=50>Nr</td>
           <td>Navn</td>
           <td>Klubb</td>
-          {% if race.round != "F" and (valgt_klasse != "live") %}
-            <td width=50>Plass</td>
-            <td>Videre til (heat)</td>
-          {% else %}
             <td></td>
             <td></td>
-          {% endif %}
         </tr>
         {% for loper in race.startliste %}
             <tr>
@@ -132,13 +127,8 @@
                 <a href=live?event_id={{ event_id }}&klasse={{ valgt_klasse }}&startnr={{ loper.bib }}>{{ loper.name }}</a>
               </td>
               <td>{{ loper.club }}</td>
-                {% if race.round != "F" and (valgt_klasse != "live") %}
-                  <td>{{ loper.starting_position }}</td>
-                  <td>{{ loper.next_race }}</td>
-                {% else %}
-                  <td></td>
-                  <td></td>
-                {% endif %}
+              <td></td>
+              <td></td>
             </tr>
         {% endfor %}
     {% endfor %}

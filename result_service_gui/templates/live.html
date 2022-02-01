@@ -43,14 +43,14 @@
             {% endif %}
             {% if race.finish_results|length > 0 %}
               <tr id=headerblack>
-                <td colspan=5>
+                <td colspan=4>
                   Resultater <b>{{ race.raceclass }}
                   {% if race.round == "Q" %}Kvartfinale {{ race.heat }}
                   {% elif race.round == "S" %}Semifinale {{ race.index }}{{ race.heat }}
                   {% elif race.round == "F" %}Finale {{ race.index }}
                   {% endif %}</b>
-                  (heat {{ race.order }})
                 </td>
+                <td>(heat {{ race.order }})</td>
               </tr>
               <tr id=subheader>
                 <td align=center><div id={{ race.order }} >Plass</div></td>
@@ -80,7 +80,7 @@
               {% endfor %}
             {% else %}
               <tr id=headerblue>
-                <td colspan=3>Start <b>{{ race.raceclass }}
+                <td colspan=3><b>Kl. {{ race.start_time }} {{ race.raceclass }}
                   {% if race.round == "Q" %}
                     Kvartfinale {{ race.heat }}
                   {% elif race.round == "S" %}
@@ -88,9 +88,9 @@
                   {% elif race.round == "F" %}
                     Finale {{ race.index }}
                   {% endif %}</b>
-                   (heat {{ race.order }})
                 </td>
-                <td colspan=2>Kl. {{ race.start_time }}</td>
+                <td></td>
+                <td>(heat {{ race.order }})</td>
               </tr>
               <tr id=subheader>
                 <td align=center><div id={{ race.order }} >Pos</div></td>

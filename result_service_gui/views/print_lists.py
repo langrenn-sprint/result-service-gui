@@ -42,13 +42,15 @@ class PrintLists(web.View):
             raceplan_summary = []
             resultlist = []
             html_template = "print_lists.html"
-            valgt_runde = ""
 
             try:
                 valgt_klasse = self.request.rel_url.query["klasse"]
-                valgt_runde = self.request.rel_url.query["valgt_runde"]
             except Exception:
                 valgt_klasse = ""  # noqa: F841
+            try:
+                valgt_runde = self.request.rel_url.query["runde"]
+            except Exception:
+                valgt_runde = ""  # noqa: F841
 
             raceclasses = await RaceclassesAdapter().get_raceclasses(
                 user["token"], event_id

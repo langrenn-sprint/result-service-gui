@@ -42,12 +42,20 @@
 {% block content %}
   <div id=spacer></div>
   <script>
-    function green_bg(my_element) {
+    function green_bg(my_element, order_index) {
       try {
-        document.getElementById(my_element.value).style.backgroundColor = "green";
-        document.getElementById(my_element.oldvalue).style.backgroundColor = "";
+        old_element = order_index + my_element.oldvalue;
+        document.getElementById(old_element).style.backgroundColor = "";
       }
       catch(err) {
+      }
+      try {
+        new_element = order_index + my_element.value;
+        document.getElementById(new_element).style.backgroundColor = "green";
+        my_element.style.backgroundColor = "";
+      }
+      catch(err) {
+        my_element.style.backgroundColor = "red";
       }
     }
     function green_bg_init(id) {
@@ -118,7 +126,7 @@
             {% for start in race.startliste %}
               <tr>
                   <td>{{ start.starting_position }}</td>
-                  <td id={{ start.bib }} align=center>{{ start.bib }}</td>
+                  <td id={{ race.order }}{{ start.bib }} align=center>{{ start.bib }}</td>
                   <td>{{ start.name }}</td>
                   <td>{{ start.club }}</td>
                   <td>{{ start.start_status }}</td>
@@ -126,7 +134,7 @@
                   {% if race.finish_timings[loop.index0] %}
                     <td></td>
                     <td align=center>
-                      <input type="number" name="form_rank_{{ loop.index }}" value="{% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}" min=1 max=9999 onfocus="this.oldvalue = this.value;" onchange="green_bg(this)">
+                      <input type="number" name="form_rank_{{ loop.index }}" value="{% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}" min=1 max=9999 onfocus="this.oldvalue = this.value;" onchange="green_bg(this, {{ race.order }})">
                       <input type="hidden" name="old_form_rank_{{ loop.index }}" value="{% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}">
                       <input type="hidden" name="time_event_id_{{ loop.index }}" value="{{ race.finish_timings[loop.index0].id }}">
                     </td>
@@ -135,7 +143,7 @@
                   {% else %}
                     <td></td>
                     <td align=center>
-                      <input type="number" name="form_rank_{{ loop.index }}" value="" min=1 max=9999 onfocus="this.oldvalue = this.value;" onchange="green_bg(this)">
+                      <input type="number" name="form_rank_{{ loop.index }}" value="" min=1 max=9999 onfocus="this.oldvalue = this.value;" onchange="green_bg(this, {{ race.order }})">
                       <input type="hidden" name="old_form_rank_{{ loop.index }}" value="" min=1 max=9999>
                     </td>
                     <td></td>
@@ -146,7 +154,7 @@
             {% for start in race.startliste %}
               {% if race.finish_timings[loop.index0] %}
                 <script>
-                  green_bg_init({{ race.finish_timings[loop.index0].bib }})
+                  green_bg_init({{ race.order }}{{ race.finish_timings[loop.index0].bib }})
                 </script>
               {% endif %}
             {% endfor %}

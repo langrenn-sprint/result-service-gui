@@ -92,6 +92,9 @@ Eller via curl:
 % curl -i http://localhost:8090/
 ```
 
+GCP testinstans: http://34.88.91.136:8090/
+Dokumentasjon: https://langrenn-sprint.github.io/docs/
+
 Når du endrer koden i result_service_gui, vil webserveren laste applikasjonen på nytt autoamtisk ved lagring.
 
 ## Referanser
