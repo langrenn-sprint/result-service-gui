@@ -31,8 +31,6 @@ class ResultAdapter:
                 logging.debug(f"get_race_results - got response {resp.status}")
                 if resp.status == 200:
                     results = await resp.json()
-                elif resp.status == 401:
-                    raise Exception(f"Login expired: {resp}")
                 else:
                     servicename = "get_race_results"
                     body = await resp.json()

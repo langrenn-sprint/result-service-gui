@@ -142,6 +142,11 @@ class TimingVerify(web.View):
                 informasjon = await update_result(user, form)  # type: ignore
         except Exception as e:
             logging.error(f"Error: {e}")
+            error_reason = str(e)
+            if error_reason.startswith("401"):
+                return web.HTTPSeeOther(
+                    location=f"/login?informasjon=Ingen tilgang, vennligst logg inn på nytt. {e}"
+                )
             informasjon = f"Det har oppstått en feil - {e.args}."
         info = (
             f"{informasjon}&klasse={valgt_runde['klasse']}&runde={valgt_runde['runde']}"

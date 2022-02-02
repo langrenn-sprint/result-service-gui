@@ -109,6 +109,11 @@ class Timing(web.View):
         except Exception as e:
             logging.error(f"Error: {e}")
             informasjon = f"Det har oppstått en feil - {e.args}."
+            error_reason = str(e)
+            if error_reason.startswith("401"):
+                return web.HTTPSeeOther(
+                    location=f"/login?informasjon=Ingen tilgang, vennligst logg inn på nytt. {e}"
+                )
 
         return web.HTTPSeeOther(
             location=f"/timing?event_id={event_id}&informasjon={informasjon}&action={action}&heat={valgt_heat}"

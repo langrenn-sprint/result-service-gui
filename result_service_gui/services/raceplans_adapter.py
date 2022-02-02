@@ -1,4 +1,5 @@
 """Module for raceplans adapter."""
+import datetime
 import logging
 import os
 from typing import List
@@ -16,8 +17,34 @@ RACE_SERVICE_URL = f"http://{RACE_HOST_SERVER}:{RACE_HOST_PORT}"
 class RaceplansAdapter:
     """Class representing raceplans."""
 
+    async def delete_race(self, token: str, race_id: str) -> str:
+        """Delete one race function."""
+        servicename = "delete_race"
+        headers = {
+            hdrs.AUTHORIZATION: f"Bearer {token}",
+        }
+        async with ClientSession() as session:
+            async with session.delete(
+                f"{RACE_SERVICE_URL}/races/{race_id}",
+                headers=headers,
+            ) as resp:
+                res = resp.status
+                logging.debug(f"delete_race result - got response {resp}")
+                if res == 204:
+                    pass
+                elif resp.status == 401:
+                    raise web.HTTPBadRequest(reason=f"401 Unathorized - {servicename}")
+                else:
+                    body = await resp.json()
+                    logging.error(f"{servicename} failed - {resp.status} - {body}")
+                    raise web.HTTPBadRequest(
+                        reason=f"Error - {resp.status}: {body['detail']}."
+                    )
+        return str(res)
+
     async def delete_raceplans(self, token: str, event_id: str) -> str:
         """Delete all raceplans in one event function."""
+        servicename = "delete_raceplan"
         raceplans = await RaceplansAdapter().get_all_raceplans(token, event_id)
         raceplan = raceplans[0]
 
@@ -34,8 +61,9 @@ class RaceplansAdapter:
                 logging.debug(f"delete raceplan result - got response {resp}")
                 if res == 204:
                     pass
+                elif resp.status == 401:
+                    raise web.HTTPBadRequest(reason=f"401 Unathorized - {servicename}")
                 else:
-                    servicename = "delete_raceplan"
                     body = await resp.json()
                     logging.error(f"{servicename} failed - {resp.status} - {body}")
                     raise web.HTTPBadRequest(
@@ -45,6 +73,7 @@ class RaceplansAdapter:
 
     async def generate_raceplan(self, token: str, event_id: str) -> int:
         """Generate classes based upon registered contestants."""
+        servicename = "generate_raceplan"
         headers = MultiDict(
             [
                 (hdrs.AUTHORIZATION, f"Bearer {token}"),
@@ -58,8 +87,9 @@ class RaceplansAdapter:
                 logging.debug(f"generate_raceplan result - got response {resp}")
                 if res == 201:
                     pass
+                elif resp.status == 401:
+                    raise web.HTTPBadRequest(reason=f"401 Unathorized - {servicename}")
                 else:
-                    servicename = "generate_raceplan"
                     body = await resp.json()
                     logging.error(f"{servicename} failed - {resp.status} - {body}")
                     raise web.HTTPBadRequest(
@@ -156,8 +186,19 @@ class RaceplansAdapter:
                 races.append(race)
         return races
 
+    async def update_order(self, token: str, race_id: str, new_order: int) -> str:
+        """Update race order function."""
+        race = await RaceplansAdapter().get_race_by_id(token, race_id)
+        race["order"] = new_order
+        res = await RaceplansAdapter().update_race(token, race["id"], race)
+        logging.debug(f"Raceplan update order, result: {res}. {race}")
+        informasjon = f"Oppdatert heat {new_order}."
+
+        return informasjon
+
     async def update_raceplan(self, token: str, id: str, new_data: dict) -> int:
         """Update klasser function."""
+        servicename = "update_raceplan"
         returncode = 201
         headers = MultiDict(
             [
@@ -175,8 +216,40 @@ class RaceplansAdapter:
                 logging.debug(f"update_raceplan - got response {resp.status}")
                 if resp.status == 204:
                     pass
+                elif resp.status == 401:
+                    raise web.HTTPBadRequest(reason=f"401 Unathorized - {servicename}")
                 else:
-                    servicename = "update_raceplan"
+                    body = await resp.json()
+                    logging.error(f"{servicename} failed - {resp.status} - {body}")
+                    raise web.HTTPBadRequest(
+                        reason=f"Error - {resp.status}: {body['detail']}."
+                    )
+
+        return returncode
+
+    async def update_race(self, token: str, id: str, new_data: dict) -> int:
+        """Update one race function."""
+        servicename = "update_race"
+        returncode = 201
+        headers = MultiDict(
+            [
+                (hdrs.CONTENT_TYPE, "application/json"),
+                (hdrs.AUTHORIZATION, f"Bearer {token}"),
+            ]
+        )
+        async with ClientSession() as session:
+            async with session.put(
+                f"{RACE_SERVICE_URL}/races/{id}",
+                headers=headers,
+                json=new_data,
+            ) as resp:
+                returncode = resp.status
+                logging.debug(f"update_race - got response {resp.status}")
+                if resp.status == 204:
+                    pass
+                elif resp.status == 401:
+                    raise web.HTTPBadRequest(reason=f"401 Unathorized - {servicename}")
+                else:
                     body = await resp.json()
                     logging.error(f"{servicename} failed - {resp.status} - {body}")
                     raise web.HTTPBadRequest(
@@ -189,6 +262,7 @@ class RaceplansAdapter:
         self, token: str, event_id: str, order: str, new_time: str
     ) -> str:
         """Update race start-time function."""
+        servicename = "update_race_start_time"
         returncode = 0
         headers = MultiDict(
             [
@@ -212,13 +286,46 @@ class RaceplansAdapter:
                 logging.debug(f"update_race_start_time - got response {resp.status}")
                 if resp.status == 204:
                     pass
+                elif resp.status == 401:
+                    raise web.HTTPBadRequest(reason=f"401 Unathorized - {servicename}")
                 else:
-                    servicename = "update_race_start_time"
                     body = await resp.json()
                     logging.error(f"{servicename} failed - {resp.status} - {body}")
                     raise web.HTTPBadRequest(
                         reason=f"Error - {resp.status}: {body['detail']}."
                     )
         informasjon = f"Tidplan er oppdatert {returncode}"
+
+        return informasjon
+
+    async def update_start_time(
+        self, token: str, event_id: str, order: int, new_time: str
+    ) -> str:
+        """Update race start-time function."""
+        delta_seconds = float(0)
+        races = await RaceplansAdapter().get_all_races(token, event_id)
+        for race in races:
+            old_time_obj = datetime.datetime.strptime(
+                race["start_time"], "%Y-%m-%dT%H:%M:%S"
+            )
+            if race["order"] >= order:
+                # calculate time difference, delta seconds
+                if race["order"] == order:
+                    new_time_obj = datetime.datetime.strptime(
+                        f"{race['start_time'][:11]}{new_time}", "%Y-%m-%dT%H:%M:%S"
+                    )
+                    delta_time = new_time_obj - old_time_obj
+                    delta_seconds = delta_time.total_seconds()
+
+                # calculate new time
+                x = old_time_obj + datetime.timedelta(seconds=delta_seconds)
+                new_time = x.strftime("%X")
+                race["start_time"] = f"{race['start_time'][:11]}{new_time}"
+                res = await RaceplansAdapter().update_race(token, race["id"], race)
+                logging.debug(f"Raceplan update time, result: {res}. {race}")
+
+        informasjon = (
+            f"Suksess! Utsettelse på {delta_seconds} sekunder fra heat {order}."
+        )
 
         return informasjon

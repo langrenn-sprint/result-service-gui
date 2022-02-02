@@ -91,6 +91,11 @@ class StartEdit(web.View):
         except Exception as e:
             logging.error(f"Error: {e}")
             informasjon = f"Det har oppstått en feil - {e.args}."
+            error_reason = str(e)
+            if error_reason.startswith("401"):
+                return web.HTTPSeeOther(
+                    location=f"/login?informasjon=Ingen tilgang, vennligst logg inn på nytt. {e}"
+                )
         info = f"{informasjon}&klasse={valgt_klasse}"
         return web.HTTPSeeOther(
             location=f"/start_edit?event_id={event_id}&informasjon={info}"

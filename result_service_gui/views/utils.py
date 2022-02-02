@@ -84,7 +84,7 @@ async def create_finish_time_events(user: dict, action: str, form: dict) -> str:
             id = await TimeEventsService().create_finish_time_event(
                 user["token"], request_body
             )
-            informasjon += f" {bib} "
+            informasjon += f" {bib}, result: {id} "
             logging.debug(f"Registrering: {id} - body: {request_body}")
     elif action == "finish_bib":
         request_body["timing_point"] = "Finish"
@@ -118,9 +118,7 @@ async def create_finish_time_events(user: dict, action: str, form: dict) -> str:
                     id = await TimeEventsService().create_finish_time_event(
                         user["token"], request_body
                     )
-                    informasjon += (
-                        f" {request_body['bib']}-{request_body['rank']} plass. "
-                    )
+                    informasjon += f" {id} "
                     logging.debug(f"Registrering: {id} - body: {request_body}")
     return f"Utført {i} registreringer: {informasjon}"
 

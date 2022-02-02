@@ -67,7 +67,7 @@ class Resultat(web.View):
                         user, event_id, valgt_klasse
                     )
                     if len(resultlist) == 0:
-                        informasjon = "Resultatliste er ikke klar. Følg med på <a href=>live resultater</a>."
+                        informasjon = "Resultater er ikke klare. Velg 'Live' i menyen for heat resultater"
                     foto = await FotoService().get_foto_by_klasse(
                         user, valgt_klasse, event_id
                     )
