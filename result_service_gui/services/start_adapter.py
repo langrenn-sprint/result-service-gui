@@ -212,8 +212,6 @@ class StartAdapter:
                 logging.debug(f"get_all_starts_by_event - got response {resp.status}")
                 if resp.status == 200:
                     starts = await resp.json()
-                elif resp.status == 401:
-                    raise Exception(f"Login expired: {resp}")
                 else:
                     servicename = "get_all_starts_by_event"
                     body = await resp.json()

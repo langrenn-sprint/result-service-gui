@@ -16,7 +16,7 @@
 
 {% block menuitems %}
   <li class=dropdown id=topborder>
-    <a href=javascript:void(0) class=dropbtn>Velg runde</a>
+    <a href=javascript:void(0) class=dropbtn>Velg klasse</a>
     <div class=dropdown-content>
       {% for raceclass in raceclasses %}
         <a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=N>{{ raceclass.name }}</a>
