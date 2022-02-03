@@ -68,8 +68,6 @@ class Live(web.View):
             colseparators = get_colseparators(races)
             if len(colseparators) == 3:
                 colclass = "w3-quart"
-            else:
-                colclass = "w3-third"
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
@@ -98,28 +96,25 @@ class Live(web.View):
 def get_colseparators(races: list) -> list:
     """Responsive design - determine column-arrangement."""
     colseparators = []
-    i = 0
-    icolcount = 1
-    for heat in races:
-        i += 1
-        if heat["round"] == "S" and icolcount == 1:
-            icolcount += 1
-            colseparators.append(heat["order"])
-        elif heat["round"] == "F" and icolcount == 2:
-            icolcount += 1
-            colseparators.append(heat["order"])
-        elif i > 4 and icolcount == 1:
-            icolcount += 1
-            colseparators.append(heat["order"])
-        elif i > 8 and icolcount == 2:
-            icolcount += 1
-            colseparators.append(heat["order"])
-        elif i > 12 and icolcount == 3:
-            icolcount += 1
-            colseparators.append(heat["order"])
-        elif i > 16 and icolcount == 4:
-            icolcount += 1
-            colseparators.append(heat["order"])
+    i = len(races)
+    if i > 15:
+        colseparators.append(races[4]["order"])
+        colseparators.append(races[8]["order"])
+        colseparators.append(races[12]["order"])
+    elif i > 12:
+        rest = 16 - i
+        colseparators.append(races[6 - rest]["order"])
+        colseparators.append(races[10 - rest]["order"])
+        colseparators.append(races[13 - rest]["order"])
+    elif i > 9:
+        rest = 12 - i
+        colseparators.append(races[5 - rest]["order"])
+        colseparators.append(races[9 - rest]["order"])
+    elif i > 6:
+        colseparators.append(races[3]["order"])
+        colseparators.append(races[6]["order"])
+    elif i > 3:
+        colseparators.append(races[3]["order"])
     return colseparators
 
 
@@ -131,23 +126,42 @@ async def get_races_for_live(
     _tmp_races = await RaceplansAdapter().get_races_by_racesclass(
         token, event_id, valgt_klasse
     )
+    # first - get overview of races
+    races_count_q = 0
+    semi_results_registered = False
     for _tmp_race in _tmp_races:
-        if _tmp_race["raceclass"] == valgt_klasse:
-            race = await RaceplansAdapter().get_race_by_id(token, _tmp_race["id"])
-            race["finish_results"] = get_finish_rank(race)
-            race["next_race"] = get_qualification_text(race)
-            race["start_time"] = race["start_time"][-8:]
-            # append race if selected starter is inside or not selected
-            if valgt_startnr == 0:
-                races.append(race)
+        if _tmp_race["round"] == "Q":
+            races_count_q += 1
+        elif _tmp_race["round"] == "S":
+            if len(_tmp_race["results"]) > 0:
+                semi_results_registered = True
+
+    for _tmp_race in _tmp_races:
+        race = await RaceplansAdapter().get_race_by_id(token, _tmp_race["id"])
+        race["finish_results"] = get_finish_rank(race)
+        race["next_race"] = get_qualification_text(race)
+        race["start_time"] = race["start_time"][-8:]
+        # append race if selected starter is inside or not selected
+        # optimize heats to show if more than 4 quarter finals
+        # avoid quarter finals or finals, depending on semi final status
+        if valgt_startnr == 0:
+            if races_count_q > 4:
+                if semi_results_registered and race["round"] == "Q":
+                    pass
+                elif not semi_results_registered and race["round"] == "F":
+                    pass
+                else:
+                    races.append(race)
             else:
-                appended = False
-                for entry in race["start_entries"]:
+                races.append(race)
+        else:
+            appended = False
+            for entry in race["start_entries"]:
+                if entry["bib"] == valgt_startnr:
+                    races.append(race)
+                    appended = True
+            if not appended:
+                for entry in race["finish_results"]:
                     if entry["bib"] == valgt_startnr:
                         races.append(race)
-                        appended = True
-                if not appended:
-                    for entry in race["finish_results"]:
-                        if entry["bib"] == valgt_startnr:
-                            races.append(race)
     return races
