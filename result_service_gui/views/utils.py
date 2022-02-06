@@ -534,11 +534,18 @@ async def get_results_by_raceclass(
 ) -> list:
     """Get results for raceclass - return sorted list."""
     results = []
+    grouped_results = {
+        "FA": [],
+        "FB": [],
+        "SA": [],
+        "FC": [],
+        "SC": [],
+    }
     races = await RaceplansAdapter().get_races_by_racesclass(
         user["token"], event_id, valgt_klasse
     )
-    raceclass_rank = 1
-    for race in reversed(races):
+    # first - extract all result-items
+    for race in races:
         if len(race["results"]) == 0:
             # need results for all races - exit if not
             return []
@@ -551,12 +558,27 @@ async def get_results_by_raceclass(
                 # skip results if racer has more races
                 if _tmp_result["next_race_id"] == "":
                     new_result: dict = {
-                        "rank": raceclass_rank,
                         "round": f"{race['round']}{race['index']}",
+                        "rank": 0,
                         "time_event": _tmp_result,
                     }
-                    results.append(new_result)
-                    raceclass_rank += 1
+                    grouped_results[f"{race['round']}{race['index']}"].append(
+                        new_result
+                    )
+
+    # now - get the order and rank right
+    ranking = 1
+    racers_count = 0
+    for round_res in grouped_results:
+        for one_res in grouped_results[round_res]:
+            one_res["rank"] = ranking
+            results.append(one_res)
+            racers_count += 1
+            if one_res["round"].startswith("F"):
+                ranking += 1
+        else:
+            ranking = racers_count + 1
+
     return results
 
 
