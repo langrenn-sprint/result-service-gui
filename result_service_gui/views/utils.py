@@ -534,7 +534,7 @@ async def get_results_by_raceclass(
 ) -> list:
     """Get results for raceclass - return sorted list."""
     results = []
-    grouped_results = {
+    grouped_results = {  # type: ignore
         "FA": [],
         "FB": [],
         "SA": [],
