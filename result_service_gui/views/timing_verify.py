@@ -61,6 +61,7 @@ class TimingVerify(web.View):
                     valgt_runde = await find_round(all_races, heat)
                 except Exception:
                     informasjon = f"Velg runde i menyen. {informasjon}"
+                    logging.debug("Ingen runde valgt")
 
             next_round = get_next_round(valgt_runde)
 
