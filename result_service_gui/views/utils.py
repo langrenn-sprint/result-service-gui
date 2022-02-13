@@ -384,27 +384,32 @@ def get_next_race_info(next_race_time_events: list, race_id: str) -> list:
 def get_qualification_text(race: dict) -> str:
     """Generate a text with info about qualification rules."""
     text = ""
-    for key, value in race["rule"].items():
-        if key == "S":
-            for x, y in value.items():
-                if x == "A" and y > 0:
-                    text += f"{y} til semi A. "
-                elif x == "C" and y > 0:
-                    text += "Resten til semi C. "
-        elif key == "F":
-            for x, y in value.items():
-                if x == "A":
-                    text += f"{y} til finale A. "
-                elif x == "B" and y > 8:
-                    text += "Resten til finale B. "
-                elif x == "B":
-                    text += f"{y} til finale B. "
-                elif x == "C" and y > 8:
-                    text += "Resten til finale C. "
-                elif x == "C":
-                    text += f"{y} til finale C. "
-            if text.count("Resten") == 0:
-                text += "Resten er ute. "
+    if race["round"] == "R1":
+        text = "Alle til runde 2"
+    elif race["round"] == "R2":
+        text = ""
+    else:
+        for key, value in race["rule"].items():
+            if key == "S":
+                for x, y in value.items():
+                    if x == "A" and y > 0:
+                        text += f"{y} til semi A. "
+                    elif x == "C" and y > 0:
+                        text += "Resten til semi C. "
+            elif key == "F":
+                for x, y in value.items():
+                    if x == "A":
+                        text += f"{y} til finale A. "
+                    elif x == "B" and y > 8:
+                        text += "Resten til finale B. "
+                    elif x == "B":
+                        text += f"{y} til finale B. "
+                    elif x == "C" and y > 8:
+                        text += "Resten til finale C. "
+                    elif x == "C":
+                        text += f"{y} til finale C. "
+                if text.count("Resten") == 0:
+                    text += "Resten er ute. "
     logging.debug(f"Regel hele: {text}")
     return text
 
@@ -417,14 +422,15 @@ def get_raceplan_summary(races: list, raceclasses: list) -> list:
     for raceclass in raceclasses:
         class_summary = {"name": raceclass["name"]}
         class_summary["no_of_contestants"] = raceclass["no_of_contestants"]
+        class_summary["ranking"] = raceclass["ranking"]
         # loop through races - update start time pr round pr class
         for race in reversed(races):
             if race["raceclass"] == raceclass["name"]:
                 if race["datatype"] == "individual_sprint":
-                    if race["round"] == "Q":
+                    if race["round"] in ["Q", "R1"]:
                         class_summary["timeQ"] = race["start_time"][-8:]
                         class_summary["orderQ"] = race["order"]
-                    elif race["round"] == "S":
+                    elif race["round"] in ["S", "R2"]:
                         class_summary["timeS"] = race["start_time"][-8:]
                         class_summary["orderS"] = race["order"]
                     elif race["round"] == "F":

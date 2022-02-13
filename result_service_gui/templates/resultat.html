@@ -19,9 +19,11 @@
     <a href=javascript:void(0) class=dropbtn>Velg klasse</a>
     <div class=dropdown-content>
       {% for klasse in klasser %}
-        {% for ac_name in klasse.ageclasses %}
-        <a href=resultat?klasse={{ klasse.name }}&event_id={{ event_id }}>{{ ac_name }}</a>
-        {% endfor %}
+        {% if klasse.ranking %}
+          {% for ac_name in klasse.ageclasses %}
+          <a href=resultat?klasse={{ klasse.name }}&event_id={{ event_id }}>{{ ac_name }}</a>
+          {% endfor %}
+        {% endif %}
       {% endfor %}
     </div>
   </li>

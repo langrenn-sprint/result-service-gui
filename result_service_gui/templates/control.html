@@ -20,9 +20,11 @@
       <div class=dropdown-content>
         <a href=control?&event_id={{ event_id }}&action={{ action }}>Alle</a>
         {% for klasse in raceclasses %}
-          {% for ac_name in klasse.ageclasses %}
-            <a href=control?valgt_klasse={{ klasse.name }}&event_id={{ event_id }}&action={{ action }}>{{ ac_name }}</a>
-          {% endfor %}
+          {% if klasse.ranking %}
+            {% for ac_name in klasse.ageclasses %}
+              <a href=control?valgt_klasse={{ klasse.name }}&event_id={{ event_id }}&action={{ action }}>{{ ac_name }}</a>
+            {% endfor %}
+          {% endif %}
         {% endfor %}
       </div>
     </li>
