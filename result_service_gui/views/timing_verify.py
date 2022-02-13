@@ -133,8 +133,6 @@ class TimingVerify(web.View):
 
             if "publish_results" in form.keys():
                 informasjon = "Resultater er publisert (TODO)"
-            elif "add_result" in form.keys():
-                informasjon = await add_result(user, form)  # type: ignore
             elif "create_start" in form.keys():
                 informasjon = await create_start(user, form)  # type: ignore
             elif "delete_start" in form.keys():
@@ -155,19 +153,6 @@ class TimingVerify(web.View):
         return web.HTTPSeeOther(
             location=f"/timing_verify?event_id={event_id}&informasjon={info}"
         )
-
-
-async def add_result(user: dict, form: dict) -> str:
-    """Extract form data and update one result and corresponding start event."""
-    rank_identifier = f"form_rank_{form['rank']}"
-    new_result = {
-        "event_id": form["event_id"],
-        "race": form["race"],
-        "race_id": form["race_id"],
-        rank_identifier: form["bib"],
-    }
-    informasjon = await create_finish_time_events(user, "finish_bib", new_result)  # type: ignore
-    return informasjon
 
 
 async def create_start(user: dict, form: dict) -> str:

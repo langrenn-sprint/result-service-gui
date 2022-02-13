@@ -59,7 +59,7 @@ async def create_finish_time_events(user: dict, action: str, form: dict) -> str:
         "race_id": form["race_id"],
         "timing_point": "",
         "rank": "",
-        "registration_time": time_now.strftime("%X"),
+        "registration_time": time_stamp_now,
         "next_race": "",
         "next_race_id": "",
         "next_race_position": 0,
@@ -88,8 +88,9 @@ async def create_finish_time_events(user: dict, action: str, form: dict) -> str:
             logging.debug(f"Registrering: {id} - body: {request_body}")
     elif action == "finish_bib":
         request_body["timing_point"] = "Finish"
+        new_registrations = []
         for x in form.keys():
-            no_change = False
+            bib_changed = True
             if x.startswith("form_rank_"):
                 new_bib = form[x]
                 _rank = int(x[10:])
@@ -97,29 +98,45 @@ async def create_finish_time_events(user: dict, action: str, form: dict) -> str:
                 if form[f"old_form_rank_{_rank}"]:
                     old_bib = form[f"old_form_rank_{_rank}"]
                     if old_bib == new_bib:
-                        no_change = True
+                        bib_changed = False
                     else:
                         new_form = {
                             "time_event_id": form[f"time_event_id_{_rank}"],
                         }
                         informasjon = await delete_result(user, new_form)
                         logging.debug(f"Deleted result: {informasjon}")
-                if new_bib.isnumeric() and not no_change:
-                    request_body["bib"] = int(new_bib)
-                    request_body["rank"] = _rank
-                    request_body["changelog"] = [
-                        {
-                            "timestamp": time_stamp_now,
-                            "user_id": user["name"],
-                            "comment": f"{request_body['rank']} plass i mål. ",
-                        }
-                    ]
+                if new_bib.isnumeric() and bib_changed:
+                    new_entry = {
+                        "id": "",
+                        "bib": int(new_bib),
+                        "event_id": request_body["event_id"],
+                        "race": request_body["race"],
+                        "race_id": request_body["race_id"],
+                        "timing_point": request_body["timing_point"],
+                        "rank": _rank,
+                        "registration_time": time_stamp_now,
+                        "next_race": "",
+                        "next_race_id": "",
+                        "next_race_position": 0,
+                        "status": "OK",
+                        "changelog": [
+                            {
+                                "timestamp": time_stamp_now,
+                                "user_id": user["name"],
+                                "comment": f"{request_body['rank']} plass i mål. ",
+                            }
+                        ],
+                    }
                     i += 1
-                    id = await TimeEventsService().create_finish_time_event(
-                        user["token"], request_body
-                    )
-                    informasjon += f" {id} "
-                    logging.debug(f"Registrering: {id} - body: {request_body}")
+                    new_registrations.append(new_entry)
+        # register new results
+        for new_registration in new_registrations:
+            id = await TimeEventsService().create_finish_time_event(
+                user["token"], new_registration
+            )
+            informasjon += f" {id} "
+            logging.debug(f"Registrering: {id} - body: {new_registration}")
+
     return f"Utført {i} registreringer: {informasjon}"
 
 
@@ -221,7 +238,7 @@ async def delete_result(user: dict, form: dict) -> str:
                     user["token"], start_entry["race_id"], start_entry["id"]
                 )
                 informasjon = f"Slettet start entry i neste heat. Resultat: {id}"
-    time_event["status"] = "Error"
+    time_event["status"] = "Deleted"
     change_info = {
         "timestamp": time_stamp_now,
         "user_id": user["name"],
@@ -231,9 +248,7 @@ async def delete_result(user: dict, form: dict) -> str:
     id2 = await TimeEventsAdapter().update_time_event(
         user["token"], form["time_event_id"], time_event
     )
-    informasjon = (
-        f"Registrert målpassering med error (slettet). Resultat: {id2}  {informasjon}"
-    )
+    informasjon = f"Registrert slettet målpassering. Resultat: {id2}  {informasjon}"
     return informasjon
 
 
