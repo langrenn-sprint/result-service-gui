@@ -5,13 +5,13 @@
 {% endblock %}
 
 {% block titleheader %}
-  Resultater {{ valgt_klubb }}{{ valgt_klasse }}
+  Resultater {{ valgt_klasse }}
 {% endblock %}
 
 {% block refresh %}300{% endblock %}
 
 {% block titlemain %}
-  Resultater {{ valgt_klubb }}{{ valgt_klasse }}
+  Resultater {{ valgt_klasse }}
 {% endblock %}
 
 {% block menuitems %}
@@ -24,15 +24,6 @@
           <a href=resultat?klasse={{ klasse.name }}&event_id={{ event_id }}>{{ ac_name }}</a>
           {% endfor %}
         {% endif %}
-      {% endfor %}
-    </div>
-  </li>
-  <li class=dropdown id=topborder>
-    <a href=javascript:void(0) class=dropbtn>Velg klubb</a>
-    <div class=dropdown-content>
-      <a href=resultat>Alle</a>
-      {% for klubb in clubs %}
-        <a href=resultat?klubb={{ klubb }}&event_id={{ event_id }}>{{ klubb }}</a>
       {% endfor %}
     </div>
   </li>
@@ -52,7 +43,7 @@
         </td>
       </tr>
     </table>
-    <div id=spacer> </div>
+    <div id=adminpagetitle>{{ valgt_klasse }} Sammenlagt resultater</div>
     <table>
       <tr id=headerblack>
         <td>Plass</td>
@@ -70,5 +61,45 @@
           <td>{{ deltaker.time_event.club }}</td>
         </tr>
       {% endfor %}
+      <tr>
+       <td colspan=5 id=white>&nbsp;</td>
+     </tr>
     </table>
+    <div id=adminpagetitle>{{ valgt_klasse }} Heat resultater</div>
+    <table>
+      {% for race in races %}
+            <tr id=headerblack>
+              <td colspan=4>
+                Resultater <b>{{ race.raceclass }}
+                {% if race.round == "Q" %}Kvartfinale {{ race.heat }}
+                {% elif race.round == "S" %}Semifinale {{ race.index }}{{ race.heat }}
+                {% elif race.round == "F" %}Finale {{ race.index }}
+                {% endif %}</b>
+              </td>
+              <td>(heat {{ race.order }})</td>
+            </tr>
+            <tr id=subheader>
+              <td align=center><div id={{ race.order }} >Plass</div></td>
+              <td>Nr</td>
+              <td>Navn</td>
+              <td>Klubb</td>
+              <td></td>
+            </tr>
+            {% for loper in race.finish_results %}
+                <tr{% if loper.bib == valgt_startnr %} id=black{% endif %}>
+                  <td align=center>{{ loper.rank }}</td>
+                  <td>{{ loper.bib }}</td>
+                  <td>
+                      <a href=live?klasse={{ valgt_klasse }}&startnr={{ loper.bib }}&event_id={{ event_id }}>{{ loper.name }}</a>
+                  </td>
+                  <td>{{ loper.club }}</td>
+                  <td></td>
+                </tr>
+            {% endfor %}
+            <tr>
+             <td colspan=5 id=white>&nbsp;</td>
+           </tr>
+      {% endfor %}
+    </table>
+
 {% endblock %}

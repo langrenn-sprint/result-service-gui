@@ -1,6 +1,5 @@
 """Resource module for resultat view."""
 import logging
-import os
 
 from aiohttp import web
 import aiohttp_jinja2
@@ -8,8 +7,14 @@ import aiohttp_jinja2
 from result_service_gui.services import (
     FotoService,
     RaceclassesAdapter,
+    RaceplansAdapter,
 )
-from .utils import check_login_open, get_event, get_results_by_raceclass
+from .utils import (
+    check_login_open,
+    get_event,
+    get_finish_rank,
+    get_results_by_raceclass,
+)
 
 
 class Resultat(web.View):
@@ -31,20 +36,15 @@ class Resultat(web.View):
             event = await get_event(user, event_id)
 
             foto = []
+            races = []
             informasjon = ""
             resultlist = []  # type: ignore
             valgt_bildevisning = ""
-            sportsclubs = str(os.getenv("SPORTS_CLUBS"))
-            clubs = sportsclubs.split(",")
 
             try:
                 valgt_klasse = self.request.rel_url.query["klasse"]
             except Exception:
                 valgt_klasse = ""  # noqa: F841
-            try:
-                valgt_klubb = self.request.rel_url.query["klubb"]
-            except Exception:
-                valgt_klubb = ""
 
             raceclasses = await RaceclassesAdapter().get_raceclasses(
                 user["token"], event_id
@@ -54,20 +54,19 @@ class Resultat(web.View):
                 for ac_name in klasse["ageclasses"]:
                     klasse["KlasseWeb"] = ac_name.replace(" ", "%20")
 
-            if (valgt_klasse == "") and (valgt_klubb == ""):
-                informasjon = "Velg klasse eller klubb for å vise resultater"
+            if valgt_klasse == "":
+                informasjon = "Velg klasse for å vise resultater"
             else:
-                if valgt_klubb != "":
-                    foto = await FotoService().get_foto_by_klubb(
-                        user, valgt_klubb, event_id
-                    )
-                    valgt_bildevisning = "klubb=" + valgt_klubb
+                resultlist = await get_results_by_raceclass(
+                    user, event_id, valgt_klasse
+                )
+                if len(resultlist) == 0:
+                    informasjon = "Resultater er ikke klare. Velg 'Live' i menyen for heat resultater"
                 else:
-                    resultlist = await get_results_by_raceclass(
-                        user, event_id, valgt_klasse
+                    races = await get_races_for_result_view(
+                        user["token"], event_id, valgt_klasse
                     )
-                    if len(resultlist) == 0:
-                        informasjon = "Resultater er ikke klare. Velg 'Live' i menyen for heat resultater"
+
                     foto = await FotoService().get_foto_by_klasse(
                         user, valgt_klasse, event_id
                     )
@@ -84,9 +83,8 @@ class Resultat(web.View):
                     "informasjon": informasjon,
                     "valgt_bildevisning": valgt_bildevisning,
                     "valgt_klasse": valgt_klasse,
-                    "valgt_klubb": valgt_klubb,
                     "klasser": raceclasses,
-                    "clubs": clubs,
+                    "races": races,
                     "resultatliste": resultlist,
                     "username": user["name"],
                 },
@@ -94,3 +92,18 @@ class Resultat(web.View):
         except Exception as e:
             logging.error(f"Error: {e}. Redirect to main page.")
             return web.HTTPSeeOther(location=f"/?informasjon={e}")
+
+
+async def get_races_for_result_view(
+    token: str, event_id: str, valgt_klasse: str
+) -> list:
+    """Extract races with enriched results."""
+    races = []
+    _tmp_races = await RaceplansAdapter().get_races_by_racesclass(
+        token, event_id, valgt_klasse
+    )
+    for _tmp_race in _tmp_races:
+        race = await RaceplansAdapter().get_race_by_id(token, _tmp_race["id"])
+        race["finish_results"] = get_finish_rank(race)
+        races.append(race)
+    return races

@@ -518,14 +518,13 @@ async def get_races_for_round_result(
 ) -> list:
     """Get races for a given round - formatted for print."""
     races = []
+    next_round = []
     first_in_class = True
     first_in_next_round = True
     if valgt_runde == "Q":
-        next_round = "S"
+        next_round = ["S", "F"]
     elif valgt_runde == "S":
-        next_round = "F"
-    else:
-        next_round = "Ugyldig"
+        next_round = ["F"]
 
     for race in _tmp_races:
         if race["raceclass"] == valgt_klasse:
@@ -540,7 +539,7 @@ async def get_races_for_round_result(
                 )
                 race["finish_results"] = get_finish_rank(race_details)
                 races.append(race)
-            elif race["round"] == next_round:
+            elif race["round"] in next_round:
                 race["first_in_class"] = first_in_next_round
                 first_in_next_round = False
                 race["next_race"] = get_qualification_text(race)
