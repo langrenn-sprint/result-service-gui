@@ -1,5 +1,6 @@
 """Utilities module for gui services."""
 import datetime
+import json
 import logging
 import os
 
@@ -362,9 +363,17 @@ def get_finish_rank(race: dict) -> list:
     return finish_rank
 
 
+def get_global_parameter(param_name: str) -> str:
+    """Get global settings from parameter file."""
+    photo_settings = str(os.getenv("GLOBAL_SETTINGS_FILE"))
+    with open(photo_settings) as json_file:
+        photopusher_settings = json.load(json_file)
+    return photopusher_settings[param_name]
+
+
 def get_local_time(format: str) -> str:
-    """Return local time, time zone adjusted from .env file."""
-    TIME_ZONE_OFFSET = int(os.getenv("TIME_ZONE_OFFSET", 1))
+    """Return local time, time zone adjusted from settings file."""
+    TIME_ZONE_OFFSET = int(get_global_parameter("TIME_ZONE_OFFSET"))
     # calculate new time
     delta_seconds = TIME_ZONE_OFFSET * 3600
     local_time_obj = datetime.datetime.now() + datetime.timedelta(seconds=delta_seconds)
