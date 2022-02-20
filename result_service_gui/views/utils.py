@@ -366,6 +366,10 @@ def get_finish_rank(race: dict) -> list:
 def get_global_parameter(param_name: str) -> str:
     """Get global settings from parameter file."""
     photo_settings = str(os.getenv("GLOBAL_SETTINGS_FILE"))
+    if photo_settings is None or photo_settings == "None":
+        raise web.HTTPBadRequest(
+            reason="Parameter GLOBAL_SETTINGS_FILE not found in .env file."
+        )
     with open(photo_settings) as json_file:
         photopusher_settings = json.load(json_file)
     return photopusher_settings[param_name]
