@@ -25,6 +25,12 @@ li:hover, .dropdown:hover, .dropbtn:hover {
   background-color: #00247d;
 }
 
+.visible_link {
+	background-color: #94b5e0;
+	text-decoration: none;
+	color: white;
+}
+
 #topborder {
   border-left: 1px solid white;
 }
