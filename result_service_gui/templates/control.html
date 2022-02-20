@@ -30,149 +30,76 @@
     </li>
 {% endblock %}
 {% block content %}
-  {% if action == "template" %}
-    <div id=spacer></div>
-    <div class="w3-container" id=info>Funnet {{ passeringer|length }} template events</div>
-    <div id=spacer></div>
-      <table>
-         <tr id=headerblue>
-          <td>Heat</td>
-          <td width=50>Plass</td>
-          <td colspan=2>Videre til</td>
-          <td colspan=2>Ny verdi (heat - posisjon)</td>
-          <td></td>
-          <td></td>
-          <td>Changelog</td>
-        </tr>
+  <div id=spacer></div>
+  <div class="w3-container" id=info>Funnet {{ passeringer|length }} events med error. (Pro tip: Hvis du vil se alle passeringer, klikk <a href="control?event_id={{ event_id }}&action=c">her</a>)</div>
+  <div id=spacer></div>
+    <table>
+       <tr id=headerblue>
+        <td></td>
+        <td>Startnr</td>
+        <td>Heat</td>
+        <td>Passeringspunkt</td>
+        <td>Tid</td>
+        <td>Plass</td>
+        <td>Videre til</td>
+        <td>Status</td>
+        <td>Changelog</td>
+      </tr>
+      <form action=/control method=post>
         {% for passering in passeringer %}
-          {% if valgt_klasse in passering.race %}
-            {% if passering.first_in_heat %}
-              <form action=/control method=post>
-            {% endif %}
-              <tr>
-                <td>{{ passering.race }}</td>
-                <td align="center">{{ passering.rank }}</td>
-                <td align=right>{{ passering.next_race }}</td>
-                <td>-{{ passering.next_race_position }}</td>
-                <td align=right><input type=text name="next_race_{{ passering.rank }}" value="" size=4></td>
-                <td>-<input type=number name="next_race_position_{{ passering.rank }}" value="" max=99 min=0></td>
-                <td align=right>
-                  <input type="hidden" name="id_{{ passering.rank }}" value="{{ passering.id }}">
-                </td>
-              <td>&nbsp;</td>
+            <tr>
+              <td>
+                <input type="checkbox" name="resolved_{{ loop.index }}" value="{{ passering.id }}">
+              </td>
+              <td align=center>{{ passering.bib }}</td>
+              <td>{{ passering.race }}</td>
+              <td>{{ passering.timing_point }}</td>
+              <td>{{ passering.registration_time }}</td>
+              <td>{{ passering.rank }}</td>
+              <td>{{ passering.next_race }}-{{ passering.next_race_position }}</td>
+              <td>{{ passering.status }}</td>
               <td>
                 {% for log_entry in passering.changelog %}
-                  {{ log_entry.comment }}<br>
+                  {{ log_entry.timestamp }}: {{ log_entry.comment }} ({{ log_entry.user_id }})<br>
                 {% endfor %}
               </td>
             </tr>
-            {% if passering.last_in_heat %}
-              <tr>
-                <td>{{ passering.race }}</td>
-                <td align=right><input type=number name="rank_new" value="" max=99 min=0></td>
-                <td colspan=2></td>
-                <td align=right><input type=text name="next_race_new" value="" size=4></td>
-                <td>-<input type=number name="next_race_position_new" value="" max=99 min=0></td>
-                <td align=right>
-                </td>
-              <td>Opprett ny template event</td>
-              <td></td>
-            </tr>
-              <tr>
-                <td colspan=5></td>
-                <td colspan=5>
-                  <input type="hidden" name="action" value="{{ action }}">
-                  <input type="hidden" name="event_id" value="{{ event_id }}">
-                  <input type="hidden" name="race" value="{{ passering.race }}">
-                  <input type="hidden" name="race_id" value="{{ passering.race_id }}">
-                  <input type="hidden" name="timing_point" value="{{ passering.timing_point }}">
-                  <input type="hidden" name="valgt_klasse" value="{{ valgt_klasse }}">
-                  <input type="submit" name="update_templates" value="Oppdater">
-                </td>
-              </tr>
-            </form>
-              <tr>
-                <td id=spacer colspan=10>&nbsp;</td>
-              </tr>
-            {% endif %}
-          {% endif %}
         {% endfor %}
-        <tr>
-          <td id=spacer colspan=8> </td>
-        </tr>
-      </table>
-  {% elif action == "control" or action == "c" %}
-    <div id=spacer></div>
-    <div class="w3-container" id=info>Funnet {{ passeringer|length }} events med error. (Pro tip: Hvis du vil se alle passeringer, klikk <a href="control?event_id={{ event_id }}&action=c">her</a>)</div>
-    <div id=spacer></div>
-      <table>
-         <tr id=headerblue>
-          <td></td>
-          <td>Startnr</td>
-          <td>Heat</td>
-          <td>Passeringspunkt</td>
-          <td>Tid</td>
-          <td>Plass</td>
-          <td>Videre til</td>
-          <td>Status</td>
-          <td>Changelog</td>
-        </tr>
-        <form action=/control method=post>
-          {% for passering in passeringer %}
-              <tr>
-                <td>
-                  <input type="checkbox" name="resolved_{{ loop.index }}" value="{{ passering.id }}">
-                </td>
-                <td align=center>{{ passering.bib }}</td>
-                <td>{{ passering.race }}</td>
-                <td>{{ passering.timing_point }}</td>
-                <td>{{ passering.registration_time }}</td>
-                <td>{{ passering.rank }}</td>
-                <td>{{ passering.next_race }}-{{ passering.next_race_position }}</td>
-                <td>{{ passering.status }}</td>
-                <td>
-                  {% for log_entry in passering.changelog %}
-                    {{ log_entry.timestamp }}: {{ log_entry.comment }} ({{ log_entry.user_id }})<br>
-                  {% endfor %}
-                </td>
-              </tr>
-          {% endfor %}
-          {% if action == "control" %}
-            <tr>
-              <td id=spacer colspan=8>
-                <input type="hidden" name="action" value="{{ action }}">
-                <input type="hidden" name="event_id" value="{{ event_id }}">
-                <input type="hidden" name="valgt_klasse" value="{{ valgt_klasse }}">
-                <input type="submit" name=resolve_error value=" Marker som håndtert ">
-              </td>
-            </tr>
-          {% endif %}
-        </form>
-        <tr>
-          <td id=spacer colspan=9>&nbsp; </td>
-        </tr>
-        <tr id=headerblack>
-          <td></td>
-          <td colspan=8> Håndterte saker</td>
-        </tr>
-      {% for passering in history_passeringer %}
+        {% if action == "control" %}
           <tr>
-            <td></td>
-            <td align=center>{{ passering.bib }}</td>
-            <td>{{ passering.race }}</td>
-            <td>{{ passering.timing_point }}</td>
-            <td>{{ passering.registration_time }}</td>
-            <td>{{ passering.rank }}</td>
-            <td>{{ passering.next_race }}-{{ passering.next_race_position }}</td>
-            <td>{{ passering.status }}</td>
-            <td>
-              {% for log_entry in passering.changelog %}
-                {{ log_entry.timestamp }}: {{ log_entry.comment }} ({{ log_entry.user_id }})<br>
-              {% endfor %}
+            <td id=spacer colspan=8>
+              <input type="hidden" name="action" value="{{ action }}">
+              <input type="hidden" name="event_id" value="{{ event_id }}">
+              <input type="hidden" name="valgt_klasse" value="{{ valgt_klasse }}">
+              <input type="submit" name=resolve_error value=" Marker som håndtert ">
             </td>
           </tr>
-      {% endfor %}
+        {% endif %}
+      </form>
+      <tr>
+        <td id=spacer colspan=9>&nbsp; </td>
+      </tr>
+      <tr id=headerblack>
+        <td></td>
+        <td colspan=8> Håndterte saker</td>
+      </tr>
+    {% for passering in history_passeringer %}
+        <tr>
+          <td></td>
+          <td align=center>{{ passering.bib }}</td>
+          <td>{{ passering.race }}</td>
+          <td>{{ passering.timing_point }}</td>
+          <td>{{ passering.registration_time }}</td>
+          <td>{{ passering.rank }}</td>
+          <td>{{ passering.next_race }}-{{ passering.next_race_position }}</td>
+          <td>{{ passering.status }}</td>
+          <td>
+            {% for log_entry in passering.changelog %}
+              {{ log_entry.timestamp }}: {{ log_entry.comment }} ({{ log_entry.user_id }})<br>
+            {% endfor %}
+          </td>
+        </tr>
+    {% endfor %}
 
-      </table>
-  {% endif %}
+    </table>
 {% endblock %}

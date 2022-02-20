@@ -182,7 +182,7 @@
               <a href=javascript:void(0) class=dropbtn>Rediger startliste</a>
               <div class=dropdown-content>
                 {% for klasse in raceclasses %}
-                  <a target=_new href=start_edit?event_id={{ event_id }}&klasse={{ klasse.name }}&runde=N>{{ klasse.name }}</a>
+                  <a target=_new href=start_edit?event_id={{ event_id }}&klasse={{ klasse.name }}>{{ klasse.name }}</a>
                 {% endfor %}
               </div>
             </li>
@@ -202,7 +202,16 @@
       </tr>
       <tr>
         <td>
-          <a href=/control?event_id={{ event_id }}&action=template>Videre til</a>
+          <ul>
+            <li class=dropdown id=topborder>
+              <a href=javascript:void(0) class=dropbtn>Rediger videre til</a>
+              <div class=dropdown-content>
+                {% for klasse in raceclasses %}
+                  <a target=_new href=start_edit?event_id={{ event_id }}&klasse={{ klasse.name }}&action=Template>{{ klasse.name }}</a>
+                {% endfor %}
+              </div>
+            </li>
+          </ul>
         </td>
         <td colspan=4>
           Manuelt redigere sprintens oppsett - kvalifisering til neste heat

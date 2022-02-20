@@ -13,8 +13,6 @@ from .utils import (
     check_login,
     get_event,
     get_passeringer,
-    get_race_id_by_name,
-    update_time_event,
 )
 
 
@@ -85,9 +83,7 @@ class Control(web.View):
             event_id = str(form["event_id"])
             valgt_klasse = str(form["valgt_klasse"])
             action = str(form["action"])
-            if "update_templates" in form.keys():
-                informasjon = await update_template_events(user, form)  # type: ignore
-            elif "resolve_error" in form.keys():
+            if "resolve_error" in form.keys():
                 informasjon = await update_timing_events(user, form)  # type: ignore
         except Exception as e:
             logging.error(f"Error: {e}")
@@ -129,43 +125,4 @@ async def update_timing_events(user: dict, form: dict) -> str:
                 user["token"], form[key], request_body
             )
             informasjon = f"{informasjon} {response}"
-    return informasjon
-
-
-async def update_template_events(user: dict, form: dict) -> str:
-    """Extract form data and update template event."""
-    informasjon = "Control result: "
-    for i in range(1, 11):
-        if f"next_race_{i}" in form.keys():
-            if form[f"next_race_{i}"]:
-                request_body = {
-                    "event_id": form["event_id"],
-                    "id": form[f"id_{i}"],
-                    "update_template": True,
-                    "next_race": form[f"next_race_{i}"],
-                    "next_race_position": form[f"next_race_position_{i}"],
-                    "race": form["race"],
-                }
-                informasjon += await update_time_event(user, request_body)
-    if form["rank_new"]:
-        next_race_id = await get_race_id_by_name(
-            user, form["event_id"], form["next_race_new"], form["valgt_klasse"]
-        )
-        time_now = datetime.datetime.now()
-        time_event = {
-            "bib": 0,
-            "event_id": form["event_id"],
-            "race": form["race"],
-            "race_id": form["race_id"],
-            "timing_point": "Template",
-            "rank": form["rank_new"],
-            "registration_time": time_now.strftime("%X"),
-            "next_race": form["next_race_new"],
-            "next_race_id": next_race_id,
-            "next_race_position": form["next_race_position_new"],
-            "status": "OK",
-            "changelog": [],
-        }
-        id = await TimeEventsAdapter().create_time_event(user["token"], time_event)
-        informasjon += f" Added new {id} "
     return informasjon

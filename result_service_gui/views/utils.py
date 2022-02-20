@@ -309,7 +309,7 @@ async def get_enchiced_startlist(user: dict, race_id: str) -> list:
 
 
 async def get_finish_timings(user: dict, race_id: str) -> list:
-    """Get finish events for race, template event if no result is registered."""
+    """Get finish events for race, Template event if no result is registered."""
     finish_events = []
     # get time-events registered
     time_events = await TimeEventsAdapter().get_time_events_by_race_id(
@@ -684,21 +684,25 @@ async def get_passeringer(
         token, event_id
     )
     if action in [
-        "template",
         "control",
         "deleted",
     ]:
         for passering in reversed(tmp_passeringer):
             if valgt_klasse == "" or valgt_klasse in passering["race"]:
-                if passering["timing_point"] == "Template" and action == "template":
-                    passeringer.append(passering)
-                elif (
+                if (
                     passering["status"] == "Error"
                     and passering["timing_point"] != "Template"
                     and action == "control"
                 ):
                     passeringer.append(passering)
                 elif passering["status"] == "Deleted" and action == "deleted":
+                    passeringer.append(passering)
+    elif action in [
+        "Template",
+    ]:
+        for passering in tmp_passeringer:
+            if valgt_klasse in passering["race"]:
+                if passering["timing_point"] == "Template":
                     passeringer.append(passering)
     else:
         for passering in tmp_passeringer:
