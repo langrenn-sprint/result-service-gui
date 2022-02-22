@@ -377,9 +377,9 @@ def get_global_parameter(param_name: str) -> str:
 
 def get_local_time(format: str) -> str:
     """Return local time, time zone adjusted from settings file."""
-    TIME_ZONE_OFFSET = int(os.getenv("TIME_ZONE_OFFSET"))  # type: ignore
+    TIME_ZONE_OFFSET = os.getenv("TIME_ZONE_OFFSET")
     # calculate new time
-    delta_seconds = TIME_ZONE_OFFSET * 3600
+    delta_seconds = int(TIME_ZONE_OFFSET) * 3600  # type: ignore
     local_time_obj = datetime.datetime.now() + datetime.timedelta(seconds=delta_seconds)
     local_time = ""
     if format == "HH:MM":
