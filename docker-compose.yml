@@ -16,6 +16,7 @@ services:
       - LOGGING_LEVEL=${LOGGING_LEVEL}
       - RACE_HOST_SERVER=race-service
       - RACE_HOST_PORT=8080
+      - TIME_ZONE_OFFSET=0
       - USERS_HOST_SERVER=user-service
       - USERS_HOST_PORT=8080
     depends_on:
