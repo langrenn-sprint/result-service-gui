@@ -46,9 +46,9 @@ async def check_login_open(self) -> dict:
     return user
 
 
-async def create_finish_time_events(user: dict, action: str, form: dict) -> str:
+async def create_finish_time_events(user: dict, action: str, form: dict) -> list:
     """Register time events for finish- return information."""
-    informasjon = ""
+    informasjon = []
     time_now = datetime.datetime.now()
     time_stamp_now = f"{time_now.strftime('%Y')}-{time_now.strftime('%m')}-{time_now.strftime('%d')}T{time_now.strftime('%X')}"
 
@@ -78,14 +78,14 @@ async def create_finish_time_events(user: dict, action: str, form: dict) -> str:
             }
         ]
         biblist = form["bib"].rsplit(" ")
-        informasjon = "Målpassering registrert: "
+        informasjon.append("Målpassering registrert: ")
         for bib in biblist:
             request_body["bib"] = int(bib)
             i += 1
             id = await TimeEventsService().create_finish_time_event(
                 user["token"], request_body
             )
-            informasjon += f" {bib}, result: {id} "
+            informasjon.append(f" {bib}, result: {id} ")
             logging.debug(f"Registrering: {id} - body: {request_body}")
     elif action == "finish_bib":
         request_body["timing_point"] = "Finish"
@@ -104,7 +104,8 @@ async def create_finish_time_events(user: dict, action: str, form: dict) -> str:
                         new_form = {
                             "time_event_id": form[f"time_event_id_{_rank}"],
                         }
-                        informasjon = await delete_result(user, new_form)
+                        info = await delete_result(user, new_form)
+                        informasjon.append(info)
                         logging.debug(f"Deleted result: {informasjon}")
                 if new_bib.isnumeric() and bib_changed:
                     new_entry = {
@@ -135,10 +136,11 @@ async def create_finish_time_events(user: dict, action: str, form: dict) -> str:
             id = await TimeEventsService().create_finish_time_event(
                 user["token"], new_registration
             )
-            informasjon += f" {id} "
+            informasjon.append(f" {id} ")
             logging.debug(f"Registrering: {id} - body: {new_registration}")
 
-    return f"Utført {i} registreringer: {informasjon}"
+    informasjon.append(f"Utført {i} registreringer.")
+    return informasjon
 
 
 async def create_start_time_events(user: dict, form: dict) -> str:
