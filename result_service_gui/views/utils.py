@@ -591,7 +591,7 @@ async def get_results_by_raceclass(
             )
             for _tmp_result in _tmp_results[0]["ranking_sequence"]:
                 # skip results if racer has more races
-                if _tmp_result["next_race_id"] == "":
+                if _tmp_result["next_race_id"] == "" and _tmp_result["status"] == "OK":
                     new_result: dict = {
                         "round": f"{race['round']}{race['index']}",
                         "rank": 0,
