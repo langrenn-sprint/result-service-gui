@@ -11,7 +11,6 @@ from result_service_gui.services import (
 )
 from .utils import (
     check_login,
-    create_finish_time_events,
     create_start_time_events,
     get_enchiced_startlist,
     get_event,
@@ -100,7 +99,7 @@ class Timing(web.View):
             valgt_heat = str(form["heat"])
 
             if "finish" in action:
-                informasjon = await create_finish_time_events(user, action, form)  # type: ignore
+                informasjon = "Funksjon ikke støttet, bruk hovedside for tidtaker"
             elif "start" in action:
                 informasjon = await create_start_time_events(user, form)  # type: ignore
             else:

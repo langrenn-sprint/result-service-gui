@@ -46,100 +46,21 @@ async def check_login_open(self) -> dict:
     return user
 
 
-async def create_finish_time_events(user: dict, action: str, form: dict) -> list:
-    """Register time events for finish- return information."""
+async def update_finish_time_events(
+    user: dict, delete_result_list: list, add_result_list: list
+) -> list:
+    """Update time events for finish- return information."""
     informasjon = []
-    time_now = datetime.datetime.now()
-    time_stamp_now = f"{time_now.strftime('%Y')}-{time_now.strftime('%m')}-{time_now.strftime('%d')}T{time_now.strftime('%X')}"
+    for del_result in delete_result_list:
+        info = await delete_result(user, del_result)
+        informasjon.append(info)
+        logging.debug(f"Deleted result: {info} - body: {del_result}")
 
-    request_body = {
-        "id": "",
-        "bib": 0,
-        "event_id": form["event_id"],
-        "race": form["race"],
-        "race_id": form["race_id"],
-        "timing_point": "",
-        "rank": "",
-        "registration_time": time_stamp_now,
-        "next_race": "",
-        "next_race_id": "",
-        "next_race_position": 0,
-        "status": "OK",
-        "changelog": [],
-    }
-    i = 0
-    if "finish" in form.keys():
-        request_body["timing_point"] = "Finish"
-        request_body["changelog"] = [
-            {
-                "timestamp": time_stamp_now,
-                "user_id": user["name"],
-                "comment": "Målpassering registrert. ",
-            }
-        ]
-        biblist = form["bib"].rsplit(" ")
-        informasjon.append("Målpassering registrert: ")
-        for bib in biblist:
-            request_body["bib"] = int(bib)
-            i += 1
-            id = await TimeEventsService().create_finish_time_event(
-                user["token"], request_body
-            )
-            informasjon.append(f" {bib}, result: {id} ")
-            logging.debug(f"Registrering: {id} - body: {request_body}")
-    elif action == "finish_bib":
-        request_body["timing_point"] = "Finish"
-        new_registrations = []
-        for x in form.keys():
-            bib_changed = True
-            if x.startswith("form_rank_"):
-                new_bib = form[x]
-                _rank = int(x[10:])
-                # check if anything is changed and delete old registration
-                if form[f"old_form_rank_{_rank}"]:
-                    old_bib = form[f"old_form_rank_{_rank}"]
-                    if old_bib == new_bib:
-                        bib_changed = False
-                    else:
-                        new_form = {
-                            "time_event_id": form[f"time_event_id_{_rank}"],
-                        }
-                        info = await delete_result(user, new_form)
-                        informasjon.append(info)
-                        logging.debug(f"Deleted result: {informasjon}")
-                if new_bib.isnumeric() and bib_changed:
-                    new_entry = {
-                        "id": "",
-                        "bib": int(new_bib),
-                        "event_id": request_body["event_id"],
-                        "race": request_body["race"],
-                        "race_id": request_body["race_id"],
-                        "timing_point": request_body["timing_point"],
-                        "rank": _rank,
-                        "registration_time": time_stamp_now,
-                        "next_race": "",
-                        "next_race_id": "",
-                        "next_race_position": 0,
-                        "status": "OK",
-                        "changelog": [
-                            {
-                                "timestamp": time_stamp_now,
-                                "user_id": user["name"],
-                                "comment": f"{request_body['rank']} plass i mål. ",
-                            }
-                        ],
-                    }
-                    i += 1
-                    new_registrations.append(new_entry)
-        # register new results
-        for new_registration in new_registrations:
-            id = await TimeEventsService().create_finish_time_event(
-                user["token"], new_registration
-            )
-            informasjon.append(f" {id} ")
-            logging.debug(f"Registrering: {id} - body: {new_registration}")
-
-    informasjon.append(f"Utført {i} registreringer.")
+    id = await TimeEventsService().create_finish_time_events(
+        user["token"], add_result_list
+    )
+    informasjon.append(f" {id} ")
+    logging.debug(f"Registrering: {id} - body: {add_result_list}")
     return informasjon
 
 
@@ -251,7 +172,8 @@ async def delete_result(user: dict, form: dict) -> str:
     id2 = await TimeEventsAdapter().update_time_event(
         user["token"], form["time_event_id"], time_event
     )
-    informasjon = f"Registrert slettet målpassering. Resultat: {id2}  {informasjon}"
+    logging.debug(f"Time event deleted: {id2} - {time_event}")
+    informasjon = f"Slettet målpassering bib: {time_event['bib']}  {informasjon}"
     return informasjon
 
 

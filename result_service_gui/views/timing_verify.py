@@ -1,4 +1,5 @@
 """Resource module for verificatoin of timing registration."""
+import datetime
 import logging
 
 from aiohttp import web
@@ -12,7 +13,6 @@ from result_service_gui.services import (
 )
 from .utils import (
     check_login,
-    create_finish_time_events,
     get_enchiced_startlist,
     get_event,
     get_finish_timings,
@@ -20,6 +20,7 @@ from .utils import (
     get_qualification_text,
     get_raceplan_summary,
     get_races_for_live_view,
+    update_finish_time_events,
 )
 
 
@@ -226,5 +227,50 @@ def get_next_round(valgt_runde: dict) -> list:
 
 async def update_result(user: dict, form: dict) -> list:
     """Extract form data and update one result and corresponding start event."""
-    informasjon = await create_finish_time_events(user, "finish_bib", form)  # type: ignore
+    time_now = datetime.datetime.now()
+    time_stamp_now = f"{time_now.strftime('%Y')}-{time_now.strftime('%m')}-{time_now.strftime('%d')}T{time_now.strftime('%X')}"
+    delete_result_list = []
+    add_result_list = []
+    for x in form.keys():
+        bib_changed = True
+        if x.startswith("form_rank_"):
+            new_bib = form[x]
+            _rank = int(x[10:])
+            # check if anything is changed and delete old registration
+            if form[f"old_form_rank_{_rank}"]:
+                old_bib = form[f"old_form_rank_{_rank}"]
+                if old_bib == new_bib:
+                    bib_changed = False
+                else:
+                    # append time event to be deleted
+                    delete_entry = {
+                        "time_event_id": form[f"time_event_id_{_rank}"],
+                    }
+                    delete_result_list.append(delete_entry)
+            if new_bib.isnumeric() and bib_changed:
+                # append new entry
+                new_entry = {
+                    "id": "",
+                    "bib": int(new_bib),
+                    "event_id": form["event_id"],
+                    "race": form["race"],
+                    "race_id": form["race_id"],
+                    "timing_point": form["timing_point"],
+                    "rank": _rank,
+                    "registration_time": time_stamp_now,
+                    "next_race": "",
+                    "next_race_id": "",
+                    "next_race_position": 0,
+                    "status": "OK",
+                    "changelog": [
+                        {
+                            "timestamp": time_stamp_now,
+                            "user_id": user["name"],
+                            "comment": f"{_rank} plass i mål. ",
+                        }
+                    ],
+                }
+                add_result_list.append(new_entry)
+
+    informasjon = await update_finish_time_events(user, delete_result_list, add_result_list)  # type: ignore
     return informasjon
