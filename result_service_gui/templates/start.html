@@ -7,6 +7,8 @@
   Startlister {{ valgt_klubb }}{{ valgt_klasse }}
 {% endblock %}
 
+{% block headercontainer %} Startlister {{ valgt_klasse }} - {% endblock %}
+
 {% block refresh %}{% if valgt_klasse == "live" %}60{% endif %}{% endblock %}
 
 {% block titlemain %}

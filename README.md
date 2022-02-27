@@ -66,9 +66,18 @@ gcloud config set project langrenn-sprint
 gcloud auth configure-docker
 
 ### Starte services i docker
-docker-compose pull #oppdatere images
-docker-compose up --build
-docker-compose up --build event-service race-service user-service mongodb
+sudo docker-compose pull #oppdatere images
+sudo docker-compose up --build #bygge og debug modus
+sudo docker-compose up -d #kjøre-modus
+
+### Starte services i docker
+sudo docker-compose stop #oppdatere images
+sudo docker-compose pull #oppdatere images
+sudo git pull #result-service-gui
+sudo docker-compose up --build #bygge og debug modus
+sudo docker-compose stop #oppdatere images
+sudo docker-compose up -d #kjøre-modus
+
 
 Denne fila _skal_ ligge i .dockerignore og .gitignore
 ### Kjøre webserver lokalt

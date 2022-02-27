@@ -7,6 +7,8 @@
   Live scroll {{ valgt_klasse }}
 {% endblock %}
 
+{% block headercontainer %} Live resultater {{ valgt_klasse }} - {% endblock %}
+
 {% block refresh %}60{% endblock %}
 
 {% block titlemain %}
@@ -113,7 +115,7 @@
                {% endfor %}
             {% endif %}
             <tr>
-               <td colspan=5 id=white>&nbsp;</td>
+               <td colspan=5 id=white></td>
              </tr>
         {% endfor %}
       </table>

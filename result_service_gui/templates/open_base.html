@@ -31,7 +31,7 @@
       {% block titlecontainer %}{% endblock %}
       <div id=spacer></div>
       <div class="w3-container" id=adminpagetitle>
-        {{ event.name }}
+        {% block headercontainer %}{% endblock %}{{ event.name }}
       </div>
       <div id=minispacer></div>
       <div class="w3-container">
