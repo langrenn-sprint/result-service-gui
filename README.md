@@ -70,7 +70,7 @@ sudo docker-compose pull #oppdatere images
 sudo docker-compose up --build #bygge og debug modus
 sudo docker-compose up -d #kjøre-modus
 
-### Starte services i docker
+### Oppdatere services i docker
 sudo docker-compose stop #oppdatere images
 sudo docker-compose pull #oppdatere images
 sudo git pull #result-service-gui

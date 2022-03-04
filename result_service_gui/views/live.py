@@ -1,5 +1,6 @@
 """Resource module for live resources."""
 import logging
+from operator import itemgetter
 
 from aiohttp import web
 import aiohttp_jinja2
@@ -64,6 +65,13 @@ class Live(web.View):
                 )
             if len(races) == 0:
                 informasjon = f"{informasjon} Ingen kjøreplaner funnet."
+            else:
+                # sort start list by starting position
+                for race in races:
+                    if len(race["start_entries"]) > 1:
+                        race["start_entries"] = sorted(
+                            race["start_entries"], key=itemgetter("starting_position")
+                        )
 
             colseparators = get_colseparators(races)
             if len(colseparators) == 3:

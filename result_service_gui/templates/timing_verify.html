@@ -84,6 +84,16 @@
           <input type="submit" name="publish_results" value="  Skriv ut  ">
         </form>
       </td>
+      {% if valgt_runde.runde == "F" %}
+        <td width=100>
+          <form action=/print_lists method=get target=new>
+            <input type="hidden" name=action value=result>
+            <input type="hidden" name=event_id value="{{ event_id }}">
+            <input type="hidden" name=klasse value="{{ valgt_runde.klasse }}">
+            <input type="submit" name="publish_results" value="  Skriv ut resultater for klassen ">
+          </form>
+        </td>
+      {% endif %}
       <td width=50>
       </td>
     </tr>

@@ -1,5 +1,6 @@
 """Resource module for start resources."""
 import logging
+from operator import itemgetter
 import os
 
 from aiohttp import web
@@ -73,6 +74,13 @@ class Start(web.View):
                         )
                         races.append(race)
                 raceplan_summary = get_raceplan_summary(_tmp_races, raceclasses)
+
+            # sort start list by starting position
+            for race in races:
+                if len(race["startliste"]) > 1:
+                    race["startliste"] = sorted(
+                        race["startliste"], key=itemgetter("starting_position")
+                    )
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
