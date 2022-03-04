@@ -111,9 +111,9 @@ def get_colseparators(races: list) -> list:
         colseparators.append(races[12]["order"])
     elif i > 12:
         rest = 16 - i
-        colseparators.append(races[6 - rest]["order"])
-        colseparators.append(races[10 - rest]["order"])
-        colseparators.append(races[13 - rest]["order"])
+        colseparators.append(races[5 - rest]["order"])
+        colseparators.append(races[8 - rest]["order"])
+        colseparators.append(races[12 - rest]["order"])
     elif i > 9:
         rest = 12 - i
         colseparators.append(races[4 - rest]["order"])
