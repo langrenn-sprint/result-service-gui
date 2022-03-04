@@ -46,7 +46,7 @@
           <td>Heat {{ race.order }}</td>
           <td>Videre til: {{ race.next_race }}</td>
           {% if action == "finish_bib" %}
-            <td colspan=2 id=resultheader>Resultat</td>
+            <td colspan=3 id=resultheader>Resultat</td>
           {% endif %}
         </tr>
         <tr>
@@ -58,6 +58,7 @@
           {% if action == "finish_bib" %}
             <td id=resultborder>Plass</td>
             <td>Startnummer</td>
+            <td>Tid registrert</td>
           {% endif %}
         </tr>
         <form action=/timing method=post>
@@ -84,11 +85,15 @@
                   <td align=center>
                     {{ race.finish_timings[loop.index0].bib }}
                   </td>
+                  <td>
+                    {{ race.finish_timings[loop.index0].registration_time }}
+                  </td>
                 {% else %}
                   <td id=resultborder align=center>{{ loop.index }}</td>
                   <td align=center>
                     <input type="number" name="form_rank_{{ loop.index }}" value="" min=1 max=9999 onchange="green_bg(this.value)">
                   </td>
+                  <td></td>
                 {% endif %}
               {% endif %}
             </tr>
@@ -96,7 +101,7 @@
         {% if action == "start" %}
           <tr>
               <td colspan=2></td>
-              <td colspan=4>
+              <td colspan=5>
                 <input type="hidden" name="race" value="{{ race.raceclass }}-{{ race.round }}{{ race.heat }}{{ race.index }}">
                 <input type="hidden" name="race_id" value="{{ race.id }}">
                 <input type="hidden" name="event_id" value="{{ event_id }}">
@@ -108,21 +113,21 @@
           </form>
           <form action=/timing method=post>
               <tr>
-                <td id=spacer colspan=6>&nbsp;</td>
+                <td id=spacer colspan=7>&nbsp;</td>
               </tr>
               <tr id=headerblue>
-                <td id=spacer colspan=6>Registrer startnummer - merk at løpere som ikke er i startlista blir registrert som en error</td>
+                <td id=spacer colspan=7>Registrer startnummer - merk at løpere som ikke er i startlista blir registrert som en error</td>
               </tr>
               <tr>
                 <td colspan=2>
                     Startnr
                 </td>
                 <td colspan=1><input type=number name="bib" value="" max=9999 min=1></td>
-                <td colspan=3>Tips: Ved flere passeringer, bruk space mellom startnummer. Eksempel: 2 4</td>
+                <td colspan=4>Tips: Ved flere passeringer, bruk space mellom startnummer. Eksempel: 2 4</td>
               </tr>
               <tr>
                   <td colspan=2></td>
-                  <td colspan=4>
+                  <td colspan=5>
                     <input type="hidden" name="race" value="{{ race.raceclass }}-{{ race.round }}{{ race.heat }}{{ race.index }}">
                     <input type="hidden" name="race_id" value="{{ race.id }}">
                     <input type="hidden" name="event_id" value="{{ event_id }}">
@@ -134,7 +139,7 @@
         {% elif action == "finish_bib" %}
         <tr>
             <td colspan=6></td>
-            <td colspan=2>
+            <td colspan=3>
               <input type="hidden" name="race" value="{{ race.raceclass }}-{{ race.round }}{{ race.heat }}{{ race.index }}">
               <input type="hidden" name="race_id" value="{{ race.id }}">
               <input type="hidden" name="event_id" value="{{ event_id }}">
