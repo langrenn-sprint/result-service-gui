@@ -44,6 +44,17 @@
 {% block content %}
   <div id=spacer></div>
   <script>
+    function checkform(form) {
+      try {
+        // Change the "Submit" text
+        form.submit_button.value = 'Vennligst vent...';
+        form.submit_button.disabled = true;
+        return true
+      }
+      catch(err) {
+        return true
+      }
+    }
     function green_bg(my_element, order_index) {
       try {
         old_element = order_index + my_element.oldvalue;
@@ -81,7 +92,7 @@
           <input type="hidden" name=action value=round_result>
           <input type="hidden" name=event_id value="{{ event_id }}">
           <input type="hidden" name=klasse value="{{ valgt_runde.klasse }}">
-          <input type="submit" name="publish_results" value="  Skriv ut  ">
+          <input type="submit" name="publish_results" value="  Skriv ut rundens resultater og startlister ">
         </form>
       </td>
       {% if valgt_runde.runde == "F" %}
@@ -128,7 +139,7 @@
             <td>Navn</td>
             <td>Videre til</td>
           </tr>
-          <form action=/timing_verify method=post>
+          <form action=/timing_verify method=post onsubmit="return checkform(this);">
             {% for start in race.startliste %}
               <tr>
                   <td>{{ start.starting_position }}</td>
@@ -173,7 +184,8 @@
                   <input type="hidden" name=klasse value="{{ valgt_runde.klasse }}">
                   <input type="hidden" name=timing_point value="Finish">
                   <input type="hidden" name=event_id value="{{ event_id }}">
-                  <input type="submit" name=update_result value="  Oppdater ">
+                  <input type="hidden" name=update_result value="true">
+                  <input type="submit" name=submit_button value="  Oppdater  ">
                 </td>
               </tr>
             </form>
