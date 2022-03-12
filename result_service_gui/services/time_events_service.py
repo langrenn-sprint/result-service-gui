@@ -147,7 +147,6 @@ class TimeEventsService:
                 next_race = await RaceplansAdapter().get_race_by_id(
                     token, time_event["next_race_id"]
                 )
-
                 # create next start entry
                 next_start_entry = {
                     "race_id": time_event["next_race_id"],

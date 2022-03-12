@@ -33,6 +33,10 @@ class PrintLists(web.View):
             action = self.request.rel_url.query["action"]
         except Exception:
             action = ""
+        try:
+            format = self.request.rel_url.query["format"]
+        except Exception:
+            format = ""
 
         try:
             user = await check_login(self)
@@ -61,26 +65,22 @@ class PrintLists(web.View):
             )
             if action == "raceplan":
                 html_template = "print_raceplan.html"
-                for race in _tmp_races:
-                    if (race["raceclass"] == valgt_klasse) or ("" == valgt_klasse):
-                        race["next_race"] = get_qualification_text(race)
-                        race["start_time"] = race["start_time"][-8:]
-                        races.append(race)
                 raceplan_summary = get_raceplan_summary(_tmp_races, raceclasses)
 
             elif action == "result":
-                html_template = "print_results.html"
                 resultlist = await get_results_by_raceclass(
                     user, event_id, valgt_klasse
                 )
-            elif action == "round_result":
-                races = await get_races_for_round_result(
-                    user, _tmp_races, valgt_runde, valgt_klasse
-                )
-            else:
-                races = await get_races_for_print(
-                    user, _tmp_races, raceclasses, valgt_klasse, action
-                )
+                html_template = "print_results.html"
+
+            races = await get_races(
+                user,
+                action,
+                valgt_klasse,
+                valgt_runde,
+                _tmp_races,
+                raceclasses,
+            )
             if len(races) == 0:
                 informasjon = "Ingen kjøreplaner funnet."
 
@@ -91,6 +91,7 @@ class PrintLists(web.View):
                 {
                     "event": event,
                     "event_id": event_id,
+                    "format": format,
                     "informasjon": informasjon,
                     "valgt_klasse": valgt_klasse,
                     "valgt_runde": valgt_runde,
@@ -104,3 +105,30 @@ class PrintLists(web.View):
         except Exception as e:
             logging.error(f"Error: {e}. Redirect to main page.")
             return web.HTTPSeeOther(location=f"/?informasjon={e}")
+
+
+async def get_races(
+    user: dict,
+    action: str,
+    valgt_klasse: str,
+    valgt_runde: str,
+    _tmp_races: list,
+    raceclasses: list,
+) -> list:
+    """Get races to display - return sorted list."""
+    races = []
+    if action == "raceplan":
+        for race in _tmp_races:
+            if (race["raceclass"] == valgt_klasse) or ("" == valgt_klasse):
+                race["next_race"] = get_qualification_text(race)
+                race["start_time"] = race["start_time"][-8:]
+                races.append(race)
+    elif action == "round_result":
+        races = await get_races_for_round_result(
+            user, _tmp_races, valgt_runde, valgt_klasse
+        )
+    else:
+        races = await get_races_for_print(
+            user, _tmp_races, raceclasses, valgt_klasse, action
+        )
+    return races
