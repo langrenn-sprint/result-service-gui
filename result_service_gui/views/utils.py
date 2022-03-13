@@ -145,8 +145,6 @@ async def create_start_time_events(user: dict, form: dict) -> str:
 async def delete_result(user: dict, form: dict) -> str:
     """Set time event to deleted and delete corresponding start event."""
     informasjon = ""
-    time_now = datetime.datetime.now()
-    time_stamp_now = f"{time_now.strftime('%Y')}-{time_now.strftime('%m')}-{time_now.strftime('%d')}T{time_now.strftime('%X')}"
 
     # get time event and delete next start if existing
     time_event = await TimeEventsAdapter().get_time_event_by_id(
@@ -162,17 +160,10 @@ async def delete_result(user: dict, form: dict) -> str:
                     user["token"], start_entry["race_id"], start_entry["id"]
                 )
                 informasjon = f"Slettet start entry i neste heat. Resultat: {id}"
-    time_event["status"] = "Deleted"
-    change_info = {
-        "timestamp": time_stamp_now,
-        "user_id": user["name"],
-        "comment": f"Error - resultat slettet. Bib {time_event['bib']}",
-    }
-    time_event["changelog"].append(change_info)
-    id2 = await TimeEventsAdapter().update_time_event(
-        user["token"], form["time_event_id"], time_event
+    id2 = await TimeEventsAdapter().delete_time_event(
+        user["token"], form["time_event_id"]
     )
-    logging.debug(f"Time event deleted: {id2} - {time_event}")
+    logging.debug(f"Time event deleted: {id2} - {form['time_event_id']}")
     informasjon = f"Slettet målpassering bib: {time_event['bib']}  {informasjon}"
     return informasjon
 
@@ -573,17 +564,9 @@ async def update_time_event(user: dict, form: dict) -> str:
         )
         request_body["next_race"] = form["next_race"]
     elif "delete" in form.keys():
-        request_body["changelog"] = [
-            {
-                "timestamp": time_stamp_now,
-                "user_id": user["name"],
-                "comment": "Status set to deleted . ",
-            }
-        ]
-        request_body["status"] = "Deleted"
-    response = await TimeEventsAdapter().update_time_event(
-        user["token"], form["id"], request_body
-    )
+        response = await TimeEventsAdapter().delete_time_event(
+            user["token"], form["id"]
+        )
     logging.debug(f"Control result: {response}")
     informasjon = f"Oppdatert - {response}  "
     return informasjon
@@ -611,19 +594,13 @@ async def get_passeringer(
     tmp_passeringer = await TimeEventsAdapter().get_time_events_by_event_id(
         token, event_id
     )
-    if action in [
-        "control",
-        "deleted",
-    ]:
+    if action == "control":
         for passering in reversed(tmp_passeringer):
             if valgt_klasse == "" or valgt_klasse in passering["race"]:
                 if (
                     passering["status"] == "Error"
                     and passering["timing_point"] != "Template"
-                    and action == "control"
                 ):
-                    passeringer.append(passering)
-                elif passering["status"] == "Deleted" and action == "deleted":
                     passeringer.append(passering)
     elif action in [
         "Template",
@@ -637,7 +614,6 @@ async def get_passeringer(
             if passering["timing_point"] not in [
                 "Template",
                 "Error",
-                "Deleted",
             ]:
                 passeringer.append(passering)
 
