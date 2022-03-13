@@ -17,7 +17,7 @@ class ResultAdapter:
     """Class representing result."""
 
     async def get_race_results(self, token: str, race_id: str) -> List:
-        """Get all results for one race."""
+        """DEPRECATED. Get all results for one race."""
         headers = MultiDict(
             [
                 (hdrs.AUTHORIZATION, f"Bearer {token}"),

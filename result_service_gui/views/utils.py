@@ -493,9 +493,10 @@ async def get_results_by_raceclass(
     )
     # first - extract all result-items
     for race in races:
-        if len(race["results"]) == 0:
-            # need results for all races - exit if not
-            return []
+        # need results for A final - exit if not
+        if race["round"] == "F" and race["index"] == "A":
+            if len(race["results"]) == 0:
+                return []
         # skip results from qualification
         if race["round"] != "Q":
             race_details = await RaceplansAdapter().get_race_by_id(
