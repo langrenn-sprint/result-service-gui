@@ -112,7 +112,7 @@ aiohttp: <https://docs.aiohttp.org/>
 ## AZURE innstallere
 1. Sette opp virtuell server - ubuntu
 2. Networking: Open up port 8080 and 8090 for incoming traffic from any * incoming source.
-3. Tildele dns navn - eks: ragdesprinten.norwayeast.cloudapp.azure.com
+3. ildele dns navn - eks: ragdesprinten.norwayeast.cloudapp.azure.com
 
 4. kommandoer for å innstallere containere
 sudo apt-get update
@@ -137,3 +137,4 @@ ssh -i /home/heming/github/sprint2-ubuntu_key_0223.pem azureuser@ragdesprinten
 ## slette images og containere
 sudo docker image prune -a
 sudo docker rm -f $(sudo docker ps -a -q)
+sudo docker-compose rm result-service-gui

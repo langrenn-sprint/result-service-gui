@@ -131,9 +131,9 @@
           <tr>
             <td>Pos</td>
             <td width=40>Nr</td>
+            <td></td>
             <td>Navn</td>
             <td>Klubb</td>
-            <td></td>
             <td id=resultborder>Plass</td>
             <td colspan=2 align=center>Startnr</td>
             <td>Navn</td>
@@ -144,9 +144,9 @@
               <tr>
                   <td>{{ start.starting_position }}</td>
                   <td id={{ race.order }}{{ start.bib }} align=center>{{ start.bib }}</td>
+                  <td>{{ start.start_status }}</td>
                   <td>{{ start.name }}</td>
                   <td>{{ start.club }}</td>
-                  <td>{{ start.start_status }}</td>
                   <td id=resultborder align=center>{{ loop.index }}</td>
                   {% if race.finish_timings[loop.index0] %}
                     <td></td>

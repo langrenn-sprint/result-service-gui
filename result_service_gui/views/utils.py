@@ -10,7 +10,6 @@ from aiohttp_session import get_session
 from result_service_gui.services import (
     EventsAdapter,
     RaceplansAdapter,
-    ResultAdapter,
     StartAdapter,
     TimeEventsAdapter,
     TimeEventsService,
@@ -499,12 +498,13 @@ async def get_results_by_raceclass(
             return []
         # skip results from qualification
         if race["round"] != "Q":
-            _tmp_results = await ResultAdapter().get_race_results(
+            race_details = await RaceplansAdapter().get_race_by_id(
                 user["token"], race["id"]
             )
-            for _tmp_result in _tmp_results[0]["ranking_sequence"]:
+            finish_results = get_finish_rank(race_details)
+            for _tmp_result in finish_results:
                 # skip results if racer has more races
-                if _tmp_result["next_race_id"] == "" and _tmp_result["status"] == "OK":
+                if _tmp_result["next_race_id"] == "":
                     new_result: dict = {
                         "round": f"{race['round']}{race['index']}",
                         "rank": 0,
