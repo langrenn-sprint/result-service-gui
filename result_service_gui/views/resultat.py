@@ -49,10 +49,6 @@ class Resultat(web.View):
             raceclasses = await RaceclassesAdapter().get_raceclasses(
                 user["token"], event_id
             )
-            # ensure web safe urls
-            for klasse in raceclasses:
-                for ac_name in klasse["ageclasses"]:
-                    klasse["KlasseWeb"] = ac_name.replace(" ", "%20")
 
             if valgt_klasse == "":
                 informasjon = "Velg klasse for å vise resultater"

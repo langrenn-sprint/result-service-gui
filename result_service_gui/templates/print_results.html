@@ -11,39 +11,27 @@
 {% block refresh %}0{% endblock %}
 
 {% block content %}
-  {% if format == "csv" %}
-    Resultater {{ valgt_klasse }} - {{ event.name }} {{ event.date_of_event }}<br>
-    Plass;Startnr;Navn;Klubb;Runde<br>
-    {% for deltaker in resultlist %}
-      {{ deltaker.rank }};
-      {{ deltaker.time_event.bib }};
-      {{ deltaker.time_event.name }};
-      {{ deltaker.time_event.club }};
-      {{ deltaker.round }}<br>
-    {% endfor %}
-  {% else %}
-    <div id=adminpagetitle>
-        Resultater {{ valgt_klasse }}
-    </div>
-    <div align=right>{{ event.name }}, {{ event.date_of_event }}</div>
+  <div id=adminpagetitle>
+      Resultater {{ valgt_klasse }}
+  </div>
+  <div align=right>{{ event.name }}, {{ event.date_of_event }}</div>
 
-    <table>
-      <tr id=headerprint>
-        <td width=60>Plass</td>
-        <td width=60>Startnr</td>
-        <td>Navn</td>
-        <td>Klubb</td>
-        <td>Runde</td>
+  <table>
+    <tr id=headerprint>
+      <td width=60>Plass</td>
+      <td width=60>Startnr</td>
+      <td>Navn</td>
+      <td>Klubb</td>
+      <td>Runde</td>
+    </tr>
+    {% for deltaker in resultlist %}
+      <tr>
+        <td align=center>{{ deltaker.rank }}</td>
+        <td align=center>{{ deltaker.time_event.bib }}</td>
+        <td>{{ deltaker.time_event.name }}</td>
+        <td>{{ deltaker.time_event.club }}</td>
+        <td align=center>{{ deltaker.round }}</td>
       </tr>
-      {% for deltaker in resultlist %}
-        <tr>
-          <td align=center>{{ deltaker.rank }}</td>
-          <td align=center>{{ deltaker.time_event.bib }}</td>
-          <td>{{ deltaker.time_event.name }}</td>
-          <td>{{ deltaker.time_event.club }}</td>
-          <td align=center>{{ deltaker.round }}</td>
-        </tr>
-      {% endfor %}
-    </table>
-  {% endif %}
+    {% endfor %}
+  </table>
 {% endblock %}

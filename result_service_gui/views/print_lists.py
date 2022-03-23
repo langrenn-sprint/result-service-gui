@@ -26,20 +26,13 @@ class PrintLists(web.View):
         """Get route function that return the livelister page."""
         informasjon = ""
         try:
-            event_id = self.request.rel_url.query["event_id"]
-        except Exception:
-            event_id = ""
-        try:
             action = self.request.rel_url.query["action"]
         except Exception:
             action = ""
-        try:
-            format = self.request.rel_url.query["format"]
-        except Exception:
-            format = ""
 
         try:
             user = await check_login(self)
+            event_id = self.request.rel_url.query["event_id"]
             event = await get_event(user, event_id)
 
             races = []
@@ -91,7 +84,6 @@ class PrintLists(web.View):
                 {
                     "event": event,
                     "event_id": event_id,
-                    "format": format,
                     "informasjon": informasjon,
                     "valgt_klasse": valgt_klasse,
                     "valgt_runde": valgt_runde,

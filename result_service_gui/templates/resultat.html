@@ -43,7 +43,7 @@
         </td>
       </tr>
     </table>
-    <div id=adminpagetitle>{{ valgt_klasse }} Sammenlagt resultater</div>
+    <div id=adminpagetitle>{{ valgt_klasse }} Løpsklasse resultater</div>
     <table>
       <tr id=headerblack>
         <td>Plass</td>
@@ -58,7 +58,10 @@
           <td>{{ deltaker.round }}</td>
           <td align=center>{{ deltaker.time_event.bib }}</td>
           <td><a alt="Live resultater" href=live?event_id={{ event_id }}&klasse={{ valgt_klasse }}&startnr={{ deltaker.time_event.bib }}>{{ deltaker.time_event.name }}</a></td>
-          <td>{{ deltaker.time_event.club }}</td>
+          <td>
+            {% if deltaker.time_event.club_logo %}<img width=15 src={{ deltaker.time_event.club_logo }}>{% endif %}
+            {{ deltaker.time_event.club }}
+          </td>
         </tr>
       {% endfor %}
       <tr>
