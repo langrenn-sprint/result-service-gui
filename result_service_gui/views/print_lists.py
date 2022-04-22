@@ -10,6 +10,7 @@ from result_service_gui.services import (
 )
 from .utils import (
     check_login,
+    create_csv_race_results,
     get_event,
     get_qualification_text,
     get_raceplan_summary,
@@ -64,6 +65,7 @@ class PrintLists(web.View):
                 resultlist = await get_results_by_raceclass(
                     user, event_id, valgt_klasse
                 )
+                await create_csv_race_results(resultlist, f"Resultat_{valgt_klasse}")
                 html_template = "print_results.html"
 
             races = await get_races(

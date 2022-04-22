@@ -45,21 +45,33 @@ async def check_login_open(self) -> dict:
     return user
 
 
-async def update_finish_time_events(
-    user: dict, delete_result_list: list, add_result_list: list
-) -> list:
-    """Update time events for finish- return information."""
-    informasjon = []
-    for del_result in delete_result_list:
-        info = await delete_result(user, del_result)
-        informasjon.append(info)
-        logging.debug(f"Deleted result: {info} - body: {del_result}")
+async def create_csv_race_results(results: list, filename: str) -> str:
+    """Create a csv file with race results."""
+    informasjon = ""
+    filepath = f"result_service_gui/files/{filename}.csv"
+    try:
+        f = open(filepath, "w")
+        f.write("Plass;Startnr;Navn;Klubb;Runde")
+        for deltaker in results:
+            result_line = (
+                str(deltaker["rank"])
+                + ";"
+                + str(deltaker["time_event"]["bib"])
+                + ";"
+                + deltaker["time_event"]["name"]
+                + ";"
+                + deltaker["time_event"]["club"]
+                + ";"
+                + deltaker["round"]
+            )
+            f.write(f"\n{result_line}")
+        f.close()
+    except Exception as e:
+        informasjon = (
+            f"En feil oppstod ved skriv av resultater til fil {filename} - {e}"
+        )
+        logging.error(informasjon)
 
-    id = await TimeEventsService().create_finish_time_events(
-        user["token"], add_result_list
-    )
-    informasjon.append(f" {id} ")
-    logging.debug(f"Registrering: {id} - body: {add_result_list}")
     return informasjon
 
 
@@ -165,6 +177,63 @@ async def delete_result(user: dict, form: dict) -> str:
     logging.debug(f"Time event deleted: {id2} - {form['time_event_id']}")
     informasjon = f"Slettet målpassering bib: {time_event['bib']}  {informasjon}"
     return informasjon
+
+
+def get_club_logo(contestant: dict) -> dict:
+    """Add link to image with club logo in list."""
+    club_logos = {
+        "Aske": "https://harnaes.no/sprint/web/asker_logo.png",
+        "Bækk": "https://harnaes.no/sprint/web/bsk_logo.png",
+        "Bæru": "https://harnaes.no/sprint/web/barums_logo.png",
+        "Dike": "https://harnaes.no/sprint/web/dikemark_logo.png",
+        "Drøb": "https://harnaes.no/sprint/web/dfi_logo.png",
+        "Eids": "https://harnaes.no/sprint/web/eidsvold_logo.png",
+        "Fet ": "https://harnaes.no/sprint/web/fet_logo.png",
+        "Frog": "https://harnaes.no/sprint/web/frogner_logo.png",
+        "Foss": "https://harnaes.no/sprint/web/fossum_logo.png",
+        "Gjel": "https://harnaes.no/sprint/web/gjellerasen_logo.png",
+        "Gjer": "https://harnaes.no/sprint/web/gjerdrum_logo.png",
+        "Gui ": "https://harnaes.no/sprint/web/gui_logo.png",
+        "Haka": "https://harnaes.no/sprint/web/hakadal_logo.png",
+        "Hasl": "https://harnaes.no/sprint/web/haslum_logo.png",
+        "Hemi": "https://harnaes.no/sprint/web/heming_logo.png",
+        "Holm": "https://harnaes.no/sprint/web/holmen_logo.png",
+        "Høyb": "https://harnaes.no/sprint/web/hsil_logo.png",
+        "IL J": "https://harnaes.no/sprint/web/jardar_logo.png",
+        "Jutu": "https://harnaes.no/sprint/web/jutul_logo.png",
+        "Kjel": "https://harnaes.no/sprint/web/kjelsaas_logo.png",
+        "Koll": "https://harnaes.no/sprint/web/koll_log.png",
+        "Lill": "https://harnaes.no/sprint/web/lillomarka_logo.png",
+        "Lomm": "https://harnaes.no/sprint/web/lommedalens_logo.png",
+        "Lyn ": "https://harnaes.no/sprint/web/lyn_ski_logo.png",
+        "Løre": "https://harnaes.no/sprint/web/lorenskog_ski_logo.png",
+        "Moss": "https://harnaes.no/sprint/web/moss_logo.png",
+        "Nes ": "https://harnaes.no/sprint/web/nes_logo.png",
+        "Neso": "https://harnaes.no/sprint/web/nesodden_logo.png",
+        "Nitt": "https://harnaes.no/sprint/web/nittedal_logo.png",
+        "Njår": "https://harnaes.no/sprint/web/njard_logo.png",
+        "Oppe": "https://harnaes.no/sprint/web/oppegard_logo.png",
+        "Rust": "https://harnaes.no/sprint/web/rustad_logo.png",
+        "Røa ": "https://harnaes.no/sprint/web/roa_logo.png",
+        "Ræli": "https://harnaes.no/sprint/web/ralingen_logo.png",
+        "Sked": "https://harnaes.no/sprint/web/skedsmo_logo.png",
+        "Spyd": "https://harnaes.no/sprint/web/spydeberg_logo.png",
+        "Stra": "https://harnaes.no/sprint/web/strandbygda_logo.png",
+        "Sørk": "https://harnaes.no/sprint/web/sif_logo.png",
+        "Tist": "https://harnaes.no/sprint/web/tistedalen_logo.png",
+        "Trøs": "https://harnaes.no/sprint/web/trosken_logo.png",
+        "Idre": "https://harnaes.no/sprint/web/try_logo.png",
+        "Vest": "https://harnaes.no/sprint/web/vestreaker_logo.png",
+        "Ørsk": "https://harnaes.no/sprint/web/orskog_logo.png",
+        "Øvre": "https://harnaes.no/sprint/web/ovrevoll_logo.png",
+        "Årvo": "https://harnaes.no/sprint/web/arvoll_logo.png",
+    }
+    try:
+        contestant["club_logo"] = club_logos[contestant["club"][:4]]
+    except Exception:
+        logging.error(f"Club logo not found - {contestant}")
+
+    return contestant
 
 
 def get_display_style(start_time: str) -> str:
@@ -324,6 +393,54 @@ def get_next_race_info(next_race_time_events: list, race_id: str) -> list:
     return startlist
 
 
+async def get_passeringer(
+    token: str, event_id: str, action: str, valgt_klasse: str
+) -> list:
+    """Return list of passeringer for selected action."""
+    passeringer = []
+    tmp_passeringer = await TimeEventsAdapter().get_time_events_by_event_id(
+        token, event_id
+    )
+    if action == "control":
+        for passering in reversed(tmp_passeringer):
+            if valgt_klasse == "" or valgt_klasse in passering["race"]:
+                if (
+                    passering["status"] == "Error"
+                    and passering["timing_point"] != "Template"
+                ):
+                    passeringer.append(passering)
+    elif action in [
+        "Template",
+    ]:
+        for passering in tmp_passeringer:
+            if valgt_klasse in passering["race"]:
+                if passering["timing_point"] == "Template":
+                    passeringer.append(passering)
+    else:
+        for passering in tmp_passeringer:
+            if passering["timing_point"] not in [
+                "Template",
+                "Error",
+            ]:
+                passeringer.append(passering)
+
+    # indentify last passering in race
+    i = 0
+    last_race = ""
+    for passering in passeringer:
+        if i == 0:
+            passering["first_in_heat"] = True
+        elif last_race != passering["race"]:
+            passeringer[i - 1]["last_in_heat"] = True
+            passering["first_in_heat"] = True
+        i += 1
+        if i == len(passeringer):
+            passering["last_in_heat"] = True
+        last_race = passering["race"]
+
+    return passeringer
+
+
 def get_qualification_text(race: dict) -> str:
     """Generate a text with info about qualification rules."""
     text = ""
@@ -355,6 +472,20 @@ def get_qualification_text(race: dict) -> str:
                     text += "Resten er ute. "
     logging.debug(f"Regel hele: {text}")
     return text
+
+
+async def get_race_id_by_name(
+    user: dict, event_id: str, next_race: str, raceclass: str
+) -> str:
+    """Get race_id for a given race."""
+    race_id = ""
+    races = await RaceplansAdapter().get_all_races(user["token"], event_id)
+    for race in races:
+        if race["raceclass"] == raceclass:
+            tmp_next_race = f"{race['round']}{race['index']}{race['heat']}"
+            if next_race == tmp_next_race:
+                return race["id"]
+    return race_id
 
 
 def get_raceplan_summary(races: list, raceclasses: list) -> list:
@@ -533,6 +664,24 @@ async def get_results_by_raceclass(
     return results
 
 
+async def update_finish_time_events(
+    user: dict, delete_result_list: list, add_result_list: list
+) -> list:
+    """Update time events for finish- return information."""
+    informasjon = []
+    for del_result in delete_result_list:
+        info = await delete_result(user, del_result)
+        informasjon.append(info)
+        logging.debug(f"Deleted result: {info} - body: {del_result}")
+
+    id = await TimeEventsService().create_finish_time_events(
+        user["token"], add_result_list
+    )
+    informasjon.append(f" {id} ")
+    logging.debug(f"Registrering: {id} - body: {add_result_list}")
+    return informasjon
+
+
 async def update_time_event(user: dict, form: dict) -> str:
     """Register time event - return information."""
     informasjon = ""
@@ -573,122 +722,3 @@ async def update_time_event(user: dict, form: dict) -> str:
     logging.debug(f"Control result: {response}")
     informasjon = f"Oppdatert - {response}  "
     return informasjon
-
-
-async def get_race_id_by_name(
-    user: dict, event_id: str, next_race: str, raceclass: str
-) -> str:
-    """Get race_id for a given race."""
-    race_id = ""
-    races = await RaceplansAdapter().get_all_races(user["token"], event_id)
-    for race in races:
-        if race["raceclass"] == raceclass:
-            tmp_next_race = f"{race['round']}{race['index']}{race['heat']}"
-            if next_race == tmp_next_race:
-                return race["id"]
-    return race_id
-
-
-async def get_passeringer(
-    token: str, event_id: str, action: str, valgt_klasse: str
-) -> list:
-    """Return list of passeringer for selected action."""
-    passeringer = []
-    tmp_passeringer = await TimeEventsAdapter().get_time_events_by_event_id(
-        token, event_id
-    )
-    if action == "control":
-        for passering in reversed(tmp_passeringer):
-            if valgt_klasse == "" or valgt_klasse in passering["race"]:
-                if (
-                    passering["status"] == "Error"
-                    and passering["timing_point"] != "Template"
-                ):
-                    passeringer.append(passering)
-    elif action in [
-        "Template",
-    ]:
-        for passering in tmp_passeringer:
-            if valgt_klasse in passering["race"]:
-                if passering["timing_point"] == "Template":
-                    passeringer.append(passering)
-    else:
-        for passering in tmp_passeringer:
-            if passering["timing_point"] not in [
-                "Template",
-                "Error",
-            ]:
-                passeringer.append(passering)
-
-    # indentify last passering in race
-    i = 0
-    last_race = ""
-    for passering in passeringer:
-        if i == 0:
-            passering["first_in_heat"] = True
-        elif last_race != passering["race"]:
-            passeringer[i - 1]["last_in_heat"] = True
-            passering["first_in_heat"] = True
-        i += 1
-        if i == len(passeringer):
-            passering["last_in_heat"] = True
-        last_race = passering["race"]
-
-    return passeringer
-
-
-def get_club_logo(contestant: dict) -> dict:
-    """Add link to image with club logo in list."""
-    club_logos = {
-        "Aske": "https://harnaes.no/sprint/web/asker_logo.png",
-        "Bækk": "https://harnaes.no/sprint/web/bsk_logo.png",
-        "Bæru": "https://harnaes.no/sprint/web/barums_logo.png",
-        "Dike": "https://harnaes.no/sprint/web/dikemark_logo.png",
-        "Drøb": "https://harnaes.no/sprint/web/dfi_logo.png",
-        "Eids": "https://harnaes.no/sprint/web/eidsvold_logo.png",
-        "Fet ": "https://harnaes.no/sprint/web/fet_logo.png",
-        "Frog": "https://harnaes.no/sprint/web/frogner_logo.png",
-        "Foss": "https://harnaes.no/sprint/web/fossum_logo.png",
-        "Gjel": "https://harnaes.no/sprint/web/gjellerasen_logo.png",
-        "Gjer": "https://harnaes.no/sprint/web/gjerdrum_logo.png",
-        "Gui ": "https://harnaes.no/sprint/web/gui_logo.png",
-        "Haka": "https://harnaes.no/sprint/web/hakadal_logo.png",
-        "Hasl": "https://harnaes.no/sprint/web/haslum_logo.png",
-        "Hemi": "https://harnaes.no/sprint/web/heming_logo.png",
-        "Holm": "https://harnaes.no/sprint/web/holmen_logo.png",
-        "Høyb": "https://harnaes.no/sprint/web/hsil_logo.png",
-        "IL J": "https://harnaes.no/sprint/web/jardar_logo.png",
-        "Jutu": "https://harnaes.no/sprint/web/jutul_logo.png",
-        "Kjel": "https://harnaes.no/sprint/web/kjelsaas_logo.png",
-        "Koll": "https://harnaes.no/sprint/web/koll_log.png",
-        "Lill": "https://harnaes.no/sprint/web/lillomarka_logo.png",
-        "Lomm": "https://harnaes.no/sprint/web/lommedalens_logo.png",
-        "Lyn ": "https://harnaes.no/sprint/web/lyn_ski_logo.png",
-        "Løre": "https://harnaes.no/sprint/web/lorenskog_ski_logo.png",
-        "Moss": "https://harnaes.no/sprint/web/moss_logo.png",
-        "Nes ": "https://harnaes.no/sprint/web/nes_logo.png",
-        "Neso": "https://harnaes.no/sprint/web/nesodden_logo.png",
-        "Nitt": "https://harnaes.no/sprint/web/nittedal_logo.png",
-        "Njår": "https://harnaes.no/sprint/web/njard_logo.png",
-        "Oppe": "https://harnaes.no/sprint/web/oppegard_logo.png",
-        "Rust": "https://harnaes.no/sprint/web/rustad_logo.png",
-        "Røa ": "https://harnaes.no/sprint/web/roa_logo.png",
-        "Ræli": "https://harnaes.no/sprint/web/ralingen_logo.png",
-        "Sked": "https://harnaes.no/sprint/web/skedsmo_logo.png",
-        "Spyd": "https://harnaes.no/sprint/web/spydeberg_logo.png",
-        "Stra": "https://harnaes.no/sprint/web/strandbygda_logo.png",
-        "Sørk": "https://harnaes.no/sprint/web/sif_logo.png",
-        "Tist": "https://harnaes.no/sprint/web/tistedalen_logo.png",
-        "Trøs": "https://harnaes.no/sprint/web/trosken_logo.png",
-        "Idre": "https://harnaes.no/sprint/web/try_logo.png",
-        "Vest": "https://harnaes.no/sprint/web/vestreaker_logo.png",
-        "Ørsk": "https://harnaes.no/sprint/web/orskog_logo.png",
-        "Øvre": "https://harnaes.no/sprint/web/ovrevoll_logo.png",
-        "Årvo": "https://harnaes.no/sprint/web/arvoll_logo.png",
-    }
-    try:
-        contestant["club_logo"] = club_logos[contestant["club"][:4]]
-    except Exception:
-        logging.error(f"Club logo not found - {contestant}")
-
-    return contestant

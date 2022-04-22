@@ -15,6 +15,7 @@ import jinja2
 from .views import (
     Control,
     Dashboard,
+    ListsCSV,
     Live,
     Login,
     Logout,
@@ -31,7 +32,7 @@ from .views import (
 load_dotenv()
 LOGGING_LEVEL = os.getenv("LOGGING_LEVEL", "INFO")
 PROJECT_ROOT = os.path.join(os.getcwd(), "result_service_gui")
-logging.debug(f"PROJECT_ROOT: {PROJECT_ROOT}")
+logging.info(f"PROJECT_ROOT: {PROJECT_ROOT}")
 
 
 async def handler(request) -> web.Response:
@@ -74,6 +75,7 @@ async def create_app() -> web.Application:
             web.view("/", Main),
             web.view("/control", Control),
             web.view("/dashboard", Dashboard),
+            web.view("/lists_csv", ListsCSV),
             web.view("/live", Live),
             web.view("/login", Login),
             web.view("/logout", Logout),
@@ -87,8 +89,11 @@ async def create_app() -> web.Application:
         ]
     )
     static_dir = os.path.join(PROJECT_ROOT, "static")
-    logging.debug(f"static_dir: {static_dir}")
+    files_dir = os.path.join(PROJECT_ROOT, "files")
+    logging.info(f"static_dir: {static_dir}")
+    logging.info(f"files_dir: {files_dir}")
 
     app.router.add_static("/static/", path=static_dir, name="static")
+    app.router.add_static("/files/", path=files_dir, name="files")
 
     return app

@@ -29,7 +29,10 @@
         <td align=center>{{ deltaker.rank }}</td>
         <td align=center>{{ deltaker.time_event.bib }}</td>
         <td>{{ deltaker.time_event.name }}</td>
-        <td>{{ deltaker.time_event.club }}</td>
+        <td>
+          {% if deltaker.time_event.club_logo %}<img width=15 src={{ deltaker.time_event.club_logo }}>{% endif %}
+          {{ deltaker.time_event.club }}
+        </td>
         <td align=center>{{ deltaker.round }}</td>
       </tr>
     {% endfor %}

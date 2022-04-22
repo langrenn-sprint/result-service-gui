@@ -1,0 +1,36 @@
+{% extends "open_base.html" %}
+{% block titlecontainer %}
+  <div class="w3-10"></div>
+  <div class="w3-80">
+{% endblock %}
+
+{% block titleheader %}
+  Lister CSV
+{% endblock %}
+
+{% block refresh %}300{% endblock %}
+
+{% block titlemain %}
+  Lister CSV
+{% endblock %}
+
+{% block menuitems %}
+{% endblock %}
+
+{% block content %}
+    <table>
+      <tr id=headerblack>
+        <td>Lister som er publisert</td>
+      </tr>
+      {% for fil in csv_files %}
+        <tr>
+          <td>
+            <a href="files/{{ fil }}" alt="Last ned" download>{{ fil }}</a>
+          </td>
+        </tr>
+      {% endfor %}
+      <tr>
+       <td colspan=5 id=white>&nbsp;</td>
+     </tr>
+    </table>
+{% endblock %}
