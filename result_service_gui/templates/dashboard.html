@@ -20,27 +20,12 @@
   <div class="w3-half">
     <table cellpadding=4>
       <tr>
-        <td colspan=5 id=spacer></td>
-      </tr>
-      <tr>
-        <td width=200><b>1. Oversikt</b></td>
-        <td colspan=4></td>
-      </tr>
-      <tr>
         <td>Lokal tid er <b>{{ local_time_now }}</b></td>
         <td colspan=4>
-          Gjelder for visning av "Starter nå". Tidssone kan endres i .env ved behov.
-        </td>
-      </tr>
-      <tr>
-        <td colspan=5 id=spacer></td>
-      </tr>
-      <tr>
-        <td>Neste start </td>
-        <td colspan=4>
-          {% for race in races %}
+          Neste start
+          <b>{% for race in races %}
             {{ race.raceclass }}-{{ race.round }}{{ race.index }}{{ race.heat }} kl. {{ race.start_time }} (heat nr. {{ race.order }})<br>
-          {% endfor %}
+          {% endfor %}</b>
         </td>
       </tr>
       <tr>
@@ -50,32 +35,32 @@
         <td colspan=5 id=spacer>&nbsp;</td>
       </tr>
       <tr>
-        <td><b>2. Tidtaker</b></td>
+        <td><b>Tidtaker funksjoner</b></td>
         <td colspan=4></td>
       </tr>
       <tr>
-        <td class=visible_link><a class=visible_link href=timing_verify?event_id={{ event_id }}&heat=0>HOVEDSIDE TIDTAKER</a></td>
+        <td class=visible_link><a class=visible_link href=timing_verify?event_id={{ event_id }}&heat=0>HOVEDSIDE</a></td>
         <td colspan=4>Hovedside for tidtaker. Registrering og korringeringer</td>
       </tr>
       <tr>
         <td colspan=5 id=spacer></td>
       </tr>
       <tr>
-        <td><a href=/timing?event_id={{ event_id }}&action=start>Start</a></td>
+        <td class=visible_link><a class=visible_link href=/timing?event_id={{ event_id }}&action=start>Start</a></td>
         <td colspan=4>For starter. Krysse av start og DNS på liste eller skrive startnummer</td>
       </tr>
       <tr>
         <td colspan=5 id=spacer></td>
       </tr>
       <tr>
-        <td><a href=/timing?event_id={{ event_id }}&action=finish_bib>Mål</a></td>
+        <td class=visible_link><a class=visible_link href=/timing?event_id={{ event_id }}&action=finish_bib>Mål</a></td>
         <td colspan=4>Enkel side for å registrere målpassering, skrive inn startnummer</td>
       </tr>
       <tr>
         <td colspan=5 id=spacer></td>
       </tr>
       <tr>
-        <td><a href=/control?event_id={{ event_id }}&action=control>Feil</a></td>
+        <td class=visible_link><a class=visible_link href=/control?event_id={{ event_id }}&action=control>Feil</a></td>
         <td colspan=4>Registreringer har feilet i systemet</td>
       </tr>
       <tr>
@@ -141,18 +126,6 @@
               <div class=dropdown-content>
                 {% for klasse in raceclasses %}
                   <a target=_new href=print_lists?klasse={{ klasse.name }}&event_id={{ event_id }}&action=result>{{ klasse.name }}</a>
-                {% endfor %}
-              </div>
-            </li>
-          </ul>
-        </td>
-        <td width=200>
-          <ul>
-            <li class=dropdown id=topborder>
-              <a href=javascript:void(0) class=dropbtn>Resultater (csv)</a>
-              <div class=dropdown-content>
-                {% for klasse in raceclasses %}
-                  <a target=_new href=print_lists?klasse={{ klasse.name }}&event_id={{ event_id }}&action=result&format=csv>{{ klasse.name }}</a>
                 {% endfor %}
               </div>
             </li>
