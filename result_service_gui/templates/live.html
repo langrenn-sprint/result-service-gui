@@ -57,10 +57,10 @@
                 <td>(heat {{ race.order }})</td>
               </tr>
               <tr id=subheader>
-                <td align=center><div id={{ race.order }} >Plass</div></td>
-                <td>Nr</td>
-                <td>Navn</td>
-                <td>Klubb</td>
+                <td width=50><div id={{ race.order }} >Plass</div></td>
+                <td width=50>Nr</td>
+                <td width=30></td>
+                <td>Løper</td>
                 {% if race.round == "F" %}
                   <td></td>
                 {% else %}
@@ -70,11 +70,12 @@
               {% for loper in race.finish_results %}
                   <tr{% if loper.bib == valgt_startnr %} id=black{% endif %}>
                     <td align=center>{{ loper.rank }}</td>
-                    <td>{{ loper.bib }}</td>
+                    <td align=center>{{ loper.bib }}</td>
+                    <td align=center>{% if loper.club_logo %}<img width=20 src={{ loper.club_logo }}>{% endif %}</td>
                     <td>
                         <a href=live?klasse={{ valgt_klasse }}&startnr={{ loper.bib }}&event_id={{ event_id }}>{{ loper.name }}</a>
+                        <br><div id=smalltext>{{ loper.club }}</div>
                     </td>
-                    <td>{{ loper.club }}</td>
                     {% if race.round == "F" %}
                       <td></td>
                     {% else %}
@@ -84,7 +85,7 @@
               {% endfor %}
             {% else %}
               <tr id=headerblue>
-                <td colspan=3><b>Kl. {{ race.start_time }} {{ race.raceclass }}
+                <td colspan=4><b>Kl. {{ race.start_time }} {{ race.raceclass }}
                   {% if race.round == "Q" %}
                     Kvartfinale {{ race.heat }}
                   {% elif race.round == "S" %}
@@ -93,24 +94,25 @@
                     Finale {{ race.index }}
                   {% endif %}</b>
                 </td>
-                <td></td>
                 <td>(heat {{ race.order }})</td>
               </tr>
               <tr id=subheader>
-                <td align=center><div id={{ race.order }} >Pos</div></td>
-                <td>Nr</td>
-                <td>Navn</td>
-                <td>Klubb</td>
+                <td width=50><div id={{ race.order }} >Pos</div></td>
+                <td width=50>Nr</td>
+                <td width=30></td>
+                <td>Løper</td>
                 <td></td>
                </tr>
                {% for loper in race.start_entries %}
                   <tr{% if loper.bib == valgt_startnr %} id=black{% endif %}>
                      <td align=center>{{ loper.starting_position }}</td>
-                     <td>{{ loper.bib }}</td>
+                     <td align=center>{{ loper.bib }}</td>
+                     <td align=center>{% if loper.club_logo %}<img width=20 src={{ loper.club_logo }}>{% endif %}</td>
                      <td>
                        <a href=live?klasse={{ valgt_klasse }}&startnr={{ loper.bib }}&event_id={{ event_id }}>{{ loper.name }}</a>
+                       <br><div id=smalltext>{{ loper.club }}</div>
                      </td>
-                     <td colspan=2>{{ loper.club }}</td>
+                     <td></td>
                    </tr>
                {% endfor %}
             {% endif %}

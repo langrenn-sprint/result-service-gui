@@ -98,7 +98,10 @@
                   <td>
                       <a href=live?klasse={{ valgt_klasse }}&startnr={{ loper.bib }}&event_id={{ event_id }}>{{ loper.name }}</a>
                   </td>
-                  <td>{{ loper.club }}</td>
+                  <td>
+                    {% if loper.club_logo %}<img width=15 src={{ loper.club_logo }}>{% endif %}
+                    {{ loper.club }}
+                  </td>
                   <td></td>
                 </tr>
             {% endfor %}

@@ -329,7 +329,7 @@ async def get_event(user: dict, event_id: str) -> dict:
 
 
 def get_finish_rank(race: dict) -> list:
-    """Extract timing events from finish."""
+    """Extract timing events from finish - append club logo."""
     finish_rank = []
     results = race["results"]
     if len(results) > 0:
@@ -343,6 +343,7 @@ def get_finish_rank(race: dict) -> list:
                     race["finish_results"] = []
                     for rank_event in finish_ranks:
                         if rank_event["status"] == "OK":
+                            rank_event = get_club_logo(rank_event)
                             finish_rank.append(rank_event)
     return finish_rank
 
@@ -653,7 +654,6 @@ async def get_results_by_raceclass(
     for round_res in grouped_results:
         for one_res in grouped_results[round_res]:
             one_res["rank"] = ranking
-            one_res["time_event"] = get_club_logo(one_res["time_event"])
             results.append(one_res)
             racers_count += 1
             if one_res["round"].startswith("F"):

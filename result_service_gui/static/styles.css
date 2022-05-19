@@ -119,6 +119,10 @@ td {
     background-color: white;
 }
 
+#smalltext {
+  font-size: 0.7em;
+}
+
 .timetitle {
   text-align: center;
   font-size: 2.0em;

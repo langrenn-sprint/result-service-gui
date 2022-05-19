@@ -12,6 +12,7 @@ from result_service_gui.services import (
 )
 from .utils import (
     check_login_open,
+    get_club_logo,
     get_event,
     get_finish_rank,
     get_qualification_text,
@@ -66,12 +67,14 @@ class Live(web.View):
             if len(races) == 0:
                 informasjon = f"{informasjon} Ingen kjøreplaner funnet."
             else:
-                # sort start list by starting position
+                # sort start list by starting position and append club_logo
                 for race in races:
                     if len(race["start_entries"]) > 1:
                         race["start_entries"] = sorted(
                             race["start_entries"], key=itemgetter("starting_position")
                         )
+                        for entry in race["start_entries"]:
+                            entry = get_club_logo(entry)
 
             colseparators = get_colseparators(races)
             if len(colseparators) == 3:
