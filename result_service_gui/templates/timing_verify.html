@@ -121,7 +121,7 @@
       <table>
         {% for race in current_races %}
         <tr>
-          <td colspan=10>&nbsp;</td>
+          <td colspan=10 align=right>{% if race.results.Finish %}Resultat status: {{ race.results.Finish.status }} {% endif %}&nbsp;</td>
         </tr>
           <tr id=headerblack>
             <td colspan=3>{{ race.raceclass }} {{ race.round }}{{ race.index }}{{ race.heat }}</td>

@@ -76,21 +76,23 @@ class TimingVerify(web.View):
             for race in all_races:
                 if valgt_runde["klasse"] == race["raceclass"]:
                     if valgt_runde["runde"] == race["round"]:
+                        race = await RaceplansAdapter().get_race_by_id(
+                            user["token"], race["id"]
+                        )
                         race["next_race"] = get_qualification_text(race)
                         # get start list detail
-                        race["startliste"] = await get_enchiced_startlist(
-                            user, race["id"]
-                        )
+                        race["startliste"] = await get_enchiced_startlist(user, race)
                         race["finish_timings"] = await get_finish_timings(
                             user, race["id"]
                         )
 
                         current_races.append(race)
                     elif race["round"] in next_round:
-                        # get start list detail
-                        race["startliste"] = await get_enchiced_startlist(
-                            user, race["id"]
+                        race = await RaceplansAdapter().get_race_by_id(
+                            user["token"], race["id"]
                         )
+                        # get start list detail
+                        race["startliste"] = await get_enchiced_startlist(user, race)
                         next_races.append(race)
 
             # get passeringer with error

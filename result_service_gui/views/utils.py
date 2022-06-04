@@ -252,15 +252,14 @@ def get_display_style(start_time: str) -> str:
     return display_style
 
 
-async def get_enchiced_startlist(user: dict, race_id: str) -> list:
+async def get_enchiced_startlist(user: dict, race: dict) -> list:
     """Enrich startlist information - including info if race result is registered."""
     startlist = []
     i = 0
     # get time-events registered
     next_race_time_events = await TimeEventsAdapter().get_time_events_by_race_id(
-        user["token"], race_id
+        user["token"], race["id"]
     )
-    race = await RaceplansAdapter().get_race_by_id(user["token"], race_id)
     new_start_entries = race["start_entries"]
     if len(new_start_entries) > 0:
         for start_entry in new_start_entries:
@@ -329,7 +328,7 @@ async def get_event(user: dict, event_id: str) -> dict:
 
 
 def get_finish_rank(race: dict) -> list:
-    """Extract timing events from finish - append club logo."""
+    """Extract timing events from finish and append club logo."""
     finish_rank = []
     results = race["results"]
     if len(results) > 0:
@@ -550,6 +549,9 @@ async def get_races_for_print(
         for race in _tmp_races:
             if race["raceclass"] == raceclass["name"]:
                 if (race["raceclass"] == valgt_klasse) or ("" == valgt_klasse):
+                    race = await RaceplansAdapter().get_race_by_id(
+                        user["token"], race["id"]
+                    )
                     race["first_in_class"] = first_in_class
                     race["next_race"] = get_qualification_text(race)
                     race["start_time"] = race["start_time"][-8:]
@@ -558,15 +560,10 @@ async def get_races_for_print(
                         action == "start" or len(race["results"]) == 0
                     ) and action != "result":
                         race["list_type"] = "start"
-                        race["startliste"] = await get_enchiced_startlist(
-                            user, race["id"]
-                        )
+                        race["startliste"] = await get_enchiced_startlist(user, race)
                     else:
                         race["list_type"] = action
-                        race_details = await RaceplansAdapter().get_race_by_id(
-                            user["token"], race["id"]
-                        )
-                        race["finish_results"] = get_finish_rank(race_details)
+                        race["finish_results"] = get_finish_rank(race)
                     if first_in_class:
                         first_in_class = False
                     races.append(race)
@@ -588,23 +585,21 @@ async def get_races_for_round_result(
 
     for race in _tmp_races:
         if race["raceclass"] == valgt_klasse:
+            race = await RaceplansAdapter().get_race_by_id(user["token"], race["id"])
             race["start_time"] = race["start_time"][-8:]
             if race["round"] == valgt_runde:
                 race["first_in_class"] = first_in_class
                 first_in_class = False
                 race["next_race"] = get_qualification_text(race)
                 race["list_type"] = "result"
-                race_details = await RaceplansAdapter().get_race_by_id(
-                    user["token"], race["id"]
-                )
-                race["finish_results"] = get_finish_rank(race_details)
+                race["finish_results"] = get_finish_rank(race)
                 races.append(race)
             elif race["round"] in next_round:
                 race["first_in_class"] = first_in_next_round
                 first_in_next_round = False
                 race["next_race"] = get_qualification_text(race)
                 race["list_type"] = "start"
-                race["startliste"] = await get_enchiced_startlist(user, race["id"])
+                race["startliste"] = await get_enchiced_startlist(user, race)
                 races.append(race)
     return races
 

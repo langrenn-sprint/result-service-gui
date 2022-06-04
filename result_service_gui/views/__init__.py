@@ -9,6 +9,7 @@ from .logout import Logout
 from .main import Main
 from .print_lists import PrintLists
 from .resultat import Resultat
+from .resultat_edit import ResultatEdit
 from .start import Start
 from .start_edit import StartEdit
 from .timing import Timing

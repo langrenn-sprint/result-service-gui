@@ -60,9 +60,12 @@ class StartEdit(web.View):
             # filter for selected races and enrich
             for race in all_races:
                 if valgt_klasse == race["raceclass"]:
+                    race = await RaceplansAdapter().get_race_by_id(
+                        user["token"], race["id"]
+                    )
                     race["next_race"] = get_qualification_text(race)
                     # get start list detail
-                    race["startliste"] = await get_enchiced_startlist(user, race["id"])
+                    race["startliste"] = await get_enchiced_startlist(user, race)
                     next_races.append(race)
 
             # get templates

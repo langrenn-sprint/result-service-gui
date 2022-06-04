@@ -1,0 +1,117 @@
+{% extends "open_base.html" %}
+{% block titlecontainer %}
+  <div class="w3-10"></div>
+  <div class="w3-80">
+{% endblock %}
+
+{% block titleheader %}
+  Resultater {{ valgt_klasse }}
+{% endblock %}
+
+{% block refresh %}300{% endblock %}
+
+{% block titlemain %}
+  Resultater {{ valgt_klasse }} - detaljer
+{% endblock %}
+
+{% block menuitems %}
+  <li class=dropdown id=topborder>
+    <a href=javascript:void(0) class=dropbtn>Velg klasse</a>
+    <div class=dropdown-content>
+      {% for klasse in klasser %}
+        {% if klasse.ranking %}
+          {% for ac_name in klasse.ageclasses %}
+          <a href=resultat_edit?klasse={{ klasse.name }}&event_id={{ event_id }}>{{ ac_name }}</a>
+          {% endfor %}
+        {% endif %}
+      {% endfor %}
+    </div>
+  </li>
+{% endblock %}
+
+{% block content %}
+    <div id=adminpagetitle>{{ valgt_klasse }} Løpsklasse resultater - detaljer</div>
+    <table>
+      <tr id=headerblack>
+        <td>Plass</td>
+        <td></td>
+        <td>Startnr</td>
+        <td>Navn</td>
+        <td>Klubb</td>
+      </tr>
+      {% for deltaker in resultatliste %}
+        <tr>
+          <td align=center>{{ deltaker.rank }}</td>
+          <td>{{ deltaker.round }}</td>
+          <td align=center>{{ deltaker.time_event.bib }}</td>
+          <td><a alt="Live resultater" href=live?event_id={{ event_id }}&klasse={{ valgt_klasse }}&startnr={{ deltaker.time_event.bib }}>{{ deltaker.time_event.name }}</a></td>
+          <td>
+            {% if deltaker.time_event.club_logo %}<img width=15 src={{ deltaker.time_event.club_logo }}>{% endif %}
+            {{ deltaker.time_event.club }}
+          </td>
+        </tr>
+      {% endfor %}
+      <tr>
+       <td colspan=5 id=white>&nbsp;</td>
+     </tr>
+    </table>
+    <div id=adminpagetitle>{{ valgt_klasse }} Heat resultater</div>
+    <table>
+      {% for race in races %}
+            <tr id=headerblack>
+              <td colspan=4>
+                Resultater <b>{{ race.raceclass }}
+                {% if race.round == "Q" %}Kvartfinale {{ race.heat }}
+                {% elif race.round == "S" %}Semifinale {{ race.index }}{{ race.heat }}
+                {% elif race.round == "F" %}Finale {{ race.index }}
+                {% endif %}</b>
+              </td>
+              <td>(heat {{ race.order }})</td>
+            </tr>
+            <tr id=subheader>
+              <td align=center><div id={{ race.order }} >Plass</div></td>
+              <td>Nr</td>
+              <td>Navn</td>
+              <td>Klubb</td>
+              <td></td>
+            </tr>
+            {% for loper in race.finish_results %}
+                <tr{% if loper.bib == valgt_startnr %} id=black{% endif %}>
+                  <td align=center>{{ loper.rank }}</td>
+                  <td>{{ loper.bib }}</td>
+                  <td>
+                      <a href=live?klasse={{ valgt_klasse }}&startnr={{ loper.bib }}&event_id={{ event_id }}>{{ loper.name }}</a>
+                  </td>
+                  <td>
+                    {% if loper.club_logo %}<img width=15 src={{ loper.club_logo }}>{% endif %}
+                    {{ loper.club }}
+                  </td>
+                  <td><a href="#" title="{{ loper }}">Details "finish_results"</a></td>
+                </tr>
+            {% endfor %}
+            {% if race.results.Finish %}
+                <tr><td colspan=5><a href="#" title="{{ race.results.Finish }}">Details "race_results" - status {{ race.results.Finish.status }}</a></td></tr>
+                {% for loper in race.results.Finish.ranking_sequence %}
+                  {% if loop.first %}<tr><td colspan=5>Point {{ loper.timing_point }}</td></tr>{% endif %}
+                  <tr>
+                    <td id=orange align=center>{{ loper.rank }}</td>
+                    <td id=orange>{{ loper.bib }}</td>
+                    <td id=orange>
+                        <a href=live?klasse={{ valgt_klasse }}&startnr={{ loper.bib }}&event_id={{ event_id }}>{{ loper.name }}</a>
+                    </td>
+                    <td id=orange>
+                      {% if loper.club_logo %}<img width=15 src={{ loper.club_logo }}>{% endif %}
+                      {{ loper.club }}
+                    </td>
+                    <td id=orange><a href="#" title="{{ loper }}">Details "racer results"</a></td>
+                  </tr>
+                {% endfor %}
+                <tr><td colspan=5><a href="#" title="{{ results }}">Details "race_results"</a></td></tr>
+              {% endif %}
+            <tr>
+             <td colspan=5 id=white>&nbsp;</td>
+           </tr>
+      {% endfor %}
+    </table>
+
+{% endblock %}

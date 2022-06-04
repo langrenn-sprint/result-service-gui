@@ -66,12 +66,13 @@ class Start(web.View):
             else:
                 for race in _tmp_races:
                     if (race["raceclass"] == valgt_klasse) or ("live" == valgt_klasse):
+                        race = await RaceplansAdapter().get_race_by_id(
+                            user["token"], race["id"]
+                        )
                         race["next_race"] = get_qualification_text(race)
                         race["start_time"] = race["start_time"][-8:]
                         # get start list details
-                        race["startliste"] = await get_enchiced_startlist(
-                            user, race["id"]
-                        )
+                        race["startliste"] = await get_enchiced_startlist(user, race)
                         races.append(race)
                 raceplan_summary = get_raceplan_summary(_tmp_races, raceclasses)
 
