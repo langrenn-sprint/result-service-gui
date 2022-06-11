@@ -179,11 +179,31 @@ class RaceplansAdapter:
         self, token: str, event_id: str, valgt_klasse: str
     ) -> list:
         """Get all get_races_by_racesclass function."""
+        headers = MultiDict(
+            [
+                (hdrs.AUTHORIZATION, f"Bearer {token}"),
+            ]
+        )
         races = []
-        _tmp_races = await RaceplansAdapter().get_all_races(token, event_id)
-        for race in _tmp_races:
-            if race["raceclass"] == valgt_klasse or ("" == valgt_klasse):
-                races.append(race)
+        async with ClientSession() as session:
+            async with session.get(
+                f"{RACE_SERVICE_URL}/races?eventId={event_id}&raceclass={valgt_klasse}",
+                headers=headers,
+            ) as resp:
+                logging.debug(
+                    f"get_all_races_by_racesclass - got response {resp.status}"
+                )
+                if resp.status == 200:
+                    races = await resp.json()
+                elif resp.status == 401:
+                    raise Exception(f"Login expired: {resp}")
+                else:
+                    servicename = "get_all_races_by_racesclass"
+                    body = await resp.json()
+                    logging.error(f"{servicename} failed - {resp.status} - {body}")
+                    raise web.HTTPBadRequest(
+                        reason=f"Error - {resp.status}: {body['detail']}."
+                    )
         return races
 
     async def update_order(self, token: str, race_id: str, new_order: int) -> str:
