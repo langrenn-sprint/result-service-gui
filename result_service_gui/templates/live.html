@@ -53,6 +53,7 @@
                   {% elif race.round == "S" %}Semifinale {{ race.index }}{{ race.heat }}
                   {% elif race.round == "F" %}Finale {{ race.index }}
                   {% endif %}</b>
+                  {% if race.results.Finish.status == 1 %} -- NB: RESULTATER IKKE BEKREFTET {% endif %}
                 </td>
                 <td>(heat {{ race.order }})</td>
               </tr>
