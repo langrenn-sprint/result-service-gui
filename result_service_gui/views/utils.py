@@ -268,6 +268,8 @@ async def get_enchiced_startlist(user: dict, race: dict) -> list:
             for time_event in next_race_time_events:
                 # get next race info
                 if time_event["timing_point"] == "Template":
+                    logging.debug(f"Time_event with error - {time_event}")
+                elif time_event["timing_point"] == "Template":
                     if i == time_event["rank"]:
                         if time_event["next_race"].startswith("Ute"):
                             start_entry["next_race"] = "Ute"

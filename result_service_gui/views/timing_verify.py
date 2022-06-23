@@ -9,6 +9,7 @@ from result_service_gui.services import (
     ContestantsAdapter,
     RaceclassesAdapter,
     RaceplansAdapter,
+    ResultAdapter,
     StartAdapter,
 )
 from .utils import (
@@ -49,7 +50,6 @@ class TimingVerify(web.View):
             raceclasses = await RaceclassesAdapter().get_raceclasses(
                 user["token"], event_id
             )
-            all_races = await RaceplansAdapter().get_all_races(user["token"], event_id)
 
             # check if specific round is selected
             try:
@@ -59,26 +59,29 @@ class TimingVerify(web.View):
                 # if heat is selected, find round
                 try:
                     heat = int(self.request.rel_url.query["heat"])
+                    all_races = await RaceplansAdapter().get_all_races(
+                        user["token"], event_id
+                    )
                     valgt_runde = await find_round(all_races, heat)
                 except Exception:
                     informasjon = f"Velg runde i menyen. {informasjon}"
                     logging.debug("Ingen runde valgt")
 
-            next_round = get_next_round(valgt_runde)
+            if valgt_runde["klasse"]:
+                all_races = await RaceplansAdapter().get_races_by_racesclass(
+                    user["token"], event_id, valgt_runde["klasse"]
+                )
+                next_round = get_next_round(valgt_runde)
 
-            raceplan_summary = []
-            if len(all_races) == 0:
-                informasjon = f"{informasjon} Ingen kjøreplaner funnet."
-            else:
-                raceplan_summary = get_raceplan_summary(all_races, raceclasses)
+                raceplan_summary = []
+                if len(all_races) == 0:
+                    informasjon = f"{informasjon} Ingen kjøreplaner funnet."
+                else:
+                    raceplan_summary = get_raceplan_summary(all_races, raceclasses)
 
-            # filter for selected races and enrich
-            for race in all_races:
-                if valgt_runde["klasse"] == race["raceclass"]:
+                # filter for selected races and enrich
+                for race in all_races:
                     if valgt_runde["runde"] == race["round"]:
-                        race = await RaceplansAdapter().get_race_by_id(
-                            user["token"], race["id"]
-                        )
                         race["next_race"] = get_qualification_text(race)
                         # get start list detail
                         race["startliste"] = await get_enchiced_startlist(user, race)
@@ -95,10 +98,10 @@ class TimingVerify(web.View):
                         race["startliste"] = await get_enchiced_startlist(user, race)
                         next_races.append(race)
 
-            # get passeringer with error
-            error_passeringer = await get_passeringer(
-                user["token"], event_id, "control", valgt_runde["klasse"]
-            )
+                # get passeringer with error
+                error_passeringer = await get_passeringer(
+                    user["token"], event_id, "control", valgt_runde["klasse"]
+                )
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
@@ -142,6 +145,10 @@ class TimingVerify(web.View):
                 informasjon = await delete_start(user, form)  # type: ignore
             elif "update_result" in form.keys():
                 informasjon = await update_result(user, form)  # type: ignore
+                # set results to official
+                if "submit_publish" in form.keys():
+                    res = await ResultAdapter().update_result_status(user["token"], form["race_id"], 2)  # type: ignore
+                    informasjon.append(f"Heat resultat er publisert - {res}.")
         except Exception as e:
             logging.error(f"Error: {e}")
             error_reason = str(e)

@@ -175,6 +175,17 @@ class RaceplansAdapter:
                     )
         return race
 
+    async def get_race_by_order(
+        self, token: str, event_id: str, race_order: int
+    ) -> dict:
+        """Get one race for event function."""
+        all_races = await RaceplansAdapter().get_all_races(token, event_id)
+        race = {}
+        for _race in all_races:
+            if _race["order"] == race_order:
+                race = await RaceplansAdapter().get_race_by_id(token, _race["id"])
+        return race
+
     async def get_races_by_racesclass(
         self, token: str, event_id: str, valgt_klasse: str
     ) -> list:

@@ -47,8 +47,9 @@
     function checkform(form) {
       try {
         // Change the "Submit" text
-        form.submit_button.value = 'Vennligst vent...';
-        form.submit_button.disabled = true;
+        form.submit_update.value = 'Vennligst vent...';
+        form.submit_update.disabled = true;
+        form.submit_publish.value = 'Vennligst vent...';
         return true
       }
       catch(err) {
@@ -125,7 +126,7 @@
         </tr>
           <tr id=headerblack>
             <td colspan=3>{{ race.raceclass }} {{ race.round }}{{ race.index }}{{ race.heat }}</td>
-            <td colspan=2><b>{{ race.start_time[-8:] }}</b> ({{ race.order }})</td>
+            <td colspan=2><b>{{ race.start_time[-8:] }}</b> (heat {{ race.order }})</td>
             <td colspan=5 id=resultheader>Resultat: {{ race.next_race }}</td>
           </tr>
           <tr>
@@ -185,7 +186,8 @@
                   <input type="hidden" name=timing_point value="Finish">
                   <input type="hidden" name=event_id value="{{ event_id }}">
                   <input type="hidden" name=update_result value="true">
-                  <input type="submit" name=submit_button value="  Oppdater  ">
+                  <input type="submit" name=submit_update value="  Oppdater  ">
+                  <input type="submit" name=submit_publish value="  Oppdater og publiser  ">
                 </td>
               </tr>
             </form>

@@ -1,0 +1,28 @@
+{% extends "open_base.html" %}
+{% block titlecontainer %}
+  <div class="w3-quart"></div>
+  <div class="w3-half">
+{% endblock %}
+
+{% block titleheader %}
+  Foto admin - {{ lopsinfo }}
+{% endblock %}
+{% block refresh %}{% endblock %}
+{% block titlemain %}
+  Foto admin - {{ lopsinfo }}
+{% endblock %}
+{% block content %}
+  <div id=spacer></div>
+    <table cellpadding=4>
+      <tr>
+        <td colspan=5 id=headerblue>
+          <b>Fotoalbum</b>
+        </td>
+      </tr>
+      <tr>
+        <td colspan=5>
+          {{ albums }}
+        </td>
+      </tr>
+    </table>
+{% endblock %}
