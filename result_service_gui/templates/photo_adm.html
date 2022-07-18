@@ -21,7 +21,7 @@
       </tr>
       {% for album in albums.albums %}
         <tr>
-          <td width=220><a href=photos_adm?event_id={{ event_id }}&album_id={{ album.id }}><img width=200 src={{ album.coverPhotoBaseUrl }}></a></td>
+          <td width=220><a href=photo_edit?event_id={{ event_id }}&album_id={{ album.id }}&album_title={{ album.title.replace(" ", "%20") }}><img width=200 src={{ album.coverPhotoBaseUrl }}></a></td>
           <td>{{ album.title }}</td>
           <td>{{ album.mediaItemsCount }}</td>
           <td></td>

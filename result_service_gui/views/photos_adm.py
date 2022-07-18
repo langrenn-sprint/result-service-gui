@@ -31,7 +31,7 @@ class PhotosAdm(web.View):
             informasjon = ""
 
         try:
-            user = await check_login_google(self)
+            user = await check_login_google(self, event_id)
         except Exception as e:
             return web.HTTPSeeOther(location=f"{e}")
 
@@ -47,7 +47,7 @@ class PhotosAdm(web.View):
                     )
                     if result == 200:
                         # reload user session information
-                        user = await check_login_google(self)
+                        user = await check_login_google(self, event_id)
                     else:
                         raise Exception(
                             f"Det har oppstått en feil med google autorisasjon - {result}"

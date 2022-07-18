@@ -7,6 +7,7 @@ from .liveness import Ping, Ready
 from .login import Login
 from .logout import Logout
 from .main import Main
+from .photo_edit import PhotoEdit
 from .photos_adm import PhotosAdm
 from .print_lists import PrintLists
 from .resultat import Resultat

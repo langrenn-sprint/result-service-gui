@@ -16,6 +16,32 @@ GOOGLE_PHOTO_CREDENTIALS_FILE = "/home/heming/github/photo_api_credentials.json"
 class GooglePhotosAdapter:
     """Class representing google photos."""
 
+    async def get_album_items(self, token: str, album_id: str) -> List:
+        """Get all albums."""
+        album_items = []
+        servicename = "get_album_items"
+        headers = MultiDict(
+            [
+                (hdrs.CONTENT_TYPE, "application/json"),
+                (hdrs.AUTHORIZATION, f"Bearer {token}"),
+            ]
+        )
+        request_body = {"albumId": album_id}
+        async with ClientSession() as session:
+            async with session.post(
+                f"{GOOGLE_PHOTO_SERVER}/mediaItems:search",
+                headers=headers,
+                json=request_body,
+            ) as resp:
+                logging.debug(f"{servicename} - got response {resp.status}")
+                if resp.status == 200:
+                    album_items = await resp.json()
+                else:
+                    body = await resp.json()
+                    logging.error(f"{servicename} failed - {resp.status} - {body}")
+                    raise web.HTTPBadRequest(reason=f"Error - {resp.status}: {body}.")
+        return album_items
+
     async def get_albums(self, token: str) -> List:
         """Get all albums."""
         albums = []

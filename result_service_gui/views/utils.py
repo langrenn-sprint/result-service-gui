@@ -62,10 +62,33 @@ async def check_login(self) -> dict:
     }
 
 
-async def check_login_google(self) -> dict:
+async def check_login_google(self, event_id: str) -> dict:
     """Check login with google and return user credentials."""
     session = await get_session(self.request)
     loggedin = UserAdapter().isloggedin_google(session)
+    if not loggedin:
+        informasjon = "informasjon=Logg inn med google for å se denne siden."
+        info = f"action=g_login&event_id={event_id}"
+        raise Exception(f"/login?{info}&{informasjon}")
+
+    return {
+        "name": session["name"],
+        "loggedin": loggedin,
+        "token": session["token"],
+        "g_loggedin": session["g_loggedin"],
+        "g_name": session["g_name"],
+        "g_jwt": session["g_jwt"],
+        "g_auth_photos": session["g_auth_photos"],
+        "g_scope": session["g_scope"],
+        "g_client_id": session["g_client_id"],
+        "g_photos_token": session["g_photos_token"],
+    }
+
+
+async def check_login_google_photos(self) -> dict:
+    """Check login with google and return user credentials."""
+    session = await get_session(self.request)
+    loggedin = UserAdapter().isloggedin_google_photos(session)
     if not loggedin:
         informasjon = "informasjon=Logg inn med google for å se denne siden."
         action = "action=g_login"
