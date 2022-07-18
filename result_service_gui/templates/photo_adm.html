@@ -1,7 +1,7 @@
 {% extends "open_base.html" %}
 {% block titlecontainer %}
-  <div class="w3-quart"></div>
-  <div class="w3-half">
+  <div class="w3-10"></div>
+  <div class="w3-80">
 {% endblock %}
 
 {% block titleheader %}
@@ -19,10 +19,15 @@
           <b>Fotoalbum</b>
         </td>
       </tr>
-      <tr>
-        <td colspan=5>
-          {{ albums }}
-        </td>
-      </tr>
+      {% for album in albums.albums %}
+        <tr>
+          <td width=220><a href=photos_adm?event_id={{ event_id }}&album_id={{ album.id }}><img width=200 src={{ album.coverPhotoBaseUrl }}></a></td>
+          <td>{{ album.title }}</td>
+          <td>{{ album.mediaItemsCount }}</td>
+          <td></td>
+          <td><a target=_blank href={{ album.productUrl }}>Bilder i Google</a></td>
+        </tr>
+      {% endfor %}
     </table>
+    {{ albums }}
 {% endblock %}
