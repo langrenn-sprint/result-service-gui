@@ -1,5 +1,6 @@
 """Module for google photos adapter."""
 import logging
+import os
 from typing import List
 
 from aiohttp import ClientSession
@@ -8,9 +9,15 @@ from aiohttp import web
 import google_auth_oauthlib.flow
 from multidict import MultiDict
 
-GOOGLE_PHOTO_SERVER = "https://photoslibrary.googleapis.com/v1"
-GOOGLE_PHOTO_SCOPE = "https://www.googleapis.com/auth/photoslibrary.readonly"
-GOOGLE_PHOTO_CREDENTIALS_FILE = "/home/heming/github/photo_api_credentials.json"
+GOOGLE_PHOTO_SERVER = os.getenv(
+    "GOOGLE_PHOTO_SERVER", "https://photoslibrary.googleapis.com/v1"
+)
+GOOGLE_PHOTO_SCOPE = os.getenv(
+    "GOOGLE_PHOTO_SCOPE", "https://www.googleapis.com/auth/photoslibrary.readonly"
+)
+GOOGLE_PHOTO_CREDENTIALS_FILE = os.getenv(
+    "GOOGLE_PHOTO_CREDENTIALS_FILE", "/home/heming/github/photo_api_credentials.json"
+)
 
 
 class GooglePhotosAdapter:

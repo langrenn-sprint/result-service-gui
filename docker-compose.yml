@@ -13,10 +13,14 @@ services:
       - EVENT_GUI_HOST_PORT=8080
       - EVENTS_HOST_SERVER=event-service
       - EVENTS_HOST_PORT=8080
+      - GOOGLE_PHOTO_SERVER=https://photoslibrary.googleapis.com/v1
+      - GOOGLE_PHOTO_SCOPE=https://www.googleapis.com/auth/photoslibrary.readonly
+      - GOOGLE_PHOTO_CREDENTIALS_FILE=/home/heming/github/photo_api_credentials.json
       - LOGGING_LEVEL=${LOGGING_LEVEL}
       - RACE_HOST_SERVER=race-service
       - RACE_HOST_PORT=8080
       - TIME_ZONE_OFFSET=0
+      - TIME_ZONE_OFFSET_G_PHOTOS=${TIME_ZONE_OFFSET_G_PHOTOS}
       - USERS_HOST_SERVER=user-service
       - USERS_HOST_PORT=8080
     depends_on:
@@ -71,6 +75,24 @@ services:
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - EVENTS_HOST_SERVER=event-service
       - EVENTS_HOST_PORT=8080
+      - USERS_HOST_SERVER=user-service
+      - USERS_HOST_PORT=8080
+      - LOGGING_LEVEL=${LOGGING_LEVEL}
+      - DB_HOST=mongodb
+      - DB_PORT=27017
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+    depends_on:
+      - "user-service"
+      - "mongodb"
+  photo-service:
+    image: ghcr.io/langrenn-sprint/photo-service:latest
+    ports:
+      - "8092:8080"
+    environment:
+      - JWT_SECRET=${JWT_SECRET}
+      - ADMIN_USERNAME=${ADMIN_USERNAME}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - USERS_HOST_SERVER=user-service
       - USERS_HOST_PORT=8080
       - LOGGING_LEVEL=${LOGGING_LEVEL}

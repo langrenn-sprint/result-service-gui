@@ -12,31 +12,78 @@
   Foto rediger - {{ lopsinfo }}
 {% endblock %}
 {% block content %}
+<! --- Edit menu --->
+  <table>
+    <tr id=headerblue align=right>
+      <td>
+        <form action=/photo_edit method=post>
+          <input type="hidden" name="event_id" value="{{ event_id }}">
+          <input type="hidden" name="album_id" value="{{ album_id }}">
+          <input type="hidden" name="album_title" value="{{ lopsinfo }}">
+          <input type="submit" name="sync_from_google" value="  Synkroniser med google album  ">
+        </form>
+      </td>
+      <td>
+        <form action=/raceplans method=post onsubmit="return confirm_delete();">
+          <input type="hidden" name="event_id" value="{{ event_id }}">
+          <input type="submit" name="delete_all" value="  Slett ...  ">
+        </form>
+      </td>
+  </table>
   <div id=spacer></div>
-    <table cellpadding=4>
-      <tr>
-        <td colspan=4 id=headerblue>
-          <b>Bilder</b>
-        </td>
-      </tr>
-      {% for foto in album.mediaItems %}
-        <tr>
-          <td width=220>
-            <a class="tooltip" href="">
-              <img width=200 src={{ foto.baseUrl }}=w200-h100-c>
-               <span>
-                   <img id=tooltipimage src="{{ foto.baseUrl }}=w800-h800">
-               </span>
-            </a>
-          </td>
-          <td>
-            {{ foto.mediaMetadata.creationTime }}<br>
-            {{ foto.mediaMetadata.photo.cameraModel }}<br>
-            {{ foto.filename }}
-          </td>
-          <td><a target=_blank href={{ foto.productUrl }}>Bilde i Google</a></td>
-        </tr>
-      {% endfor %}
+  <table>
+    <tr><td>
+        <table cellpadding=4>
+          <tr>
+            <td colspan=4 id=headerblue>
+              <b>Bilder fra Google</b>
+            </td>
+          </tr>
+          {% for foto in album.mediaItems %}
+            <tr>
+              <td width=220>
+                <a class="tooltip" href="">
+                  <img width=200 src={{ foto.baseUrl }}=w200-h100-c>
+                   <span>
+                       <img id=tooltipimage src="{{ foto.baseUrl }}=w800-h800">
+                   </span>
+                </a>
+              </td>
+              <td>
+                {{ foto.mediaMetadata.creationTime }}<br>
+                {{ foto.mediaMetadata.photo.cameraModel }}<br>
+                {{ foto.filename }}
+              </td>
+              <td><a target=_blank href={{ foto.productUrl }}>Bilde i Google</a></td>
+            </tr>
+          {% endfor %}
+        </table>
+      </td><td>
+        <table cellpadding=4>
+          <tr>
+            <td colspan=4 id=headerblue>
+              <b>Bilder fra databasen</b>
+            </td>
+          </tr>
+          {% for foto in photos %}
+            <tr>
+              <td width=220>
+                <a class="tooltip" href="">
+                  <img width=200 src={{ foto.g_base_url }}=w200-h100-c>
+                   <span>
+                       <img id=tooltipimage src="{{ foto.g_base_url }}=w800-h800">
+                   </span>
+                </a>
+              </td>
+              <td>
+                {{ foto.creation_time }}<br>
+                {{ foto.name }}
+              </td>
+              <td><a target=_blank href={{ foto.g_product_url }}>Bilde i Google</a></td>
+            </tr>
+          {% endfor %}
+        </table>
+      </td></tr>
     </table>
     {{ album }}
 {% endblock %}

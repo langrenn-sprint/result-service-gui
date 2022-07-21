@@ -3,6 +3,7 @@ from .contestants_adapter import ContestantsAdapter
 from .events_adapter import EventsAdapter
 from .foto_service import FotoService
 from .google_photos_adapter import GooglePhotosAdapter
+from .photos_adapter import PhotosAdapter
 from .raceclasses_adapter import RaceclassesAdapter
 from .raceplans_adapter import RaceplansAdapter
 from .result_adapter import ResultAdapter

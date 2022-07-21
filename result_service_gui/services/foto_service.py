@@ -1,9 +1,12 @@
 """Module for foto service."""
 import datetime
 import logging
+import os
 from typing import Any, List
 
 from .contestants_adapter import ContestantsAdapter
+from .google_photos_adapter import GooglePhotosAdapter
+from .photos_adapter import PhotosAdapter
 from .raceclasses_adapter import RaceclassesAdapter
 from .raceplans_adapter import RaceplansAdapter
 from .start_adapter import StartAdapter
@@ -97,6 +100,82 @@ class FotoService:
         logging.debug(f"update tags {newvalues}")
         result = await db.foto_collection.update_one(myquery, {"$set": newvalues})
         logging.info(f"updated one {result}")
+
+    async def sync_from_google(
+        self,
+        user: dict,
+        event_id: str,
+        album_id: str,
+    ) -> str:
+        """Get photos from google and sync with local database."""
+        informasjon = ""
+        album = await GooglePhotosAdapter().get_album_items(
+            user["g_photos_token"], album_id
+        )
+        i_c = 0
+        i_u = 0
+
+        for g_photo in album["mediaItems"]:  # type: ignore
+            creation_time = g_photo["mediaMetadata"]["creationTime"]
+            # update or create record in db
+            try:
+                photo = await PhotosAdapter().get_photo_by_g_id(
+                    user["token"], g_photo["id"]
+                )
+                photo["name"] = g_photo["filename"]
+                photo["g_product_url"] = g_photo["productUrl"]
+                photo["g_base_url"] = g_photo["baseUrl"]
+                photo_id = await PhotosAdapter().update_photo(
+                    user["token"], photo["id"], photo
+                )
+                logging.debug(f"Updated photo with id {photo_id}")
+                i_u += 1
+            except Exception:
+                request_body = {
+                    "name": g_photo["filename"],
+                    "event_id": event_id,
+                    "creation_time": format_zulu_time(creation_time),
+                    "information": "",
+                    "race_id": "",
+                    "raceclass": "",
+                    "biblist": [],
+                    "clublist": [],
+                    "g_id": g_photo["id"],
+                    "g_product_url": g_photo["productUrl"],
+                    "g_base_url": g_photo["baseUrl"],
+                    "ai_text": [],
+                    "ai_numbers": [],
+                    "ai_information": "",
+                }
+                photo_id = await PhotosAdapter().create_photo(
+                    user["token"], request_body
+                )
+                logging.debug(f"Created photo with id {photo_id}")
+                i_c += 1
+
+        informasjon = (
+            f"Synkronisert bilder fra Google. {i_u} oppdatert og {i_c} opprettet."
+        )
+        return informasjon
+
+
+# internal functions
+def format_zulu_time(timez: str) -> str:
+    """Convert from zulu time to normalized time - string formats."""
+    # TODO: Move to properties
+    pattern = "%Y-%m-%dT%H:%M:%SZ"
+    TIME_ZONE_OFFSET_G_PHOTOS = os.getenv("TIME_ZONE_OFFSET_G_PHOTOS")
+    try:
+        t1 = datetime.datetime.strptime(timez, pattern)
+        # calculate new time
+        delta_seconds = int(TIME_ZONE_OFFSET_G_PHOTOS) * 3600  # type: ignore
+        t2 = t1 + datetime.timedelta(seconds=delta_seconds)
+    except ValueError:
+        logging.debug(f"Got error parsing time {ValueError}")
+        return ""
+
+    time = f"{t2.strftime('%Y')}-{t2.strftime('%m')}-{t2.strftime('%d')}T{t2.strftime('%X')}"
+    return time
 
 
 def get_seconds_diff(time1: str, time2: str) -> int:
