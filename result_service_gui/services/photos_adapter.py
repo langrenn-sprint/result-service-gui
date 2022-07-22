@@ -2,7 +2,7 @@
 import copy
 import logging
 import os
-from typing import List
+from typing import List, Optional
 
 from aiohttp import ClientSession
 from aiohttp import hdrs
@@ -17,9 +17,10 @@ PHOTO_SERVICE_URL = f"http://{PHOTOS_HOST_SERVER}:{PHOTOS_HOST_PORT}"
 class PhotosAdapter:
     """Class representing photos."""
 
-    async def get_all_photos(self, token: str) -> List:
+    async def get_all_photos(self, token: str, event_id: Optional[str]) -> List:
         """Get all photos function."""
         photos = []
+        logging.debug(f"Need to handle event_id {event_id}")
         headers = MultiDict(
             [
                 (hdrs.CONTENT_TYPE, "application/json"),
@@ -129,7 +130,7 @@ class PhotosAdapter:
 
         return id
 
-    async def delete_photo(self, token: str, id: str) -> str:
+    async def delete_photo(self, token: str, id: str) -> int:
         """Delete photo function."""
         servicename = "delete_photo"
         headers = MultiDict(
@@ -146,12 +147,9 @@ class PhotosAdapter:
             if resp.status == 204:
                 logging.debug(f"result - got response {resp}")
             else:
-                body = await resp.json()
-                logging.error(f"{servicename} failed - {resp.status} - {body}")
-                raise web.HTTPBadRequest(
-                    reason=f"Error - {resp.status}: {body['detail']}."
-                )
-        return str(resp.status)
+                logging.error(f"{servicename} failed - {resp.status} - {resp}")
+                raise web.HTTPBadRequest(reason=f"Error - {resp.status}: {resp}.")
+        return resp.status
 
     async def update_photo(self, token: str, id: str, request_body: dict) -> str:
         """Update photo function."""

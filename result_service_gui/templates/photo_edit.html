@@ -24,9 +24,11 @@
         </form>
       </td>
       <td>
-        <form action=/raceplans method=post onsubmit="return confirm_delete();">
+        <form action=/photo_edit method=post onsubmit="return confirm_delete();">
           <input type="hidden" name="event_id" value="{{ event_id }}">
-          <input type="submit" name="delete_all" value="  Slett ...  ">
+          <input type="hidden" name="album_id" value="{{ album_id }}">
+          <input type="hidden" name="album_title" value="{{ lopsinfo }}">
+          <input type="submit" name="delete_all_local" value="  Slett lokal kopi  ">
         </form>
       </td>
   </table>
@@ -76,8 +78,10 @@
                 </a>
               </td>
               <td>
-                {{ foto.creation_time }}<br>
-                {{ foto.name }}
+                Tidspunkt: {{ foto.creation_time }}<br>
+                Filnavn: {{ foto.name }}<br>
+                AI: {{ foto.ai_information }}<br>
+                Løpsklasse: {{ foto }}
               </td>
               <td><a target=_blank href={{ foto.g_product_url }}>Bilde i Google</a></td>
             </tr>
@@ -85,5 +89,4 @@
         </table>
       </td></tr>
     </table>
-    {{ album }}
 {% endblock %}

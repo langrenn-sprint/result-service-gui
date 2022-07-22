@@ -42,7 +42,7 @@ class PhotoEdit(web.View):
             album = await GooglePhotosAdapter().get_album_items(
                 user["g_photos_token"], album_id
             )
-            photos = await PhotosAdapter().get_all_photos(user["token"])
+            photos = await PhotosAdapter().get_all_photos(user["token"], event_id)
 
             return await aiohttp_jinja2.render_template_async(
                 "photo_edit.html",
@@ -76,10 +76,14 @@ class PhotoEdit(web.View):
 
         try:
             if "sync_from_google" in form.keys():
+                event = await get_event(user, event_id)
                 informasjon = await FotoService().sync_from_google(
-                    user, event_id, album_id
+                    user, event, album_id
                 )
-            # Create classes from list of contestants
+            if "delete_all_local" in form.keys():
+                informasjon = await FotoService().delete_all_local_photos(
+                    user["token"], event_id
+                )
         except Exception as e:
             logging.error(f"Error: {e}")
             informasjon = f"Det har oppstått en feil - {e.args}."

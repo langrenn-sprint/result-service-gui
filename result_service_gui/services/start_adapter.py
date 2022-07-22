@@ -135,9 +135,8 @@ class StartAdapter:
                     )
         return start_entry
 
-    # todo: update
-    async def get_startliste_by_lopsklasse(
-        self, token: str, event_id: str, raceclass: str
+    async def get_start_entries_by_bib(
+        self, token: str, event_id: str, bib: int
     ) -> List:
         """Get all raceplans function."""
         headers = MultiDict(
@@ -148,48 +147,17 @@ class StartAdapter:
         raceplans = []
         async with ClientSession() as session:
             async with session.get(
-                f"{RACE_SERVICE_URL}/raceplans", headers=headers
+                f"{RACE_SERVICE_URL}/races/all/start-entries?bib={bib}", headers=headers
             ) as resp:
                 logging.debug(
-                    f"get_all_raceplans - got response {resp.status}, raceclass: {raceclass}"
+                    f"get_start_entries_by_bib - got response {resp.status}, bib {bib}"
                 )
                 if resp.status == 200:
                     raceplans = await resp.json()
                 elif resp.status == 401:
                     raise Exception(f"Login expired: {resp}")
                 else:
-                    servicename = "get_startliste_by_lopsklasse"
-                    body = await resp.json()
-                    logging.error(f"{servicename} failed - {resp.status} - {body}")
-                    raise web.HTTPBadRequest(
-                        reason=f"Error - {resp.status}: {body['detail']}."
-                    )
-        return raceplans
-
-    # todo: update
-    async def get_startlist_by_bib(
-        self, token: str, event_id: str, start_bib: str
-    ) -> List:
-        """Get all raceplans function."""
-        headers = MultiDict(
-            [
-                (hdrs.AUTHORIZATION, f"Bearer {token}"),
-            ]
-        )
-        raceplans = []
-        async with ClientSession() as session:
-            async with session.get(
-                f"{RACE_SERVICE_URL}/raceplans", headers=headers
-            ) as resp:
-                logging.debug(
-                    f"get_all_raceplans - got response {resp.status}, bib {start_bib}"
-                )
-                if resp.status == 200:
-                    raceplans = await resp.json()
-                elif resp.status == 401:
-                    raise Exception(f"Login expired: {resp}")
-                else:
-                    servicename = "get_startliste_by_nr"
+                    servicename = "get_start_entries_by_bib"
                     body = await resp.json()
                     logging.error(f"{servicename} failed - {resp.status} - {body}")
                     raise web.HTTPBadRequest(

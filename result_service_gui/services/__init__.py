@@ -1,4 +1,5 @@
 """Package for all services."""
+from .ai_image_service import AiImageService
 from .contestants_adapter import ContestantsAdapter
 from .events_adapter import EventsAdapter
 from .foto_service import FotoService
