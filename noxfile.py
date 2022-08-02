@@ -52,7 +52,7 @@ def integration_tests(session: Session) -> None:
     )
 
 
-@session
+@session(python="3.9")
 def contract_tests(session: Session) -> None:
     """Run the contract test suite."""
     args = session.posargs
@@ -64,7 +64,6 @@ def contract_tests(session: Session) -> None:
         "pytest-asyncio",
         "requests",
         "aioresponses",
-        "pygments",
     )
     session.run(
         "pytest",
@@ -75,10 +74,10 @@ def contract_tests(session: Session) -> None:
             "CONFIG": "test",
             "ADMIN_USERNAME": "admin",
             "ADMIN_PASSWORD": "password",
-            "EVENTS_HOST_SERVER": "localhost",
-            "EVENTS_HOST_PORT": "8081",
-            "USERS_HOST_SERVER": "localhost",
-            "USERS_HOST_PORT": "8082",
+            "EVENTS_HOST_SERVER": "event-service",
+            "EVENTS_HOST_PORT": "8080",
+            "USERS_HOST_SERVER": "user-service",
+            "USERS_HOST_PORT": "8080",
             "JWT_EXP_DELTA_SECONDS": "60",
             "DB_USER": "event-service",
             "DB_PASSWORD": "password",

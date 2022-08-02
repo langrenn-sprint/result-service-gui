@@ -4,12 +4,12 @@ services:
     build: .
     image: ghcr.io/langrenn-sprint/result-service-gui:test
     ports:
-      - "8090:8080"
+      - 8090:8080
     environment:
       - ADMIN_USERNAME=${ADMIN_USERNAME}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - HOST_PORT=8080
-      - EVENT_GUI_HOST_SERVER=localhost
+      - EVENT_GUI_HOST_SERVER=event-service-gui
       - EVENT_GUI_HOST_PORT=8080
       - EVENTS_HOST_SERVER=event-service
       - EVENTS_HOST_PORT=8080
@@ -25,7 +25,7 @@ services:
   event-service-gui:
     image: ghcr.io/langrenn-sprint/event-service-gui:latest
     ports:
-      - "8080:8080"
+      - 8080:8080
     environment:
       - JWT_SECRET=${JWT_SECRET}
       - ADMIN_USERNAME=${ADMIN_USERNAME}
@@ -36,8 +36,8 @@ services:
       - LOGGING_LEVEL=${LOGGING_LEVEL}
       - RACE_HOST_SERVER=race-service
       - RACE_HOST_PORT=8080
-      - RESULT_GUI_HOST_SERVER=localhost
-      - RESULT_GUI_HOST_PORT=8090
+      - RESULT_GUI_HOST_SERVER=result-service-gui
+      - RESULT_GUI_HOST_PORT=8080
       - USERS_HOST_SERVER=user-service
       - USERS_HOST_PORT=8080
     depends_on:
@@ -45,7 +45,7 @@ services:
   event-service:
     image: ghcr.io/langrenn-sprint/event-service:latest
     ports:
-      - "8082:8080"
+      - 8082:8080
     environment:
       - JWT_SECRET=${JWT_SECRET}
       - ADMIN_USERNAME=${ADMIN_USERNAME}
@@ -63,7 +63,7 @@ services:
   race-service:
     image: ghcr.io/langrenn-sprint/race-service:latest
     ports:
-      - "8088:8080"
+      - 8088:8080
     environment:
       - JWT_SECRET=${JWT_SECRET}
       - ADMIN_USERNAME=${ADMIN_USERNAME}
@@ -83,7 +83,7 @@ services:
   user-service:
     image: ghcr.io/langrenn-sprint/user-service:latest
     ports:
-      - "8086:8080"
+      - 8086:8080
     environment:
       - JWT_EXP_DELTA_SECONDS=${JWT_EXP_DELTA_SECONDS}
       - JWT_SECRET=${JWT_SECRET}
