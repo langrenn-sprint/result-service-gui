@@ -43,8 +43,10 @@ DB_USER=admin
 DB_PASSWORD=password
 EVENTS_HOST_SERVER=localhost
 EVENTS_HOST_PORT=8082
-FERNET_KEY=23EHUWpP_tpleR_RjuX5hxndWqyc0vO-cjNUMSzbjN4=
-GLOBAL_SETTINGS_FILE=global_settings.json
+PHOTOS_HOST_SERVER=localhost
+PHOTOS_HOST_PORT=8092
+FERNET_KEY=23EHUWpP_MyKey_MyKeyhxndWqyc0vO-MyKeySMyKey=
+GOOGLE_OAUTH_CLIENT_ID=12345My-ClientId12345.apps.googleusercontent.com
 JWT_EXP_DELTA_SECONDS=3600
 LOGGING_LEVEL=INFO
 RACE_HOST_SERVER=localhost
@@ -88,6 +90,7 @@ Denne fila _skal_ ligge i .dockerignore og .gitignore
 ```Shell
 % source .env
 % poetry run adev runserver -p 8090 result_service_gui
+% docker-compose up event-service race-service user-service photo-service mongodb event-service-gui
 ```
 
 ### Teste manuelt

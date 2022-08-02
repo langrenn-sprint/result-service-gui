@@ -1,8 +1,6 @@
 """Utilities module for gui services."""
 import datetime
-import json
 import logging
-import os
 
 from aiohttp import web
 from aiohttp_session import get_session, new_session
@@ -259,63 +257,6 @@ async def delete_result(user: dict, form: dict) -> str:
     return informasjon
 
 
-def get_club_logo(contestant: dict) -> dict:
-    """Add link to image with club logo in list."""
-    club_logos = {
-        "Aske": "https://harnaes.no/sprint/web/asker_logo.png",
-        "Bækk": "https://harnaes.no/sprint/web/bsk_logo.png",
-        "Bæru": "https://harnaes.no/sprint/web/barums_logo.png",
-        "Dike": "https://harnaes.no/sprint/web/dikemark_logo.png",
-        "Drøb": "https://harnaes.no/sprint/web/dfi_logo.png",
-        "Eids": "https://harnaes.no/sprint/web/eidsvold_logo.png",
-        "Fet ": "https://harnaes.no/sprint/web/fet_logo.png",
-        "Frog": "https://harnaes.no/sprint/web/frogner_logo.png",
-        "Foss": "https://harnaes.no/sprint/web/fossum_logo.png",
-        "Gjel": "https://harnaes.no/sprint/web/gjellerasen_logo.png",
-        "Gjer": "https://harnaes.no/sprint/web/gjerdrum_logo.png",
-        "Gui ": "https://harnaes.no/sprint/web/gui_logo.png",
-        "Haka": "https://harnaes.no/sprint/web/hakadal_logo.png",
-        "Hasl": "https://harnaes.no/sprint/web/haslum_logo.png",
-        "Hemi": "https://harnaes.no/sprint/web/heming_logo.png",
-        "Holm": "https://harnaes.no/sprint/web/holmen_logo.png",
-        "Høyb": "https://harnaes.no/sprint/web/hsil_logo.png",
-        "IL J": "https://harnaes.no/sprint/web/jardar_logo.png",
-        "Jutu": "https://harnaes.no/sprint/web/jutul_logo.png",
-        "Kjel": "https://harnaes.no/sprint/web/kjelsaas_logo.png",
-        "Koll": "https://harnaes.no/sprint/web/koll_log.png",
-        "Lill": "https://harnaes.no/sprint/web/lillomarka_logo.png",
-        "Lomm": "https://harnaes.no/sprint/web/lommedalens_logo.png",
-        "Lyn ": "https://harnaes.no/sprint/web/lyn_ski_logo.png",
-        "Løre": "https://harnaes.no/sprint/web/lorenskog_ski_logo.png",
-        "Moss": "https://harnaes.no/sprint/web/moss_logo.png",
-        "Nes ": "https://harnaes.no/sprint/web/nes_logo.png",
-        "Neso": "https://harnaes.no/sprint/web/nesodden_logo.png",
-        "Nitt": "https://harnaes.no/sprint/web/nittedal_logo.png",
-        "Njår": "https://harnaes.no/sprint/web/njard_logo.png",
-        "Oppe": "https://harnaes.no/sprint/web/oppegard_logo.png",
-        "Rust": "https://harnaes.no/sprint/web/rustad_logo.png",
-        "Røa ": "https://harnaes.no/sprint/web/roa_logo.png",
-        "Ræli": "https://harnaes.no/sprint/web/ralingen_logo.png",
-        "Sked": "https://harnaes.no/sprint/web/skedsmo_logo.png",
-        "Spyd": "https://harnaes.no/sprint/web/spydeberg_logo.png",
-        "Stra": "https://harnaes.no/sprint/web/strandbygda_logo.png",
-        "Sørk": "https://harnaes.no/sprint/web/sif_logo.png",
-        "Tist": "https://harnaes.no/sprint/web/tistedalen_logo.png",
-        "Trøs": "https://harnaes.no/sprint/web/trosken_logo.png",
-        "Idre": "https://harnaes.no/sprint/web/try_logo.png",
-        "Vest": "https://harnaes.no/sprint/web/vestreaker_logo.png",
-        "Ørsk": "https://harnaes.no/sprint/web/orskog_logo.png",
-        "Øvre": "https://harnaes.no/sprint/web/ovrevoll_logo.png",
-        "Årvo": "https://harnaes.no/sprint/web/arvoll_logo.png",
-    }
-    try:
-        contestant["club_logo"] = club_logos[contestant["club"][:4]]
-    except Exception:
-        logging.error(f"Club logo not found - {contestant}")
-
-    return contestant
-
-
 def get_display_style(start_time: str) -> str:
     """Calculate time remaining to start and return table header style."""
     start_time_obj = datetime.datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%S")
@@ -343,7 +284,9 @@ async def get_enchiced_startlist(user: dict, race: dict) -> list:
     new_start_entries = race["start_entries"]
     if len(new_start_entries) > 0:
         for start_entry in new_start_entries:
-            start_entry = get_club_logo(start_entry)
+            start_entry["club_logo"] = EventsAdapter().get_club_logo_url(
+                start_entry["club"]
+            )
             i += 1
             for time_event in next_race_time_events:
                 # get next race info
@@ -424,26 +367,16 @@ def get_finish_rank(race: dict) -> list:
                     race["finish_results"] = []
                     for rank_event in finish_ranks:
                         if rank_event["status"] == "OK":
-                            rank_event = get_club_logo(rank_event)
+                            rank_event["club_logo"] = EventsAdapter().get_club_logo_url(
+                                rank_event["club"]
+                            )
                             finish_rank.append(rank_event)
     return finish_rank
 
 
-def get_global_parameter(param_name: str) -> str:
-    """Get global settings from parameter file."""
-    photo_settings = str(os.getenv("GLOBAL_SETTINGS_FILE"))
-    if photo_settings is None or photo_settings == "None":
-        raise web.HTTPBadRequest(
-            reason="Parameter GLOBAL_SETTINGS_FILE not found in docker-compose.yaml file."
-        )
-    with open(photo_settings) as json_file:
-        photopusher_settings = json.load(json_file)
-    return photopusher_settings[param_name]
-
-
 def get_local_time(format: str) -> str:
     """Return local time, time zone adjusted from settings file."""
-    TIME_ZONE_OFFSET = os.getenv("TIME_ZONE_OFFSET")
+    TIME_ZONE_OFFSET = EventsAdapter().get_global_setting("TIME_ZONE_OFFSET")
     # calculate new time
     delta_seconds = int(TIME_ZONE_OFFSET) * 3600  # type: ignore
     local_time_obj = datetime.datetime.now() + datetime.timedelta(seconds=delta_seconds)

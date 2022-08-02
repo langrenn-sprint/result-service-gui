@@ -1,30 +1,16 @@
 """Module for foto service."""
 import datetime
 import logging
-import os
 from typing import Any, List
 
 from .ai_image_service import AiImageService
 from .contestants_adapter import ContestantsAdapter
+from .events_adapter import EventsAdapter
 from .google_photos_adapter import GooglePhotosAdapter
 from .photos_adapter import PhotosAdapter
 from .raceclasses_adapter import RaceclassesAdapter
 from .raceplans_adapter import RaceplansAdapter
 from .start_adapter import StartAdapter
-
-klubber = [
-    "Bækkelaget",
-    "Heming",
-    "Kjelsås",
-    "Koll",
-    "Lillomarka",
-    "Lyn",
-    "Njård",
-    "Rustad",
-    "Røa",
-    "Try",
-    "Årvoll",
-]
 
 
 class FotoService:
@@ -39,17 +25,16 @@ class FotoService:
             logging.debug(document)
         return foto
 
-    async def get_foto_by_klasse(
-        self, user: dict, lopsklasse: str, event_id: str
+    async def get_photo_by_raceclass(
+        self, token: str, event_id: str, raceclass: str
     ) -> List:
         """Get all foto for a given klasse."""
-        foto = []  # type: ignore
-        return foto
-
-    async def get_foto_by_klubb(self, user: dict, klubb: str, event_id: str) -> List:
-        """Get all foto for a given klubb."""
-        foto = []  # type: ignore
-        return foto
+        photos = []
+        tmp_photos = await PhotosAdapter().get_all_photos(token, event_id)
+        for photo in tmp_photos:
+            if raceclass in photo["raceclass"]:
+                photos.append(photo)
+        return photos
 
     async def delete_all_local_photos(self, token: str, event_id: str) -> str:
         """Delete all local copies of photo information."""
@@ -72,7 +57,6 @@ class FotoService:
         )
         i_c = 0
         i_u = 0
-
         for g_photo in album["mediaItems"]:  # type: ignore
             creation_time = g_photo["mediaMetadata"]["creationTime"]
             # update or create record in db
@@ -164,17 +148,21 @@ async def find_race_info_from_bib(
                 )
                 if foundheat != "":
                     photo["race_id"] = foundheat
-        # Get klubb and klasse
-        try:
-            contestant = await ContestantsAdapter().get_contestant_by_bib(
-                token, event["id"], bib
-            )
-            if contestant:
-                photo["biblist"].append(bib)
-                photo["clublist"].append(contestant["club"])
-                photo["raceclass"] = contestant["ageclass"]
-        except Exception as e:
-            logging.debug(f"Missing attribute - {e}")
+                    # Get klubb and klasse
+                    if bib not in photo["biblist"]:
+                        try:
+                            contestant = (
+                                await ContestantsAdapter().get_contestant_by_bib(
+                                    token, event["id"], bib
+                                )
+                            )
+                            if contestant:
+                                photo["biblist"].append(bib)
+                                if contestant["club"] not in photo["clublist"]:
+                                    photo["clublist"].append(contestant["club"])
+                                photo["raceclass"] = contestant["ageclass"]
+                        except Exception as e:
+                            logging.debug(f"Missing attribute - {e}")
 
     return 200
 
@@ -196,7 +184,9 @@ def format_zulu_time(timez: str) -> str:
     """Convert from zulu time to normalized time - string formats."""
     # TODO: Move to properties
     pattern = "%Y-%m-%dT%H:%M:%SZ"
-    TIME_ZONE_OFFSET_G_PHOTOS = os.getenv("TIME_ZONE_OFFSET_G_PHOTOS")
+    TIME_ZONE_OFFSET_G_PHOTOS = EventsAdapter().get_global_setting(
+        "TIME_ZONE_OFFSET_G_PHOTOS"
+    )
     try:
         t1 = datetime.datetime.strptime(timez, pattern)
         # calculate new time

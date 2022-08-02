@@ -63,10 +63,10 @@ class Resultat(web.View):
                         user["token"], event_id, valgt_klasse
                     )
 
-                    foto = await FotoService().get_foto_by_klasse(
-                        user, valgt_klasse, event_id
-                    )
-                    valgt_bildevisning = "klasse=" + valgt_klasse
+                foto = await FotoService().get_photo_by_raceclass(
+                    user["token"], event_id, valgt_klasse
+                )
+                valgt_bildevisning = "klasse=" + valgt_klasse
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(

@@ -13,14 +13,9 @@ services:
       - EVENT_GUI_HOST_PORT=8080
       - EVENTS_HOST_SERVER=event-service
       - EVENTS_HOST_PORT=8080
-      - GOOGLE_PHOTO_SERVER=https://photoslibrary.googleapis.com/v1
-      - GOOGLE_PHOTO_SCOPE=https://www.googleapis.com/auth/photoslibrary.readonly
-      - GOOGLE_PHOTO_CREDENTIALS_FILE=/home/heming/github/photo_api_credentials.json
       - LOGGING_LEVEL=${LOGGING_LEVEL}
       - RACE_HOST_SERVER=race-service
       - RACE_HOST_PORT=8080
-      - TIME_ZONE_OFFSET=0
-      - TIME_ZONE_OFFSET_G_PHOTOS=2
       - USERS_HOST_SERVER=user-service
       - USERS_HOST_PORT=8080
     depends_on:

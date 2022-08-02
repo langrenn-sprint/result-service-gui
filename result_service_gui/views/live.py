@@ -7,12 +7,12 @@ import aiohttp_jinja2
 
 from result_service_gui.services import (
     ContestantsAdapter,
+    EventsAdapter,
     RaceclassesAdapter,
     RaceplansAdapter,
 )
 from .utils import (
     check_login_open,
-    get_club_logo,
     get_event,
     get_finish_rank,
     get_qualification_text,
@@ -74,7 +74,9 @@ class Live(web.View):
                             race["start_entries"], key=itemgetter("starting_position")
                         )
                         for entry in race["start_entries"]:
-                            entry = get_club_logo(entry)
+                            entry["club_logo"] = EventsAdapter().get_club_logo_url(
+                                entry["club"]
+                            )
 
             colseparators = get_colseparators(races)
             if len(colseparators) == 3:

@@ -38,9 +38,7 @@
         <td align=center>
         {% for bilde in foto %}
           {% if loop.index < 5 %}
-              <a href=foto?{{ valgt_bildevisning }}>
-                <img class="img_kvart" src="{{ bilde.Url_thumb }}">
-              </a>
+            <img width=20% src={{ bilde.g_base_url }}=w200-h100-c>
           {% endif %}
         {% endfor %}
         </td>

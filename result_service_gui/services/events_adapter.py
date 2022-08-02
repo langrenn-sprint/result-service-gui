@@ -1,5 +1,6 @@
 """Module for events adapter."""
 import copy
+import json
 import logging
 import os
 from typing import List
@@ -179,6 +180,24 @@ class EventsAdapter:
                         reason=f"Error - {resp.status}: {body['detail']}."
                     )
         return event
+
+    def get_global_setting(self, param_name: str) -> str:
+        """Get global settings from .env file."""
+        global_settings = "global_settings.json"
+        with open(global_settings) as json_file:
+            settings = json.load(json_file)
+        return settings[param_name]
+
+    def get_club_logo_url(self, club_name: str) -> str:
+        """Get url to club logo - input is 4 first chars of club name."""
+        try:
+            club_name_short = club_name[:4]
+            with open("sports_clubs.json") as json_file:
+                logo_urls = json.load(json_file)
+            logo_url = logo_urls[club_name_short]
+        except Exception:
+            logging.error(f"Club logo not found - {club_name}")
+        return logo_url
 
     async def create_event(self, token: str, event: dict) -> str:
         """Create new event function."""

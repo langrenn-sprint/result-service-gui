@@ -18,6 +18,10 @@ class PhotoEdit(web.View):
     async def get(self) -> web.Response:
         """Get route function that return the dashboards page."""
         try:
+            action = self.request.rel_url.query["action"]
+        except Exception:
+            action = ""
+        try:
             event_id = self.request.rel_url.query["event_id"]
         except Exception:
             event_id = ""
@@ -49,6 +53,7 @@ class PhotoEdit(web.View):
                 self.request,
                 {
                     "lopsinfo": album_title,
+                    "action": action,
                     "album": album,
                     "album_id": album_id,
                     "event": event,
@@ -80,10 +85,21 @@ class PhotoEdit(web.View):
                 informasjon = await FotoService().sync_from_google(
                     user, event, album_id
                 )
-            if "delete_all_local" in form.keys():
+            elif "delete_all_local" in form.keys():
                 informasjon = await FotoService().delete_all_local_photos(
                     user["token"], event_id
                 )
+            elif "delete_select" in form.keys():
+                breakpoint()
+                informasjon = "Sletting utført: "
+                for key in form.keys():
+                    if key.startswith("slett_"):
+                        photo_id = str(form[key])
+                        result = await PhotosAdapter().delete_photo(
+                            user["token"], photo_id
+                        )
+                        logging.debug(f"Deleted photo - {result}")
+                        informasjon += f"{key} "
         except Exception as e:
             logging.error(f"Error: {e}")
             informasjon = f"Det har oppstått en feil - {e.args}."

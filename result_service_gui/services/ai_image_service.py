@@ -1,10 +1,10 @@
 """Module for image services."""
-import json
 import logging
-import os
 
 from google.cloud import vision  # type: ignore
 import requests
+
+from .events_adapter import EventsAdapter
 
 
 class AiImageService:
@@ -89,10 +89,13 @@ class AiImageService:
             logging.debug(
                 "Found object: {} (confidence: {})".format(object_.name, object_.score)
             )
-            if float(get_global_setting("CONFIDENCE_LIMIT")) < object_.score:
+            if (
+                float(EventsAdapter().get_global_setting("CONFIDENCE_LIMIT"))
+                < object_.score
+            ):
                 if object_.name == "Person":
                     count_persons = count_persons + 1
-        _tags["Persons"] = str(count_persons)
+        _tags["Persons"] = count_persons
 
         # Performs text detection on the image file
         _numbers = []
@@ -103,7 +106,9 @@ class AiImageService:
                 for paragraph in block.paragraphs:
                     for word in paragraph.words:
                         if (
-                            float(get_global_setting("CONFIDENCE_LIMIT"))
+                            float(
+                                EventsAdapter().get_global_setting("CONFIDENCE_LIMIT")
+                            )
                             < word.confidence
                         ):
                             word_text = "".join(
@@ -115,7 +120,7 @@ class AiImageService:
                                 )
                             )
                             if word_text.isnumeric():
-                                _numbers.append(word_text)
+                                _numbers.append(int(word_text))
                             else:
                                 _texts.append(word_text)
         _tags["ai_numbers"] = _numbers  # type: ignore
@@ -130,11 +135,3 @@ class AiImageService:
             )
 
         return _tags
-
-
-def get_global_setting(param_name: str) -> str:
-    """Get global settings from .env file."""
-    photo_settings = str(os.getenv("PHOTOPUSHER_SETTINGS_FILE"))
-    with open(photo_settings) as json_file:
-        photopusher_settings = json.load(json_file)
-    return photopusher_settings[param_name]

@@ -1,7 +1,6 @@
 """Resource module for start resources."""
 import logging
 from operator import itemgetter
-import os
 
 from aiohttp import web
 import aiohttp_jinja2
@@ -19,10 +18,6 @@ from .utils import (
     get_raceplan_summary,
     get_races_for_live_view,
 )
-
-EVENT_GUI_HOST_SERVER = os.getenv("EVENT_GUI_HOST_SERVER", "localhost")
-EVENT_GUI_HOST_PORT = os.getenv("EVENT_GUI_HOST_PORT", "8080")
-EVENT_GUI_URL = f"http://{EVENT_GUI_HOST_SERVER}:{EVENT_GUI_HOST_PORT}"
 
 
 class Start(web.View):

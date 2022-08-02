@@ -65,7 +65,7 @@ class PhotosAdapter:
                 else:
                     servicename = "get_photo"
                     body = await resp.json()
-                    logging.error(f"{servicename} failed - {resp.status} - {body}")
+                    logging.debug(f"{servicename} failed - {resp.status} - {body}")
                     raise web.HTTPBadRequest(
                         reason=f"Error - {resp.status}: {body['detail']}."
                     )
@@ -93,7 +93,7 @@ class PhotosAdapter:
                 else:
                     servicename = "get_photo_by_g_id"
                     body = await resp.json()
-                    logging.error(f"{servicename} failed - {resp.status} - {body}")
+                    logging.debug(f"{servicename} failed - {resp.status} - {body}")
                     raise web.HTTPBadRequest(
                         reason=f"Error - {resp.status}: {body['detail']}."
                     )

@@ -5,6 +5,7 @@ import os
 from aiohttp import web
 import aiohttp_jinja2
 
+from result_service_gui.services import EventsAdapter
 from .utils import (
     check_login_open,
     get_event,
@@ -56,6 +57,6 @@ class ListsCSV(web.View):
 
 async def get_lists_csv(event_id: str) -> list:
     """Get files available."""
-    arr = os.listdir("result_service_gui/files")
-    logging.debug(arr)
+    file_directory = EventsAdapter().get_global_setting("CSV_FILE_DIR")
+    arr = os.listdir(file_directory)
     return arr
