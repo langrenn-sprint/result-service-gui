@@ -1,5 +1,6 @@
 """Module for foto service."""
 import datetime
+import json
 import logging
 from typing import Any, List
 
@@ -15,6 +16,14 @@ from .start_adapter import StartAdapter
 
 class FotoService:
     """Class representing foto service."""
+
+    async def delete_all_local_photos(self, token: str, event_id: str) -> str:
+        """Delete all local copies of photo information."""
+        photos = await PhotosAdapter().get_all_photos(token, event_id)
+        for photo in photos:
+            result = await PhotosAdapter().delete_photo(token, photo["id"])
+            logging.debug(f"Deleted photo with id {photo['id']}, result {result}")
+        return "Alle lokale kopier er slettet."
 
     async def get_all_foto(self, db: Any, event: dict) -> List:
         """Get all foto function."""
@@ -36,13 +45,42 @@ class FotoService:
                 photos.append(photo)
         return photos
 
-    async def delete_all_local_photos(self, token: str, event_id: str) -> str:
-        """Delete all local copies of photo information."""
-        photos = await PhotosAdapter().get_all_photos(token, event_id)
-        for photo in photos:
-            result = await PhotosAdapter().delete_photo(token, photo["id"])
-            logging.debug(f"Deleted photo with id {photo['id']}, result {result}")
-        return "Alle lokale kopier er slettet."
+    async def star_photo(self, token: str, photo_id: str, starred: bool) -> str:
+        """Mark photo as starred, or unstarr."""
+        informasjon = ""
+        photo = await PhotosAdapter().get_photo(token, photo_id)
+        photo["starred"] = starred
+        result = await PhotosAdapter().update_photo(token, photo["id"], photo)
+        logging.debug(f"Updated photo with id {photo_id} - {result}")
+        if starred:
+            informasjon = "Foto er stjernemerket."
+        else:
+            informasjon = "Stjernemerke fjernet."
+        return informasjon
+
+    async def update_race_info(self, token: str, event_id: str, form: dict) -> str:
+        """Update race information in phostos, biblist."""
+        informasjon = ""
+        iCount = 0
+        for key in form.keys():
+            if key.startswith("biblist_"):
+                try:
+                    new_biblist = form[key]
+                    photo_id = key[8:]
+                    old_biblist = form[f"old_biblist_{photo_id}"]
+                    if new_biblist != old_biblist:
+                        photo = await PhotosAdapter().get_photo(token, photo_id)
+                        photo["biblist"] = json.loads(new_biblist)
+                        result = await PhotosAdapter().update_photo(
+                            token, photo["id"], photo
+                        )
+                        iCount += 1
+                        logging.debug(f"Updated photo with id {photo_id} - {result}")
+                except Exception as e:
+                    logging.error(f"Error reading biblist - {form[key]}: {e}")
+                    informasjon += "En Feil oppstod. "
+        informasjon = f"Oppdatert {iCount} bilder."
+        return informasjon
 
     async def sync_from_google(
         self,
@@ -82,6 +120,8 @@ class FotoService:
                 # create new photo
                 request_body = {
                     "name": g_photo["filename"],
+                    "finish_line": False,
+                    "starred": False,
                     "event_id": event["id"],
                     "creation_time": format_zulu_time(creation_time),
                     "information": "",

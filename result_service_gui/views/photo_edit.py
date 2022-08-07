@@ -85,20 +85,33 @@ class PhotoEdit(web.View):
                 informasjon = await FotoService().sync_from_google(
                     user, event, album_id
                 )
+            elif "update_race_info" in form.keys():
+                informasjon = await FotoService().update_race_info(
+                    user["token"], event_id, form  # type: ignore
+                )
             elif "delete_all_local" in form.keys():
                 informasjon = await FotoService().delete_all_local_photos(
                     user["token"], event_id
                 )
             elif "delete_select" in form.keys():
-                breakpoint()
                 informasjon = "Sletting utført: "
                 for key in form.keys():
-                    if key.startswith("slett_"):
+                    if key.startswith("update_"):
                         photo_id = str(form[key])
                         result = await PhotosAdapter().delete_photo(
                             user["token"], photo_id
                         )
                         logging.debug(f"Deleted photo - {result}")
+                        informasjon += f"{key} "
+            elif "star_photo" in form.keys():
+                informasjon = "Oppdatert stjernemarkering utført: "
+                for key in form.keys():
+                    if key.startswith("update_"):
+                        photo_id = str(form[key])
+                        res = await FotoService().star_photo(
+                            user["token"], photo_id, True
+                        )
+                        logging.debug(f"Starred photo - {res}")
                         informasjon += f"{key} "
         except Exception as e:
             logging.error(f"Error: {e}")

@@ -39,6 +39,24 @@
           <input type="hidden" name=event_id value="{{ event_id }}">
           <input type="hidden" name="album_id" value="{{ album_id }}">
           <input type="hidden" name="album_title" value="{{ lopsinfo }}">
+          <input type="hidden" name=action value="update_race_info">
+          <input type="submit" name=update_race_info value="  Rediger løpsinformasjon  ">
+        </form>
+      </td>
+      <td>
+        <form action=/photo_edit method=get>
+          <input type="hidden" name=event_id value="{{ event_id }}">
+          <input type="hidden" name="album_id" value="{{ album_id }}">
+          <input type="hidden" name="album_title" value="{{ lopsinfo }}">
+          <input type="hidden" name=action value="star_photo">
+          <input type="submit" name=star_photo value="  Sett stjernemerke  ">
+        </form>
+      </td>
+      <td>
+        <form action=/photo_edit method=get>
+          <input type="hidden" name=event_id value="{{ event_id }}">
+          <input type="hidden" name="album_id" value="{{ album_id }}">
+          <input type="hidden" name="album_title" value="{{ lopsinfo }}">
           <input type="hidden" name=action value="delete_select">
           <input type="submit" name=delete_select value="  Slett lokale kopier  ">
         </form>
@@ -55,6 +73,7 @@
   <div id=spacer></div>
   <table>
     <tr><td valign=top>
+      {% if action == "" %}
         <table cellpadding=4>
           <tr>
             <td colspan=4 id=headerblue>
@@ -80,6 +99,7 @@
             </tr>
           {% endfor %}
         </table>
+      {% endif %}
       </td><td valign=top>
         <table cellpadding=4>
           <tr>
@@ -87,11 +107,11 @@
               <b>Bilder - lokale kopier</b>
             </td>
           </tr>
-          {% if action == "delete_select" %}
+          {% if action in ["delete_select", "star_photo", "update_race_info"] %}
           <tr>
             <td colspan=4>
             <form action=/photo_edit method=post>
-              <input type="submit" name=delete_select value="  Slett valgte  ">
+              <input type="submit" name={{ action }} value="  Oppdater  ">
               <input type="hidden" name="event_id" value="{{ event_id }}">
               <input type="hidden" name="album_id" value="{{ album_id }}">
               <input type="hidden" name="album_title" value="{{ lopsinfo }}">
@@ -99,14 +119,16 @@
             </td>
           </tr>
           {% endif %}
+
           {% for foto in photos %}
             <tr>
-              {% if action == "delete_select" %}
+              {% if action in ["delete_select", "star_photo"] %}
                 <td>
-                  <input type="checkbox" name="slett_{{ foto.id }}" value="{{ foto.id }}">
+                  <input type="checkbox" name="update_{{ foto.id }}" value="{{ foto.id }}">
                 </td>
               {% endif %}
               <td width=220>
+                {{ foto.starred }}<br>
                 <a class="tooltip">
                   <img width=200 src={{ foto.g_base_url }}=w200-h100-c>
                    <span>
@@ -120,16 +142,23 @@
                   <tr><td>Info</td><td>{{ foto.creation_time }} / {{ foto.name }}</td></tr>
                   <tr><td>AI info</td><td>{{ foto.ai_information }}</td></tr>
                   <tr><td>Klasse</td><td>{{ foto.raceclass }}, race_id: {{ foto.race_id }}</td></tr>
-                  <tr><td>Bibs</td><td>{{ foto.biblist }}</td></tr>
+                  <tr><td>Bibs</td><td>
+                    {% if action == "update_race_info" %}
+                      <input name="biblist_{{ foto.id }}" value="{{ foto.biblist }}">
+                      <input type="hidden" name="old_biblist_{{ foto.id }}" value="{{ foto.biblist }}">
+                    {% else %}
+                      {{ foto.biblist }}
+                    {% endif %}
+                  </td></tr>
                   <tr><td>Clubs</td><td>{{ foto.clublist }}</td></tr>
                 </table>
               </td>
             </tr>
           {% endfor %}
-          {% if action == "delete_select" %}
+          {% if action in ["delete_select", "star_photo", "update_race_info"] %}
           <tr>
             <td colspan=4>
-              <input type="submit" name=delete_select value="  Slett valgte  ">
+              <input type="submit" name={{ action }} value="  Oppdater  ">
               </form>
             </td>
           </tr>
