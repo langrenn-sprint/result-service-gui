@@ -158,6 +158,13 @@
                     </td>
                     <td>{{ race.finish_timings[loop.index0].name }}</td>
                     <td>{{ race.finish_timings[loop.index0].next_race }}-{{ race.finish_timings[loop.index0].next_race_position }}</td>
+                    {% for result in race.finish_timings %}
+                      {% if result.bib == start.bib %}
+                        <script>
+                          green_bg_init({{ race.order }}{{ result.bib }})
+                        </script>
+                      {% endif %}
+                    {% endfor %}
                   {% else %}
                     <td></td>
                     <td align=center>
@@ -168,13 +175,6 @@
                     <td></td>
                   {% endif %}
               </tr>
-            {% endfor %}
-            {% for start in race.startliste %}
-              {% if race.finish_timings[loop.index0] %}
-                <script>
-                  green_bg_init({{ race.order }}{{ race.finish_timings[loop.index0].bib }})
-                </script>
-              {% endif %}
             {% endfor %}
               <tr>
                 <td colspan=7></td>

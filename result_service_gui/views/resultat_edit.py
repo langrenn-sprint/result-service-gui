@@ -7,6 +7,7 @@ import aiohttp_jinja2
 
 from result_service_gui.services import (
     ContestantsAdapter,
+    FotoService,
     RaceclassesAdapter,
     RaceplansAdapter,
     ResultAdapter,
@@ -31,8 +32,6 @@ class ResultatEdit(web.View):
     async def get(self) -> web.Response:
         """Get route function that return the passeringer page."""
         current_races = []
-        next_races = []
-        next_round = []
         valgt_runde = {
             "klasse": "",
             "runde": "",
@@ -71,13 +70,16 @@ class ResultatEdit(web.View):
                 all_races = await RaceplansAdapter().get_races_by_racesclass(
                     user["token"], event_id, valgt_runde["klasse"]
                 )
-                next_round = get_next_round(valgt_runde)
 
                 raceplan_summary = []
                 if len(all_races) == 0:
                     informasjon = f"{informasjon} Ingen kjøreplaner funnet."
                 else:
                     raceplan_summary = get_raceplan_summary(all_races, raceclasses)
+
+                foto = await FotoService().get_photo_by_raceclass(
+                    user["token"], event_id, valgt_runde["klasse"]
+                )
 
                 # filter for selected races and enrich
                 for race in all_races:
@@ -88,15 +90,8 @@ class ResultatEdit(web.View):
                         race["finish_timings"] = await get_finish_timings(
                             user, race["id"]
                         )
-
+                        race["photo_finish"] = get_fotofinish_for_race(user, race, foto)
                         current_races.append(race)
-                    elif race["round"] in next_round:
-                        race = await RaceplansAdapter().get_race_by_id(
-                            user["token"], race["id"]
-                        )
-                        # get start list detail
-                        race["startliste"] = await get_enchiced_startlist(user, race)
-                        next_races.append(race)
 
                 # get passeringer with error
                 error_passeringer = await get_passeringer(
@@ -112,7 +107,6 @@ class ResultatEdit(web.View):
                     "event": event,
                     "event_id": event_id,
                     "informasjon": informasjon,
-                    "next_races": next_races,
                     "raceclasses": raceclasses,
                     "raceplan_summary": raceplan_summary,
                     "current_races": current_races,
@@ -222,16 +216,13 @@ async def find_round(all_races, heat) -> dict:
     return valgt_runde
 
 
-def get_next_round(valgt_runde: dict) -> list:
-    """Analyse selected round and determine next round(s)."""
-    next_round = []
-    if valgt_runde["runde"] == "Q":
-        next_round = ["S", "F"]
-    elif valgt_runde["runde"] == "S":
-        next_round = ["F"]
-    elif valgt_runde["runde"] == "N":
-        next_round = ["Q"]
-    return next_round
+def get_fotofinish_for_race(user, race, photos) -> list:
+    """Loop throgh photos and return relevant finish photo(s)."""
+    fotos = []
+    for photo in photos:
+        if photo["race_id"] == race["id"]:
+            fotos.append(photo)
+    return fotos
 
 
 async def update_result(user: dict, form: dict) -> list:

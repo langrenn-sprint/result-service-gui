@@ -8,6 +8,7 @@
     {% else %}
       <link rel="stylesheet" type="text/css" href="../static/styles_lyn.css">
     {% endif %}
+    {% block stylesheet %}{% endblock %}
 
     <meta http-equiv="refresh" content="{% block refresh %}{% endblock %}">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">

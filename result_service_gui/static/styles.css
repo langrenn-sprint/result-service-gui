@@ -81,10 +81,13 @@ table {
 	border-spacing: 0;
 }
 
-tr:nth-child(even){background-color: #f2f2f2;}
+tr:nth-child(even) {
+  background-color: #f2f2f2;
+}
 
 td {
-  padding: 5px;
+  border-bottom: 1px solid #ddd;
+  padding: 4px 4px 4px 4px;
 }
 
 #footeradmin {
@@ -169,8 +172,14 @@ td {
   border-left: 1px solid black;
 }
 
-#resultheader {
+#resultheaderfirst {
   border-left: 4px solid white;
+  padding-left: 4px;
+  color: white;
+  background-color: grey;
+}
+
+#resultheader {
   padding-left: 4px;
   color: white;
   background-color: grey;
@@ -299,8 +308,31 @@ async function savefile(inp)
   width:auto;
 }
 
-#tooltipimage{
+#tooltip_photo{
   width:900px;
   height:600px;
+}
+/* END: Tooltip - to show image - END */
+
+/* START: Tooltip - to show image - start */
+.tooltip_photo {
+  position:relative;
+}
+
+.tooltip_photo span {
+  display:none;
+}
+
+.tooltip_photo span img {
+  float:left;
+}
+
+.tooltip_photo:hover span {
+  display:block;
+  position:absolute;
+  top:-1000%;
+  left:-1000%;
+  z-index:1000;
+  width:auto;
 }
 /* END: Tooltip - to show image - END */
