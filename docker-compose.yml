@@ -81,24 +81,6 @@ services:
       - "event-service"
       - "user-service"
       - "mongodb"
-  photo-service:
-    image: ghcr.io/langrenn-sprint/photo-service:latest
-    ports:
-      - 8092:8080
-    environment:
-      - JWT_SECRET=${JWT_SECRET}
-      - ADMIN_USERNAME=${ADMIN_USERNAME}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
-      - USERS_HOST_SERVER=user-service
-      - USERS_HOST_PORT=8080
-      - LOGGING_LEVEL=${LOGGING_LEVEL}
-      - DB_HOST=mongodb
-      - DB_PORT=27017
-      - DB_USER=${DB_USER}
-      - DB_PASSWORD=${DB_PASSWORD}
-    depends_on:
-      - "user-service"
-      - "mongodb"
   user-service:
     image: ghcr.io/langrenn-sprint/user-service:latest
     ports:
