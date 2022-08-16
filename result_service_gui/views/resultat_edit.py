@@ -32,6 +32,8 @@ class ResultatEdit(web.View):
     async def get(self) -> web.Response:
         """Get route function that return the passeringer page."""
         current_races = []
+        raceplan_summary = []
+        error_passeringer = []
         valgt_runde = {
             "klasse": "",
             "runde": "",
@@ -66,17 +68,15 @@ class ResultatEdit(web.View):
                     informasjon = f"Velg runde i menyen. {informasjon}"
                     logging.debug("Ingen runde valgt")
 
+            all_races = await RaceplansAdapter().get_races_by_racesclass(
+                user["token"], event_id, valgt_runde["klasse"]
+            )
+            if len(all_races) == 0:
+                informasjon = f"{informasjon} Ingen kjøreplaner funnet."
+
+            raceplan_summary = get_raceplan_summary(all_races, raceclasses)
+
             if valgt_runde["klasse"]:
-                all_races = await RaceplansAdapter().get_races_by_racesclass(
-                    user["token"], event_id, valgt_runde["klasse"]
-                )
-
-                raceplan_summary = []
-                if len(all_races) == 0:
-                    informasjon = f"{informasjon} Ingen kjøreplaner funnet."
-                else:
-                    raceplan_summary = get_raceplan_summary(all_races, raceclasses)
-
                 foto = await FotoService().get_photo_by_raceclass(
                     user["token"], event_id, valgt_runde["klasse"]
                 )

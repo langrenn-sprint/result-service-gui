@@ -1,13 +1,14 @@
 {% extends "open_base.html" %}
 {% block titlecontainer %}
-  <div class="w3-container">
+<div class="w3-10"></div>
+<div class="w3-80">
 {% endblock %}
 
 {% block titleheader %}
   Startlister {{ valgt_klubb }}{{ valgt_klasse }}
 {% endblock %}
 
-{% block headercontainer %} Startlister {{ valgt_klasse }} - {% endblock %}
+{% block headercontainer %}Startlister {{ valgt_klasse }} <img id=header_icon src="../static/icon_start.png"> {% endblock %}
 
 {% block refresh %}{% if valgt_klasse == "live" %}60{% endif %}{% endblock %}
 

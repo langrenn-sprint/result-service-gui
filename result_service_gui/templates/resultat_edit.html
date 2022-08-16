@@ -159,7 +159,7 @@
                         <img src={{ bilde.g_base_url }}=w100-h100-c>
                          <span>
                              <img src="{{ bilde.g_base_url }}=w900-h900"><br>
-                             <div id=headerblack>Photo time: {{ bilde.creation_time }}</div>
+                             <div id=headerblack>Photo time: {{ bilde.creation_time[-8:] }}</div>
                          </span>
                       </a>
                       {% if loop.index is divisibleby(3) %}<br>{% endif %}

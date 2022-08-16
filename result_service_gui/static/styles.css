@@ -189,6 +189,23 @@ td {
   border-left: 4px solid white;
 }
 
+#frontpage_icon{
+  width:100px;
+  height:100px;
+}
+
+#header_icon{
+  width:40px;
+  height:40px;
+  vertical-align: bottom;
+}
+
+#menu_icon{
+  width:16px;
+  height:16px;
+  vertical-align: bottom;
+}
+
 function naviger(id) {
   var elmnt = document.getElementById(id);
   elmnt.scrollIntoView();
