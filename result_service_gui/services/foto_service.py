@@ -2,7 +2,7 @@
 import datetime
 import json
 import logging
-from typing import Any, List
+from typing import List
 
 from .ai_image_service import AiImageService
 from .contestants_adapter import ContestantsAdapter
@@ -24,15 +24,6 @@ class FotoService:
             result = await PhotosAdapter().delete_photo(token, photo["id"])
             logging.debug(f"Deleted photo with id {photo['id']}, result {result}")
         return "Alle lokale kopier er slettet."
-
-    async def get_all_foto(self, db: Any, event: dict) -> List:
-        """Get all foto function."""
-        foto = []
-        cursor = db.foto_collection.find()
-        for document in await cursor.to_list(length=2000):
-            foto.append(document)
-            logging.debug(document)
-        return foto
 
     async def get_photo_by_raceclass(
         self, token: str, event_id: str, raceclass: str

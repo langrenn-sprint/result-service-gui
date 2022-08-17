@@ -8,10 +8,12 @@
   Passeringer {{ valgt_klasse }}
 {% endblock %}
 
+{% block headercontainer %}Passeringer {{ valgt_klasse }} <img id=header_icon src="../static/icon_timing.png"> {% endblock %}
+
 {% block refresh %}{% endblock %}
 
 {% block titlemain %}
-  Tidtaker funksjoner {{ action }}
+  <img id=menu_icon src="../static/icon_settings.png"> Tidtaker funksjoner {{ action }}
 {% endblock %}
 
 {% block menuitems %}

@@ -7,9 +7,10 @@
 {% block titleheader %}
   {{ lopsinfo }}
 {% endblock %}
+{% block headercontainer %}<img id=header_icon src="../static/icon_live.png"> {% endblock %}
 {% block refresh %}{% endblock %}
 {% block titlemain %}
-  {{ lopsinfo }}
+  <img id=menu_icon src="../static/icon_live.png"> {{ lopsinfo }}
 {% endblock %}
 {% block content %}
   {% if username != "Gjest" %}

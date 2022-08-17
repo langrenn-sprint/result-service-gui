@@ -8,10 +8,12 @@
   Rediger {{ action }} {{ valgt_klasse }}
 {% endblock %}
 
+{% block headercontainer %}Rediger startlister {{ valgt_klasse }} <img id=header_icon src="../static/icon_start.png"> {% endblock %}
+
 {% block refresh %}{% endblock %}
 
 {% block titlemain %}
-  Rediger {{ action }} {{ valgt_klasse }}
+  <img id=menu_icon src="../static/icon_start.png"> Rediger {{ action }} {{ valgt_klasse }}
 {% endblock %}
 
 {% block menuitems %}
