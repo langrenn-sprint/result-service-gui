@@ -4,11 +4,10 @@ import os
 
 from aiohttp import web
 import aiohttp_jinja2
-from aiohttp_session import get_session
 from aiohttp_session import new_session
 
 from result_service_gui.services import UserAdapter
-from .utils import check_login
+from .utils import check_login, check_login_open
 
 
 class Login(web.View):
@@ -16,7 +15,6 @@ class Login(web.View):
 
     async def get(self) -> web.Response:
         """Get route function that return the index page."""
-        username = ""
         try:
             informasjon = self.request.rel_url.query["informasjon"]
         except Exception:
@@ -30,11 +28,7 @@ class Login(web.View):
         except Exception:
             action = ""
 
-        if action == "create_new":
-            session = await get_session(self.request)
-            loggedin = UserAdapter().isloggedin(session)
-            if loggedin:
-                username = session["username"]
+        user = await check_login_open(self)
 
         event = {"name": "Administrasjon", "organiser": "Ikke valgt"}
         GOOGLE_OAUTH_CLIENT_ID = str(os.getenv("GOOGLE_OAUTH_CLIENT_ID"))
@@ -49,7 +43,7 @@ class Login(web.View):
                 "event": event,
                 "event_id": event_id,
                 "informasjon": informasjon,
-                "username": username,
+                "username": user["name"],
             },
         )
 

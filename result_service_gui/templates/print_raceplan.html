@@ -11,7 +11,7 @@
 {% block refresh %}0{% endblock %}
 
 {% block content %}
-  <div id=adminpagetitle>Kjøreplan {{ valgt_klasse }}</div>
+  <div id=adminpagetitle>Kjøreplan <img id=header_icon src="../static/icon_timing.png"> {{ valgt_klasse }}</div>
   <div align=right>{{ event.name }}, {{ event.date_of_event }}</div>
   {% if raceplan_summary|length > 0 %}
     <table>

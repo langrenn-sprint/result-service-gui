@@ -20,14 +20,14 @@
           {% endif %}
           <div id=adminpagetitle>
             {% if race.list_type == "start" %}
-              Startliste {{ race.raceclass }}
+              Startliste <img id=header_icon src="../static/icon_start.png"> {{ race.raceclass }}
               {% if valgt_runde == "Q"%}semifinaler
               {% elif valgt_runde == "S"%}finaler
               {% endif %}
             {% elif race.list_type == "live" %}
-              Live resultater {{ race.raceclass }}
+              Live resultater <img id=header_icon src="../static/icon_live.png"> {{ race.raceclass }}
             {% else %}
-              Resultater {{ race.raceclass }}
+              Resultater <img id=header_icon src="../static/icon_result.png"> {{ race.raceclass }}
               {% if valgt_runde == "Q"%}kvartfinaler
               {% elif valgt_runde == "S"%}semifinaler
               {% elif valgt_runde == "F"%}finaler
