@@ -85,22 +85,20 @@ class Login(web.View):
                 else:
                     informasjon = f"Innlogging feilet - {result}"
 
+            event = {"name": "Langrenn", "organiser": "Ikke valgt"}
+            if result != 200:
+                return await aiohttp_jinja2.render_template_async(
+                    "login.html",
+                    self.request,
+                    {
+                        "lopsinfo": "Login resultat",
+                        "event": event,
+                        "event_id": event_id,
+                        "informasjon": informasjon,
+                    },
+                )
         except Exception as e:
             logging.error(f"Error: {e}")
             informasjon = f"Det har oppstått en feil - {e.args}."
             result = 400
-
-        event = {"name": "Langrenn", "organiser": "Ikke valgt"}
-        if result != 200:
-            return await aiohttp_jinja2.render_template_async(
-                "login.html",
-                self.request,
-                {
-                    "lopsinfo": "Login resultat",
-                    "event": event,
-                    "event_id": event_id,
-                    "informasjon": informasjon,
-                },
-            )
-        else:
-            return web.HTTPSeeOther(location=f"/?informasjon={informasjon}")
+        return web.HTTPSeeOther(location=f"/?informasjon={informasjon}")

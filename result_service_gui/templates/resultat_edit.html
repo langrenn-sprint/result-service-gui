@@ -97,6 +97,10 @@
           - <a data-toggle="collapse" href="#demo_{{ race.id }}">resultat publisert.</a></div>
           <div id=spacer></div>
           <div id="demo_{{ race.id }}" class="collapse">
+      {% elif not race.startliste %}
+          - <a data-toggle="collapse" href="#demo_{{ race.id }}">ingen deltakere.</a></div>
+          <div id=spacer></div>
+          <div id="demo_{{ race.id }}" class="collapse">
       {% else %}
         </div>
         <div id="demo_{{ race.id }}" class="collapse in">

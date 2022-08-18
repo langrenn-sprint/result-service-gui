@@ -43,7 +43,8 @@ class PhotoEdit(web.View):
 
         try:
             event = await get_event(user, event_id)
-            album = await GooglePhotosAdapter().get_album_items(
+            all_albums = await GooglePhotosAdapter().get_albums(user["g_photos_token"])
+            selected_album = await GooglePhotosAdapter().get_album_items(
                 user["g_photos_token"], album_id
             )
             photos = await PhotosAdapter().get_all_photos(user["token"], event_id)
@@ -54,8 +55,9 @@ class PhotoEdit(web.View):
                 {
                     "lopsinfo": album_title,
                     "action": action,
-                    "album": album,
+                    "album": selected_album,
                     "album_id": album_id,
+                    "all_albums": all_albums,
                     "event": event,
                     "event_id": event_id,
                     "informasjon": informasjon,

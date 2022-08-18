@@ -30,16 +30,17 @@
       </tr>
       <tr>
         <td align=center>
-          <a id="myStart{{ oneevent.id }}" onclick="result_gui_href('myStart{{ oneevent.id }}', 'start?event_id={{ oneevent.id }}')" href=><img id=frontpage_icon title="Startlister" src="../static/icon_start.png"></a>
-          <a id="myLive{{ oneevent.id }}" onclick="result_gui_href('myLive{{ oneevent.id }}', 'live?event_id={{ oneevent.id }}')" href=><img id=frontpage_icon title="Live" src="../static/icon_live.png"></a>
-          <a id="myResult{{ oneevent.id }}" onclick="result_gui_href('myResult{{ oneevent.id }}', 'resultat?event_id={{ oneevent.id }}')" href=><img id=frontpage_icon title="Resultater" src="../static/icon_result.png"></a>
-          <a id="myPhotos{{ oneevent.id }}" onclick="result_gui_href('myPhotos{{ oneevent.id }}', 'photos?event_id={{ oneevent.id }}')" href=><img id=frontpage_icon title="Bildegalleri" src="../static/icon_photos.png"></a>
+          <a id="myStart{{ oneevent.id }}" onclick="result_gui_href('myStart{{ oneevent.id }}', 'start?event_id={{ oneevent.id }}')" href=><img id=frontpage_icon title="Startlister" src="../static/icon_start_txt.png"></a>
+          <a id="myLive{{ oneevent.id }}" onclick="result_gui_href('myLive{{ oneevent.id }}', 'live?event_id={{ oneevent.id }}')" href=><img id=frontpage_icon title="Live" src="../static/icon_live_txt.png"></a>
+          <a id="myResult{{ oneevent.id }}" onclick="result_gui_href('myResult{{ oneevent.id }}', 'resultat?event_id={{ oneevent.id }}')" href=><img id=frontpage_icon title="Resultater" src="../static/icon_result_txt.png"></a>
+          <a id="myPhotos{{ oneevent.id }}" onclick="result_gui_href('myPhotos{{ oneevent.id }}', 'photos?event_id={{ oneevent.id }}')" href=><img id=frontpage_icon title="Bildegalleri" src="../static/icon_photos_txt.png"></a>
         </td>
           {% if username != "Gjest" %}
             <td align=center>
-              <a id="myAdmF{{ oneevent.id }}" onclick="event_gui_href('myAdmF{{ oneevent.id }}', 'tasks?event_id={{ oneevent.id }}')" href=><img id=frontpage_icon title="Event admin" src="../static/icon_event.png"></a>
-              <a id="myNewContestant{{ oneevent.id }}" onclick="event_gui_href('myNewContestant{{ oneevent.id }}', 'contestants?event_id={{ oneevent.id }}&action=new_manual')" href=><img id=frontpage_icon title="Etteranmelding" src="../static/icon_new.png"></a>
-              <a id="myAdmU{{ oneevent.id }}" onclick="result_gui_href('myAdmU{{ oneevent.id }}', 'dashboard?event_id={{ oneevent.id }}')" href=><img id=frontpage_icon title="Tidtaking / registrere resultater" src="../static/icon_timing.png"></a>
+              <a id="myAdmF{{ oneevent.id }}" onclick="event_gui_href('myAdmF{{ oneevent.id }}', 'tasks?event_id={{ oneevent.id }}')" href=><img id=frontpage_icon title="Event admin" src="../static/icon_event_txt.png"></a>
+              <a id="myNewContestant{{ oneevent.id }}" onclick="event_gui_href('myNewContestant{{ oneevent.id }}', 'contestants?event_id={{ oneevent.id }}&action=new_manual')" href=><img id=frontpage_icon title="Etteranmelding" src="../static/icon_new_txt.png"></a>
+              <a id="myTiming{{ oneevent.id }}" onclick="result_gui_href('myTiming{{ oneevent.id }}', 'resultat_edit?event_id={{ oneevent.id }}')" href=><img id=frontpage_icon title="Tidtaking / registrere resultater" src="../static/icon_timing_txt.png"></a>
+              <a id="myAdmU{{ oneevent.id }}" onclick="result_gui_href('myAdmU{{ oneevent.id }}', 'dashboard?event_id={{ oneevent.id }}')" href=><img id=frontpage_icon title="Renn admin" src="../static/icon_settings_txt.png"></a>
             </td>
           {% else %}
             <td></td>
