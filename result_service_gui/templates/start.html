@@ -76,7 +76,7 @@
         {% for raceclass in raceplan_summary %}
           {% if (valgt_klasse == "") or valgt_klasse == raceclass.name %}
             <tr>
-              <td>{{ raceclass.name }}</td>
+              <td><a href=start?klasse={{ raceclass.name }}&event_id={{ event_id }}>{{ raceclass.name }}</a></td>
               <td>{{ raceclass.timeQ }}</td>
               <td>{{ raceclass.timeS }}</td>
               <td>{{ raceclass.timeF }}</td>
