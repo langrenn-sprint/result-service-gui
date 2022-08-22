@@ -20,6 +20,7 @@
   <li class=dropdown id=topborder>
     <a href=javascript:void(0) class=dropbtn>Velg klasse</a>
     <div class=dropdown-content>
+      <a href=photos?klasse=&event_id={{ event_id }}>Alle bilder</a>
       {% for klasse in raceclasses %}
         {% for ac_name in klasse.ageclasses %}
           <a href=photos?klasse={{ klasse.name }}&event_id={{ event_id }}>{{ ac_name }}</a>

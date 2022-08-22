@@ -19,6 +19,11 @@ class Main(web.View):
             informasjon = ""
 
         try:
+            reload = self.request.rel_url.query["reload"]
+        except Exception:
+            reload = ""
+
+        try:
             user = await check_login_open(self)
             event = await get_event(user["token"], "")
 
@@ -34,6 +39,7 @@ class Main(web.View):
                     "event_id": "",
                     "events": events,
                     "informasjon": informasjon,
+                    "reload": reload,
                     "username": user["name"],
                 },
             )

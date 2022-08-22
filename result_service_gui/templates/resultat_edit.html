@@ -7,7 +7,7 @@
 {% block titlecontainer %}<div class="w3-container">{% endblock %}
 
 {% block titleheader %}
-  <img id=menu_icon src="../static/icon_timing.png"> Registrer resultat {{ valgt_runde.klasse }} {{ valgt_runde.runde }}
+  Registrer resultat {{ valgt_runde.klasse }} {{ valgt_runde.runde }}
 {% endblock %}
 
 {% block headercontainer %}Registrer resultat {{ valgt_klasse }} <img id=header_icon src="../static/icon_timing.png"> {% endblock %}
@@ -15,7 +15,7 @@
 {% block refresh %}{% endblock %}
 
 {% block titlemain %}
-  Registrer resultat {{ valgt_runde.klasse }}
+  <img id=menu_icon src="../static/icon_timing.png"> Registrer resultat {{ valgt_runde.klasse }}
   {% if valgt_runde.runde == "Q" %}Kvartfinaler
   {% elif valgt_runde.runde == "S" %}Semifinaler
   {% elif valgt_runde.runde == "F" %}Finaler

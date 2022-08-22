@@ -40,7 +40,7 @@
         <td align=center>
         {% for bilde in foto %}
           {% if loop.index < 5 %}
-            <a href=photos?klasse={{ klasse.name }}&event_id={{ event_id }}><img width=20% src={{ bilde.g_base_url }}=w200-h100-c></a>
+            <a href=photos?klasse={{ bilde.raceclass }}&event_id={{ event_id }}><img width=20% src={{ bilde.g_base_url }}=w200-h100-c></a>
           {% endif %}
         {% endfor %}
         </td>

@@ -48,6 +48,7 @@
             xhttp.open("POST", "http://" + window.location.hostname + ":8090/login?action=g_login", true);
             xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
             xhttp.send("g_jwt=" + response.credential);
+            document.getElementById('informasjon').innerHTML = "Google login fullført! Klikk her hvis du ikke videresendes automatisk.";
           }
           window.onload = function () {
             google.accounts.id.initialize({
@@ -58,10 +59,15 @@
               document.getElementById("buttonDiv"),
               { theme: "outline", size: "large" }  // customization attributes
             );
+            google.accounts.id.prompt(); // also display the One Tap dialog
           }
         </script>
-        <div id="buttonDiv"></div>
-        <div id=spacer></div>
+        <br>
+        <div align=center id="buttonDiv"></div>
+        <p>
+          <a id="informasjon" href="/?reload=1"></a>
+        </p>
+
     {% else %}
       <form action="/login?event_id={{ event_id }}&action=login" method="post">
         <table cellpadding=4>
