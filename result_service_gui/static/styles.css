@@ -147,6 +147,11 @@ td {
 #subheader {
     background-color: lightgrey;
 }
+#subheaderbold {
+    background-color: lightgrey;
+    font-weight: bold;
+    text-align: center;
+}
 
 #table_header_red {
     background-color: red;
