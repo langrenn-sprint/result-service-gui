@@ -39,20 +39,28 @@
       {% endif %}
       <table>
         {% for race in races %}
-            {% if race.order in colseparators %}
+            {% if loop.index0 == 0 %}
+              <div id=subheaderbold>{% if race.round == "Q" %}Kvartfinaler
+              {% elif race.round == "S" %}Semifinaler
+              {% elif race.round == "F" %}Finaler
+              {% endif %}</div>
+            {% elif race.order in colseparators %}
                 </table>
               </div>
               <div class="{{ colclass }}">
+                <div id=subheaderbold>{% if race.round == "Q" %}Kvartfinaler
+                {% elif race.round == "S" %}Semifinaler
+                {% elif race.round == "F" %}Finaler
+                {% endif %}</div>
                 <table>
             {% endif %}
             {% if race.finish_results|length > 0 %}
               <tr id=headerblack>
                 <td colspan=4>
-                  Resultater <b>{{ race.raceclass }}
-                  {% if race.round == "Q" %}Kvartfinale {{ race.heat }}
-                  {% elif race.round == "S" %}Semifinale {{ race.index }}{{ race.heat }}
-                  {% elif race.round == "F" %}Finale {{ race.index }}
-                  {% endif %}</b>
+                  <b>{{ race.raceclass }}
+                  {% if race.round == "Q" %}{{ race.round }}{{ race.heat }}
+                  {% else %}{{ race.round }}{{ race.index }}{{ race.heat }}
+                  {% endif %} - Resultat</b>
                   {% if race.results.Finish.status == 1 %} -- NB: RESULTATER IKKE BEKREFTET {% endif %}
                 </td>
                 <td>(heat {{ race.order }})</td>
@@ -86,14 +94,11 @@
               {% endfor %}
             {% else %}
               <tr id=headerblue>
-                <td colspan=4><b>Kl. {{ race.start_time }} {{ race.raceclass }}
-                  {% if race.round == "Q" %}
-                    Kvartfinale {{ race.heat }}
-                  {% elif race.round == "S" %}
-                    Semifinale {{ race.index }}{{ race.heat }}
-                  {% elif race.round == "F" %}
-                    Finale {{ race.index }}
-                  {% endif %}</b>
+                <td colspan=4>
+                  <b>{{ race.raceclass }}
+                  {% if race.round == "Q" %}{{ race.round }}{{ race.heat }}
+                  {% else %}{{ race.round }}{{ race.index }}{{ race.heat }}
+                  {% endif %} - Kl. {{ race.start_time }}</b>
                 </td>
                 <td>(heat {{ race.order }})</td>
               </tr>
