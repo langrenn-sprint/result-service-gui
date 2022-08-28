@@ -78,18 +78,14 @@
               </tr>
               {% for loper in race.finish_results %}
                   <tr{% if loper.bib == valgt_startnr %} id=black{% endif %}>
-                    <td align=center>{{ loper.rank }}</td>
+                    <td align=center id=table_border>{{ loper.rank }}</td>
                     <td align=center>{{ loper.bib }}</td>
                     <td align=center>{% if loper.club_logo %}<img width=20 src={{ loper.club_logo }}>{% endif %}</td>
                     <td>
                         <a href=live?klasse={{ valgt_klasse }}&startnr={{ loper.bib }}&event_id={{ event_id }}>{{ loper.name }}</a>
                         <br><div id=smalltext>{{ loper.club }}</div>
                     </td>
-                    {% if race.round == "F" %}
-                      <td></td>
-                    {% else %}
-                      <td>{{ loper.next_race }}</td>
-                    {% endif %}
+                    <td align=center id=table_border>{% if race.round != "F" %}{{ loper.next_race }}{% endif %}</td>
                   </tr>
               {% endfor %}
             {% else %}
@@ -111,19 +107,19 @@
                </tr>
                {% for loper in race.start_entries %}
                   <tr{% if loper.bib == valgt_startnr %} id=black{% endif %}>
-                     <td align=center>{{ loper.starting_position }}</td>
+                     <td align=center id=table_border>{{ loper.starting_position }}</td>
                      <td align=center>{{ loper.bib }}</td>
                      <td align=center>{% if loper.club_logo %}<img width=20 src={{ loper.club_logo }}>{% endif %}</td>
                      <td>
                        <a href=live?klasse={{ valgt_klasse }}&startnr={{ loper.bib }}&event_id={{ event_id }}>{{ loper.name }}</a>
                        <br><div id=smalltext>{{ loper.club }}</div>
                      </td>
-                     <td></td>
+                     <td id=table_border></td>
                    </tr>
                {% endfor %}
             {% endif %}
             <tr>
-               <td colspan=5 id=white></td>
+               <td colspan=5 id=white height=25></td>
              </tr>
         {% endfor %}
       </table>

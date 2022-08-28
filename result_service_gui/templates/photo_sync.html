@@ -1,0 +1,82 @@
+{% extends "open_base.html" %}
+{% block titlecontainer %}
+  <div class="w3-10"></div>
+  <div class="w3-80">
+{% endblock %}
+
+{% block titleheader %}Foto synkronisering{% endblock %}
+
+{% block headercontainer %}Foto synkronisering {{ valgt_klasse }} <img id=header_icon src="../static/icon_photos.png"> {% endblock %}
+
+{% block refresh %}{% endblock %}
+{% block titlemain %}
+  <img id=menu_icon src="../static/icon_photos.png"> Foto synkronisering
+{% endblock %}
+{% block menuitems %}
+  <li class=dropdown id=topborder>
+    <a href=javascript:void(0) class=dropbtn>Velg Google album</a>
+    <div class=dropdown-content>
+      {% for one_album in all_albums.albums %}
+          <a href=photo_sync?event_id={{ event_id }}&album_id={{ one_album.id }}&album_title={{ one_album.title.replace(" ", "%20") }}><img width=30 src={{ one_album.coverPhotoBaseUrl }}> {{ one_album.title }} ({{ one_album.mediaItemsCount }})</a>
+      {% endfor %}
+    </div>
+  </li>
+{% endblock %}
+
+{% block content %}
+<! --- Edit menu --->
+  <script>
+    function checkform(form) {
+      try {
+        form.sync_from_google.value = 'Nye bilder analyseres, vennligst vent...';
+        return true
+      }
+      catch(err) {
+        return true
+      }
+    }
+  </script>
+  <table>
+    <tr id=headerblue align=right>
+      <td>
+        <form action=/photo_sync method=post onsubmit="return checkform(this);">
+          <input type="hidden" name="event_id" value="{{ event_id }}">
+          <input type="hidden" name="album_id" value="{{ album_id }}">
+          <input type="hidden" name="album_title" value="{{ lopsinfo }}">
+          <input type="submit" name="sync_from_google" value="  Synkroniser med google album - {{ lopsinfo }} ">
+        </form>
+      </td>
+      <td>
+        <form action=/photo_edit method=get>
+          <input type="hidden" name=event_id value="{{ event_id }}">
+          <input type="submit" name=photo_edit value="  Til lokale bilder  ">
+        </form>
+      </td>
+  </table>
+  <div id=spacer></div>
+    <table>
+      <tr>
+        <td colspan=3 id=headerblue>
+          <b>Bilder fra Google Album: {{ lopsinfo }}</b>
+        </td>
+      </tr>
+      {% for foto in album.mediaItems %}
+        <tr>
+          <td id=table_border_l width=220>
+            <a class="tooltip" href="">
+              <img width=200 src={{ foto.baseUrl }}=w200-h100-c>
+               <span>
+                   <img id=tooltipimage src="{{ foto.baseUrl }}=w800-h800">
+               </span>
+            </a>
+          </td>
+          <td>
+            Tid: {{ foto.mediaMetadata.creationTime }}<br>
+            {{ foto.mediaMetadata.photo.cameraModel }}<br>
+            Filnavn: {{ foto.filename }}
+          </td>
+          <td id=table_border_r><a target=_blank href={{ foto.productUrl }}>Bilde i Google</a></td>
+        </tr>
+      {% endfor %}
+    </table>
+{% endblock %}
