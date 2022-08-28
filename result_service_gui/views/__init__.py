@@ -8,6 +8,7 @@ from .login import Login
 from .logout import Logout
 from .main import Main
 from .photo_edit import PhotoEdit
+from .photo_sync import PhotoSync
 from .photos import Photos
 from .photos_adm import PhotosAdm
 from .print_lists import PrintLists
