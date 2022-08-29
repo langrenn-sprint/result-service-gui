@@ -39,20 +39,28 @@
       {% endif %}
       <table>
         {% for race in races %}
-            {% if race.order in colseparators %}
+            {% if loop.index0 == 0 %}
+              <div id=subheaderbold>{% if race.round == "Q" %}Kvartfinaler
+              {% elif race.round == "S" %}Semifinaler
+              {% elif race.round == "F" %}Finaler
+              {% endif %}</div>
+            {% elif race.order in colseparators %}
                 </table>
               </div>
               <div class="{{ colclass }}">
+                <div id=subheaderbold>{% if race.round == "Q" %}Kvartfinaler
+                {% elif race.round == "S" %}Semifinaler
+                {% elif race.round == "F" %}Finaler
+                {% endif %}</div>
                 <table>
             {% endif %}
             {% if race.finish_results|length > 0 %}
               <tr id=headerblack>
                 <td colspan=4>
-                  Resultater <b>{{ race.raceclass }}
-                  {% if race.round == "Q" %}Kvartfinale {{ race.heat }}
-                  {% elif race.round == "S" %}Semifinale {{ race.index }}{{ race.heat }}
-                  {% elif race.round == "F" %}Finale {{ race.index }}
-                  {% endif %}</b>
+                  <b>{{ race.raceclass }}
+                  {% if race.round == "Q" %}{{ race.round }}{{ race.heat }}
+                  {% else %}{{ race.round }}{{ race.index }}{{ race.heat }}
+                  {% endif %} - Resultat</b>
                   {% if race.results.Finish.status == 1 %} -- NB: RESULTATER IKKE BEKREFTET {% endif %}
                 </td>
                 <td>(heat {{ race.order }})</td>
@@ -70,30 +78,23 @@
               </tr>
               {% for loper in race.finish_results %}
                   <tr{% if loper.bib == valgt_startnr %} id=black{% endif %}>
-                    <td align=center>{{ loper.rank }}</td>
+                    <td align=center id=table_border>{{ loper.rank }}</td>
                     <td align=center>{{ loper.bib }}</td>
                     <td align=center>{% if loper.club_logo %}<img width=20 src={{ loper.club_logo }}>{% endif %}</td>
                     <td>
                         <a href=live?klasse={{ valgt_klasse }}&startnr={{ loper.bib }}&event_id={{ event_id }}>{{ loper.name }}</a>
                         <br><div id=smalltext>{{ loper.club }}</div>
                     </td>
-                    {% if race.round == "F" %}
-                      <td></td>
-                    {% else %}
-                      <td>{{ loper.next_race }}</td>
-                    {% endif %}
+                    <td align=center id=table_border>{% if race.round != "F" %}{{ loper.next_race }}{% endif %}</td>
                   </tr>
               {% endfor %}
             {% else %}
               <tr id=headerblue>
-                <td colspan=4><b>Kl. {{ race.start_time }} {{ race.raceclass }}
-                  {% if race.round == "Q" %}
-                    Kvartfinale {{ race.heat }}
-                  {% elif race.round == "S" %}
-                    Semifinale {{ race.index }}{{ race.heat }}
-                  {% elif race.round == "F" %}
-                    Finale {{ race.index }}
-                  {% endif %}</b>
+                <td colspan=4>
+                  <b>{{ race.raceclass }}
+                  {% if race.round == "Q" %}{{ race.round }}{{ race.heat }}
+                  {% else %}{{ race.round }}{{ race.index }}{{ race.heat }}
+                  {% endif %} - Kl. {{ race.start_time }}</b>
                 </td>
                 <td>(heat {{ race.order }})</td>
               </tr>
@@ -106,19 +107,19 @@
                </tr>
                {% for loper in race.start_entries %}
                   <tr{% if loper.bib == valgt_startnr %} id=black{% endif %}>
-                     <td align=center>{{ loper.starting_position }}</td>
+                     <td align=center id=table_border>{{ loper.starting_position }}</td>
                      <td align=center>{{ loper.bib }}</td>
                      <td align=center>{% if loper.club_logo %}<img width=20 src={{ loper.club_logo }}>{% endif %}</td>
                      <td>
                        <a href=live?klasse={{ valgt_klasse }}&startnr={{ loper.bib }}&event_id={{ event_id }}>{{ loper.name }}</a>
                        <br><div id=smalltext>{{ loper.club }}</div>
                      </td>
-                     <td></td>
+                     <td id=table_border></td>
                    </tr>
                {% endfor %}
             {% endif %}
             <tr>
-               <td colspan=5 id=white></td>
+               <td colspan=5 id=white height=25></td>
              </tr>
         {% endfor %}
       </table>
