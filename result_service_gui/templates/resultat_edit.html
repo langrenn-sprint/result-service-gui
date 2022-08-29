@@ -135,7 +135,7 @@
                 <td>{{ start.club }}</td>
                 <td id=resultborder align=center>{{ loop.index }}</td>
                 {% if race.finish_timings[loop.index0] %}
-                  <td align=center>
+                  <td>
                     <input type="number" name="form_rank_{{ loop.index }}" value="{% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}" min=1 max=9999 onfocus="this.oldvalue = this.value;" onchange="green_bg(this, {{ race.order }})">
                     <input type="hidden" name="old_form_rank_{{ loop.index }}" value="{% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}">
                     <input type="hidden" name="time_event_id_{{ loop.index }}" value="{{ race.finish_timings[loop.index0].id }}">
@@ -150,8 +150,7 @@
                     {% endif %}
                   {% endfor %}
                 {% else %}
-                  <td></td>
-                  <td align=center>
+                  <td>
                     <input type="number" name="form_rank_{{ loop.index }}" value="" min=1 max=9999 onfocus="this.oldvalue = this.value;" onchange="green_bg(this, {{ race.order }})">
                     <input type="hidden" name="old_form_rank_{{ loop.index }}" value="" min=1 max=9999>
                   </td>
