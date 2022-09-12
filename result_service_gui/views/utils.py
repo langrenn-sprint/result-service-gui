@@ -8,6 +8,7 @@ from aiohttp_session import get_session, new_session
 from result_service_gui.services import (
     EventsAdapter,
     GooglePhotosAdapter,
+    RaceclassResultsService,
     RaceplansAdapter,
     StartAdapter,
     TimeEventsAdapter,
@@ -123,22 +124,22 @@ async def check_login_open(self) -> dict:
     return user
 
 
-async def create_csv_race_results(results: list, filename: str) -> str:
+async def create_csv_race_results(results: dict, filename: str) -> str:
     """Create a csv file with race results."""
     informasjon = ""
     filepath = f"result_service_gui/files/{filename}.csv"
     try:
         f = open(filepath, "w")
         f.write("Plass;Startnr;Navn;Klubb;Runde")
-        for deltaker in results:
+        for deltaker in results["ranking_sequence"]:
             result_line = (
                 str(deltaker["rank"])
                 + ";"
-                + str(deltaker["time_event"]["bib"])
+                + str(deltaker["bib"])
                 + ";"
-                + deltaker["time_event"]["name"]
+                + deltaker["name"]
                 + ";"
-                + deltaker["time_event"]["club"]
+                + deltaker["club"]
                 + ";"
                 + deltaker["round"]
             )
@@ -352,28 +353,6 @@ async def get_event(user: dict, event_id: str) -> dict:
     return event
 
 
-def get_finish_rank(race: dict) -> list:
-    """Extract timing events from finish and append club logo."""
-    finish_rank = []
-    results = race["results"]
-    if len(results) > 0:
-        logging.debug(f"Resultst: {results}")
-        if "Finish" in results.keys():
-            finish_results = results["Finish"]
-            if len(finish_results) > 0:
-                logging.debug(finish_results.keys())
-                if "ranking_sequence" in finish_results.keys():
-                    finish_ranks = finish_results["ranking_sequence"]
-                    race["finish_results"] = []
-                    for rank_event in finish_ranks:
-                        if rank_event["status"] == "OK":
-                            rank_event["club_logo"] = EventsAdapter().get_club_logo_url(
-                                rank_event["club"]
-                            )
-                            finish_rank.append(rank_event)
-    return finish_rank
-
-
 def get_local_time(format: str) -> str:
     """Return local time, time zone adjusted from settings file."""
     TIME_ZONE_OFFSET = EventsAdapter().get_global_setting("TIME_ZONE_OFFSET")
@@ -578,7 +557,9 @@ async def get_races_for_print(
                         race["startliste"] = await get_enchiced_startlist(user, race)
                     else:
                         race["list_type"] = action
-                        race["finish_results"] = get_finish_rank(race)
+                        race[
+                            "finish_results"
+                        ] = RaceclassResultsService().get_finish_rank_for_race(race)
                     if first_in_class:
                         first_in_class = False
                     races.append(race)
@@ -607,7 +588,9 @@ async def get_races_for_round_result(
                 first_in_class = False
                 race["next_race"] = get_qualification_text(race)
                 race["list_type"] = "result"
-                race["finish_results"] = get_finish_rank(race)
+                race[
+                    "finish_results"
+                ] = RaceclassResultsService().get_finish_rank_for_race(race)
                 races.append(race)
             elif race["round"] in next_round:
                 race["first_in_class"] = first_in_next_round
@@ -617,61 +600,6 @@ async def get_races_for_round_result(
                 race["startliste"] = await get_enchiced_startlist(user, race)
                 races.append(race)
     return races
-
-
-async def get_results_by_raceclass(
-    user: dict, event_id: str, valgt_klasse: str
-) -> list:
-    """Get results for raceclass - return sorted list."""
-    results = []
-    grouped_results = {  # type: ignore
-        "FA": [],
-        "FB": [],
-        "SA": [],
-        "FC": [],
-        "SC": [],
-    }
-    races = await RaceplansAdapter().get_races_by_racesclass(
-        user["token"], event_id, valgt_klasse
-    )
-    # first - extract all result-items
-    for race in races:
-        # need results for A final - exit if not
-        if race["round"] == "F" and race["index"] == "A":
-            if len(race["results"]) == 0:
-                return []
-        # skip results from qualification
-        if race["round"] != "Q":
-            race_details = await RaceplansAdapter().get_race_by_id(
-                user["token"], race["id"]
-            )
-            finish_results = get_finish_rank(race_details)
-            for _tmp_result in finish_results:
-                # skip results if racer has more races
-                if _tmp_result["next_race_id"] == "":
-                    new_result: dict = {
-                        "round": f"{race['round']}{race['index']}",
-                        "rank": 0,
-                        "time_event": _tmp_result,
-                    }
-                    grouped_results[f"{race['round']}{race['index']}"].append(
-                        new_result
-                    )
-
-    # now - get the order and rank right
-    ranking = 1
-    racers_count = 0
-    for round_res in grouped_results:
-        for one_res in grouped_results[round_res]:
-            one_res["rank"] = ranking
-            results.append(one_res)
-            racers_count += 1
-            if one_res["round"].startswith("F"):
-                ranking += 1
-        else:
-            ranking = racers_count + 1
-
-    return results
 
 
 async def update_finish_time_events(

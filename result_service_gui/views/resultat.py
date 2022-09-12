@@ -7,13 +7,13 @@ import aiohttp_jinja2
 from result_service_gui.services import (
     FotoService,
     RaceclassesAdapter,
+    RaceclassResultsAdapter,
+    RaceclassResultsService,
     RaceplansAdapter,
 )
 from .utils import (
     check_login_open,
     get_event,
-    get_finish_rank,
-    get_results_by_raceclass,
 )
 
 
@@ -38,7 +38,7 @@ class Resultat(web.View):
             foto = []
             races = []
             informasjon = ""
-            resultlist = []  # type: ignore
+            resultlist = {}
             valgt_bildevisning = ""
 
             try:
@@ -53,10 +53,11 @@ class Resultat(web.View):
             if valgt_klasse == "":
                 informasjon = "Velg klasse for å vise resultater"
             else:
-                resultlist = await get_results_by_raceclass(
-                    user, event_id, valgt_klasse
-                )
-                if len(resultlist) == 0:
+                try:
+                    resultlist = await RaceclassResultsAdapter().get_raceclass_result(
+                        event_id, valgt_klasse
+                    )
+                except Exception:
                     informasjon = "Resultater er ikke klare. Velg 'Live' i menyen for heat resultater"
                 else:
                     races = await get_races_for_result_view(
@@ -81,7 +82,7 @@ class Resultat(web.View):
                     "valgt_klasse": valgt_klasse,
                     "klasser": raceclasses,
                     "races": races,
-                    "resultatliste": resultlist,
+                    "resultlist": resultlist,
                     "username": user["name"],
                 },
             )
@@ -100,6 +101,8 @@ async def get_races_for_result_view(
     )
     for _tmp_race in _tmp_races:
         race = await RaceplansAdapter().get_race_by_id(token, _tmp_race["id"])
-        race["finish_results"] = get_finish_rank(race)
+        race["finish_results"] = RaceclassResultsService().get_finish_rank_for_race(
+            race
+        )
         races.append(race)
     return races

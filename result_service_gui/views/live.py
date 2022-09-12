@@ -9,12 +9,12 @@ from result_service_gui.services import (
     ContestantsAdapter,
     EventsAdapter,
     RaceclassesAdapter,
+    RaceclassResultsService,
     RaceplansAdapter,
 )
 from .utils import (
     check_login_open,
     get_event,
-    get_finish_rank,
     get_qualification_text,
 )
 
@@ -151,7 +151,9 @@ async def get_races_for_live(
 
     for _tmp_race in _tmp_races:
         race = await RaceplansAdapter().get_race_by_id(token, _tmp_race["id"])
-        race["finish_results"] = get_finish_rank(race)
+        race["finish_results"] = RaceclassResultsService().get_finish_rank_for_race(
+            race
+        )
         race["next_race"] = get_qualification_text(race)
         race["start_time"] = race["start_time"][-8:]
         # append race if selected starter is inside or not selected

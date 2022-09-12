@@ -6,6 +6,7 @@ import aiohttp_jinja2
 
 from result_service_gui.services import (
     RaceclassesAdapter,
+    RaceclassResultsAdapter,
     RaceplansAdapter,
 )
 from .utils import (
@@ -16,7 +17,6 @@ from .utils import (
     get_raceplan_summary,
     get_races_for_print,
     get_races_for_round_result,
-    get_results_by_raceclass,
 )
 
 
@@ -38,7 +38,7 @@ class PrintLists(web.View):
 
             races = []
             raceplan_summary = []
-            resultlist = []
+            resultlist = {}
             html_template = "print_lists.html"
 
             try:
@@ -62,8 +62,8 @@ class PrintLists(web.View):
                 raceplan_summary = get_raceplan_summary(_tmp_races, raceclasses)
 
             elif action == "result":
-                resultlist = await get_results_by_raceclass(
-                    user, event_id, valgt_klasse
+                resultlist = await RaceclassResultsAdapter().get_raceclass_result(
+                    event_id, valgt_klasse
                 )
                 await create_csv_race_results(resultlist, f"Resultat_{valgt_klasse}")
                 html_template = "print_results.html"

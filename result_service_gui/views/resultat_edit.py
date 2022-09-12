@@ -9,6 +9,7 @@ from result_service_gui.services import (
     ContestantsAdapter,
     FotoService,
     RaceclassesAdapter,
+    RaceclassResultsService,
     RaceplansAdapter,
     ResultAdapter,
     StartAdapter,
@@ -143,6 +144,13 @@ class ResultatEdit(web.View):
                 if "submit_publish" in form.keys():
                     res = await ResultAdapter().update_result_status(user["token"], form["race_id"], 2)  # type: ignore
                     informasjon.append(f"Heat resultat er publisert - {res}.")
+                    race_round = str(form["race"])
+                    if race_round.find("FA") > -1:
+                        res = await RaceclassResultsService().create_raceclass_results(
+                            user["token"], event_id, valgt_runde["klasse"]
+                        )  # type: ignore
+                        informasjon.append(f" Klassens resultat er publisert - {res}.")
+
         except Exception as e:
             logging.error(f"Error: {e}")
             error_reason = str(e)

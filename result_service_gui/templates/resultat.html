@@ -54,21 +54,23 @@
         <td>Startnr</td>
         <td>Navn</td>
         <td>Klubb</td>
+        <td>Aldersklasse</td>
       </tr>
-      {% for deltaker in resultatliste %}
+      {% for deltaker in resultlist.ranking_sequence %}
         <tr>
           <td align=center>{{ deltaker.rank }}</td>
           <td>{{ deltaker.round }}</td>
-          <td align=center>{{ deltaker.time_event.bib }}</td>
-          <td><a alt="Live resultater" href=live?event_id={{ event_id }}&klasse={{ valgt_klasse }}&startnr={{ deltaker.time_event.bib }}>{{ deltaker.time_event.name }}</a></td>
+          <td align=center>{{ deltaker.bib }}</td>
+          <td><a alt="Live resultater" href=live?event_id={{ event_id }}&klasse={{ valgt_klasse }}&startnr={{ deltaker.bib }}>{{ deltaker.name }}</a></td>
           <td>
-            {% if deltaker.time_event.club_logo %}<img width=15 src={{ deltaker.time_event.club_logo }}>{% endif %}
-            {{ deltaker.time_event.club }}
+            {% if deltaker.club_logo %}<img width=15 src={{ deltaker.time_event.club_logo }}>{% endif %}
+            {{ deltaker.club }}
           </td>
+          <td>{{ deltaker.ageclass }}</td>
         </tr>
       {% endfor %}
       <tr>
-       <td colspan=5 id=white>&nbsp;</td>
+       <td colspan=6 id=white>&nbsp;</td>
      </tr>
     </table>
     <div id=adminpagetitle>{{ valgt_klasse }} Heat resultater</div>

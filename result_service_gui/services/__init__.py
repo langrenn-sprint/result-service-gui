@@ -5,6 +5,8 @@ from .events_adapter import EventsAdapter
 from .foto_service import FotoService
 from .google_photos_adapter import GooglePhotosAdapter
 from .photos_adapter import PhotosAdapter
+from .raceclass_result_adapter import RaceclassResultsAdapter
+from .raceclass_result_service import RaceclassResultsService
 from .raceclasses_adapter import RaceclassesAdapter
 from .raceplans_adapter import RaceplansAdapter
 from .result_adapter import ResultAdapter
