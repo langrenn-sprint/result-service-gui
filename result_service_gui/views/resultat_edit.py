@@ -116,6 +116,7 @@ class ResultatEdit(web.View):
                 },
             )
         except Exception as e:
+            breakpoint()
             logging.error(f"Error: {e}. Redirect to main page.")
             return web.HTTPSeeOther(location=f"/?informasjon={e}")
 
@@ -132,16 +133,12 @@ class ResultatEdit(web.View):
             valgt_runde["klasse"] = str(form["klasse"])
             valgt_runde["runde"] = str(form["runde"])
 
-            if "publish_results" in form.keys():
-                informasjon = ["Resultater er publisert (TODO)"]
-            elif "create_start" in form.keys():
+            if "create_start" in form.keys():
                 informasjon = await create_start(user, form)  # type: ignore
-            elif "delete_start" in form.keys():
-                informasjon = await delete_start(user, form)  # type: ignore
             elif "update_result" in form.keys():
                 informasjon = await update_result(user, form)  # type: ignore
                 # set results to official
-                if "submit_publish" in form.keys():
+                if "publish" in form.keys():
                     res = await ResultAdapter().update_result_status(user["token"], form["race_id"], 2)  # type: ignore
                     informasjon.append(f"Heat resultat er publisert - {res}.")
                     race_round = str(form["race"])
@@ -188,16 +185,6 @@ async def create_start(user: dict, form: dict) -> list:
     return informasjon
 
 
-async def delete_start(user: dict, form: dict) -> list:
-    """Extract form data and delete one start event."""
-    informasjon = []
-    id = await StartAdapter().delete_start_entry(
-        user["token"], form["race_id"], form["start_id"]
-    )
-    informasjon.append(f"Slettet start. Resultat: {id}")
-    return informasjon
-
-
 async def find_round(all_races, heat) -> dict:
     """Analyse selected round and determine next round(s)."""
     valgt_runde = {
@@ -234,7 +221,7 @@ def get_fotofinish_for_race(user, race, photos) -> list:
 
 
 async def update_result(user: dict, form: dict) -> list:
-    """Extract form data and update one result and corresponding start event."""
+    """Extract form data and update result and corresponding start event."""
     time_now = datetime.datetime.now()
     time_stamp_now = f"{time_now.strftime('%Y')}-{time_now.strftime('%m')}-{time_now.strftime('%d')}T{time_now.strftime('%X')}"
     delete_result_list = []

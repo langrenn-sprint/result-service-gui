@@ -36,7 +36,6 @@ class Resultat(web.View):
             event = await get_event(user, event_id)
 
             foto = []
-            races = []
             informasjon = ""
             resultlist = {}
             valgt_bildevisning = ""
@@ -59,10 +58,6 @@ class Resultat(web.View):
                     )
                 except Exception:
                     informasjon = "Resultater er ikke klare. Velg 'Live' i menyen for heat resultater"
-                else:
-                    races = await get_races_for_result_view(
-                        user["token"], event_id, valgt_klasse
-                    )
 
                 foto = await FotoService().get_photo_by_raceclass(
                     user["token"], event_id, valgt_klasse
@@ -81,7 +76,6 @@ class Resultat(web.View):
                     "valgt_bildevisning": valgt_bildevisning,
                     "valgt_klasse": valgt_klasse,
                     "klasser": raceclasses,
-                    "races": races,
                     "resultlist": resultlist,
                     "username": user["name"],
                 },

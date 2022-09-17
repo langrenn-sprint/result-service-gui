@@ -12,7 +12,7 @@
 
 {% block content %}
   <div id=adminpagetitle>
-      Resultater <img id=header_icon src="../static/icon_result.png"> {{ valgt_klasse }}
+      Offisielle resultater <img id=header_icon src="../static/icon_result.png"> {{ valgt_klasse }}
   </div>
   <div align=right>{{ event.name }}, {{ event.date_of_event }}</div>
 
@@ -23,18 +23,24 @@
       <td>Navn</td>
       <td>Klubb</td>
       <td>Runde</td>
+      <td>Aldersklasse</td>
     </tr>
-    {% for deltaker in resultlist %}
+    {% for deltaker in resultlist.ranking_sequence %}
       <tr>
         <td align=center>{{ deltaker.rank }}</td>
-        <td align=center>{{ deltaker.time_event.bib }}</td>
-        <td>{{ deltaker.time_event.name }}</td>
+        <td align=center>{{ deltaker.bib }}</td>
+        <td>{{ deltaker.name }}</td>
         <td>
-          {% if deltaker.time_event.club_logo %}<img width=15 src={{ deltaker.time_event.club_logo }}>{% endif %}
-          {{ deltaker.time_event.club }}
+          {% if deltaker.club_logo %}<img width=15 src={{ deltaker.time_event.club_logo }}>{% endif %}
+          {{ deltaker.club }}
         </td>
         <td align=center>{{ deltaker.round }}</td>
+        <td></td>
       </tr>
     {% endfor %}
+    <tr>
+      <td colspan=4></td>
+     <td colspan=2 align=center>Antall løpere: {{ resultlist.no_of_contestants }}</td>
+   </tr>
   </table>
 {% endblock %}

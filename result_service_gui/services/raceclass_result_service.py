@@ -46,7 +46,6 @@ class RaceclassResultsService:
                 if len(finish_results) > 0:
                     if "ranking_sequence" in finish_results.keys():
                         finish_ranks = finish_results["ranking_sequence"]
-                        race["finish_results"] = []
                         for rank_event in finish_ranks:
                             if rank_event["status"] == "OK":
                                 rank_event[
@@ -55,6 +54,25 @@ class RaceclassResultsService:
                                     rank_event["club"]
                                 )
                                 finish_rank.append(rank_event)
+
+        # get the racers not finishing DNS
+        for start_entry in race["start_entries"]:
+            found_rank = False
+            for rank_entry in finish_rank:
+                if start_entry["bib"] == rank_entry["bib"]:
+                    found_rank = True
+            if not found_rank:
+                dns_rank = {
+                    "bib": start_entry["bib"],
+                    "time_event": start_entry,
+                    "name": start_entry["name"],
+                    "club": start_entry["club"],
+                    "status": "DNF",
+                    "next_race_id": "",
+                    "club_logo": EventsAdapter().get_club_logo_url(start_entry["club"]),
+                }
+                finish_rank.append(dns_rank)
+
         return finish_rank
 
 
@@ -76,6 +94,7 @@ async def get_results_by_raceclass(
         "SA": [],
         "FC": [],
         "SC": [],
+        "DNF": [],
     }
     races = await RaceplansAdapter().get_races_by_racesclass(
         token, event_id, valgt_klasse
@@ -96,7 +115,6 @@ async def get_results_by_raceclass(
                 # skip results if racer has more races
                 if _tmp_result["next_race_id"] == "":
                     new_result: dict = {
-                        "rank": 0,
                         "bib": _tmp_result["bib"],
                         "round": f"{race['round']}{race['index']}",
                         "name": _tmp_result["name"],
@@ -105,16 +123,21 @@ async def get_results_by_raceclass(
                         "ageclass": "",
                         "time_event": _tmp_result,
                     }
-                    grouped_results[f"{race['round']}{race['index']}"].append(
-                        new_result
-                    )
+                    if _tmp_result["status"] == "DNF":
+                        new_result["round"] = "DNF"
+                        grouped_results["DNF"].append(new_result)
+                    else:
+                        grouped_results[f"{race['round']}{race['index']}"].append(
+                            new_result
+                        )
 
     # now - get the order and rank right
     ranking = 1
     racers_count = 0
     for round_res in grouped_results:
         for one_res in grouped_results[round_res]:
-            one_res["rank"] = ranking
+            if one_res["round"] != "DNF":
+                one_res["rank"] = ranking
             results["ranking_sequence"].append(one_res)  # type: ignore
             racers_count += 1
             if one_res["round"].startswith("F"):

@@ -197,6 +197,7 @@ class EventsAdapter:
             logo_url = logo_urls[club_name_short]
         except Exception:
             logging.error(f"Club logo not found - {club_name}")
+            logo_url = ""
         return logo_url
 
     async def create_event(self, token: str, event: dict) -> str:

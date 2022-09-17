@@ -39,7 +39,7 @@
         {% block headercontainer %}{% endblock %}{{ event.name }}
       </div>
       <div id=minispacer></div>
-      <div class="w3-container">
+      <div class="w3-container-sticky">
         <ul>
           <li class=dropdown>
             <a href=javascript:void(0) class=dropbtn>...</a>
@@ -73,11 +73,12 @@
             </div>
           </li>
         </ul>
+        {% if informasjon %}
+          <p id=info>&nbsp;&nbsp;{{ informasjon }}</p>
+        {% endif %}
       </div>
-    <div id=spacer></div>
-    <div class="w3-container" id=info>{{ informasjon }}</div>
     {% block content %}{% endblock %}
-    <div id=spacer></div>
+    <br>
     <div id=footeradmin>
         <a href="https://github.com/langrenn-sprint">langrenn-sprint</a> - utviklet av Lyn ski og Kjelsås langrenn
     </div>

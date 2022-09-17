@@ -68,15 +68,9 @@
             {% elif race.round == "S" %}Semifinale {{ race.index }}{{ race.heat }}
             {% elif race.round == "F" %}Finale {{ race.index }}
             {% endif %}
+            ({{ race.raceclass }}{{ race.round }}{{ race.index }}{{ race.heat }})
           </td>
           <td>{% if race.round != "F" %}Neste heat: {{ race.next_race }}{% endif %}</td>
-          <td align=right>(heat {{ race.order }})</td>
-        </tr>
-        <tr>
-          <td width=50><div id={{ race.heat }} >Pos</div></td>
-          <td width=50>Nr</td>
-          <td>Navn</td>
-          <td>Klubb</td>
           <td></td>
         </tr>
         {% for loper in race.startliste %}
@@ -97,15 +91,9 @@
             {% elif race.round == "S" %}Semifinale {{ race.index }}{{ race.heat }}
             {% elif race.round == "F" %}Finale {{ race.index }}
             {% endif %}
+            ({{ race.raceclass }}{{ race.round }}{{ race.index }}{{ race.heat }})
           </td>
-          <td colspan=1></td>
-          <td align=right>(heat {{ race.order }})</td>
-        </tr>
-        <tr>
-          <td><div id={{ race.order }} >Plass</div></td>
-          <td>Nr</td>
-          <td>Navn</td>
-          <td>Klubb</td>
+          <td></td>
           {% if race.round == "F" %}
             <td></td>
           {% else %}
@@ -121,7 +109,7 @@
               {% if race.round == "F" %}
                 <td></td>
               {% else %}
-                <td>{{ loper.next_race }}-{{ loper.next_race_position }}</td>
+                <td>{{ loper.next_race }}</td>
               {% endif %}
             </tr>
         {% endfor %}
