@@ -1,6 +1,7 @@
 """Module for raceclass results adapter."""
 import logging
 
+from .contestants_adapter import ContestantsAdapter
 from .events_adapter import EventsAdapter
 from .raceclass_result_adapter import RaceclassResultsAdapter
 from .raceplans_adapter import RaceplansAdapter
@@ -28,11 +29,24 @@ class RaceclassResultsService:
         except Exception:
             logging.debug(f"No results found, no delete required {valgt_klasse}")
 
-        # generate new result and store
+        # generate new resultset
         raceclass_result = await get_results_by_raceclass(token, event_id, valgt_klasse)
+
+        # query contestant object to add ageclass
+        contestants = await ContestantsAdapter().get_all_contestants_by_raceclass(
+            token, event_id, valgt_klasse
+        )
+        for racer in raceclass_result["ranking_sequence"]:
+            for contestant in contestants:
+                if contestant["bib"] == racer["bib"]:
+                    racer["ageclass"] = contestant["ageclass"]
+                    break
+
+        # and store to db
         res = await RaceclassResultsAdapter().create_raceclass_results(
             token, event_id, raceclass_result
         )
+
         return res
 
     def get_finish_rank_for_race(self, race: dict) -> list:
