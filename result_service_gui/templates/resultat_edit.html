@@ -142,7 +142,7 @@
                 <td id=resultborder align=center>{{ loop.index }}</td>
                 {% if race.finish_timings[loop.index0] %}
                   <td>
-                    <input type="number" name="form_rank_{{ loop.index }}" value="{% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}" min=1 max=9999 onfocus="this.oldvalue = this.value;" onchange="green_bg(this, {{ race.order }})">
+                    <input type="number" id="{{ race.order }}form_rank_{{ loop.index }}" name="form_rank_{{ loop.index }}" value="{% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}" min=1 max=9999 onfocus="this.oldvalue = this.value;" onchange="green_bg(this, {{ race.order }})">
                     <input type="hidden" name="old_form_rank_{{ loop.index }}" value="{% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}">
                     <input type="hidden" name="time_event_id_{{ loop.index }}" value="{{ race.finish_timings[loop.index0].id }}">
                   </td>
@@ -154,27 +154,39 @@
                   </td>
                 {% else %}
                   <td>
-                    <input type="number" name="form_rank_{{ loop.index }}" value="" min=1 max=9999 onfocus="this.oldvalue = this.value;" onchange="green_bg(this, {{ race.order }})">
+                    <input type="number" id="{{ race.order }}form_rank_{{ loop.index }}" name="form_rank_{{ loop.index }}" value="" min=1 max=9999 onfocus="this.oldvalue = this.value;" onchange="green_bg(this, {{ race.order }})">
                     <input type="hidden" name="old_form_rank_{{ loop.index }}" value="" min=1 max=9999>
                   </td>
                   <td></td>
                   <td></td>
                 {% endif %}
-                {% for result in race.finish_timings %}
-                  {% if result.bib == start.bib %}
-                    <script>
-                      green_bg_init({{ race.order }}{{ result.bib }})
-                    </script>
-                  {% endif %}
-                {% endfor %}
                 {% if loop.first %}
+                  <script>
+                    /* populate_rank: populate race rank based upon analysis of photos
+                      */
+                    function populate_rank{{ race.order }}() {
+                        try {
+                          biblist = {{ race.photo_bib_rank }};
+                          biblist.forEach(set_result{{ race.order }});
+                        }
+                        catch(err) {
+                        }
+                    }
+                    function set_result{{ race.order }}(value, index) {
+                      count = index + 1;
+                      the_element = "{{ race.order }}form_rank_" + count;
+                      document.getElementById(the_element).value = value;
+                    }
+
+                  </script>
                   <td rowspan="{{ loop.length }}">
+                    <button type="button" name="button" onclick=populate_rank{{ race.order }}()>Hent resultat fra bilder</button><br>
                     {% for bilde in race.photo_finish %}
                       <a class="tooltip_photo" href="">
                         <img src={{ bilde.g_base_url }}=w100-h100-c>
                          <span>
                              <img src="{{ bilde.g_base_url }}=w900-h900" tabindex=99><br>
-                             <div id=headerblack>Photo time: {{ bilde.creation_time[-8:] }}</div>
+                             <div id=headerblack>Photo time: {{ bilde.creation_time[-8:] }} Bibs: {{ bilde.biblist }}</div>
                          </span>
                       </a>
                       {% if loop.index is divisibleby(3) %}<br>{% endif %}
@@ -182,6 +194,13 @@
                   </td>
                 {% endif %}
             </tr>
+            {% for result in race.finish_timings %}
+              {% if result.bib == start.bib %}
+                <script>
+                  green_bg_init({{ race.order }}{{ result.bib }})
+                </script>
+              {% endif %}
+            {% endfor %}
           {% endfor %}
             <tr>
               <td colspan=5></td>

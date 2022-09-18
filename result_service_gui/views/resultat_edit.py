@@ -92,6 +92,9 @@ class ResultatEdit(web.View):
                             user, race["id"]
                         )
                         race["photo_finish"] = get_fotofinish_for_race(user, race, foto)
+                        race["photo_bib_rank"] = get_finish_rank_from_photos(
+                            user, race["photo_finish"]
+                        )
                         current_races.append(race)
 
                 # get passeringer with error
@@ -116,7 +119,6 @@ class ResultatEdit(web.View):
                 },
             )
         except Exception as e:
-            breakpoint()
             logging.error(f"Error: {e}. Redirect to main page.")
             return web.HTTPSeeOther(location=f"/?informasjon={e}")
 
@@ -218,6 +220,16 @@ def get_fotofinish_for_race(user, race, photos) -> list:
         if photo["race_id"] == race["id"]:
             fotos.append(photo)
     return fotos
+
+
+def get_finish_rank_from_photos(user, photos) -> list:
+    """Loop throgh photos and return bib(s) in sorted order."""
+    biblist = []
+    for photo in photos:
+        for bib in photo["biblist"]:
+            if bib not in biblist:
+                biblist.append(bib)
+    return biblist
 
 
 async def update_result(user: dict, form: dict) -> list:
