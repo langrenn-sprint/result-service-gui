@@ -52,7 +52,7 @@ def integration_tests(session: Session) -> None:
     )
 
 
-@session(python="3.9")
+@session
 def contract_tests(session: Session) -> None:
     """Run the contract test suite."""
     args = session.posargs
@@ -137,7 +137,7 @@ def mypy(session: Session) -> None:
         session.run("mypy", f"--python-executable={sys.executable}", "noxfile.py")
 
 
-@session(python="3.7")
+@session
 def pytype(session: Session) -> None:
     """Run the static type checker using pytype."""
     args = session.posargs or ["--disable=import-error", *locations]

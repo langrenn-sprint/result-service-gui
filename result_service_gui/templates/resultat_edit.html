@@ -180,8 +180,10 @@
 
                   </script>
                   <td rowspan="{{ loop.length }}">
-                    <button type="button" name="button" onclick=populate_rank{{ race.order }}()>Hent resultat fra bilder</button><br>
                     {% for bilde in race.photo_finish %}
+                      {% if loop.first %}
+                        <button type="button" name="button" onclick=populate_rank{{ race.order }}()>Hent resultat fra bilder</button><br>
+                      {% endif %}
                       <a class="tooltip_photo" href="">
                         <img src={{ bilde.g_base_url }}=w100-h100-c>
                          <span>

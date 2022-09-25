@@ -45,7 +45,7 @@ class Dashboard(web.View):
                 "dashboard.html",
                 self.request,
                 {
-                    "lopsinfo": "Dashboard - under rennet",
+                    "lopsinfo": "Renn admin",
                     "event": event,
                     "event_id": event_id,
                     "informasjon": informasjon,

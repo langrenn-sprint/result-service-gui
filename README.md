@@ -18,8 +18,8 @@ Her finner du en enkel webserver som generer html basert på csv-filer i test-da
 ```Shell
 % git clone https://github.com/langrenn-sprint/result-service-gui.git
 % cd evnt-service-gui
-% pyenv install 3.9.1
-% pyenv local 3.9.1
+% pyenv install 3.10
+% pyenv local 3.10
 % pipx install poetry
 % pipx install nox
 % pipx inject nox nox-poetry
