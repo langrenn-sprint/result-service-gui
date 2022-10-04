@@ -29,7 +29,7 @@ class PhotosAdm(web.View):
 
         try:
             if not user["g_auth_photos"]:
-                if event_id == "":
+                if not event_id:
                     # handle authorization response from google photo
                     event_id = self.request.rel_url.query["state"]
                     user["g_scope"] = self.request.rel_url.query["scope"]
@@ -49,7 +49,7 @@ class PhotosAdm(web.View):
                     auth_url = await get_auth_url_google_photos(
                         self, WEBSERVER_PHOTO_URL, event_id
                     )
-                    if auth_url != "":
+                    if auth_url:
                         return web.HTTPSeeOther(location=f"{auth_url}")
             # authenticated ok send to edit page
             return web.HTTPSeeOther(location=f"photo_edit?event_id={event_id}")

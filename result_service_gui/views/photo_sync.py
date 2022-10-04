@@ -37,7 +37,7 @@ class PhotoSync(web.View):
             album_title = ""
 
         try:
-            user = await check_login_google_photos(self)
+            user = await check_login_google_photos(self, event_id)
         except Exception as e:
             return web.HTTPSeeOther(location=f"{e}")
 
@@ -47,6 +47,8 @@ class PhotoSync(web.View):
             selected_album = await GooglePhotosAdapter().get_album_items(
                 user["g_photos_token"], album_id
             )
+            if not selected_album:
+                informasjon = "Velg et album i menyen."
             return await aiohttp_jinja2.render_template_async(
                 "photo_sync.html",
                 self.request,
@@ -69,14 +71,13 @@ class PhotoSync(web.View):
 
     async def post(self) -> web.Response:
         """Post route function that updates a collection of klasses."""
-        user = await check_login_google_photos(self)
-
         informasjon = ""
         form = await self.request.post()
         event_id = str(form["event_id"])
         album_id = str(form["album_id"])
         album_title = str(form["album_title"])
         logging.debug(f"Form {form}")
+        user = await check_login_google_photos(self, event_id)
 
         try:
             if "sync_from_google" in form.keys():

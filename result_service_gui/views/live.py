@@ -55,7 +55,7 @@ class Live(web.View):
 
             colseparators = []
             colclass = "w3-third"
-            if valgt_klasse != "":
+            if valgt_klasse:
                 contestants = (
                     await ContestantsAdapter().get_all_contestants_by_raceclass(
                         user["token"], event_id, valgt_klasse

@@ -115,7 +115,7 @@
               Runde 2
             {% endif %}
           </td>
-          <td colspan=2>{% if race.next_race != "" %}Neste heat: {{ race.next_race }}{% endif %}</td>
+          <td colspan=2>{% if race.next_race %}Neste heat: {{ race.next_race }}{% endif %}</td>
           <td>(heat {{ race.order }})</td>
         </tr>
         <tr id=subheader>

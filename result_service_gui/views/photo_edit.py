@@ -30,7 +30,7 @@ class PhotoEdit(web.View):
         except Exception:
             informasjon = ""
         try:
-            user = await check_login_google_photos(self)
+            user = await check_login_google_photos(self, event_id)
         except Exception as e:
             return web.HTTPSeeOther(location=f"{e}")
 

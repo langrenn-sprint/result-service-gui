@@ -45,7 +45,7 @@ class Photos(web.View):
                 user["token"], event_id
             )
             photos = []
-            if valgt_klasse == "":
+            if not valgt_klasse:
                 photos = await PhotosAdapter().get_all_photos(user["token"], event_id)
             else:
                 photos = await FotoService().get_photo_by_raceclass(
