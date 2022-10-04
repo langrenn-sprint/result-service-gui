@@ -11,7 +11,7 @@
   "PHOTO_WATERMARK_TEXT": "Ragdesprinten",
   "AZURE_THUMB_SERVICE": "True",
   "AZURE_VISION_TEXT_SERVICE": "False",
-  "GOOGLE_PHOTO_CREDENTIALS_FILE": "/home/heming/github/photo_api_credentials.json",
+  "GOOGLE_PHOTO_CREDENTIALS_FILE": "/home/heming/github/secrets/photo_api_credentials.json",
   "GOOGLE_PHOTO_SERVER": "https://photoslibrary.googleapis.com/v1",
   "GOOGLE_PHOTO_SCOPE": "https://www.googleapis.com/auth/photoslibrary.readonly"
 }

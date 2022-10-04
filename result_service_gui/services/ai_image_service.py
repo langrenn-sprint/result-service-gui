@@ -73,7 +73,7 @@ class AiImageService:
 
     def analyze_photo_with_google_for_langrenn(self, image_uri: str) -> dict:
         """Send infile to Vision API, return dict with langrenn info."""
-        logging.debug("Enter vision")
+        logging.info(f"Enter vision, image {image_uri}")
         _tags = {}
         count_persons = 0
 

@@ -77,7 +77,6 @@
           </td>
         {% endif %}
         <td width=220>
-          {{ foto.starred }}<br>
           <a class="tooltip">
             <img width=200 src={{ foto.g_base_url }}=w200-h100-c>
              <span>
@@ -88,18 +87,18 @@
         </td>
         <td id=table_border_r>
           <table>
-            <tr><td>Info</td><td>{{ foto.creation_time }} / {{ foto.name }}</td></tr>
+            <tr><td>{% if foto.starred %}<img width=20 src="../static/star.png"> {% endif %}Info</td><td>{{ foto.creation_time }} / {{ foto.name }}</td></tr>
             <tr><td>AI info</td><td>{{ foto.ai_information }}</td></tr>
             <tr><td>Klasse</td><td>{{ foto.raceclass }}, race_id: {{ foto.race_id }}</td></tr>
-            <tr><td>Bibs</td><td>
+            <tr><td>Bibs / clubs</td><td>
               {% if action == "update_race_info" %}
                 <input name="biblist_{{ foto.id }}" value="{{ foto.biblist }}">
                 <input type="hidden" name="old_biblist_{{ foto.id }}" value="{{ foto.biblist }}">
               {% else %}
                 {{ foto.biblist }}
               {% endif %}
+               / {{ foto.clublist }}
             </td></tr>
-            <tr><td>Clubs</td><td>{{ foto.clublist }}</td></tr>
           </table>
         </td>
       </tr>
