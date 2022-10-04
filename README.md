@@ -13,7 +13,7 @@ Her finner du en enkel webserver som generer html basert på csv-filer i test-da
 - [nox](https://nox.thea.codes/en/stable/)
 - [nox-poetry](https://pypi.org/project/nox-poetry/)
 
-### Installere programvare
+### Installere programvare og sette miljøvariable
 
 ```Shell
 % git clone https://github.com/langrenn-sprint/result-service-gui.git
@@ -24,7 +24,10 @@ Her finner du en enkel webserver som generer html basert på csv-filer i test-da
 % pipx install nox
 % pipx inject nox nox-poetry
 % poetry install
+% export GOOGLE_APPLICATION_CREDENTIALS="/home/heming/github/secrets/langrenn-sprint-key220110.json"
 ```
+
+
 
 ## oppdatere
 

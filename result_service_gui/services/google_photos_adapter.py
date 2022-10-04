@@ -1,6 +1,6 @@
 """Module for google photos adapter."""
 import logging
-from typing import List
+from typing import Dict, List
 
 from aiohttp import ClientSession
 from aiohttp import hdrs
@@ -48,6 +48,29 @@ class GooglePhotosAdapter:
                             reason=f"Error - {resp.status}: {body}."
                         )
         return album_items
+
+    async def get_album(self, token: str, album_id: str) -> Dict:
+        """Get one album."""
+        album = {}
+        servicename = "get_album"
+        headers = MultiDict(
+            [
+                (hdrs.CONTENT_TYPE, "application/json"),
+                (hdrs.AUTHORIZATION, f"Bearer {token}"),
+            ]
+        )
+        async with ClientSession() as session:
+            async with session.get(
+                f"{GOOGLE_PHOTO_SERVER}/albums/{album_id}", headers=headers
+            ) as resp:
+                logging.debug(f"{servicename} - got response {resp.status}")
+                if resp.status == 200:
+                    album = await resp.json()
+                else:
+                    body = await resp.json()
+                    logging.error(f"{servicename} failed - {resp.status} - {body}")
+                    raise web.HTTPBadRequest(reason=f"Error - {resp.status}: {body}.")
+        return album
 
     async def get_albums(self, token: str) -> List:
         """Get all albums."""
