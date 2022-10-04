@@ -25,12 +25,6 @@ class PhotoSync(web.View):
             informasjon = self.request.rel_url.query["informasjon"]
         except Exception:
             informasjon = ""
-        try:
-            album_id = self.request.rel_url.query["album_id"]
-            album_title = self.request.rel_url.query["album_title"]
-        except Exception:
-            album_id = ""
-            album_title = ""
 
         try:
             user = await check_login_google_photos(self, event_id)
@@ -74,16 +68,16 @@ class PhotoSync(web.View):
         informasjon = ""
         form = await self.request.post()
         event_id = str(form["event_id"])
+        user = await check_login_google_photos(self, event_id)
         event = await get_event(user, event_id)
         album_id = str(form["album_id"])
         album_title = str(form["album_title"])
         logging.debug(f"Form {form}")
-        user = await check_login_google_photos(self, event_id)
 
         try:
             if "sync_from_google" in form.keys():
                 # the actual sync is done on get-processing
-                try: 
+                try:
                     action = str(form["action"])
                     if action == "auto_sync":
                         informasjon = f"Automatisk synkronisering er på. Siden oppdateres hvert minutt. {informasjon}"
@@ -93,7 +87,7 @@ class PhotoSync(web.View):
                 album = await AlbumsAdapter().get_album(user["token"], album_id)
                 album["is_photo_finish"] = True
                 resU = await AlbumsAdapter().update_album(user["token"], album["id"], album)
-                informasjon = f"Album {album_title} er registrert som photo_finish ({informasjon})"
+                informasjon = f"Album {album_title} er registrert som photo_finish ({resU})"
             elif "add_sync" in form.keys():
                 informasjon = await FotoService().add_album_for_synk(
                     user["token"],
