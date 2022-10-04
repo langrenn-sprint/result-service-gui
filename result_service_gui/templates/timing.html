@@ -15,7 +15,7 @@
 {% endblock %}
 
 {% block menuitems %}
-  {% if action != "" %}
+  {% if action %}
     <li class=dropdown id=topborder>
       <a href=timing?&event_id={{ event_id }}&action={{ action }}&heat={{ valgt_heat - 1 }} class=dropbtn>Forrige heat</a>
     </li>
@@ -36,7 +36,7 @@
     }
   </script>
     <table>
-    {% if action == "" %}
+    {% if not action %}
       &nbsp;<br>
     {% elif action != "lap" %}
       {% for race in races %}

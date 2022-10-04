@@ -21,7 +21,7 @@ class GooglePhotosAdapter:
     """Class representing google photos."""
 
     async def get_album_items(self, token: str, album_id: str) -> List:
-        """Get all albums."""
+        """Get all items for an album."""
         album_items = []
         servicename = "get_album_items"
         headers = MultiDict(
@@ -30,20 +30,23 @@ class GooglePhotosAdapter:
                 (hdrs.AUTHORIZATION, f"Bearer {token}"),
             ]
         )
-        request_body = {"albumId": album_id}
-        async with ClientSession() as session:
-            async with session.post(
-                f"{GOOGLE_PHOTO_SERVER}/mediaItems:search",
-                headers=headers,
-                json=request_body,
-            ) as resp:
-                logging.debug(f"{servicename} - got response {resp.status}")
-                if resp.status == 200:
-                    album_items = await resp.json()
-                else:
-                    body = await resp.json()
-                    logging.error(f"{servicename} failed - {resp.status} - {body}")
-                    raise web.HTTPBadRequest(reason=f"Error - {resp.status}: {body}.")
+        if album_id:
+            request_body = {"albumId": album_id}
+            async with ClientSession() as session:
+                async with session.post(
+                    f"{GOOGLE_PHOTO_SERVER}/mediaItems:search",
+                    headers=headers,
+                    json=request_body,
+                ) as resp:
+                    logging.debug(f"{servicename} - got response {resp.status}")
+                    if resp.status == 200:
+                        album_items = await resp.json()
+                    else:
+                        body = await resp.json()
+                        logging.error(f"{servicename} failed - {resp.status} - {body}")
+                        raise web.HTTPBadRequest(
+                            reason=f"Error - {resp.status}: {body}."
+                        )
         return album_items
 
     async def get_album(self, token: str, album_id: str) -> Dict:

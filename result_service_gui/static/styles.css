@@ -41,7 +41,6 @@ li.dropdown {
   background-color: #f9f9f9;
   min-width: 160px;
   box-shadow: 0px 2px 2px 0px rgba(0,0,0,0.2);
-  z-index: 1;
 }
 
 .dropdown-content a {
@@ -187,7 +186,7 @@ td {
 }
 
 #topborder {
-  border-left: 1px solid black;
+  border-left: 1px solid white;
 }
 
 #resultheaderfirst {
@@ -255,6 +254,7 @@ async function savefile(inp)
   padding: 0.01em 0px;
   position: -webkit-sticky;
   position: sticky;
+  z-index: 99;
   top: 0;
 }
 
@@ -347,7 +347,6 @@ async function savefile(inp)
   position:absolute;
   top:105%;
   left:105%;
-  z-index:1000;
   width:auto;
 }
 
@@ -375,7 +374,6 @@ async function savefile(inp)
   position:absolute;
   top:-1000%;
   left:-1000%;
-  z-index:1000;
   width:auto;
 }
 /* END: Tooltip - to show image - END */

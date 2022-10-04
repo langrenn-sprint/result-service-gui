@@ -27,10 +27,6 @@ li:hover, .dropdown:hover, .dropbtn:hover {
 	color: white;
 }
 
-#topborder {
-  border-left: 1px solid white;
-}
-
 #headerblue {
     color: white;
     background-color: #75000e;
@@ -39,6 +35,13 @@ li:hover, .dropdown:hover, .dropbtn:hover {
 #headerblack {
     color: white;
     background-color: #1f3d8e;
+}
+
+#headercollapse {
+		text-align: center;
+		font-size: 1.5em;
+    color: white;
+    background-color: #A30013;
 }
 
 #adminpagetitle {

@@ -180,19 +180,21 @@
 
                   </script>
                   <td rowspan="{{ loop.length }}">
+                    <table><tr>
                     {% for bilde in race.photo_finish %}
                       {% if loop.first %}
-                        <button type="button" name="button" onclick=populate_rank{{ race.order }}()>Hent resultat fra bilder</button><br>
+                        <td colspan=5><button type="button" name="button" onclick=populate_rank{{ race.order }}()>Hent resultat fra bilder</button></td></tr><tr>
                       {% endif %}
-                      <a class="tooltip_photo" href="">
+                      <td width=100><a class="tooltip_photo" href="">
                         <img src={{ bilde.g_base_url }}=w100-h100-c>
                          <span>
                              <img src="{{ bilde.g_base_url }}=w900-h900" tabindex=99><br>
                              <div id=headerblack>Photo time: {{ bilde.creation_time[-8:] }} Bibs: {{ bilde.biblist }}</div>
                          </span>
-                      </a>
-                      {% if loop.index is divisibleby(3) %}<br>{% endif %}
+                      </a></td>
+                      {% if loop.index is divisibleby(4) %}<td></td></tr><tr>{% endif %}
                     {% endfor %}
+                    </tr></table>
                   </td>
                 {% endif %}
             </tr>

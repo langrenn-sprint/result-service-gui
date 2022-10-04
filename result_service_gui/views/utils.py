@@ -84,14 +84,14 @@ async def check_login_google(self, event_id: str) -> dict:
     }
 
 
-async def check_login_google_photos(self) -> dict:
+async def check_login_google_photos(self, event_id: str) -> dict:
     """Check login with google and return user credentials."""
     session = await get_session(self.request)
     loggedin = UserAdapter().isloggedin_google_photos(session)
     if not loggedin:
         informasjon = "informasjon=Logg inn med google for å se denne siden."
-        action = "action=g_login"
-        raise Exception(f"/login?{action}&{informasjon}")
+        info = f"action=g_login&event_id={event_id}"
+        raise Exception(f"/login?{info}&{informasjon}")
 
     return {
         "name": session["name"],
@@ -346,7 +346,7 @@ async def get_finish_timings(user: dict, race_id: str) -> list:
 async def get_event(user: dict, event_id: str) -> dict:
     """Get event - return new if no event found."""
     event = {"id": event_id, "name": "Langrenn-sprint", "organiser": "Ikke valgt"}
-    if event_id != "":
+    if event_id:
         logging.debug(f"get_event {event_id}")
         event = await EventsAdapter().get_event(user["token"], event_id)
 
@@ -397,7 +397,7 @@ async def get_passeringer(
     )
     if action == "control":
         for passering in reversed(tmp_passeringer):
-            if valgt_klasse == "" or valgt_klasse in passering["race"]:
+            if not valgt_klasse or valgt_klasse in passering["race"]:
                 if (
                     passering["status"] == "Error"
                     and passering["timing_point"] != "Template"

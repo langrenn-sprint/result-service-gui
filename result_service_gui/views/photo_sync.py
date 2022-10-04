@@ -33,7 +33,7 @@ class PhotoSync(web.View):
             album_title = ""
 
         try:
-            user = await check_login_google_photos(self)
+            user = await check_login_google_photos(self, event_id)
         except Exception as e:
             return web.HTTPSeeOther(location=f"{e}")
 
@@ -71,8 +71,6 @@ class PhotoSync(web.View):
 
     async def post(self) -> web.Response:
         """Post route function that updates a collection of klasses."""
-        user = await check_login_google_photos(self)
-        action = ""
         informasjon = ""
         form = await self.request.post()
         event_id = str(form["event_id"])
@@ -80,6 +78,7 @@ class PhotoSync(web.View):
         album_id = str(form["album_id"])
         album_title = str(form["album_title"])
         logging.debug(f"Form {form}")
+        user = await check_login_google_photos(self, event_id)
 
         try:
             if "sync_from_google" in form.keys():

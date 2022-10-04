@@ -31,10 +31,6 @@ li:hover, .dropdown:hover, .dropbtn:hover {
 	color: white;
 }
 
-#topborder {
-  border-left: 1px solid white;
-}
-
 #headerblue {
     color: white;
     background-color: #00247d;

@@ -5,7 +5,7 @@
 {% endblock %}
 
 {% block titleheader %}
-  <img id=menu_icon src="../static/icon_photos.png"> Bilder {{ valgt_klubb }}{{ valgt_klasse }}
+  Bilder {{ valgt_klubb }}{{ valgt_klasse }}
 {% endblock %}
 
 {% block headercontainer %}Bilder {{ valgt_klasse }} <img id=header_icon src="../static/icon_photos.png"> {% endblock %}
@@ -13,7 +13,7 @@
 {% block refresh %}{% if valgt_klasse == "live" %}60{% endif %}{% endblock %}
 
 {% block titlemain %}
-  Bilder {{ valgt_klubb }}{{ valgt_klasse }}
+  <img id=menu_icon src="../static/icon_photos.png"> Bilder {{ valgt_klubb }}{{ valgt_klasse }}
 {% endblock %}
 
 {% block menuitems %}
@@ -35,7 +35,7 @@
       <tr>
         <td align=center>
         {% for bilde in photos %}
-          <a href="{{ bilde.g_product_url }}" target=_blank><img width=20% src={{ bilde.g_base_url }}=w200-h100-c></a>
+          <a href="{{ bilde.g_product_url }}" title="{{ bilde.raceclass }}" target=_blank><img width=20% src={{ bilde.g_base_url }}=w200-h100-c></a>
           {% if loop.index % 4 == 0 %}
             <br>
           {% endif %}

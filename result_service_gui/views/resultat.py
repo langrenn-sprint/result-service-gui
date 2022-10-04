@@ -49,7 +49,7 @@ class Resultat(web.View):
                 user["token"], event_id
             )
 
-            if valgt_klasse == "":
+            if not valgt_klasse:
                 informasjon = "Velg klasse for å vise resultater"
             else:
                 try:

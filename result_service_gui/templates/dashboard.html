@@ -53,21 +53,7 @@
         <td id=table_border colspan=4>Side for å registrere målpassering og publisere resultater</td>
       </tr>
       <tr>
-        <td id=table_border colspan=5 id=spacer></td>
-      </tr>
-      <tr>
-        <td class=visible_link><a class=visible_link href=timing_verify?event_id={{ event_id }}&heat=0>Avansert</a></td>
-        <td id=table_border colspan=4>Oversiktsside for tidtaker. Registrering og korringeringer</td>
-      </tr>
-      <tr>
-        <td id=table_border colspan=5 id=spacer></td>
-      </tr>
-      <tr>
-        <td class=visible_link><a class=visible_link href=/control?event_id={{ event_id }}&action=control>Feil</a></td>
-        <td id=table_border colspan=4>Registreringer har feilet i systemet</td>
-      </tr>
-      <tr>
-        <td id=table_border colspan=5 id=spacer></td>
+        <td colspan=5 id=spacer>&nbsp;</td>
       </tr>
     </table>
   </div>
@@ -79,7 +65,7 @@
       <tr>
         <td width=200>
           <ul>
-            <li class=dropdown id=topborder>
+            <li class=dropdown>
               <a href=javascript:void(0) class=dropbtn>Kjøreplan</a>
               <div class=dropdown-content>
                 <a target=_new href=print_lists?event_id={{ event_id }}&action=raceplan>Alle</a>
@@ -92,7 +78,7 @@
         </td>
         <td width=200>
           <ul>
-            <li class=dropdown id=topborder>
+            <li class=dropdown>
               <a href=javascript:void(0) class=dropbtn>Startliste (pr klasse)</a>
               <div class=dropdown-content>
                 <a target=_new href=print_lists?event_id={{ event_id }}&action=start>Alle</a>
@@ -105,7 +91,7 @@
         </td>
         <td width=200>
           <ul>
-            <li class=dropdown id=topborder>
+            <li class=dropdown>
               <a href=javascript:void(0) class=dropbtn>Live (heat resultater)</a>
               <div class=dropdown-content>
                 {% for klasse in raceclasses %}
@@ -117,7 +103,7 @@
         </td>
         <td width=200>
           <ul>
-            <li class=dropdown id=topborder>
+            <li class=dropdown>
               <a href=javascript:void(0) class=dropbtn>Resultater (pr klasse)</a>
               <div class=dropdown-content>
                 {% for klasse in raceclasses %}
@@ -129,18 +115,58 @@
         </td>
       </tr>
       <tr>
+        <td id=table_border colspan=5>Tips: Utskrift kommer i eget vindu. Bruk Ctrl+P for å skrive ut.</td>
+      </tr>
+      <tr>
         <td id=table_border colspan=5 id=spacer></td>
       </tr>
       <tr>
-        <td id=table_border colspan=5>Tips: Utskrift kommer i eget vindu. Bruk Ctrl+P for å skrive ut.</td>
+        <td colspan=5 id=spacer>&nbsp;</td>
       </tr>
       <tr id=headerblue>
-        <td id=table_border colspan=5>Oppsett</td>
+        <td id=table_border colspan=5>Foto</td>
+      </tr>
+      <tr>
+        <td id=table_border colspan=5 id=spacer></td>
+      </tr>
+      <tr>
+        <td class=visible_link><a class=visible_link href=photos_adm?event_id={{ event_id }}>Bildeinnstillinger</a></td>
+        <td colspan=4>Tagging og berikelse av bildeinformasjon.</td>
+      </tr>
+      <tr>
+        <td id=table_border colspan=5 id=spacer></td>
+      </tr>
+      <tr>
+        <td class=visible_link><a class=visible_link href=photo_sync?event_id={{ event_id }}&photo_sync=++Til+synkronisering++>Synkronisering</a></td>
+        <td colspan=4>Styre synkronisering mot Google albums.</td>
+      </tr>
+      <tr>
+        <td colspan=5 id=spacer>&nbsp;</td>
+      </tr>
+      <tr id=headerblue>
+        <td id=table_border colspan=5>Avanserte funksjoner</td>
+      </tr>
+      <tr>
+        <td id=table_border colspan=5 id=spacer></td>
+      </tr>
+      <tr>
+        <td class=visible_link><a class=visible_link href=timing_verify?event_id={{ event_id }}&heat=0>Tidtaker admin</a></td>
+        <td id=table_border colspan=4>Oversiktsside for tidtaker. Mulighet for både registrering og korringeringer</td>
+      </tr>
+      <tr>
+        <td id=table_border colspan=5 id=spacer></td>
+      </tr>
+      <tr>
+        <td class=visible_link><a class=visible_link href=/control?event_id={{ event_id }}&action=control>Feil</a></td>
+        <td id=table_border colspan=4>Registreringer har feilet i systemet</td>
+      </tr>
+      <tr>
+        <td id=table_border colspan=5 id=spacer></td>
       </tr>
       <tr>
         <td>
           <ul>
-            <li class=dropdown id=topborder>
+            <li class=dropdown>
               <a href=javascript:void(0) class=dropbtn>Rediger startliste</a>
               <div class=dropdown-content>
                 {% for klasse in raceclasses %}
@@ -156,7 +182,7 @@
         <td id=table_border colspan=5 id=spacer></td>
       </tr>
       <tr>
-        <td><a id="mySeeTime" onclick="event_gui_href('mySeeTime', 'raceplans?event_id={{ event_id }}&action=edit_time')" href=>Tidskjema</a></td>
+        <td class=visible_link><a class=visible_link id="mySeeTime" onclick="event_gui_href('mySeeTime', 'raceplans?event_id={{ event_id }}&action=edit_time')" href=>Tidskjema</a></td>
         <td colspan=4>Utsette (eller forsere) kjøreplanen</td>
       </tr>
       <tr>
@@ -165,7 +191,7 @@
       <tr>
         <td>
           <ul>
-            <li class=dropdown id=topborder>
+            <li class=dropdown >
               <a href=javascript:void(0) class=dropbtn>Rediger videre til</a>
               <div class=dropdown-content>
                 {% for klasse in raceclasses %}
@@ -183,15 +209,11 @@
         <td id=table_border colspan=5 id=spacer></td>
       </tr>
       <tr>
-        <td><a href=resultat_edit?event_id={{ event_id }}>Resultat detaljer</a></td>
+        <td class=visible_link><a class=visible_link href=resultat_edit?event_id={{ event_id }}>Resultat detaljer</a></td>
         <td colspan=4>Viser alle resultat - detaljer. Brukes primært til debugging.</td>
       </tr>
       <tr>
         <td id=table_border colspan=5 id=spacer></td>
-      </tr>
-      <tr>
-        <td><a href=photos_adm?event_id={{ event_id }}>Bildeinnstillinger</a></td>
-        <td colspan=4>Styre import og tagging av bilder tatt under rennet.</td>
       </tr>
     </table>
   </div>
