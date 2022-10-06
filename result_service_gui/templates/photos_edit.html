@@ -14,6 +14,24 @@
 {% endblock %}
 
 {% block content %}
+<script>
+  function star_toggle(photo_id, action) {
+    console.log("Star photo: " + photo_id);
+    var xhttp = new XMLHttpRequest();
+     xhttp.open("POST", "/photo_update", true);
+    xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+    xhttp.send("photo_id=" + photo_id + "&action=" + action);
+    xhttp.onload = function() {
+      if ("200" == this.responseText) {
+        document.getElementById("star_" + photo_id).src = "../static/" + action + ".png";
+      }
+      else {
+        document.getElementById('informasjon').innerHTML = this.responseText;
+      }
+    }
+  }
+</script>
+
 <! --- Edit menu --->
   <table>
     <tr id=headerblue align=right>
@@ -24,44 +42,39 @@
         </form>
       </td>
       <td>
-        <form action=/photo_edit method=get>
+        <form action=/photos_edit method=get>
           <input type="hidden" name=event_id value="{{ event_id }}">
           <input type="hidden" name=action value="update_race_info">
           <input type="submit" name=update_race_info value="  Rediger løpsinformasjon  ">
         </form>
       </td>
       <td>
-        <form action=/photo_edit method=get>
-          <input type="hidden" name=event_id value="{{ event_id }}">
-          <input type="hidden" name=action value="star_photo">
-          <input type="submit" name=star_photo value="  Sett stjernemerke  ">
-        </form>
-      </td>
-      <td>
-        <form action=/photo_edit method=get>
+        <form action=/photos_edit method=get>
           <input type="hidden" name=event_id value="{{ event_id }}">
           <input type="hidden" name=action value="delete_select">
           <input type="submit" name=delete_select value="  Slett lokale kopier  ">
         </form>
       </td>
       <td>
-        <form action=/photo_edit method=post>
+        <form action=/photos_edit method=post>
           <input type="hidden" name="event_id" value="{{ event_id }}">
           <input type="submit" name="delete_all_local" value="  Slett alle lokale kopier  ">
         </form>
       </td>
   </table>
-  <div id=spacer></div>
+  <p>
+    <span id="informasjon"></span>
+  </p>
   <table cellpadding=4>
     <tr>
       <td colspan=4 id=headerblue>
         <b>Bilder - lokale kopier</b>
       </td>
     </tr>
-    {% if action in ["delete_select", "star_photo", "update_race_info"] %}
+    {% if action in ["delete_select", "update_race_info"] %}
     <tr>
       <td id=table_border colspan=4>
-      <form action=/photo_edit method=post>
+      <form action=/photos_edit method=post>
         <input type="submit" name={{ action }} value="  Lagre  ">
         <input type="hidden" name="event_id" value="{{ event_id }}">
         <input type="hidden" name=action value={{ action }}>
@@ -71,7 +84,7 @@
 
     {% for foto in photos %}
       <tr>
-        {% if action in ["delete_select", "star_photo"] %}
+        {% if action in ["delete_select"] %}
           <td>
             <input type="checkbox" name="update_{{ foto.id }}" value="{{ foto.id }}">
           </td>
@@ -87,7 +100,12 @@
         </td>
         <td id=table_border_r>
           <table>
-            <tr><td>{% if foto.starred %}<img width=20 src="../static/star.png"> {% endif %}Info</td><td>{{ foto.creation_time }} / {{ foto.name }}</td></tr>
+            <tr><td>{% if foto.starred %}
+              <input type=image id="star_{{ foto.id }}" onclick="star_toggle('{{ foto.id }}','star_off');" width=20 src="../static/star_on.png">
+              {% else %}
+                <input type=image id="star_{{ foto.id }}" onclick="star_toggle('{{ foto.id }}','star_on');" width=20 src="../static/star_off.png">
+              {% endif %}
+              </td><td>{{ foto.creation_time }} / {{ foto.name }}</td></tr>
             <tr><td>AI info</td><td>{{ foto.ai_information }}</td></tr>
             <tr><td>Klasse</td><td>{{ foto.raceclass }}, race_id: {{ foto.race_id }}</td></tr>
             <tr><td>Bibs / clubs</td><td>
@@ -103,7 +121,7 @@
         </td>
       </tr>
     {% endfor %}
-    {% if action in ["delete_select", "star_photo", "update_race_info"] %}
+    {% if action in ["delete_select", "update_race_info"] %}
     <tr>
       <td colspan=4>
         <input type="submit" name={{ action }} value="  Lagre  ">

@@ -63,7 +63,7 @@
                   {% if race.round == "Q" %}{{ race.round }}{{ race.heat }}
                   {% else %}{{ race.round }}{{ race.index }}{{ race.heat }}
                   {% endif %} -
-                  {% if race.results.Finish.status == 2 %}
+                  {% if race.results.Finish and (race.results.Finish.status == 2) %}
                     Resultat
                   {% else %}
                     Uoffisielt resultat
@@ -78,7 +78,10 @@
               </tr>
               {% for loper in race.finish_results %}
                   <tr{% if loper.bib == valgt_startnr %} id=black{% endif %}>
-                    <td align=center id=table_border>{{ loper.rank }}{% if race.results.Finish.status != 2 %}&nbsp;<img width=15 src="../static/warning.png" title="Uoffisielt resultat">{% endif %}</td>
+                    <td align=center id=table_border>
+                      {% if loper.rank %}{{ loper.rank }}{% else %}{{ loper.status }}{% endif %}
+                      {% if race.results.Finish and (race.results.Finish.status != 2) %}&nbsp;<img width=15 src="../static/warning.png" title="Uoffisielt resultat">{% endif %}
+                    </td>
                     <td align=center>{{ loper.bib }}</td>
                     <td align=center>{% if loper.club_logo %}<img width=20 src={{ loper.club_logo }}>{% endif %}</td>
                     <td>

@@ -77,11 +77,15 @@ class AiImageService:
         _tags = {}
         count_persons = 0
 
-        # Instantiates a client
-        client = vision.ImageAnnotatorClient()
-        # Loads the image into memory
-        content = requests.get(image_uri).content
-        image = vision.Image(content=content)
+        try:
+            # Instantiates a client
+            client = vision.ImageAnnotatorClient()
+            # Loads the image into memory
+            content = requests.get(image_uri).content
+            image = vision.Image(content=content)
+        except Exception as e:
+            logging.error(f"Error connecting to VisionAI service: {e}")
+            raise Exception(f"Kunne ikke koble til GoogleVisionAI. {e}") from e
 
         # Performs object detection on the image file
         objects = client.object_localization(image=image).localized_object_annotations

@@ -25,7 +25,7 @@ class Main(web.View):
 
         try:
             user = await check_login_open(self)
-            event = await get_event(user["token"], "")
+            event = await get_event(user, "")
 
             events = await EventsAdapter().get_all_events(user["token"])
             logging.debug(f"Events: {events}")

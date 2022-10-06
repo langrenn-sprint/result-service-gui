@@ -25,7 +25,10 @@ class PhotoSync(web.View):
             informasjon = self.request.rel_url.query["informasjon"]
         except Exception:
             informasjon = ""
-
+        try:
+            action = self.request.rel_url.query["action"]
+        except Exception:
+            action = ""
         try:
             user = await check_login_google_photos(self, event_id)
         except Exception as e:
@@ -35,12 +38,12 @@ class PhotoSync(web.View):
             event = await get_event(user, event_id)
             # check if automatic sync is active
             try:
-                action = self.request.rel_url.query["action"]
                 if action in ["auto_sync", "one_sync"]:
                     informasjon += await FotoService().sync_photos_from_google(
                         user, event
                     )
-            except Exception:
+            except Exception as e:
+                informasjon = f"Det har oppstått en feil ved synkronisering. {e}"
                 action = ""
             synced_albums = await AlbumsAdapter().get_all_albums(user["token"], event_id)
             g_albums = await GooglePhotosAdapter().get_albums(user["g_photos_token"])
@@ -65,6 +68,7 @@ class PhotoSync(web.View):
 
     async def post(self) -> web.Response:
         """Post route function that updates a collection of klasses."""
+        action = ""
         informasjon = ""
         form = await self.request.post()
         event_id = str(form["event_id"])
@@ -89,20 +93,20 @@ class PhotoSync(web.View):
                 resU = await AlbumsAdapter().update_album(user["token"], album["id"], album)
                 informasjon = f"Album {album_title} er registrert som photo_finish ({resU})"
             elif "add_sync" in form.keys():
-                informasjon = await FotoService().add_album_for_synk(
+                resA = await FotoService().add_album_for_synk(
                     user["token"],
                     user["g_photos_token"],
                     event,
                     album_id
                 )
-                informasjon = f"Album {album_title} er lagt til synkronisering ({informasjon})"
+                informasjon = f"Album {album_title} er lagt til synkronisering ({resA})"
             elif "delete_all_local" in form.keys():
                 informasjon = await FotoService().delete_all_local_albums(
                     user["token"], event_id
                 )
             elif "stop_sync" in form.keys():
-                informasjon = await AlbumsAdapter().delete_album(user["token"], album_id)
-                informasjon = f"Album {album_title} er fjernet fra synkronisering ({informasjon})"
+                resD = await AlbumsAdapter().delete_album(user["token"], album_id)
+                informasjon = f"Album {album_title} er fjernet fra synkronisering ({resD})"
                 album_id = ""
                 album_title = ""
         except Exception as e:

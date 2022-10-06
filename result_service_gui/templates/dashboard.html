@@ -53,6 +53,24 @@
         <td id=table_border colspan=4>Side for å registrere målpassering og publisere resultater</td>
       </tr>
       <tr>
+        <td id=table_border colspan=5 id=spacer></td>
+      </tr>
+      <tr>
+        <td id=table_border>
+          <ul>
+            <li class=dropdown>
+              <a href=javascript:void(0) class=dropbtn>Rediger startliste</a>
+              <div class=dropdown-content>
+                {% for klasse in raceclasses %}
+                  <a target=_new href=start_edit?event_id={{ event_id }}&klasse={{ klasse.name }}>{{ klasse.name }}</a>
+                {% endfor %}
+              </div>
+            </li>
+          </ul>
+        </td>
+        <td colspan=4>Redigere i starlister - optimalsere: likt antall løpere i heat, fylle opp C-finaler osv.</td>
+      </tr>
+      <tr>
         <td colspan=5 id=spacer>&nbsp;</td>
       </tr>
     </table>
@@ -124,26 +142,6 @@
         <td colspan=5 id=spacer>&nbsp;</td>
       </tr>
       <tr id=headerblue>
-        <td id=table_border colspan=5>Foto</td>
-      </tr>
-      <tr>
-        <td id=table_border colspan=5 id=spacer></td>
-      </tr>
-      <tr>
-        <td class=visible_link><a class=visible_link href=photos_adm?event_id={{ event_id }}>Bildeinnstillinger</a></td>
-        <td colspan=4>Tagging og berikelse av bildeinformasjon.</td>
-      </tr>
-      <tr>
-        <td id=table_border colspan=5 id=spacer></td>
-      </tr>
-      <tr>
-        <td class=visible_link><a class=visible_link href=photo_sync?event_id={{ event_id }}&photo_sync=++Til+synkronisering++>Synkronisering</a></td>
-        <td colspan=4>Styre synkronisering mot Google albums.</td>
-      </tr>
-      <tr>
-        <td colspan=5 id=spacer>&nbsp;</td>
-      </tr>
-      <tr id=headerblue>
         <td id=table_border colspan=5>Avanserte funksjoner</td>
       </tr>
       <tr>
@@ -164,24 +162,6 @@
         <td id=table_border colspan=5 id=spacer></td>
       </tr>
       <tr>
-        <td>
-          <ul>
-            <li class=dropdown>
-              <a href=javascript:void(0) class=dropbtn>Rediger startliste</a>
-              <div class=dropdown-content>
-                {% for klasse in raceclasses %}
-                  <a target=_new href=start_edit?event_id={{ event_id }}&klasse={{ klasse.name }}>{{ klasse.name }}</a>
-                {% endfor %}
-              </div>
-            </li>
-          </ul>
-        </td>
-        <td colspan=4>Redigere i starlister</td>
-      </tr>
-      <tr>
-        <td id=table_border colspan=5 id=spacer></td>
-      </tr>
-      <tr>
         <td class=visible_link><a class=visible_link id="mySeeTime" onclick="event_gui_href('mySeeTime', 'raceplans?event_id={{ event_id }}&action=edit_time')" href=>Tidskjema</a></td>
         <td colspan=4>Utsette (eller forsere) kjøreplanen</td>
       </tr>
@@ -189,7 +169,7 @@
         <td id=table_border colspan=5 id=spacer></td>
       </tr>
       <tr>
-        <td>
+        <td id=table_border>
           <ul>
             <li class=dropdown >
               <a href=javascript:void(0) class=dropbtn>Rediger videre til</a>

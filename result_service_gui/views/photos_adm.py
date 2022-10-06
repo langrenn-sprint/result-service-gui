@@ -21,7 +21,6 @@ class PhotosAdm(web.View):
             event_id = self.request.rel_url.query["event_id"]
         except Exception:
             event_id = ""
-
         try:
             user = await check_login_google(self, event_id)
         except Exception as e:
@@ -30,7 +29,7 @@ class PhotosAdm(web.View):
         try:
             if not user["g_auth_photos"]:
                 if not event_id:
-                    # handle authorization response from google photo
+                    # case (step 2): handle authorization response from google photo
                     event_id = self.request.rel_url.query["state"]
                     user["g_scope"] = self.request.rel_url.query["scope"]
                     user["g_client_id"] = self.request.rel_url.query["code"]
@@ -41,18 +40,16 @@ class PhotosAdm(web.View):
                         # reload user session information
                         user = await check_login_google(self, event_id)
                     else:
-                        raise Exception(
-                            f"Det har oppstått en feil med google autorisasjon - {result}"
-                        )
+                        raise Exception(f"Det har oppstått en feil med google autorisasjon - {result}")
                 else:
-                    # initiate authorization for google photo
+                    # case (step 1): initiate authorization for google photo
                     auth_url = await get_auth_url_google_photos(
                         self, WEBSERVER_PHOTO_URL, event_id
                     )
                     if auth_url:
                         return web.HTTPSeeOther(location=f"{auth_url}")
-            # authenticated ok send to edit page
-            return web.HTTPSeeOther(location=f"photo_edit?event_id={event_id}")
+            # authenticated ok send to sync page
+            return web.HTTPSeeOther(location=f"photo_sync?event_id={event_id}")
 
         except Exception as e:
             logging.error(f"Error: {e}. Redirect to main page.")

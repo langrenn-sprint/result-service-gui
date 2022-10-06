@@ -69,23 +69,24 @@ class RaceclassResultsService:
                                 )
                                 finish_rank.append(rank_event)
 
-        # get the racers not finishing DNS
-        for start_entry in race["start_entries"]:
-            found_rank = False
-            for rank_entry in finish_rank:
-                if start_entry["bib"] == rank_entry["bib"]:
-                    found_rank = True
-            if not found_rank:
-                dns_rank = {
-                    "bib": start_entry["bib"],
-                    "time_event": start_entry,
-                    "name": start_entry["name"],
-                    "club": start_entry["club"],
-                    "status": "DNF",
-                    "next_race_id": "",
-                    "club_logo": EventsAdapter().get_club_logo_url(start_entry["club"]),
-                }
-                finish_rank.append(dns_rank)
+            # get the racers not finishing DNS - if results are official
+            if race["results"]["Finish"]["status"] == 2:
+                for start_entry in race["start_entries"]:
+                    found_rank = False
+                    for rank_entry in finish_rank:
+                        if start_entry["bib"] == rank_entry["bib"]:
+                            found_rank = True
+                    if not found_rank:
+                        dns_rank = {
+                            "bib": start_entry["bib"],
+                            "time_event": start_entry,
+                            "name": start_entry["name"],
+                            "club": start_entry["club"],
+                            "status": "DNF",
+                            "next_race_id": "",
+                            "club_logo": EventsAdapter().get_club_logo_url(start_entry["club"]),
+                        }
+                        finish_rank.append(dns_rank)
 
         return finish_rank
 
