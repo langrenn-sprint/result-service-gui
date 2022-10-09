@@ -85,12 +85,8 @@
         }
       }
       function green_bg_init(id) {
-      try {
           document.getElementById(id).style.backgroundColor = "green";
       }
-      catch(err) {
-      }
-    }
   </script>
 
 <div class="w3-row-padding">
@@ -164,26 +160,26 @@
                   <script>
                     /* populate_rank: populate race rank based upon analysis of photos
                       */
-                    function populate_rank{{ race.order }}() {
+                    function populate_rank_{{ race.order }}() {
+                      biblist = {{ race.photo_bib_rank }};
+                      for (let i = 0; i < biblist.length; i++) {
+                          position = i + 1;
+                          the_element = "{{ race.order }}form_rank_" + position;
+                          document.getElementById(the_element).value = biblist[i];
                         try {
-                          biblist = {{ race.photo_bib_rank }};
-                          biblist.forEach(set_result{{ race.order }});
+                          green_bg_init("{{ race.order }}" + biblist[i]);
                         }
                         catch(err) {
+                          document.getElementById(the_element).style.backgroundColor = "red";
                         }
+                      }
                     }
-                    function set_result{{ race.order }}(value, index) {
-                      count = index + 1;
-                      the_element = "{{ race.order }}form_rank_" + count;
-                      document.getElementById(the_element).value = value;
-                    }
-
                   </script>
                   <td rowspan="{{ loop.length }}">
                     <table><tr>
                     {% for bilde in race.photo_finish %}
                       {% if loop.first %}
-                        <td colspan=5><button type="button" name="button" onclick=populate_rank{{ race.order }}()>Hent resultat fra bilder</button></td></tr><tr>
+                        <td colspan=5><button type="button" name="button" onclick=populate_rank_{{ race.order }}()>Hent resultat fra bilder</button></td></tr><tr>
                       {% endif %}
                       <td width=100><a class="tooltip_photo" href="">
                         <img src={{ bilde.g_base_url }}=w100-h100-c>

@@ -24,7 +24,6 @@ Her finner du en enkel webserver som generer html basert på csv-filer i test-da
 % pipx install nox
 % pipx inject nox nox-poetry
 % poetry install
-% export GOOGLE_APPLICATION_CREDENTIALS="/home/heming/github/secrets/langrenn-sprint-key220110.json"
 ```
 
 
@@ -92,6 +91,7 @@ Denne fila _skal_ ligge i .dockerignore og .gitignore
 
 ```Shell
 % source .env
+% export GOOGLE_APPLICATION_CREDENTIALS="/home/heming/github/secrets/langrenn-sprint-key220110.json"
 % poetry run adev runserver -p 8090 result_service_gui
 % docker-compose up event-service race-service user-service photo-service mongodb event-service-gui
 ```
