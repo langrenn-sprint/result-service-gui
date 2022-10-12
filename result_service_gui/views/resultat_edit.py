@@ -91,9 +91,10 @@ class ResultatEdit(web.View):
                         race["finish_timings"] = await get_finish_timings(
                             user, race["id"]
                         )
-                        race["photo_finish"] = get_fotofinish_for_race(user, race, foto)
+                        race["photo_finish"] = get_foto_finish_for_race(user, race, foto)
+                        race["photo_start"] = get_foto_start_for_race(user, race, foto)
                         race["photo_bib_rank"] = get_finish_rank_from_photos(
-                            user, race["photo_finish"]
+                            user, race["photo_finish"], "right"
                         )
                         current_races.append(race)
 
@@ -187,13 +188,13 @@ async def create_start(user: dict, form: dict) -> list:
     return informasjon
 
 
-async def find_round(all_races, heat) -> dict:
+async def find_round(all_races: list, heat_order: int) -> dict:
     """Analyse selected round and determine next round(s)."""
     valgt_runde = {
         "klasse": "",
         "runde": "",
     }
-    if heat == 0:
+    if heat_order == 0:
         # find race starting now
         races = get_races_for_live_view(all_races, 0, 1)
         if len(races) > 0:
@@ -204,7 +205,7 @@ async def find_round(all_races, heat) -> dict:
     else:
         # find round for selected heat
         for race in all_races:
-            if heat == race["order"]:
+            if heat_order == race["order"]:
                 valgt_runde = {
                     "klasse": race["raceclass"],
                     "runde": race["round"],
@@ -213,22 +214,38 @@ async def find_round(all_races, heat) -> dict:
     return valgt_runde
 
 
-def get_fotofinish_for_race(user, race, photos) -> list:
+def get_foto_finish_for_race(user: dict, race: dict, photos: list) -> list:
     """Loop throgh photos and return relevant finish photo(s)."""
     fotos = []
     for photo in photos:
         if photo["race_id"] == race["id"]:
-            fotos.append(photo)
+            if photo["is_photo_finish"]:
+                fotos.append(photo)
     return fotos
 
 
-def get_finish_rank_from_photos(user, photos) -> list:
+def get_foto_start_for_race(user: dict, race: dict, photos: list) -> list:
+    """Loop throgh photos and return relevant finish photo(s)."""
+    fotos = []
+    for photo in photos:
+        if photo["race_id"] == race["id"]:
+            if photo["is_start_registration"]:
+                fotos.append(photo)
+    return fotos
+
+
+def get_finish_rank_from_photos(user: dict, photos: list, camera_side: str) -> list:
     """Loop throgh photos and return bib(s) in sorted order."""
     biblist = []
     for photo in photos:
-        for bib in photo["biblist"]:
-            if bib not in biblist:
-                biblist.append(bib)
+        if camera_side == "left":
+            for bib in photo["biblist"]:
+                if bib not in biblist:
+                    biblist.append(bib)
+        else:
+            for bib in reversed(photo["biblist"]):
+                if bib not in biblist:
+                    biblist.append(bib)
     return biblist
 
 

@@ -54,17 +54,17 @@
             <input type="submit" name=resolve_error value=" Slett valgte ">
           </td>
         </tr>
-       <tr id=headerblue>
-        <td></td>
-        <td>Startnr</td>
-        <td>Heat</td>
-        <td>Passeringspunkt</td>
-        <td>Tid</td>
-        <td>Plass</td>
-        <td>Videre til</td>
-        <td>Status</td>
-        <td>Changelog</td>
-      </tr>
+        <tr id=headerblue>
+          <td></td>
+          <td>Startnr</td>
+          <td>Heat</td>
+          <td>Passeringspunkt</td>
+          <td>Tid</td>
+          <td>Plass</td>
+          <td>Videre til</td>
+          <td>Status</td>
+          <td>Changelog</td>
+        </tr>
         {% for passering in passeringer %}
           {% if not valgt_heat or passering.race == valgt_heat %}
             <tr>

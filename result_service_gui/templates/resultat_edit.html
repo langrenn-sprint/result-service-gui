@@ -132,7 +132,19 @@
           {% for start in race.startliste %}
             <tr>
                 <td id={{ race.order }}{{ start.bib }} align=center>{{ start.bib }}</td>
-                <td>{{ start.start_status }}</td>
+                <td>
+                  {{ start.start_status }}
+                  {% for bilde in race.photo_start %}
+                    {% if start.bib in bilde.biblist %}
+                    <a class="tooltip_photo_left">
+                      &nbsp;<img src={{ bilde.g_base_url }}=w30-h25-c>
+                        <span>
+                            <img src="{{ bilde.g_base_url }}=w900-h900" title="Photo time: {{ bilde.creation_time[-8:] }}">
+                        </span>
+                    </a></td>
+                    {% endif %}
+                  {% endfor %}
+                </td>
                 <td>&nbsp;{{ start.name }}</td>
                 <td>{{ start.club }}</td>
                 <td id=resultborder align=center>{{ loop.index }}</td>

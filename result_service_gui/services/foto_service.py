@@ -77,6 +77,7 @@ class FotoService:
                 "event_id": event["id"],
                 "g_id": g_album_id,
                 "is_photo_finish": False,
+                "is_start_registration": False,
                 "last_sync_time": "",
                 "place": "",
                 "sync_on": True,
@@ -140,7 +141,8 @@ class FotoService:
                     photo["name"] = g_photo["filename"]
                     photo["g_product_url"] = g_photo["productUrl"]
                     photo["g_base_url"] = g_photo["baseUrl"]
-
+                    photo["is_photo_finish"] = sync_album["is_photo_finish"]
+                    photo["is_start_registration"] = sync_album["is_start_registration"]
                     photo_id = await PhotosAdapter().update_photo(
                         user["token"], photo["id"], photo
                     )
@@ -150,7 +152,8 @@ class FotoService:
                     # create new photo
                     request_body = {
                         "name": g_photo["filename"],
-                        "finish_line": sync_album["is_photo_finish"],
+                        "is_photo_finish": sync_album["is_photo_finish"],
+                        "is_start_registration": sync_album["is_start_registration"],
                         "starred": False,
                         "event_id": event["id"],
                         "creation_time": format_zulu_time(creation_time),

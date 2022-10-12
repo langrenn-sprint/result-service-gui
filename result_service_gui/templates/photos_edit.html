@@ -100,11 +100,13 @@
         </td>
         <td id=table_border_r>
           <table>
-            <tr><td>{% if foto.starred %}
+            <tr><td width="150">{% if foto.starred %}
               <input type=image id="star_{{ foto.id }}" onclick="star_toggle('{{ foto.id }}','star_off');" width=20 src="../static/star_on.png">
               {% else %}
                 <input type=image id="star_{{ foto.id }}" onclick="star_toggle('{{ foto.id }}','star_on');" width=20 src="../static/star_off.png">
               {% endif %}
+              {% if foto.is_photo_finish %} MÅLFOTO{% endif %}
+              {% if foto.is_start_registration %} START{% endif %}
               </td><td>{{ foto.creation_time }} / {{ foto.name }}</td></tr>
             <tr><td>AI info</td><td>{{ foto.ai_information }}</td></tr>
             <tr><td>Klasse</td><td>{{ foto.raceclass }}, race_id: {{ foto.race_id }}</td></tr>

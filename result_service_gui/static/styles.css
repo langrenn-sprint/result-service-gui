@@ -354,10 +354,6 @@ async function savefile(inp)
   width:auto;
 }
 
-#tooltip_photo{
-  width:900px;
-  height:600px;
-}
 /* END: Tooltip - to show image - END */
 
 /* START: Tooltip - to show image - start */
@@ -378,6 +374,28 @@ async function savefile(inp)
   position:absolute;
   top:-1000%;
   left:-1000%;
+  width:auto;
+}
+/* END: Tooltip - to show image - END */
+
+/* START: Tooltip - to show image - start */
+.tooltip_photo_left {
+  position:relative;
+}
+
+.tooltip_photo_left span {
+  display:none;
+}
+
+.tooltip_photo_left span img {
+  float:left;
+}
+
+.tooltip_photo_left:hover span {
+  display:block;
+  position:absolute;
+  top:-500%;
+  left:100%;
   width:auto;
 }
 /* END: Tooltip - to show image - END */
