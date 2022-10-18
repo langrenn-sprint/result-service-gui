@@ -20,18 +20,26 @@ GOOGLE_PHOTO_CREDENTIALS_FILE = EventsAdapter().get_global_setting(
 class GooglePhotosAdapter:
     """Class representing google photos."""
 
-    async def get_album_items(self, token: str, album_id: str) -> List:
+    async def get_album_items(self, g_token: str, album_id: str) -> List:
         """Get all items for an album."""
         album_items = []
+        morePages = True
+        pageToken = ""
         servicename = "get_album_items"
         headers = MultiDict(
             [
                 (hdrs.CONTENT_TYPE, "application/json"),
-                (hdrs.AUTHORIZATION, f"Bearer {token}"),
+                (hdrs.AUTHORIZATION, f"Bearer {g_token}"),
             ]
         )
-        if album_id:
-            request_body = {"albumId": album_id}
+        request_body = {
+            "albumId": album_id,
+            "pageSize": 100
+        }
+        while morePages:
+            if pageToken:
+                request_body['pageToken'] = pageToken
+
             async with ClientSession() as session:
                 async with session.post(
                     f"{GOOGLE_PHOTO_SERVER}/mediaItems:search",
@@ -40,23 +48,28 @@ class GooglePhotosAdapter:
                 ) as resp:
                     logging.debug(f"{servicename} - got response {resp.status}")
                     if resp.status == 200:
-                        album_items = await resp.json()
+                        tmp_album_items = await resp.json()
                     else:
                         body = await resp.json()
                         logging.error(f"{servicename} failed - {resp.status} - {body}")
                         raise web.HTTPBadRequest(
                             reason=f"Error - {resp.status}: {body}."
                         )
+            if "nextPageToken" in tmp_album_items.keys():
+                pageToken = tmp_album_items["nextPageToken"]
+            else:
+                morePages = False
+            album_items.extend(tmp_album_items["mediaItems"])
         return album_items
 
-    async def get_album(self, token: str, album_id: str) -> Dict:
+    async def get_album(self, g_token: str, album_id: str) -> Dict:
         """Get one album."""
         album = {}
         servicename = "get_album"
         headers = MultiDict(
             [
                 (hdrs.CONTENT_TYPE, "application/json"),
-                (hdrs.AUTHORIZATION, f"Bearer {token}"),
+                (hdrs.AUTHORIZATION, f"Bearer {g_token}"),
             ]
         )
         async with ClientSession() as session:
@@ -72,14 +85,14 @@ class GooglePhotosAdapter:
                     raise web.HTTPBadRequest(reason=f"Error - {resp.status}: {body}.")
         return album
 
-    async def get_albums(self, token: str) -> List:
+    async def get_albums(self, g_token: str) -> List:
         """Get all albums."""
         albums = []
         servicename = "get_albums"
         headers = MultiDict(
             [
                 (hdrs.CONTENT_TYPE, "application/json"),
-                (hdrs.AUTHORIZATION, f"Bearer {token}"),
+                (hdrs.AUTHORIZATION, f"Bearer {g_token}"),
             ]
         )
         async with ClientSession() as session:
@@ -118,7 +131,7 @@ class GooglePhotosAdapter:
         )
         return authorization_url
 
-    def get_token(self, redirect_url: str, event_id: str, user: dict) -> str:
+    def get_g_token(self, redirect_url: str, event_id: str, user: dict) -> str:
         """Get token for request to read from Photos API."""
         flow = google_auth_oauthlib.flow.Flow.from_client_secrets_file(
             GOOGLE_PHOTO_CREDENTIALS_FILE, scopes=GOOGLE_PHOTO_SCOPE, state=event_id

@@ -17,7 +17,7 @@ PHOTO_SERVICE_URL = f"http://{PHOTOS_HOST_SERVER}:{PHOTOS_HOST_PORT}"
 class PhotosAdapter:
     """Class representing photos."""
 
-    async def get_all_photos(self, token: str, event_id: Optional[str]) -> List:
+    async def get_all_photos(self, token: str, event_id: str, limit: Optional[int] = None) -> List:
         """Get all photos function."""
         photos = []
         logging.debug(f"Need to handle event_id {event_id}")
@@ -27,11 +27,12 @@ class PhotosAdapter:
                 (hdrs.AUTHORIZATION, f"Bearer {token}"),
             ]
         )
+        url = f"{PHOTO_SERVICE_URL}/photos?event_id={event_id}"
+        if limit:
+            url += f"&limit={limit}"
 
         async with ClientSession() as session:
-            async with session.get(
-                f"{PHOTO_SERVICE_URL}/photos", headers=headers
-            ) as resp:
+            async with session.get(url, headers=headers) as resp:
                 logging.debug(f"get_all_photos - got response {resp.status}")
                 if resp.status == 200:
                     photos = await resp.json()
@@ -70,6 +71,31 @@ class PhotosAdapter:
                         reason=f"Error - {resp.status}: {body['detail']}."
                     )
         return photo
+
+    async def get_photos_by_raceclass(self, token: str, event_id: str, raceclass: str, limit: Optional[int] = None) -> List:
+        """Get all photos function."""
+        photos = []
+        headers = MultiDict(
+            [
+                (hdrs.CONTENT_TYPE, "application/json"),
+                (hdrs.AUTHORIZATION, f"Bearer {token}"),
+            ]
+        )
+        url = f"{PHOTO_SERVICE_URL}/photos?event_id={event_id}&raceclass={raceclass}"
+        if limit:
+            url += f"&limit={limit}"
+
+        async with ClientSession() as session:
+            async with session.get(url, headers=headers) as resp:
+                logging.debug(f"get_photos_by_raceclass - got response {resp.status}")
+                if resp.status == 200:
+                    photos = await resp.json()
+                    logging.debug(f"photos - got response {photos}")
+                elif resp.status == 401:
+                    raise Exception(f"Login expired: {resp}")
+                else:
+                    logging.error(f"Error {resp.status} getting photos: {resp} ")
+        return photos
 
     async def get_photo_by_g_id(self, token: str, g_id: str) -> dict:
         """Get photo by google id function."""

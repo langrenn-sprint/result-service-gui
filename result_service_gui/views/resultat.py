@@ -5,7 +5,7 @@ from aiohttp import web
 import aiohttp_jinja2
 
 from result_service_gui.services import (
-    FotoService,
+    PhotosAdapter,
     RaceclassesAdapter,
     RaceclassResultsAdapter,
     RaceclassResultsService,
@@ -59,8 +59,8 @@ class Resultat(web.View):
                 except Exception:
                     informasjon = "Resultater er ikke klare. Velg 'Live' i menyen for heat resultater"
 
-                foto = await FotoService().get_photo_by_raceclass(
-                    user["token"], event_id, valgt_klasse
+                foto = await PhotosAdapter().get_photos_by_raceclass(
+                    user["token"], event_id, valgt_klasse, 4
                 )
                 valgt_bildevisning = "klasse=" + valgt_klasse
 

@@ -7,7 +7,7 @@ import aiohttp_jinja2
 
 from result_service_gui.services import (
     ContestantsAdapter,
-    FotoService,
+    PhotosAdapter,
     RaceclassesAdapter,
     RaceclassResultsService,
     RaceplansAdapter,
@@ -78,10 +78,9 @@ class ResultatEdit(web.View):
             raceplan_summary = get_raceplan_summary(all_races, raceclasses)
 
             if valgt_runde["klasse"]:
-                foto = await FotoService().get_photo_by_raceclass(
-                    user["token"], event_id, valgt_runde["klasse"]
+                foto = await PhotosAdapter().get_photos_by_raceclass(
+                    user["token"], event_id, valgt_runde["klasse"], 4
                 )
-
                 # filter for selected races and enrich
                 for race in all_races:
                     if valgt_runde["runde"] == race["round"]:

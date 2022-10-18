@@ -2,7 +2,6 @@
 import datetime
 import json
 import logging
-from typing import List
 
 from .ai_image_service import AiImageService
 from .albums_adapter import AlbumsAdapter
@@ -33,17 +32,6 @@ class FotoService:
             result = await PhotosAdapter().delete_photo(token, photo["id"])
             logging.debug(f"Deleted photo with id {photo['id']}, result {result}")
         return "Alle lokale kopier er slettet."
-
-    async def get_photo_by_raceclass(
-        self, token: str, event_id: str, raceclass: str
-    ) -> List:
-        """Get all foto for a given klasse."""
-        photos = []
-        tmp_photos = await PhotosAdapter().get_all_photos(token, event_id)
-        for photo in tmp_photos:
-            if raceclass in photo["raceclass"]:
-                photos.append(photo)
-        return photos
 
     async def star_photo(self, token: str, photo_id: str, starred: bool) -> str:
         """Mark photo as starred, or unstarr."""
@@ -123,10 +111,10 @@ class FotoService:
         i_u = 0
         sync_albums = await AlbumsAdapter().get_all_albums(user["token"], event["id"])
         for sync_album in sync_albums:
-            album = await GooglePhotosAdapter().get_album_items(
+            album_items = await GooglePhotosAdapter().get_album_items(
                 user["g_photos_token"], sync_album["g_id"]
             )
-            for g_photo in album["mediaItems"]:  # type: ignore
+            for g_photo in album_items:  # type: ignore
                 creation_time = g_photo["mediaMetadata"]["creationTime"]
                 # update or create record in db
                 try:

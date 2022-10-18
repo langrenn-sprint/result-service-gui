@@ -5,7 +5,6 @@ from aiohttp import web
 import aiohttp_jinja2
 
 from result_service_gui.services import (
-    FotoService,
     PhotosAdapter,
     RaceclassesAdapter,
 )
@@ -48,7 +47,7 @@ class Photos(web.View):
             if not valgt_klasse:
                 photos = await PhotosAdapter().get_all_photos(user["token"], event_id)
             else:
-                photos = await FotoService().get_photo_by_raceclass(
+                photos = await PhotosAdapter().get_photos_by_raceclass(
                     user["token"], event_id, valgt_klasse
                 )
 

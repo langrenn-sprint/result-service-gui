@@ -170,7 +170,7 @@ class UserAdapter:
         cookiestorage["g_client_id"] = user["g_client_id"]
         if "photoslibrary" in user["g_scope"]:
             cookiestorage["g_auth_photos"] = True
-            cookiestorage["g_photos_token"] = GooglePhotosAdapter().get_token(
+            cookiestorage["g_photos_token"] = GooglePhotosAdapter().get_g_token(
                 redirect_url, event_id, user
             )
             return 200
