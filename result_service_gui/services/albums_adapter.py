@@ -1,5 +1,4 @@
 """Module for albums adapter."""
-import copy
 import logging
 import os
 from typing import List, Optional
@@ -9,6 +8,8 @@ from aiohttp import hdrs
 from aiohttp import web
 from multidict import MultiDict
 
+from result_service_gui.model import Album, AlbumSchema
+
 PHOTOS_HOST_SERVER = os.getenv("PHOTOS_HOST_SERVER", "localhost")
 PHOTOS_HOST_PORT = os.getenv("PHOTOS_HOST_PORT", "8092")
 PHOTO_SERVICE_URL = f"http://{PHOTOS_HOST_SERVER}:{PHOTOS_HOST_PORT}"
@@ -17,7 +18,7 @@ PHOTO_SERVICE_URL = f"http://{PHOTOS_HOST_SERVER}:{PHOTOS_HOST_PORT}"
 class AlbumsAdapter:
     """Class representing albums."""
 
-    async def get_all_albums(self, token: str, event_id: Optional[str]) -> List:
+    async def get_all_albums(self, token: str, event_id: Optional[str]) -> List[Album]:
         """Get all albums function."""
         albums = []
         logging.debug(f"Need to handle event_id {event_id}")
@@ -40,9 +41,13 @@ class AlbumsAdapter:
                     raise Exception(f"Login expired: {resp}")
                 else:
                     logging.error(f"Error {resp.status} getting albums: {resp} ")
-        return albums
+        # convert to Album type
+        ds_albums = []
+        schema = AlbumSchema(many=True)
+        ds_albums = schema.load(albums)
+        return ds_albums
 
-    async def get_album(self, token: str, id: str) -> dict:
+    async def get_album(self, token: str, id: str) -> Album:
         """Get album function."""
         album = {}
         headers = MultiDict(
@@ -69,9 +74,10 @@ class AlbumsAdapter:
                     raise web.HTTPBadRequest(
                         reason=f"Error - {resp.status}: {body['detail']}."
                     )
-        return album
+        ds_album = AlbumSchema().load(album)
+        return ds_album
 
-    async def get_album_by_g_id(self, token: str, g_id: str) -> dict:
+    async def get_album_by_g_id(self, token: str, g_id: str) -> Optional[Album]:
         """Get album by google id function."""
         album = {}
         headers = MultiDict(
@@ -80,6 +86,7 @@ class AlbumsAdapter:
                 (hdrs.AUTHORIZATION, f"Bearer {token}"),
             ]
         )
+        servicename = "get_album_by_g_id"
 
         async with ClientSession() as session:
             async with session.get(
@@ -90,16 +97,19 @@ class AlbumsAdapter:
                     album = await resp.json()
                 elif resp.status == 401:
                     raise Exception(f"Login expired: {resp}")
+                elif resp.status == 500:
+                    # no album found
+                    return None
                 else:
-                    servicename = "get_album_by_g_id"
                     body = await resp.json()
                     logging.debug(f"{servicename} failed - {resp.status} - {body}")
                     raise web.HTTPBadRequest(
                         reason=f"Error - {resp.status}: {body['detail']}."
                     )
-        return album
+        ds_album = AlbumSchema().load(album)
+        return ds_album
 
-    async def create_album(self, token: str, album: dict) -> str:
+    async def create_album(self, token: str, album: Album) -> str:
         """Create new album function."""
         servicename = "create_album"
         id = ""
@@ -109,7 +119,7 @@ class AlbumsAdapter:
                 (hdrs.AUTHORIZATION, f"Bearer {token}"),
             ]
         )
-        request_body = copy.deepcopy(album)
+        request_body = AlbumSchema().dump(album)
 
         async with ClientSession() as session:
             async with session.post(
@@ -151,7 +161,7 @@ class AlbumsAdapter:
                 raise web.HTTPBadRequest(reason=f"Error - {resp.status}: {resp}.")
         return resp.status
 
-    async def update_album(self, token: str, id: str, request_body: dict) -> str:
+    async def update_album(self, token: str, id: str, album: Album) -> str:
         """Update album function."""
         servicename = "update_album"
         headers = MultiDict(
@@ -160,6 +170,7 @@ class AlbumsAdapter:
                 (hdrs.AUTHORIZATION, f"Bearer {token}"),
             ]
         )
+        request_body = AlbumSchema().dump(album)
 
         async with ClientSession() as session:
             async with session.put(

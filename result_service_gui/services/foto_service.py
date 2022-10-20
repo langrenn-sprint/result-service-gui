@@ -3,6 +3,9 @@ import datetime
 import json
 import logging
 
+from aiohttp import web
+
+from result_service_gui.model import Album
 from .ai_image_service import AiImageService
 from .albums_adapter import AlbumsAdapter
 from .contestants_adapter import ContestantsAdapter
@@ -21,8 +24,8 @@ class FotoService:
         """Delete all local copies of album sync information."""
         albums = await AlbumsAdapter().get_all_albums(token, event_id)
         for album in albums:
-            result = await AlbumsAdapter().delete_album(token, album["id"])
-            logging.debug(f"Deleted album with id {album['id']}, result {result}")
+            result = await AlbumsAdapter().delete_album(token, album.id)
+            logging.debug(f"Deleted album with id {album.id}, result {result}")
         return "Alle lokale kopier er slettet."
 
     async def delete_all_local_photos(self, token: str, event_id: str) -> str:
@@ -47,32 +50,32 @@ class FotoService:
         return informasjon
 
     async def add_album_for_synk(self, token: str, g_token: str, event: dict, g_album_id: str) -> int:
-        """Create or update album - with results from sync."""
+        """Create album for synk."""
         g_album = await GooglePhotosAdapter().get_album(g_token, g_album_id)
 
-        # check if album already has been synced, then update or create
-        try:
-            album = await AlbumsAdapter().get_album_by_g_id(token, g_album_id)
-            if album:
-                album["last_sync_time"] = ""
-                album["sync_on"] = True
-                resU = await AlbumsAdapter().update_album(token, album["id"], album)
-                logging.debug(f"Update album, local copy {resU}")
-        except Exception:
-            request_body = {
-                "camera_position": "",
-                "changelog": [],
-                "event_id": event["id"],
-                "g_id": g_album_id,
-                "is_photo_finish": False,
-                "is_start_registration": False,
-                "last_sync_time": "",
-                "place": "",
-                "sync_on": True,
-                "title": g_album["title"],
-                "cover_photo_url": g_album["coverPhotoBaseUrl"],
-            }
-            resC = await AlbumsAdapter().create_album(token, request_body)
+        # check if album already has been synced, if not create new
+        album = await AlbumsAdapter().get_album_by_g_id(token, g_album_id)
+        if album:
+            raise web.HTTPBadRequest(
+                reason="Error - album eksisterer allerede."
+            )
+        else:
+            # create album instance
+            album = Album(
+                g_album_id,
+                False,
+                False,
+                True,
+                event["id"],
+                "",
+                None,
+                g_album["coverPhotoBaseUrl"],
+                None,
+                None,
+                "",
+                g_album["title"]
+            )
+            resC = await AlbumsAdapter().create_album(token, album)
             logging.debug(f"Created album, local copy {resC}")
         return 200
 
@@ -93,7 +96,7 @@ class FotoService:
                             token, photo["id"], photo
                         )
                         iCount += 1
-                        logging.debug(f"Updated photo with id {photo_id} - {result}")
+                        logging.debug(f"Updated photo with id {photo_id} for event {event_id} - {result}")
                 except Exception as e:
                     logging.error(f"Error reading biblist - {form[key]}: {e}")
                     informasjon += "En Feil oppstod. "
@@ -112,7 +115,7 @@ class FotoService:
         sync_albums = await AlbumsAdapter().get_all_albums(user["token"], event["id"])
         for sync_album in sync_albums:
             album_items = await GooglePhotosAdapter().get_album_items(
-                user["g_photos_token"], sync_album["g_id"]
+                user["g_photos_token"], sync_album.g_id
             )
             for g_photo in album_items:  # type: ignore
                 creation_time = g_photo["mediaMetadata"]["creationTime"]
@@ -123,14 +126,13 @@ class FotoService:
                     )
                 except Exception:
                     photo = {}
-
                 if photo:
                     # update existing photo
                     photo["name"] = g_photo["filename"]
                     photo["g_product_url"] = g_photo["productUrl"]
                     photo["g_base_url"] = g_photo["baseUrl"]
-                    photo["is_photo_finish"] = sync_album["is_photo_finish"]
-                    photo["is_start_registration"] = sync_album["is_start_registration"]
+                    photo["is_photo_finish"] = sync_album.is_photo_finish
+                    photo["is_start_registration"] = sync_album.is_start_registration
                     photo_id = await PhotosAdapter().update_photo(
                         user["token"], photo["id"], photo
                     )
@@ -140,12 +142,12 @@ class FotoService:
                     # create new photo
                     request_body = {
                         "name": g_photo["filename"],
-                        "is_photo_finish": sync_album["is_photo_finish"],
-                        "is_start_registration": sync_album["is_start_registration"],
+                        "is_photo_finish": sync_album.is_photo_finish,
+                        "is_start_registration": sync_album.is_start_registration,
                         "starred": False,
                         "event_id": event["id"],
                         "creation_time": format_zulu_time(creation_time),
-                        "information": sync_album["title"],
+                        "information": sync_album.title,
                         "race_id": "",
                         "raceclass": "",
                         "biblist": [],
@@ -174,11 +176,9 @@ class FotoService:
                     i_c += 1
 
             # update album register
-            t2 = datetime.datetime.now()
-            time_now = f"{t2.strftime('%Y')}-{t2.strftime('%m')}-{t2.strftime('%d')}T{t2.strftime('%X')}"
-            sync_album["last_sync_time"] = time_now
-            resU = await AlbumsAdapter().update_album(user["token"], sync_album["id"], sync_album)
-            logging.debug(f"Synked album - {sync_album['g_id']}, stored locally {resU}")
+            sync_album.last_sync_time = datetime.datetime.now()
+            resU = await AlbumsAdapter().update_album(user["token"], sync_album.id, sync_album)
+            logging.debug(f"Synked album - {sync_album.g_id}, stored locally {resU}")
 
         informasjon = (
             f"Synkronisert bilder fra Google. {i_u} oppdatert og {i_c} opprettet."
