@@ -110,6 +110,9 @@ class FotoService:
         i_c = 0
         i_u = 0
         sync_albums = await AlbumsAdapter().get_all_albums(user["token"], event["id"])
+        raceclasses = await RaceclassesAdapter().get_raceclasses(
+            user["token"], event["id"]
+        )
         for sync_album in sync_albums:
             album_items = await GooglePhotosAdapter().get_album_items(
                 user["g_photos_token"], sync_album["g_id"]
@@ -164,7 +167,7 @@ class FotoService:
 
                     # new photo - try to link with event activities
                     result = await get_link_to_event_info_from_ai(
-                        user["token"], request_body, event
+                        user["token"], request_body, event, raceclasses
                     )
                     logging.debug(f"Link to race info, result {result}")
                     photo_id = await PhotosAdapter().create_photo(
@@ -187,18 +190,18 @@ class FotoService:
 
 
 # internal functions
-async def get_link_to_event_info_from_ai(token: str, photo: dict, event: dict) -> int:
+async def get_link_to_event_info_from_ai(token: str, photo: dict, event: dict, raceclasses: list) -> int:
     """Use information from AI to link photo to the event activities."""
     result = 200
     ai_information = photo["ai_information"]
     if ai_information["ai_numbers"]:
         for nummer in ai_information["ai_numbers"]:
-            result = await find_race_info_from_bib(token, nummer, photo, event)
+            result = await find_race_info_from_bib(token, nummer, photo, event, raceclasses)
     return result
 
 
 async def find_race_info_from_bib(
-    token: str, bib: int, photo: dict, event: dict
+    token: str, bib: int, photo: dict, event: dict, raceclasses: list
 ) -> int:
     """Analyse photo ai info and add race info to photo."""
     foundheat = ""
@@ -228,22 +231,20 @@ async def find_race_info_from_bib(
                                 photo["biblist"].append(bib)
                                 if contestant["club"] not in photo["clublist"]:
                                     photo["clublist"].append(contestant["club"])
-                                photo["raceclass"] = contestant["ageclass"]
+                                photo["raceclass"] = find_raceclass(contestant["ageclass"], raceclasses)
                         except Exception as e:
                             logging.debug(f"Missing attribute - {e}")
 
     return 200
 
 
-async def find_lopsklasse(token: str, tags: dict, event_id: str) -> str:
+def find_raceclass(ageclass: str, raceclasses: list) -> str:
     """Analyse photo tags and identify løpsklasse."""
     funnetklasse = ""
-    raceclasses = await RaceclassesAdapter().get_raceclasses(token, event_id)
     for klasse in raceclasses:
-        logging.debug(klasse)
-        if tags["Filename"].find(klasse["Løpsklasse"]) > -1:
-            funnetklasse = klasse["Løpsklasse"]
-            logging.debug(f"Found klasse: {funnetklasse}")
+        if ageclass in klasse["ageclasses"]:
+            funnetklasse = klasse["name"]
+            break
 
     return funnetklasse
 
