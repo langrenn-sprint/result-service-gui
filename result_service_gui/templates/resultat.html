@@ -45,18 +45,8 @@
         {% endfor %}
         </td>
       </tr>
-      <tr>
-        <td align=right>
-          <form action=/print_lists method=get target=new>
-            <input type="hidden" name=action value=result>
-            <input type="hidden" name=event_id value="{{ event_id }}">
-            <input type="hidden" name=klasse value="{{ valgt_klasse }}">
-            <input type="submit" name="publish_results" value="  Utskriftsvennlig side ">
-          </form>
-        </td>
-      </tr>
     </table>
-    <div id=adminpagetitle>{{ valgt_klasse }} offisielle resultater</div>
+    <div id=adminpagetitle>{{ valgt_klasse }} Offisielle resultater</div>
     <table>
       <tr id=headerblack>
         <td>Plass</td>
@@ -80,9 +70,17 @@
         </tr>
       {% endfor %}
       <tr>
-        <td colspan=4></td>
-       <td colspan=2 align=center>Antall løpere: {{ resultlist.no_of_contestants }}</td>
-     </tr>
+        <td colspan=2 align=center>Antall løpere: {{ resultlist.no_of_contestants }}</td>
+        <td colspan=2></td>
+        <td colspan=2 align=right>
+          <form action=/print_lists method=get target=new>
+            <input type="hidden" name=action value=result>
+            <input type="hidden" name=event_id value="{{ event_id }}">
+            <input type="hidden" name=klasse value="{{ valgt_klasse }}">
+            <input type="submit" name="publish_results" value="  Utskriftsvennlig side ">
+          </form>
+        </td>
+      </tr>
     </table>
 {% endblock %}
 </div>

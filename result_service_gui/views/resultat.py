@@ -51,6 +51,7 @@ class Resultat(web.View):
 
             if not valgt_klasse:
                 informasjon = "Velg klasse for å vise resultater"
+                foto = await PhotosAdapter().get_all_photos(user["token"], event_id, 5)
             else:
                 try:
                     resultlist = await RaceclassResultsAdapter().get_raceclass_result(
@@ -60,7 +61,7 @@ class Resultat(web.View):
                     informasjon = "Resultater er ikke klare. Velg 'Live' i menyen for heat resultater"
 
                 foto = await PhotosAdapter().get_photos_by_raceclass(
-                    user["token"], event_id, valgt_klasse, 4
+                    user["token"], event_id, valgt_klasse, 5
                 )
                 valgt_bildevisning = "klasse=" + valgt_klasse
 
