@@ -13,6 +13,13 @@
   <img id=menu_icon src="../static/icon_photos.png"> Foto synkronisering
 {% endblock %}
 {% block menuitems %}
+  <li class=dropdown id=topborder>
+    <a href=javascript:void(0) class=dropbtn>Velg funksjon</a>
+    <div class=dropdown-content>
+      <a  href=photos_edit?event_id={{ event_id }}>Bilderedigering</a>
+      <a  href=photo_sync?event_id={{ event_id }}>Synkronisering</a>
+    </div>
+  </li>
 {% endblock %}
 
 {% block content %}
@@ -30,12 +37,6 @@
   </script>
   <table>
     <tr id=headerblue align=right>
-      <td>
-        <form action=/photos_edit method=get>
-          <input type="hidden" name=event_id value="{{ event_id }}">
-          <input type="submit" name=photos_edit value="  Til lokale bilder  ">
-        </form>
-      </td>
       <td>
         <form action=/photo_sync method=post onsubmit="return checkform(this);">
           <input type="hidden" name="event_id" value="{{ event_id }}">
