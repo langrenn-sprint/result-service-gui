@@ -89,17 +89,17 @@ class PhotoSync(web.View):
                     action = "one_sync"
             elif "add_photo_finish" in form.keys():
                 album = await AlbumsAdapter().get_album(user["token"], album_id)
-                album["is_photo_finish"] = True
-                album["is_start_registration"] = False
-                album["place"] = "Finish"
-                resU = await AlbumsAdapter().update_album(user["token"], album["id"], album)
+                album.is_photo_finish = True
+                album.is_start_registration = False
+                album.place = "Finish"
+                resU = await AlbumsAdapter().update_album(user["token"], album.id, album)
                 informasjon = f"Album {album_title} er registrert som photo_finish ({resU})"
             elif "add_place_start" in form.keys():
                 album = await AlbumsAdapter().get_album(user["token"], album_id)
-                album["is_photo_finish"] = False
-                album["is_start_registration"] = True
-                album["place"] = "Start"
-                resU = await AlbumsAdapter().update_album(user["token"], album["id"], album)
+                album.is_photo_finish = False
+                album.is_start_registration = True
+                album.place = "Start"
+                resU = await AlbumsAdapter().update_album(user["token"], album.id, album)
                 informasjon = f"Album {album_title} er registrert som start-foto ({resU})"
             elif "add_sync" in form.keys():
                 resA = await FotoService().add_album_for_synk(
