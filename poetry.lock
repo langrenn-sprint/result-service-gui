@@ -49,6 +49,19 @@ jinja2 = ">=3.0.0"
 typing-extensions = {version = ">=3.7.4", markers = "python_version < \"3.8\""}
 
 [[package]]
+name = "aiohttp-middlewares"
+version = "2.2.0"
+description = "Collection of useful middlewares for aiohttp applications."
+category = "main"
+optional = false
+python-versions = ">=3.7,<4.0"
+
+[package.dependencies]
+aiohttp = ">=3.8.1,<4.0.0"
+async-timeout = ">=4.0.2,<5.0.0"
+yarl = ">=1.5.1,<2.0.0"
+
+[[package]]
 name = "aiohttp-session"
 version = "2.12.0"
 description = "sessions for aiohttp.web"
@@ -1650,7 +1663,7 @@ testing = ["flake8 (<5)", "func-timeout", "jaraco.functools", "jaraco.itertools"
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.7,<3.11"
-content-hash = "bcccbfdb59eacb63e11e47c6ed20d1b89c32b0e16e68b646738be569e45afe48"
+content-hash = "66c1b910dcfd717f0cbaa2d0fd6e7952171b55ccc5f32536727891b52d7cabfe"
 
 [metadata.files]
 aiohttp = [
@@ -1749,6 +1762,10 @@ aiohttp-devtools = [
 aiohttp-jinja2 = [
     {file = "aiohttp-jinja2-1.5.tar.gz", hash = "sha256:7c3ba5eac060b691f4e50534af2d79fca2a75712ebd2b25e6fcb1295859f910b"},
     {file = "aiohttp_jinja2-1.5-py3-none-any.whl", hash = "sha256:b55c0ed167b0cc4b6d6a50fb2299a44beb5dc4aec9df21305b91a5484694cf74"},
+]
+aiohttp-middlewares = [
+    {file = "aiohttp_middlewares-2.2.0-py3-none-any.whl", hash = "sha256:f4b87665667d4d3e818d70495e832e368f11a1fdc9c2fd8157a7d9e5d5147c5d"},
+    {file = "aiohttp_middlewares-2.2.0.tar.gz", hash = "sha256:3967b2a0d17a2c094681e7c2f246977a365479a2820e48f8a01136c910f4aa93"},
 ]
 aiohttp-session = [
     {file = "aiohttp-session-2.12.0.tar.gz", hash = "sha256:0ccd11a7c77cb9e5a61f4daacdc9170d561112f9cfaf9e9a2d9867c0587d1950"},

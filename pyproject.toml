@@ -32,6 +32,7 @@ nox-poetry = "^1.0.1"
 setuptools = "^65.5.0"
 PyJWT = "^2.6.0"
 marshmallow = "^3.18.0"
+aiohttp-middlewares = "^2.2.0"
 
 [tool.poetry.dev-dependencies]
 aiohttp-devtools = "^1"
