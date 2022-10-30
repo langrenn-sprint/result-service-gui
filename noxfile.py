@@ -19,7 +19,7 @@ nox.options.sessions = (
 )
 
 
-@session
+@session(python="3.10")
 def integration_tests(session: Session) -> None:
     """Run the integration test suite."""
     args = session.posargs or ["--cov"]
@@ -30,29 +30,19 @@ def integration_tests(session: Session) -> None:
         "pytest-cov",
         "pytest-mock",
         "pytest-aiohttp",
-        "requests",
         "aioresponses",
-        "pygments",
+        "requests",
     )
     session.run(
         "pytest",
         "-m integration",
-        "-rF",
+        "-rA",
         *args,
-        env={
-            "CONFIG": "test",
-            "JWT_SECRET": "secret",
-            "ADMIN_USERNAME": "admin",
-            "ADMIN_PASSWORD": "password",
-            "EVENTS_HOST_SERVER": "events.example.com",
-            "EVENTS_HOST_PORT": "8080",
-            "USERS_HOST_SERVER": "users.example.com",
-            "USERS_HOST_PORT": "8081",
-        },
+        env={},
     )
 
 
-@session
+@session(python="3.10")
 def contract_tests(session: Session) -> None:
     """Run the contract test suite."""
     args = session.posargs
@@ -63,7 +53,6 @@ def contract_tests(session: Session) -> None:
         "pytest_mock",
         "pytest-asyncio",
         "requests",
-        "aioresponses",
     )
     session.run(
         "pytest",
