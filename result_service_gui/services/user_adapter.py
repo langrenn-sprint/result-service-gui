@@ -140,7 +140,7 @@ class UserAdapter:
 
     def login_google(self, g_jwt: str, user: dict, cookiestorage: Session) -> int:
         """Login based upon google token."""
-        decoded_jwt = jwt.decode(g_jwt, options={"verify_signature": False})
+        decoded_jwt = jwt.decode(g_jwt, options={"verify_signature": False})  # type: ignore
 
         # store token to session variable
         cookiestorage["token"] = user["token"]
