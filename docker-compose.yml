@@ -18,6 +18,8 @@ services:
       - RACE_HOST_PORT=8080
       - USERS_HOST_SERVER=user-service
       - USERS_HOST_PORT=8080
+    volumes:
+      - .:/app
     depends_on:
       - "event-service"
       - "user-service"
