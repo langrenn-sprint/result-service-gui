@@ -605,7 +605,7 @@ async def get_races_for_round_result(
 async def update_finish_time_events(
     user: dict, delete_result_list: list, add_result_list: list
 ) -> list:
-    """Update time events for finish- return information."""
+    """Update time events for finish - return information."""
     informasjon = []
     for del_result in delete_result_list:
         info = await delete_result(user, del_result)
