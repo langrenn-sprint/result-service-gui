@@ -66,6 +66,9 @@
           if (my_element.style.backgroundColor != "red") {
   	        document.getElementById(old_element).style.backgroundColor = "";
           }
+          else {
+  	        my_element.backgroundColor = "";
+          }
         }
         catch(err) {
         }
@@ -81,7 +84,9 @@
           }
         }
         catch(err) {
-          my_element.style.backgroundColor = "red";
+          if (my_element.value != "") {
+            my_element.style.backgroundColor = "red";
+          }
         }
       }
       function green_bg_init(id) {
