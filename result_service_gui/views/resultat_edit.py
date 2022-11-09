@@ -126,7 +126,7 @@ class ResultatEdit(web.View):
         """Post route function that creates deltakerliste."""
         # check login
         user = await check_login(self)
-        informasjon = []
+        informasjon = ""
         valgt_runde = {}
         try:
             form = await self.request.post()
@@ -136,19 +136,19 @@ class ResultatEdit(web.View):
             valgt_runde["runde"] = str(form["runde"])
 
             if "create_start" in form.keys():
-                informasjon = await create_start(user, form)  # type: ignore
+                informasjon += await create_start(user, form)  # type: ignore
             elif "update_result" in form.keys():
-                informasjon = await update_result(user, form)  # type: ignore
+                informasjon += await update_result(user, form)  # type: ignore
                 # set results to official
                 if "publish" in form.keys():
                     res = await ResultAdapter().update_result_status(user["token"], form["race_id"], 2)  # type: ignore
-                    informasjon.append(f"Heat resultat er publisert - {res}.")
+                    informasjon = f"Heat resultat er publisert - {res}. " + informasjon
                     race_round = str(form["race"])
                     if race_round.find("FA") > -1:
                         res = await RaceclassResultsService().create_raceclass_results(
                             user["token"], event_id, valgt_runde["klasse"]
                         )  # type: ignore
-                        informasjon.append(f" Klassens resultat er publisert - {res}.")
+                        informasjon = f" Klassens resultat er publisert - {res}. " + informasjon
 
         except Exception as e:
             logging.error(f"Error: {e}")
@@ -157,7 +157,7 @@ class ResultatEdit(web.View):
                 return web.HTTPSeeOther(
                     location=f"/login?informasjon=Ingen tilgang, vennligst logg inn på nytt. {e}"
                 )
-            informasjon.append(f"Det har oppstått en feil - {e.args}.")
+            informasjon += f"Det har oppstått en feil - {e.args}. " + informasjon
         info = (
             f"{informasjon}&klasse={valgt_runde['klasse']}&runde={valgt_runde['runde']}"
         )
@@ -166,9 +166,9 @@ class ResultatEdit(web.View):
         )
 
 
-async def create_start(user: dict, form: dict) -> list:
+async def create_start(user: dict, form: dict) -> str:
     """Extract form data and create one start."""
-    informasjon = []
+    informasjon = ""
     contestant = await ContestantsAdapter().get_contestant_by_bib(
         user["token"], form["event_id"], form["bib"]
     )
@@ -183,7 +183,7 @@ async def create_start(user: dict, form: dict) -> list:
         "club": contestant["club"],
     }
     id = await StartAdapter().create_start_entry(user["token"], new_start)
-    informasjon.append(f"Opprettet ny start. Resultat: {id}")
+    informasjon += f"Opprettet ny start. Resultat: {id} "
     return informasjon
 
 
@@ -248,7 +248,7 @@ def get_finish_rank_from_photos(user: dict, photos: list, camera_side: str) -> l
     return biblist
 
 
-async def update_result(user: dict, form: dict) -> list:
+async def update_result(user: dict, form: dict) -> str:
     """Extract form data and update result and corresponding start event."""
     time_now = datetime.datetime.now()
     time_stamp_now = f"{time_now.strftime('%Y')}-{time_now.strftime('%m')}-{time_now.strftime('%d')}T{time_now.strftime('%X')}"

@@ -39,7 +39,6 @@ class Start(web.View):
             raceplan_summary = []
             colseparators = []
             colclass = "w3-container"
-
             try:
                 valgt_klasse = self.request.rel_url.query["klasse"]
             except Exception:

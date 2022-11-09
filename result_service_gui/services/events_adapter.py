@@ -10,6 +10,8 @@ from aiohttp import hdrs
 from aiohttp import web
 from multidict import MultiDict
 
+from .competition_format_adapter import CompetitionFormatAdapter
+
 EVENTS_HOST_SERVER = os.getenv("EVENTS_HOST_SERVER", "localhost")
 EVENTS_HOST_PORT = os.getenv("EVENTS_HOST_PORT", "8082")
 EVENT_SERVICE_URL = f"http://{EVENTS_HOST_SERVER}:{EVENTS_HOST_PORT}"
@@ -17,59 +19,6 @@ EVENT_SERVICE_URL = f"http://{EVENTS_HOST_SERVER}:{EVENTS_HOST_PORT}"
 
 class EventsAdapter:
     """Class representing events."""
-
-    async def create_competition_format(self, token: str, request_body: dict) -> str:
-        """Generate create_competition_format standard values."""
-        servicename = "create_competition_format"
-        headers = MultiDict(
-            [
-                (hdrs.CONTENT_TYPE, "application/json"),
-                (hdrs.AUTHORIZATION, f"Bearer {token}"),
-            ]
-        )
-        url = f"{EVENT_SERVICE_URL}/competition-formats"
-        async with ClientSession() as session:
-            async with session.post(url, headers=headers, json=request_body) as resp:
-                res = resp.status
-                logging.debug(f"create_competition_format result - got response {resp}")
-                if res == 201:
-                    pass
-                elif resp.status == 401:
-                    raise web.HTTPBadRequest(reason=f"401 Unathorized - {servicename}")
-                else:
-                    body = await resp.json()
-                    logging.error(f"{servicename} failed - {resp.status} - {body}")
-                    raise web.HTTPBadRequest(
-                        reason=f"Error - {resp.status}: {body['detail']}."
-                    )
-        information = f"Opprettet competition format {resp.status}."
-        return information
-
-    async def delete_competition_format(self, token: str, id: str) -> str:
-        """Function to delete one competition_format."""
-        servicename = "delete_competition_format"
-        headers = MultiDict(
-            [
-                (hdrs.AUTHORIZATION, f"Bearer {token}"),
-            ]
-        )
-        url = f"{EVENT_SERVICE_URL}/competition-formats/{id}"
-        async with ClientSession() as session:
-            async with session.delete(url, headers=headers) as resp:
-                res = resp.status
-                logging.debug(f"delete_competition_format result - got response {resp}")
-                if res == 204:
-                    pass
-                elif resp.status == 401:
-                    raise web.HTTPBadRequest(reason=f"401 Unathorized - {servicename}")
-                else:
-                    body = await resp.json()
-                    logging.error(f"{servicename} failed - {resp.status} - {body}")
-                    raise web.HTTPBadRequest(
-                        reason=f"Error - {resp.status}: {body['detail']}."
-                    )
-        information = f"Slettet competition format {resp.status}."
-        return information
 
     async def generate_classes(self, token: str, event_id: str) -> str:
         """Generate classes based upon registered contestants."""
@@ -120,37 +69,6 @@ class EventsAdapter:
                 else:
                     logging.error(f"Error {resp.status} getting events: {resp} ")
         return events
-
-    async def get_competition_formats(self, token: str) -> List:
-        """Get competition_formats function."""
-        competition_formats = []
-        headers = MultiDict(
-            [
-                (hdrs.CONTENT_TYPE, "application/json"),
-                (hdrs.AUTHORIZATION, f"Bearer {token}"),
-            ]
-        )
-
-        async with ClientSession() as session:
-            async with session.get(
-                f"{EVENT_SERVICE_URL}/competition-formats", headers=headers
-            ) as resp:
-                logging.debug(f"get_competition_formats - got response {resp.status}")
-                if resp.status == 200:
-                    competition_formats = await resp.json()
-                    logging.debug(
-                        f"competition_formats - got response {competition_formats}"
-                    )
-                elif resp.status == 401:
-                    raise Exception(f"Login expired: {resp}")
-                else:
-                    servicename = "get_competition_formats"
-                    body = await resp.json()
-                    logging.error(f"{servicename} failed - {resp.status} - {body}")
-                    raise web.HTTPBadRequest(
-                        reason=f"Error - {resp.status}: {body['detail']}."
-                    )
-        return competition_formats
 
     async def get_event(self, token: str, id: str) -> dict:
         """Get event function."""
@@ -209,7 +127,7 @@ class EventsAdapter:
         servicename = "create_event"
         id = ""
         # add default values for selected competition format
-        competition_formats = await self.get_competition_formats(token)
+        competition_formats = await CompetitionFormatAdapter().get_competition_formats(token)
         for format in competition_formats:
             if format["name"] == event["competition_format"]:
                 event["datatype"] = format["datatype"]
@@ -270,33 +188,6 @@ class EventsAdapter:
                     reason=f"Error - {resp.status}: {body['detail']}."
                 )
         return str(resp.status)
-
-    async def update_competition_format(self, token: str, request_body: dict) -> str:
-        """Generate update_competition_format standard values."""
-        servicename = "update_competition_format"
-        headers = MultiDict(
-            [
-                (hdrs.CONTENT_TYPE, "application/json"),
-                (hdrs.AUTHORIZATION, f"Bearer {token}"),
-            ]
-        )
-        url = f"{EVENT_SERVICE_URL}/competition-formats/{request_body['id']}"
-        async with ClientSession() as session:
-            async with session.put(url, headers=headers, json=request_body) as resp:
-                res = resp.status
-                logging.debug(f"update_competition_format result - got response {resp}")
-                if res == 204:
-                    pass
-                elif resp.status == 401:
-                    raise web.HTTPBadRequest(reason=f"401 Unathorized - {servicename}")
-                else:
-                    body = await resp.json()
-                    logging.error(f"{servicename} failed - {resp.status} - {body}")
-                    raise web.HTTPBadRequest(
-                        reason=f"Error - {resp.status}: {body['detail']}."
-                    )
-        information = f"Oppdatert competition format {resp.status}."
-        return information
 
     async def update_event(self, token: str, id: str, request_body: dict) -> str:
         """Update event function."""
