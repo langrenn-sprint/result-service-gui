@@ -446,20 +446,18 @@ def get_qualification_text(race: dict) -> str:
         for key, value in race["rule"].items():
             if key == "S":
                 for x, y in value.items():
-                    if x == "A":
-                        text += f"{y} til semi A. "
-                    elif x == "C":
-                        text += f"{y} til semi C. "
+                    if y == "REST":
+                        text += f"Resten til semi {x}. "
+                    elif y > 0:
+                        text += f"{y} til semi {x}. "
             elif key == "F":
                 for x, y in value.items():
-                    if x == "A":
-                        text += f"{y} til finale A. "
-                    elif x == "B":
-                        text += f"{y} til finale B. "
-                    elif x == "C":
-                        text += f"{y} til finale C. "
-                if text.count("REST") == 0:
-                    text += "Resten er ute. "
+                    if y == "ALL":
+                        text += f"Alle til finale {x}. "
+                    elif y == "REST":
+                        text += f"Resten til finale {x}. "
+                    elif y > 0:
+                        text += f"{y} til finale {x}. "
     logging.debug(f"Regel hele: {text}")
     return text
 
