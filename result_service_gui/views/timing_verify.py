@@ -128,7 +128,7 @@ class TimingVerify(web.View):
         """Post route function that creates deltakerliste."""
         # check login
         user = await check_login(self)
-        informasjon = []
+        informasjon = ""
         valgt_runde = {}
         try:
             form = await self.request.post()
@@ -138,7 +138,7 @@ class TimingVerify(web.View):
             valgt_runde["runde"] = str(form["runde"])
 
             if "publish_results" in form.keys():
-                informasjon = ["Resultater er publisert (TODO)"]
+                informasjon = "Resultater er publisert (TODO)"
             elif "create_start" in form.keys():
                 informasjon = await create_start(user, form)  # type: ignore
             elif "delete_start" in form.keys():
@@ -148,7 +148,8 @@ class TimingVerify(web.View):
                 # set results to official
                 if "submit_publish" in form.keys():
                     res = await ResultAdapter().update_result_status(user["token"], form["race_id"], 2)  # type: ignore
-                    informasjon.append(f"Heat resultat er publisert - {res}.")
+                    logging.debug(f"Resultat publisert: {res} - {form}")
+                    informasjon = "Heat resultat er publisert. " + informasjon
         except Exception as e:
             logging.error(f"Error: {e}")
             error_reason = str(e)
@@ -156,7 +157,7 @@ class TimingVerify(web.View):
                 return web.HTTPSeeOther(
                     location=f"/login?informasjon=Ingen tilgang, vennligst logg inn på nytt. {e}"
                 )
-            informasjon.append(f"Det har oppstått en feil - {e.args}.")
+            informasjon = f"Det har oppstått en feil - {e.args}." + informasjon
         info = (
             f"{informasjon}&klasse={valgt_runde['klasse']}&runde={valgt_runde['runde']}"
         )
@@ -165,9 +166,9 @@ class TimingVerify(web.View):
         )
 
 
-async def create_start(user: dict, form: dict) -> list:
+async def create_start(user: dict, form: dict) -> str:
     """Extract form data and create one start."""
-    informasjon = []
+    informasjon = ""
     contestant = await ContestantsAdapter().get_contestant_by_bib(
         user["token"], form["event_id"], form["bib"]
     )
@@ -182,17 +183,17 @@ async def create_start(user: dict, form: dict) -> list:
         "club": contestant["club"],
     }
     id = await StartAdapter().create_start_entry(user["token"], new_start)
-    informasjon.append(f"Opprettet ny start. Resultat: {id}")
+    informasjon = f"Opprettet start: {id}. "
     return informasjon
 
 
-async def delete_start(user: dict, form: dict) -> list:
+async def delete_start(user: dict, form: dict) -> str:
     """Extract form data and delete one start event."""
-    informasjon = []
+    informasjon = ""
     id = await StartAdapter().delete_start_entry(
         user["token"], form["race_id"], form["start_id"]
     )
-    informasjon.append(f"Slettet start. Resultat: {id}")
+    informasjon = f"Slettet start: {id}. "
     return informasjon
 
 
@@ -234,7 +235,7 @@ def get_next_round(valgt_runde: dict) -> list:
     return next_round
 
 
-async def update_result(user: dict, form: dict) -> list:
+async def update_result(user: dict, form: dict) -> str:
     """Extract form data and update one result and corresponding start event."""
     time_now = datetime.datetime.now()
     time_stamp_now = f"{time_now.strftime('%Y')}-{time_now.strftime('%m')}-{time_now.strftime('%d')}T{time_now.strftime('%X')}"

@@ -446,23 +446,19 @@ def get_qualification_text(race: dict) -> str:
         for key, value in race["rule"].items():
             if key == "S":
                 for x, y in value.items():
-                    if x == "A" and y > 0:
+                    if x == "A":
                         text += f"{y} til semi A. "
-                    elif x == "C" and y > 0:
-                        text += "Resten til semi C. "
+                    elif x == "C":
+                        text += f"{y} til semi C. "
             elif key == "F":
                 for x, y in value.items():
                     if x == "A":
                         text += f"{y} til finale A. "
-                    elif x == "B" and y > 8:
-                        text += "Resten til finale B. "
                     elif x == "B":
                         text += f"{y} til finale B. "
-                    elif x == "C" and y > 8:
-                        text += "Resten til finale C. "
                     elif x == "C":
                         text += f"{y} til finale C. "
-                if text.count("Resten") == 0:
+                if text.count("REST") == 0:
                     text += "Resten er ute. "
     logging.debug(f"Regel hele: {text}")
     return text
@@ -604,19 +600,19 @@ async def get_races_for_round_result(
 
 async def update_finish_time_events(
     user: dict, delete_result_list: list, add_result_list: list
-) -> list:
+) -> str:
     """Update time events for finish- return information."""
-    informasjon = []
+    informasjon = ""
     for del_result in delete_result_list:
         info = await delete_result(user, del_result)
-        informasjon.append(info)
+        informasjon += info
         logging.debug(f"Deleted result: {info} - body: {del_result}")
 
-    id = await TimeEventsService().create_finish_time_events(
+    info = await TimeEventsService().create_finish_time_events(
         user["token"], add_result_list
     )
-    informasjon.append(f" {id} ")
-    logging.debug(f"Registrering: {id} - body: {add_result_list}")
+    informasjon += info
+    logging.debug(f"Registreringer: {info} - body: {add_result_list}")
     return informasjon
 
 
