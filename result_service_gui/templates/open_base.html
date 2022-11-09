@@ -44,7 +44,7 @@
             <table><tr><td>
               <a id="myIndex" onclick="result_gui_href('myIndex', '')" href=><img id=menu_icon src="../static/icon_event.png"> Forsiden</a>
               {% if event_id %}
-                <a id="myStart" onclick="result_gui_href('myStart', 'start?event_id={{ event_id }}')" href=><img id=menu_icon src="../static/icon_start.png"> Startlister</a>
+                <nobr><a id="myStart" onclick="result_gui_href('myStart', 'start?event_id={{ event_id }}')" href=><img id=menu_icon src="../static/icon_start.png"> Startlister</a></nobr>
                 <a id="myLive" onclick="result_gui_href('myLive', 'live?event_id={{ event_id }}')" href=><img id=menu_icon src="../static/icon_live.png"> Live</a>
                 <nobr><a id="myResult" onclick="result_gui_href('myResult', 'resultat?event_id={{ event_id }}')" href=><img id=menu_icon src="../static/icon_result.png"> Resultater</a></nobr>
                 <a id="myPhoto" onclick="result_gui_href('myPhoto', 'photos?event_id={{ event_id }}')" href=><img id=menu_icon src="../static/icon_photos.png"> Bilder</a>

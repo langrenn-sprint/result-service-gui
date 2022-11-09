@@ -64,8 +64,8 @@
       {% if race.list_type == "start" %}
         <tr id=headerprint>
           <td colspan=3>Kl. {{ race.start_time }} {{ race.raceclass }}
-            {% if race.round == "Q" %}Kvartfinale {{ race.heat }}
-            {% elif race.round == "S" %}Semifinale {{ race.index }}{{ race.heat }}
+            {% if race.round == "Q" %}Kvart {{ race.heat }}
+            {% elif race.round == "S" %}Semi {{ race.index }}{{ race.heat }}
             {% elif race.round == "F" %}Finale {{ race.index }}
             {% endif %}
             ({{ race.raceclass }}{{ race.round }}{{ race.index }}{{ race.heat }})
@@ -87,8 +87,8 @@
         <tr id=headerprint>
           <td colspan=3>
             Resultater {{ race.raceclass }}
-            {% if race.round == "Q" %}Kvartfinale {{ race.heat }}
-            {% elif race.round == "S" %}Semifinale {{ race.index }}{{ race.heat }}
+            {% if race.round == "Q" %}Kvart {{ race.heat }}
+            {% elif race.round == "S" %}Semi {{ race.index }}{{ race.heat }}
             {% elif race.round == "F" %}Finale {{ race.index }}
             {% endif %}
             ({{ race.raceclass }}{{ race.round }}{{ race.index }}{{ race.heat }})
