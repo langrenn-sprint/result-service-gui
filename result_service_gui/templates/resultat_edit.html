@@ -97,7 +97,11 @@
 <div class="w3-row-padding">
   {% for race in current_races %}
     <div id=headercollapse>
-      {{ race.raceclass }} {{ race.round }}{{ race.index }}{{ race.heat }}
+      {% if race.round == "F" %}
+        {{ race.raceclass }}{{ race.round }}{{ race.index }}
+      {% else %}
+        {{ race.raceclass }}{{ race.round }}{{ race.index }}{{ race.heat }}
+      {% endif %}
       {% if race.results.Finish and (race.results.Finish.status == 2) %}
           - <a data-toggle="collapse" href="#demo_{{ race.id }}">resultat publisert.</a></div>
           <div id=spacer></div>

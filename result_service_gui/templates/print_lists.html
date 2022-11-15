@@ -68,7 +68,11 @@
             {% elif race.round == "S" %}Semi {{ race.index }}{{ race.heat }}
             {% elif race.round == "F" %}Finale {{ race.index }}
             {% endif %}
-            ({{ race.raceclass }}{{ race.round }}{{ race.index }}{{ race.heat }})
+            {% if race.round == "F" %}
+              ({{ race.raceclass }}{{ race.round }}{{ race.index }})
+            {% else %}
+              ({{ race.raceclass }}{{ race.round }}{{ race.index }}{{ race.heat }})
+            {% endif %}
           </td>
           <td>{% if race.round != "F" %}Neste heat: {{ race.next_race }}{% endif %}</td>
           <td></td>
@@ -91,8 +95,12 @@
             {% elif race.round == "S" %}Semi {{ race.index }}{{ race.heat }}
             {% elif race.round == "F" %}Finale {{ race.index }}
             {% endif %}
-            ({{ race.raceclass }}{{ race.round }}{{ race.index }}{{ race.heat }})
-          </td>
+            {% if race.round == "F" %}
+              ({{ race.raceclass }}{{ race.round }}{{ race.index }})
+            {% else %}
+              ({{ race.raceclass }}{{ race.round }}{{ race.index }}{{ race.heat }})
+            {% endif %}
+            </td>
           <td></td>
           {% if race.round == "F" %}
             <td></td>

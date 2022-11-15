@@ -106,8 +106,15 @@ async def get_results_by_raceclass(
     grouped_results = {  # type: ignore
         "FA": [],
         "FB": [],
+        "FB1": [],
+        "FB2": [],
+        "FB3": [],
         "SA": [],
         "FC": [],
+        "FC1": [],
+        "FC2": [],
+        "FC3": [],
+        "FC4": [],
         "SC": [],
         "DNF": [],
     }

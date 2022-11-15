@@ -96,7 +96,8 @@
                 <td colspan=4>
                   <b>{{ race.raceclass }}
                   {% if race.round == "Q" %}{{ race.round }}{{ race.heat }}
-                  {% else %}{{ race.round }}{{ race.index }}{{ race.heat }}
+                  {% elif race.round == "S" %}{{ race.round }}{{ race.index }}{{ race.heat }}
+                  {% else %}{{ race.round }}{{ race.index }}
                   {% endif %} - Kl. {{ race.start_time }}</b>
                 </td>
                 <td></td>
