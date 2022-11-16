@@ -23,6 +23,7 @@ services:
     volumes:
       - .:/app
     depends_on:
+      - "competition-format-service"
       - "event-service"
       - "user-service"
       - "mongodb"
@@ -47,7 +48,10 @@ services:
       - USERS_HOST_SERVER=user-service
       - USERS_HOST_PORT=8080
     depends_on:
+      - "competition-format-service"
       - "event-service"
+      - "user-service"
+      - "mongodb"
   event-service:
     image: ghcr.io/langrenn-sprint/event-service:latest
     ports:
