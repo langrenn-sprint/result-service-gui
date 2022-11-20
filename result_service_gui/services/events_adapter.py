@@ -102,7 +102,7 @@ class EventsAdapter:
     def get_global_setting(self, param_name: str) -> str:
         """Get global settings from .env file."""
         try:
-            with open("global_settings.json") as json_file:
+            with open(f"{os.getcwd()}/global_settings.json") as json_file:
                 settings = json.load(json_file)
                 global_setting = settings[param_name]
         except Exception as e:
