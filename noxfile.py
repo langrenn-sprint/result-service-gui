@@ -8,7 +8,7 @@ package = "result_service_gui"
 locations = "result_service_gui", "tests", "noxfile.py"
 nox.options.envdir = ".cache"
 nox.options.reuse_existing_virtualenvs = True
-nox.options.stop_on_first_error = True
+nox.options.stop_on_first_error = False
 nox.options.sessions = (
     "lint",
     "mypy",
