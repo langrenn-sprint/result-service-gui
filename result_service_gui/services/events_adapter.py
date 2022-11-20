@@ -114,11 +114,11 @@ class EventsAdapter:
         """Get url to club logo - input is 4 first chars of club name."""
         try:
             club_name_short = club_name[:4]
-            with open("sports_clubs.json") as json_file:
+            with open(f"{os.getcwd()}/sports_clubs.json") as json_file:
                 logo_urls = json.load(json_file)
             logo_url = logo_urls[club_name_short]
-        except Exception:
-            logging.error(f"Club logo not found - {club_name}")
+        except Exception as e:
+            logging.error(f"Club logo not found - {club_name}, error: {e}")
             logo_url = ""
         return logo_url
 

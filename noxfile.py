@@ -13,7 +13,7 @@ nox.options.sessions = (
     "lint",
     "mypy",
     "pytype",
-    "safety",
+    # "safety",
     "integration_tests",
     "contract_tests",
 )
