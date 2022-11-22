@@ -1,4 +1,5 @@
 """Module for events adapter."""
+import json
 import logging
 import os
 from typing import List
@@ -8,7 +9,10 @@ from aiohttp import hdrs
 from aiohttp import web
 from multidict import MultiDict
 
-COMPETITION_FORMAT_HOST_SERVER = os.getenv("COMPETITION_FORMAT_HOST_SERVER", "localhost")
+
+COMPETITION_FORMAT_HOST_SERVER = os.getenv(
+    "COMPETITION_FORMAT_HOST_SERVER", "localhost"
+)
 COMPETITION_FORMAT_HOST_PORT = os.getenv("COMPETITION_FORMAT_HOST_PORT", "8094")
 COMPETITION_FORMAT_SERVICE_URL = (
     f"http://{COMPETITION_FORMAT_HOST_SERVER}:{COMPETITION_FORMAT_HOST_PORT}"
@@ -102,6 +106,29 @@ class CompetitionFormatAdapter:
                     )
         return competition_formats
 
+    def get_default_competition_format(self, format_type: str) -> dict:
+        """Get default settings from config file."""
+        config_files_directory = f"{os.getcwd()}/result_service_gui/config"
+        if format_type == "default_individual_sprint":
+            config_file_name = (
+                f"{config_files_directory}/competition_format_individual_sprint.json"
+            )
+        elif format_type == "default_sprint_all_to_finals":
+            config_file_name = f"{config_files_directory}/competition_format_individual_sprint_all_to_finals.json"
+        elif format_type == "default_interval_start":
+            config_file_name = (
+                f"{config_files_directory}/competition_format_interval_start.json"
+            )
+        try:
+            with open(config_file_name) as json_file:
+                default_format = json.load(json_file)
+        except Exception as e:
+            error_text = f"Default competition format for {format_type} not found. File path {config_files_directory} - {e}"
+            logging.error(error_text)
+            logging.error(f"Current directory {os.getcwd()} - content {os.listdir()}")
+            raise Exception(error_text) from e
+        return default_format
+
     async def update_competition_format(self, token: str, request_body: dict) -> str:
         """Generate update_competition_format standard values."""
         servicename = "update_competition_format"
@@ -111,7 +138,9 @@ class CompetitionFormatAdapter:
                 (hdrs.AUTHORIZATION, f"Bearer {token}"),
             ]
         )
-        url = f"{COMPETITION_FORMAT_SERVICE_URL}/competition-formats/{request_body['id']}"
+        url = (
+            f"{COMPETITION_FORMAT_SERVICE_URL}/competition-formats/{request_body['id']}"
+        )
         async with ClientSession() as session:
             async with session.put(url, headers=headers, json=request_body) as resp:
                 res = resp.status
@@ -199,9 +228,7 @@ class CompetitionFormatAdapter:
                 logging.debug(f"get_race_configs - got response {resp.status}")
                 if resp.status == 200:
                     race_configs = await resp.json()
-                    logging.debug(
-                        f"race_configs - got response {race_configs}"
-                    )
+                    logging.debug(f"race_configs - got response {race_configs}")
                 elif resp.status == 401:
                     raise Exception(f"Login expired: {resp}")
                 else:

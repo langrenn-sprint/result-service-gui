@@ -2,12 +2,13 @@ version: '3'
 services:
   result-service-gui:
     build: .
-    image: ghcr.io/langrenn-sprint/result-service-gui:test
+    image: ghcr.io/langrenn-sprint/result-service-gui:latest
     ports:
       - 8090:8080
     environment:
       - ADMIN_USERNAME=${ADMIN_USERNAME}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - CONFIG_FILES_DIRECTORY=${CONFIG_FILES_DIRECTORY}
       - HOST_PORT=8080
       - EVENT_GUI_HOST_SERVER=event-service-gui
       - EVENT_GUI_HOST_PORT=8080
@@ -23,7 +24,9 @@ services:
       - USERS_HOST_SERVER=user-service
       - USERS_HOST_PORT=8080
     volumes:
-      - .:/app
+      - type: bind
+        source: .
+        target: /app
     depends_on:
       - "competition-format-service"
       - "event-service"
@@ -38,6 +41,7 @@ services:
       - ADMIN_USERNAME=${ADMIN_USERNAME}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
       - HOST_PORT=8080
+      - CONFIG_FILES_DIRECTORY=${CONFIG_FILES_DIRECTORY}
       - COMPETITION_FORMAT_HOST_SERVER=competition-format-service
       - COMPETITION_FORMAT_HOST_PORT=8080
       - EVENTS_HOST_SERVER=event-service
