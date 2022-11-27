@@ -120,7 +120,7 @@ aiohttp: <https://docs.aiohttp.org/>
 2. Networking: Open up port 8080 and 8090 for incoming traffic from any * incoming source.
 3. Tildele dns navn - eks: ragdesprinten.norwayeast.cloudapp.azure.com
 
-4. kommandoer for å innstallere containere
+4. kommandoer for å innstallere containere (kan trolig optimaliseres - trenger ikke alt dette)
 sudo apt-get update
 sudo apt-get install python-is-python3
 curl -sSL https://install.python-poetry.org | python3 -
@@ -134,6 +134,7 @@ sudo apt install docker-compose
 sudo git clone https://github.com/langrenn-sprint/result-service-gui.git
 copy .env file og secrets (inkl GOOGLE_APPLICATION_CREDENTIALS)
 Endre fra test til latest i docker-compose.yml
+sudo usermod -aG docker $USER #deretter logge ut og inn igjen
 sudo docker-compose up --build
 
 ## AZURE remote access

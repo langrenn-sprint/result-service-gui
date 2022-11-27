@@ -12,7 +12,7 @@ from result_service_gui.services import (
 from .utils import (
     check_login,
     create_start_time_events,
-    get_enchiced_startlist,
+    get_enrichced_startlist,
     get_event,
     get_finish_timings,
 )
@@ -56,7 +56,7 @@ class Timing(web.View):
             if len(races) > 0:
                 for race in races:
                     # get start and finish list detail
-                    race["startliste"] = await get_enchiced_startlist(user, race)
+                    race["startliste"] = await get_enrichced_startlist(user, race)
                     race["finish_timings"] = await get_finish_timings(user, race["id"])
             else:
                 informasjon = "Fant ingen heat. Velg på nytt."

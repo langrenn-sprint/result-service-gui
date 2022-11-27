@@ -14,7 +14,7 @@ from result_service_gui.services import (
 )
 from .utils import (
     check_login,
-    get_enchiced_startlist,
+    get_enrichced_startlist,
     get_event,
     get_passeringer,
     get_qualification_text,
@@ -65,7 +65,7 @@ class StartEdit(web.View):
                     )
                     race["next_race"] = get_qualification_text(race)
                     # get start list detail
-                    race["startliste"] = await get_enchiced_startlist(user, race)
+                    race["startliste"] = await get_enrichced_startlist(user, race)
                     next_races.append(race)
 
             # get templates

@@ -274,7 +274,7 @@ def get_display_style(start_time: str) -> str:
     return display_style
 
 
-async def get_enchiced_startlist(user: dict, race: dict) -> list:
+async def get_enrichced_startlist(user: dict, race: dict) -> list:
     """Enrich startlist information - including info if race result is registered."""
     startlist = []
     i = 0
@@ -355,9 +355,9 @@ async def get_event(user: dict, event_id: str) -> dict:
 
 def get_local_time(format: str) -> str:
     """Return local time, time zone adjusted from settings file."""
-    TIME_ZONE_OFFSET = EventsAdapter().get_global_setting("TIME_ZONE_OFFSET")
+    time_zone_offset = EventsAdapter().get_global_setting("TIME_ZONE_OFFSET")
     # calculate new time
-    delta_seconds = int(TIME_ZONE_OFFSET) * 3600  # type: ignore
+    delta_seconds = int(time_zone_offset) * 3600  # type: ignore
     local_time_obj = datetime.datetime.now() + datetime.timedelta(seconds=delta_seconds)
     local_time = ""
     if format == "HH:MM":
@@ -548,7 +548,7 @@ async def get_races_for_print(
                         action == "start" or len(race["results"]) == 0
                     ) and action != "result":
                         race["list_type"] = "start"
-                        race["startliste"] = await get_enchiced_startlist(user, race)
+                        race["startliste"] = await get_enrichced_startlist(user, race)
                     else:
                         race["list_type"] = action
                         race[
@@ -591,7 +591,7 @@ async def get_races_for_round_result(
                 first_in_next_round = False
                 race["next_race"] = get_qualification_text(race)
                 race["list_type"] = "start"
-                race["startliste"] = await get_enchiced_startlist(user, race)
+                race["startliste"] = await get_enrichced_startlist(user, race)
                 races.append(race)
     return races
 

@@ -138,13 +138,13 @@ class StartAdapter:
     async def get_start_entries_by_bib(
         self, token: str, event_id: str, bib: int
     ) -> List:
-        """Get all raceplans function."""
+        """Get all start_entries by bib function."""
         headers = MultiDict(
             [
                 (hdrs.AUTHORIZATION, f"Bearer {token}"),
             ]
         )
-        raceplans = []
+        start_entries = []
         async with ClientSession() as session:
             async with session.get(
                 f"{RACE_SERVICE_URL}/races/all/start-entries?bib={bib}", headers=headers
@@ -153,7 +153,7 @@ class StartAdapter:
                     f"get_start_entries_by_bib - got response {resp.status}, bib {bib}"
                 )
                 if resp.status == 200:
-                    raceplans = await resp.json()
+                    start_entries = await resp.json()
                 elif resp.status == 401:
                     raise Exception(f"Login expired: {resp}")
                 else:
@@ -163,7 +163,7 @@ class StartAdapter:
                     raise web.HTTPBadRequest(
                         reason=f"Error - {resp.status}: {body['detail']}."
                     )
-        return raceplans
+        return start_entries
 
     async def get_all_starts_by_event(self, token: str, event_id: str) -> List:
         """Get all starts function."""

@@ -127,21 +127,22 @@
             <td></td>
         </tr>
         {% for loper in race.startliste %}
-            <tr>
-              <td>{{ loper.starting_position }}</td>
-              <td><div id={{ loper.bib }}></div>{{ loper.bib }}</td>
-              <td>
-                <a href=live?event_id={{ event_id }}&klasse={{ valgt_klasse }}&startnr={{ loper.bib }}>{{ loper.name }}</a>
-              </td>
-              <td>
-                {% if loper.club_logo %}<img width=15 src={{ loper.club_logo }}>{% endif %}
-                {{ loper.club }}
-              </td>
-              <td></td>
-              <td></td>
-            </tr>
+          <tr>
+            <td>{{ loper.starting_position }}</td>
+            <td><div id={{ loper.bib }}></div>{{ loper.bib }}</td>
+            <td>
+              <a href=live?event_id={{ event_id }}&klasse={{ valgt_klasse }}&startnr={{ loper.bib }}>{{ loper.name }}</a>
+            </td>
+            <td>
+              {% if loper.club_logo %}<img width=15 src={{ loper.club_logo }}>{% endif %}
+              {{ loper.club }}
+            </td>
+            <td></td>
+            <td></td>
+          </tr>
         {% endfor %}
-    {% endfor %}
+      <tr><td colspan="6" id="spacer"></td></tr>
+      {% endfor %}
   </table>
   {% endif %} {# note: end competition_format #}
     </div>

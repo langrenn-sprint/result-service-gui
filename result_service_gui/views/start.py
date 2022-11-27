@@ -11,7 +11,7 @@ from result_service_gui.services import (
 )
 from .utils import (
     check_login_open,
-    get_enchiced_startlist,
+    get_enrichced_startlist,
     get_event,
     get_local_time,
     get_qualification_text,
@@ -66,7 +66,7 @@ class Start(web.View):
                         race["next_race"] = get_qualification_text(race)
                         race["start_time"] = race["start_time"][-8:]
                         # get start list details
-                        race["startliste"] = await get_enchiced_startlist(user, race)
+                        race["startliste"] = await get_enrichced_startlist(user, race)
                         races.append(race)
                 raceplan_summary = get_raceplan_summary(_tmp_races, raceclasses)
 

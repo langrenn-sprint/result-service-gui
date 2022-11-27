@@ -16,7 +16,7 @@ from result_service_gui.services import (
 )
 from .utils import (
     check_login,
-    get_enchiced_startlist,
+    get_enrichced_startlist,
     get_event,
     get_finish_timings,
     get_passeringer,
@@ -86,7 +86,7 @@ class ResultatEdit(web.View):
                     if valgt_runde["runde"] == race["round"]:
                         race["next_race"] = get_qualification_text(race)
                         # get start list detail
-                        race["startliste"] = await get_enchiced_startlist(user, race)
+                        race["startliste"] = await get_enrichced_startlist(user, race)
                         race["finish_timings"] = await get_finish_timings(
                             user, race["id"]
                         )

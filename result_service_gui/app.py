@@ -66,7 +66,7 @@ async def create_app() -> web.Application:
     app.router.add_get("/secret", handler)
 
     # Set up logging
-    logging.basicConfig(level=LOGGING_LEVEL, filename=f"{os.getcwd()}/result_service_gui.log")
+    logging.basicConfig(level=LOGGING_LEVEL)
     # Set up template path
     template_path = os.path.join(PROJECT_ROOT, "templates")
     aiohttp_jinja2.setup(
