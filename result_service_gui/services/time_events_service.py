@@ -175,11 +175,14 @@ class TimeEventsService:
                 informasjon += f" Updated time event {id}. "
             else:
                 new_t_e = await TimeEventsAdapter().create_time_event(token, time_event)
-                informasjon += f" Bib {new_t_e['bib']}: {new_t_e['status']}. "
                 if new_t_e["status"] == "OK":
+                    informasjon += f"- Bib {new_t_e['bib']}: {new_t_e['status']}. "
                     result_ok = True
                 else:
-                    informasjon += f" Error details: {new_t_e['changelog']}"
+                    # error, add last comment from changelog
+                    if new_t_e['changelog']:
+                        informasjon += f"<br> - Bib {new_t_e['bib']}: {new_t_e['status']}. "
+                        informasjon += f"{new_t_e['changelog'][-1]['comment']} <br>"
             if time_event["next_race"] != "Ute" and result_ok:
                 id = await StartAdapter().create_start_entry(token, next_start_entry)
 

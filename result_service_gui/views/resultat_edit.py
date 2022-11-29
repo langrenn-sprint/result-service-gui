@@ -42,8 +42,11 @@ class ResultatEdit(web.View):
 
         try:
             informasjon = self.request.rel_url.query["informasjon"]
+            info_list = informasjon.split("<br>")
+            informasjon = ""
         except Exception:
             informasjon = ""
+            info_list = []
 
         try:
             user = await check_login(self)
@@ -111,6 +114,7 @@ class ResultatEdit(web.View):
                     "event": event,
                     "event_id": event_id,
                     "informasjon": informasjon,
+                    "info_list": info_list,
                     "raceclasses": raceclasses,
                     "raceplan_summary": raceplan_summary,
                     "current_races": current_races,
@@ -136,19 +140,19 @@ class ResultatEdit(web.View):
             valgt_runde["runde"] = str(form["runde"])
 
             if "create_start" in form.keys():
-                informasjon += await create_start(user, form)  # type: ignore
+                informasjon += "<br>" + await create_start(user, form)  # type: ignore
             elif "update_result" in form.keys():
-                informasjon += await update_result(user, form)  # type: ignore
+                informasjon += "<br>" + await update_result(user, form)  # type: ignore
                 # set results to official
                 if "publish" in form.keys():
                     res = await ResultAdapter().update_result_status(user["token"], form["race_id"], 2)  # type: ignore
-                    informasjon = f"Heat resultat er publisert - {res}. " + informasjon
+                    informasjon = f"Heat resultat er publisert ({res}). <br>" + informasjon
                     race_round = str(form["race"])
                     if race_round.find("FA") > -1:
                         res = await RaceclassResultsService().create_raceclass_results(
                             user["token"], event_id, valgt_runde["klasse"]
                         )  # type: ignore
-                        informasjon = f" Klassens resultat er publisert - {res}. " + informasjon
+                        informasjon = f" Klassens resultat er publisert ({res}). " + informasjon
 
         except Exception as e:
             logging.error(f"Error: {e}")
@@ -183,7 +187,8 @@ async def create_start(user: dict, form: dict) -> str:
         "club": contestant["club"],
     }
     id = await StartAdapter().create_start_entry(user["token"], new_start)
-    informasjon += f"Opprettet ny start. Resultat: {id} "
+    informasjon += f"Lagt til bib {form['bib']} i startliste."
+    logging.debug(f"Opprettet start {id}")
     return informasjon
 
 
