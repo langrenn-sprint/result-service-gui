@@ -15,6 +15,7 @@ from .utils import (
     get_enrichced_startlist,
     get_event,
     get_finish_timings,
+    get_local_time,
 )
 
 
@@ -40,7 +41,7 @@ class Timing(web.View):
         try:
             valgt_heat = int(self.request.rel_url.query["heat"])
         except Exception:
-            valgt_heat = 1
+            valgt_heat = 0
 
         try:
             user = await check_login(self)
@@ -48,10 +49,22 @@ class Timing(web.View):
             raceclasses = await RaceclassesAdapter().get_raceclasses(
                 user["token"], event_id
             )
+            races = []
+            if valgt_heat == 0:
+                # find race starting now
+                all_races = await RaceplansAdapter().get_all_races(
+                    user["token"], event_id
+                )
+                time_now = get_local_time("HH:MM:SS")
+                # find next race on start
+                valgt_heat = 1
+                for tmp_race in all_races:
+                    if time_now < tmp_race["start_time"][-8:]:
+                        valgt_heat = tmp_race["order"]
+                        break
             race = await RaceplansAdapter().get_race_by_order(
                 user["token"], event_id, valgt_heat
             )
-            races = []
             races.append(race)
             if len(races) > 0:
                 for race in races:

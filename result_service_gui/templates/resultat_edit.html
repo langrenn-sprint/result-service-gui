@@ -100,11 +100,9 @@
 <div class="w3-row-padding">
   {% for race in current_races %}
     <div id=headercollapse>
-      {% if race.round == "F" %}
-        {{ race.raceclass }}{{ race.round }}{{ race.index }}
-      {% else %}
-        {{ race.raceclass }}{{ race.round }}{{ race.index }}{{ race.heat }}
-      {% endif %}
+      {{ race.raceclass }}{{ race.round }}{{ race.index }}
+      {% if race.round != "F" %}{{ race.heat }}{% endif %}
+      &nbsp;kl {{ race.start_time[-8:] }} (heat {{ race.order }})
       {% if race.results.Finish and (race.results.Finish.status == 2) %}
           - <a data-toggle="collapse" href="#demo_{{ race.id }}">resultat publisert.</a></div>
           <div id=spacer></div>
@@ -117,10 +115,10 @@
         </div>
         <div id="demo_{{ race.id }}" class="collapse in">
       {% endif %}
-      <table border="1">
+      <table>
         <tr id=headerblack>
           <td colspan=3>Startliste</td>
-          <td colspan=2><b>{{ race.start_time[-8:] }}</b> (heat {{ race.order }})</td>
+          <td colspan=2></td>
           <td colspan=2 id=resultheaderfirst>Resultater</td>
           <td colspan=2 id=resultheader align=center>{{ race.next_race }}</td>
           <td id=resultheader>Bilder</td>
