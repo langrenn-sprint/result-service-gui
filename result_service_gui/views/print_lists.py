@@ -10,7 +10,7 @@ from result_service_gui.services import (
     RaceplansAdapter,
 )
 from .utils import (
-    check_login,
+    check_login_open,
     create_csv_race_results,
     get_event,
     get_qualification_text,
@@ -32,7 +32,7 @@ class PrintLists(web.View):
             action = ""
 
         try:
-            user = await check_login(self)
+            user = await check_login_open(self)
             event_id = self.request.rel_url.query["event_id"]
             event = await get_event(user, event_id)
 
@@ -53,10 +53,14 @@ class PrintLists(web.View):
             raceclasses = await RaceclassesAdapter().get_raceclasses(
                 user["token"], event_id
             )
-
-            _tmp_races = await RaceplansAdapter().get_races_by_racesclass(
-                user["token"], event_id, valgt_klasse
-            )
+            if valgt_klasse:
+                _tmp_races = await RaceplansAdapter().get_races_by_racesclass(
+                    user["token"], event_id, valgt_klasse
+                )
+            else:
+                _tmp_races = await RaceplansAdapter().get_all_races(
+                    user["token"], event_id
+                )
             if action == "raceplan":
                 html_template = "print_raceplan.html"
                 raceplan_summary = get_raceplan_summary(_tmp_races, raceclasses)

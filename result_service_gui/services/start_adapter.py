@@ -77,6 +77,31 @@ class StartAdapter:
                     )
         return str(res)
 
+    async def delete_start_list(self, token: str, start_list_id: str) -> str:
+        """Delete one start_list function."""
+        servicename = "delete_start_list"
+        headers = {
+            hdrs.AUTHORIZATION: f"Bearer {token}",
+        }
+        async with ClientSession() as session:
+            async with session.delete(
+                f"{RACE_SERVICE_URL}/startlists/{start_list_id}",
+                headers=headers,
+            ) as resp:
+                res = resp.status
+                logging.debug(f"delete result - got response {resp}")
+                if res == 204:
+                    pass
+                elif resp.status == 401:
+                    raise web.HTTPBadRequest(reason=f"401 Unathorized - {servicename}")
+                else:
+                    body = await resp.json()
+                    logging.error(f"{servicename} failed - {resp.status} - {body}")
+                    raise web.HTTPBadRequest(
+                        reason=f"Error - {resp.status}: {body['detail']}."
+                    )
+        return str(res)
+
     async def get_start_entries_by_race_id(self, token: str, race_id: str) -> list:
         """Get one start_entry - lap time or heat place function."""
         headers = MultiDict(
@@ -139,30 +164,12 @@ class StartAdapter:
         self, token: str, event_id: str, bib: int
     ) -> List:
         """Get all start_entries by bib function."""
-        headers = MultiDict(
-            [
-                (hdrs.AUTHORIZATION, f"Bearer {token}"),
-            ]
-        )
         start_entries = []
-        async with ClientSession() as session:
-            async with session.get(
-                f"{RACE_SERVICE_URL}/races/all/start-entries?bib={bib}", headers=headers
-            ) as resp:
-                logging.debug(
-                    f"get_start_entries_by_bib - got response {resp.status}, bib {bib}"
-                )
-                if resp.status == 200:
-                    start_entries = await resp.json()
-                elif resp.status == 401:
-                    raise Exception(f"Login expired: {resp}")
-                else:
-                    servicename = "get_start_entries_by_bib"
-                    body = await resp.json()
-                    logging.error(f"{servicename} failed - {resp.status} - {body}")
-                    raise web.HTTPBadRequest(
-                        reason=f"Error - {resp.status}: {body['detail']}."
-                    )
+        all_starts = await StartAdapter().get_all_starts_by_event(token, event_id)
+        if all_starts:
+            for start in all_starts[0]["start_entries"]:
+                if start["bib"] == bib:
+                    start_entries.append(start)
         return start_entries
 
     async def get_all_starts_by_event(self, token: str, event_id: str) -> List:
