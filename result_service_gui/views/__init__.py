@@ -1,7 +1,7 @@
 """Package for all views."""
 from .control import Control
+from .csv_list import CsvList
 from .dashboard import Dashboard
-from .lists_csv import ListsCSV
 from .live import Live
 from .liveness import Ping, Ready
 from .login import Login

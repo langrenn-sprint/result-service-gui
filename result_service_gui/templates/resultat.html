@@ -29,9 +29,11 @@
       {% endfor %}
     </div>
   </li>
-  <li class=dropdown id=topborder>
-    <a href=lists_csv?event_id={{ event_id }} class=dropbtn>CSV filer</a>
-  </li>
+  {% if valgt_klasse %}
+    <li class=dropdown id=topborder>
+      <a target=_blank href=/csv?event_id={{ event_id }}&action=results&klasse={{ valgt_klasse }}>CSV fil</a>
+    </li>
+  {% endif %}
 {% endblock %}
 
 {% block content %}

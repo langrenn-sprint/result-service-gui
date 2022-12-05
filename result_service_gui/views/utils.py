@@ -124,36 +124,6 @@ async def check_login_open(self) -> dict:
     return user
 
 
-async def create_csv_race_results(results: dict, filename: str) -> str:
-    """Create a csv file with race results."""
-    informasjon = ""
-    filepath = f"result_service_gui/files/{filename}.csv"
-    try:
-        f = open(filepath, "w")
-        f.write("Plass;Startnr;Navn;Klubb;Runde")
-        for deltaker in results["ranking_sequence"]:
-            result_line = (
-                str(deltaker["rank"])
-                + ";"
-                + str(deltaker["bib"])
-                + ";"
-                + deltaker["name"]
-                + ";"
-                + deltaker["club"]
-                + ";"
-                + deltaker["round"]
-            )
-            f.write(f"\n{result_line}")
-        f.close()
-    except Exception as e:
-        informasjon = (
-            f"En feil oppstod ved skriv av resultater til fil {filename} - {e}"
-        )
-        logging.error(informasjon)
-
-    return informasjon
-
-
 async def create_start_time_events(user: dict, form: dict) -> str:
     """Extract form data and create time_events for start."""
     informasjon = ""
