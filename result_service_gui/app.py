@@ -13,10 +13,10 @@ from dotenv import load_dotenv
 import jinja2
 
 from .views import (
+    Contestants,
     Control,
     CsvList,
     Dashboard,
-    ListsCSV,
     Live,
     Login,
     Logout,
@@ -81,9 +81,9 @@ async def create_app() -> web.Application:
         [
             web.view("/", Main),
             web.view("/csv", CsvList),
+            web.view("/contestants", Contestants),
             web.view("/control", Control),
             web.view("/dashboard", Dashboard),
-            web.view("/lists_csv", ListsCSV),
             web.view("/live", Live),
             web.view("/login", Login),
             web.view("/logout", Logout),
