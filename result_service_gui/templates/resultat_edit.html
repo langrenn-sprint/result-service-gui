@@ -56,6 +56,32 @@
         return true
       }
     }
+    
+    /* this function will send results to backend without reloading the page */
+    function update_results_ajax(button) {
+      try {
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("POST", "/resultat_edit", true);
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+        var my_form = button.form;
+        var formData = "";
+        for (let i = 0; i < my_form.length; i++) {
+          formData += my_form[i].name + "=" + my_form[i].value + "&";
+        }
+        formData += "ajax=true"
+
+        xhttp.send(formData);
+        xhttp.onload = function() {
+            alert(this.responseText);
+          }
+      }
+      catch(err) {
+        alert(err)
+      }
+    }
+
+
     /* this function will indicate with red or green colors if an entered value is correct or not
       if bib exist in heat, the bib will be green,
       if bib not exist in heat or it is a duplicate, the entered value will be red */
@@ -104,11 +130,11 @@
       {% if race.round != "F" %}{{ race.heat }}{% endif %}
       &nbsp;kl {{ race.start_time[-8:] }} (heat {{ race.order }})
       {% if race.results.Finish and (race.results.Finish.status == 2) %}
-          - <a data-toggle="collapse" href="#demo_{{ race.id }}">resultat publisert.</a></div>
+          - resultat publisert. <a data-toggle="collapse" href="#demo_{{ race.id }}">Vis/skjul.</a></div>
           <div id=spacer></div>
-          <div id="demo_{{ race.id }}" class="collapse">
+          <div id="demo_{{ race.id }}" class="collapse in">
       {% elif not race.startliste %}
-          - <a data-toggle="collapse" href="#demo_{{ race.id }}">ingen deltakere.</a></div>
+          - ingen deltakere.<a data-toggle="collapse" href="#demo_{{ race.id }}">Vis/skjul.</a></div>
           <div id=spacer></div>
           <div id="demo_{{ race.id }}" class="collapse">
       {% else %}
@@ -162,7 +188,7 @@
                 <td id=resultborder align=center>{{ loop.index }}</td>
                 {% if race.finish_timings[loop.index0] %}
                   <td>
-                    <input type="number" id="{{ race.order }}form_rank_{{ loop.index }}" name="form_rank_{{ loop.index }}" value="{% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}" min=1 max=9999 onfocus="this.oldvalue = this.value;" onchange="green_bg(this, {{ race.order }})">
+                    <input type="text" id="{{ race.order }}form_rank_{{ loop.index }}" name="form_rank_{{ loop.index }}" value="{% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}" size=3 onfocus="this.oldvalue = this.value;" onchange="green_bg(this, {{ race.order }})">
                     <input type="hidden" name="old_form_rank_{{ loop.index }}" value="{% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}">
                     <input type="hidden" name="time_event_id_{{ loop.index }}" value="{{ race.finish_timings[loop.index0].id }}">
                   </td>
@@ -174,8 +200,8 @@
                   </td>
                 {% else %}
                   <td>
-                    <input type="number" id="{{ race.order }}form_rank_{{ loop.index }}" name="form_rank_{{ loop.index }}" value="" min=1 max=9999 onfocus="this.oldvalue = this.value;" onchange="green_bg(this, {{ race.order }})">
-                    <input type="hidden" name="old_form_rank_{{ loop.index }}" value="" min=1 max=9999>
+                    <input type="text" id="{{ race.order }}form_rank_{{ loop.index }}" name="form_rank_{{ loop.index }}" value="" size=3 onfocus="this.oldvalue = this.value;" onchange="green_bg(this, {{ race.order }})">
+                    <input type="hidden" name="old_form_rank_{{ loop.index }}" value="">
                   </td>
                   <td></td>
                   <td></td>
@@ -265,47 +291,33 @@
     <table>
       <tr>
         <td>
-          {% if error_passeringer|length > 0 %}
-            <div id=info>Funnet {{ error_passeringer|length }} events med error, <a href="control?event_id={{ event_id }}&action=control">kontroller</a>.</div>
-          {% endif %}
         </td>
         {% if valgt_runde.runde == "F" %}
-          <td width=200>
-            <form action=/print_lists method=get target=new>
-              <input type="hidden" name=runde value="{{ valgt_runde.runde }}">
-              <input type="hidden" name=action value=round_result>
-              <input type="hidden" name=event_id value="{{ event_id }}">
-              <input type="hidden" name=klasse value="{{ valgt_runde.klasse }}">
-              <input type="submit" name="publish_results" value="  Skriv ut rundens resultater  ">
-            </form>
-          </td>
-          <td width=100>
-            <form action=/print_lists method=get target=new>
-              <input type="hidden" name=action value=result>
-              <input type="hidden" name=event_id value="{{ event_id }}">
-              <input type="hidden" name=klasse value="{{ valgt_runde.klasse }}">
-              <input type="submit" name="publish_results" value="  Skriv ut resultater for klassen ">
-            </form>
-          </td>
+          <td width=300>
+            <ul>
+              <li class=dropdown>
+                <a href=javascript:void(0) class=dropbtn>Utskrift</a>
+                <div class=dropdown-content>
+                  <a target=_blank href=print_lists?event_id={{ event_id }}&action=round_result&klasse={{ valgt_runde.klasse }}&runde={{ valgt_runde.runde }}>Rundens resultater</a>
+                  <a target=_blank href=print_lists?event_id={{ event_id }}&action=result&klasse={{ valgt_runde.klasse }}&runde={{ valgt_runde.runde }}>Klassens resultatliste</a>
+                </div>
+              </li>
+            </ul>
         {% else %}
-          <td width=200>
-            <form action=/print_lists method=get target=new>
-              <input type="hidden" name=runde value="{{ valgt_runde.runde }}">
-              <input type="hidden" name=action value=round_result>
-              <input type="hidden" name=event_id value="{{ event_id }}">
-              <input type="hidden" name=klasse value="{{ valgt_runde.klasse }}">
-              <input type="submit" name="publish_results" value="  Skriv ut rundens resultater og nye startlister ">
-            </form>
-          </td>
-          <td width=100>
-            <form action=resultat_edit method=get>
-              <input type="hidden" name=heat value={{ (current_races|last).order + 1 }}>
-              <input type="hidden" name=event_id value="{{ event_id }}">
-              <input type="submit" name="next_roudn" value="  Neste runde ">
-            </form>
+          <td width=300>
+            <ul>
+              <li class=dropdown>
+                <a href=javascript:void(0) class=dropbtn>Utskrift</a>
+                <div class=dropdown-content>
+                  <a target=_blank href=print_lists?event_id={{ event_id }}&action=round_result&klasse={{ valgt_runde.klasse }}&runde={{ valgt_runde.runde }}>Rundens resultater</a>
+                  <a target=_blank href=print_lists?event_id={{ event_id }}&action=round_resultstart&klasse={{ valgt_runde.klasse }}&runde={{ valgt_runde.runde }}>Rundens resultater og nye startlister</a>
+                  <a target=_blank href=print_lists?event_id={{ event_id }}&action=round_start&klasse={{ valgt_runde.klasse }}&runde={{ valgt_runde.runde }}>Nye startlister</a>
+                </div>
+              </li>
+            </ul>
           </td>
         {% endif %}
-        <td width=50>
+        <td width=200>
         </td>
       </tr>
     </table>

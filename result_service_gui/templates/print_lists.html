@@ -60,8 +60,10 @@
             </table>
           {% endif %}
         <table>
-      {% endif %}
-      {% if race.list_type == "start" %}
+      {% endif %} {# end create header #}
+
+      {# print startlist if start-entries #}
+      {% if race.list_type == "start" and race.startliste %}
         <tr id=headerprint>
           <td colspan=3>Kl. {{ race.start_time }} {{ race.raceclass }}
             {% if race.round == "Q" %}Kvart {{ race.heat }}
@@ -79,15 +81,15 @@
         </tr>
         {% for loper in race.startliste %}
             <tr>
-              <td>{{ loper.starting_position }}</td>
-              <td><div id={{ loper.bib }}></div>{{ loper.bib }}</td>
+              <td align="center">{{ loper.starting_position }}</td>
+              <td align="center"><div id={{ loper.bib }}></div>{{ loper.bib }}</td>
               <td>{{ loper.name }}</td>
               <td>{{ loper.club }}{% if loper.team %} / {{ loper.team }}{% endif %}</td>
               <td></td>
             </tr>
         {% endfor %}
         <tr id=tablespacer><td>&nbsp;</td></tr>
-      {% else %} {# print results #}
+      {% elif race.list_type == "result" %} {# print results #}
         <tr id=headerprint>
           <td colspan=3>
             Resultater {{ race.raceclass }}
@@ -110,15 +112,13 @@
         </tr>
         {% for loper in race.finish_results %}
             <tr{% if loper.bib == valgt_startnr %} id=black{% endif %}>
-              <td>{{ loper.rank }}</td>
-              <td>{{ loper.bib }}</td>
+              <td align="center">{{ loper.rank }}{% if loper.status != "OK" %} {{ loper.status }}{% endif %}</td>
+              <td align="center">{{ loper.bib }}</td>
               <td>{{ loper.name }}</td>
               <td>{{ loper.club }}{% if loper.team %} / {{ loper.team }}{% endif %}</td>
-              {% if race.round == "F" %}
-                <td></td>
-              {% else %}
-                <td>{{ loper.next_race }}</td>
-              {% endif %}
+              <td>
+                {% if race.round != "F" %} {{ loper.next_race }}{% endif %}
+              </td>
             </tr>
         {% endfor %}
       {% endif %}

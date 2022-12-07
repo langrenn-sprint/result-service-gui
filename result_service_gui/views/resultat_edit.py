@@ -132,8 +132,8 @@ class ResultatEdit(web.View):
         user = await check_login(self)
         informasjon = ""
         valgt_runde = {}
+        form = await self.request.post()
         try:
-            form = await self.request.post()
             logging.debug(f"Form {form}")
             event_id = str(form["event_id"])
             valgt_runde["klasse"] = str(form["klasse"])
@@ -153,15 +153,21 @@ class ResultatEdit(web.View):
                             user["token"], event_id, valgt_runde["klasse"]
                         )  # type: ignore
                         informasjon = f" Klassens resultat er publisert ({res}). " + informasjon
-
         except Exception as e:
             logging.error(f"Error: {e}")
             error_reason = str(e)
             if error_reason.startswith("401"):
+                informasjon = f"Error 401 - Ingen tilgang, vennligst logg inn på nytt. {e}"
+                # check for update without reload
+                if "ajax" in form.keys():
+                    return web.Response(text=informasjon)
                 return web.HTTPSeeOther(
-                    location=f"/login?informasjon=Ingen tilgang, vennligst logg inn på nytt. {e}"
+                    location=f"/login?informasjon={informasjon}"
                 )
             informasjon += f"Det har oppstått en feil - {e.args}. " + informasjon
+        # check for update without reload
+        if "ajax" in form.keys():
+            return web.Response(text=informasjon)
         info = (
             f"{informasjon}&klasse={valgt_runde['klasse']}&runde={valgt_runde['runde']}"
         )

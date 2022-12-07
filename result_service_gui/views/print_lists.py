@@ -63,12 +63,11 @@ class PrintLists(web.View):
             if action == "raceplan":
                 html_template = "print_raceplan.html"
                 raceplan_summary = get_raceplan_summary(_tmp_races, raceclasses)
-
             elif action == "result":
                 resultlist = await RaceclassResultsAdapter().get_raceclass_result(
                     event_id, valgt_klasse
                 )
-
+                html_template = "print_results.html"
             races = await get_races(
                 user,
                 action,
@@ -118,9 +117,9 @@ async def get_races(
                 race["next_race"] = get_qualification_text(race)
                 race["start_time"] = race["start_time"][-8:]
                 races.append(race)
-    elif action == "round_result":
+    elif action.startswith("round_"):
         races = await get_races_for_round_result(
-            user, _tmp_races, valgt_runde, valgt_klasse
+            user, _tmp_races, valgt_runde, valgt_klasse, action
         )
     else:
         races = await get_races_for_print(
