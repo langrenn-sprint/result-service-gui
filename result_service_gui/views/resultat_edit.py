@@ -1,5 +1,6 @@
 """Resource module for verificatoin of timing registration."""
 import datetime
+import json
 import logging
 
 from aiohttp import web
@@ -165,9 +166,15 @@ class ResultatEdit(web.View):
                     location=f"/login?informasjon={informasjon}"
                 )
             informasjon += f"Det har oppstått en feil - {e.args}. " + informasjon
-        # check for update without reload
+        # check for update without reload - return latest race results
         if "ajax" in form.keys():
-            return web.Response(text=informasjon)
+            race = await RaceplansAdapter().get_race_by_id(user["token"], str(form["race_id"]))
+            response = {
+                "race_results": race['results']['Finish']['ranking_sequence'],
+                "informasjon": informasjon
+            }
+            json_response = json.dumps(response)
+            return web.Response(body=json_response)
         info = (
             f"{informasjon}&klasse={valgt_runde['klasse']}&runde={valgt_runde['runde']}"
         )

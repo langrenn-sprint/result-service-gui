@@ -66,15 +66,47 @@
 
         var my_form = button.form;
         var formData = "";
+        var race_order = 0
         for (let i = 0; i < my_form.length; i++) {
           formData += my_form[i].name + "=" + my_form[i].value + "&";
+          if (my_form[i].name == "race_order"){
+            race_order = my_form[i].value
+          }
         }
         formData += "ajax=true"
 
         xhttp.send(formData);
         xhttp.onload = function() {
-            alert(this.responseText);
+          try {
+            // refresh data - first delete
+            for (let i = 0; i < 12; i++) {
+              /* do the stuff */
+              try { 
+                document.getElementById(race_order + "_name_" + i).innerHTML = ""
+                document.getElementById(race_order + "_form_rank_" + i).value = ""
+              }
+              catch(err) {}
+            }
+            // refresh data - then load new info
+            const jsonDoc = JSON.parse(this.response);
+            const race_results = jsonDoc.race_results;
+            for (let i = 0; i < race_results.length; i++) {
+              /* do the stuff */
+              document.getElementById(race_order + "_name_" + race_results[i].rank).innerHTML = race_results[i].name
+              document.getElementById(race_order + "_form_rank_" + race_results[i].rank).value = race_results[i].bib
+            }
+            const info = jsonDoc.informasjon.replace("<br>", ", ");
+            alert(info)
           }
+          catch(err) {
+            if (err.message.indexOf("401") > 0) {
+              alert("Error 401 - Logg inn på nytt.")
+            }
+            else {
+              alert(err)
+            }
+          }
+        }
       }
       catch(err) {
         alert(err)
@@ -130,16 +162,16 @@
       {% if race.round != "F" %}{{ race.heat }}{% endif %}
       &nbsp;kl {{ race.start_time[-8:] }} (heat {{ race.order }})
       {% if race.results.Finish and (race.results.Finish.status == 2) %}
-          - resultat publisert. <a data-toggle="collapse" href="#demo_{{ race.id }}">Vis/skjul.</a></div>
+          - resultat publisert. <a data-toggle="collapse" href="#demo_{{ race.order }}">Vis/skjul.</a></div>
           <div id=spacer></div>
-          <div id="demo_{{ race.id }}" class="collapse in">
+          <div id="demo_{{ race.order }}" class="collapse in">
       {% elif not race.startliste %}
-          - ingen deltakere.<a data-toggle="collapse" href="#demo_{{ race.id }}">Vis/skjul.</a></div>
+          - ingen deltakere.<a data-toggle="collapse" href="#demo_{{ race.order }}">Vis/skjul.</a></div>
           <div id=spacer></div>
-          <div id="demo_{{ race.id }}" class="collapse">
+          <div id="demo_{{ race.order }}" class="collapse">
       {% else %}
         </div>
-        <div id="demo_{{ race.id }}" class="collapse in">
+        <div id="demo_{{ race.order }}" class="collapse in">
       {% endif %}
       <table>
         <tr id=headerblack>
@@ -188,11 +220,11 @@
                 <td id=resultborder align=center>{{ loop.index }}</td>
                 {% if race.finish_timings[loop.index0] %}
                   <td>
-                    <input type="text" id="{{ race.order }}form_rank_{{ loop.index }}" name="form_rank_{{ loop.index }}" value="{% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}" size=3 onfocus="this.oldvalue = this.value;" onchange="green_bg(this, {{ race.order }})">
+                    <input type="text" id="{{ race.order }}_form_rank_{{ loop.index }}" name="form_rank_{{ loop.index }}" value="{% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}" size=3 onfocus="this.oldvalue = this.value;" onchange="green_bg(this, {{ race.order }})">
                     <input type="hidden" name="old_form_rank_{{ loop.index }}" value="{% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}">
                     <input type="hidden" name="time_event_id_{{ loop.index }}" value="{{ race.finish_timings[loop.index0].id }}">
                   </td>
-                  <td>{{ race.finish_timings[loop.index0].name }}</td>
+                  <td id="{{ race.order }}_name_{{ loop.index }}">{{ race.finish_timings[loop.index0].name }}</td>
                   <td>
                     {% if valgt_runde.runde != "F" %}
                       {{ race.finish_timings[loop.index0].next_race }}-{{ race.finish_timings[loop.index0].next_race_position }}
@@ -200,10 +232,10 @@
                   </td>
                 {% else %}
                   <td>
-                    <input type="text" id="{{ race.order }}form_rank_{{ loop.index }}" name="form_rank_{{ loop.index }}" value="" size=3 onfocus="this.oldvalue = this.value;" onchange="green_bg(this, {{ race.order }})">
+                    <input type="text" id="{{ race.order }}_form_rank_{{ loop.index }}" name="form_rank_{{ loop.index }}" value="" size=3 onfocus="this.oldvalue = this.value;" onchange="green_bg(this, {{ race.order }})">
                     <input type="hidden" name="old_form_rank_{{ loop.index }}" value="">
                   </td>
-                  <td></td>
+                  <td id="{{ race.order }}_name_{{ loop.index }}"></td>
                   <td></td>
                 {% endif %}
                 {% if loop.first %}
@@ -214,10 +246,10 @@
                       biblist = {{ race.photo_bib_rank }};
                       for (let i = 0; i < biblist.length; i++) {
                           position = i + 1;
-                          the_element = "{{ race.order }}form_rank_" + position;
+                          the_element = "{{ race.order }}_form_rank_" + position;
                           document.getElementById(the_element).value = biblist[i];
                         try {
-                          green_bg_init("{{ race.order }}" + biblist[i]);
+                          green_bg_init("{{ race.order }} + biblist[i]");
                         }
                         catch(err) {
                           document.getElementById(the_element).style.backgroundColor = "red";
@@ -229,7 +261,7 @@
                     <table><tr>
                     {% for bilde in race.photo_finish %}
                       {% if loop.first %}
-                        <td colspan=5><button type="button" name="button" onclick=populate_rank_{{ race.order }}()>Hent resultat fra bilder</button></td></tr><tr>
+                        <td colspan=5><button type="button" name="button" onclick="populate_rank_{{ race.order }}()">Hent resultat fra bilder</button></td></tr><tr>
                       {% endif %}
                       <td width=100><a class="tooltip_photo" href="">
                         <img src={{ bilde.g_base_url }}=w100-h100-c>
@@ -247,7 +279,7 @@
             {% for result in race.finish_timings %}
               {% if result.bib == start.bib %}
                 <script>
-                  green_bg_init({{ race.order }}{{ result.bib }})
+                  green_bg_init("{{ race.order }}{{ result.bib }}")
                 </script>
               {% endif %}
             {% endfor %}
@@ -257,12 +289,14 @@
               <td colspan=4>
                 <input type="hidden" name="race" value="{{ race.raceclass }}-{{ race.round }}{{ race.index }}{{ race.heat }}">
                 <input type="hidden" name="race_id" value="{{ race.id }}">
+                <input type="hidden" name="race_order" value="{{ race.order }}">
                 <input type="hidden" name=runde value="{{ valgt_runde.runde }}">
                 <input type="hidden" name=klasse value="{{ valgt_runde.klasse }}">
                 <input type="hidden" name=timing_point value="Finish">
                 <input type="hidden" name=event_id value="{{ event_id }}">
                 <input type="hidden" name=update_result value="true">
                 <input type="submit" name=submit_update value="  Lagre  " >
+                <button type="button" onclick=update_results_ajax(this); >Lagre (beta)</button>
                 &nbsp;<input type="checkbox" name=publish checked> Publisere
               </td>
             </tr>
