@@ -64,10 +64,10 @@ class PrintLists(web.View):
                 html_template = "print_raceplan.html"
                 raceplan_summary = get_raceplan_summary(_tmp_races, raceclasses)
             elif action == "result":
+                html_template = "print_results.html"
                 resultlist = await RaceclassResultsAdapter().get_raceclass_result(
                     event_id, valgt_klasse
                 )
-                html_template = "print_results.html"
             races = await get_races(
                 user,
                 action,
@@ -84,6 +84,7 @@ class PrintLists(web.View):
                 html_template,
                 self.request,
                 {
+                    "action": action,
                     "event": event,
                     "event_id": event_id,
                     "informasjon": informasjon,

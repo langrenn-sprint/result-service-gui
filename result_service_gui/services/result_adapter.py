@@ -16,14 +16,15 @@ class ResultAdapter:
     """Class representing result."""
 
     async def get_race_results(self, token: str, race_id: str, idsOnly: bool) -> dict:
-        """Get all results for one race."""
+        """Get all finish results for one race."""
         headers = MultiDict(
             [
                 (hdrs.AUTHORIZATION, f"Bearer {token}"),
             ]
         )
         url = f"{RACE_SERVICE_URL}/races/{race_id}/race-results?idsOnly={idsOnly}"
-        results = {}
+        results = []
+        finish_results = {}
         async with ClientSession() as session:
             async with session.get(url, headers=headers) as resp:
                 logging.debug(f"get_race_results - got response {resp.status}")
@@ -36,7 +37,10 @@ class ResultAdapter:
                     raise web.HTTPBadRequest(
                         reason=f"Error - {resp.status}: {body['detail']}."
                     )
-        return results[0]
+        for result_set in results:
+            if result_set['timing_point'] == "Finish":
+                finish_results = result_set
+        return finish_results
 
     async def update_race_results(
         self, token: str, race_id: str, new_race_results: dict

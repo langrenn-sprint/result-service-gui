@@ -147,7 +147,7 @@ class ResultatEdit(web.View):
                 # set results to official
                 if "publish" in form.keys():
                     res = await ResultAdapter().update_result_status(user["token"], form["race_id"], 2)  # type: ignore
-                    informasjon = f"Heat resultat er publisert ({res}). <br>" + informasjon
+                    informasjon = f"Heat resultat er publisert ({res}). " + informasjon
                     race_round = str(form["race"])
                     if race_round.find("FA") > -1:
                         res = await RaceclassResultsService().create_raceclass_results(
@@ -272,20 +272,22 @@ async def update_result(user: dict, form: dict) -> str:
     time_stamp_now = f"{time_now.strftime('%Y')}-{time_now.strftime('%m')}-{time_now.strftime('%d')}T{time_now.strftime('%X')}"
     delete_result_list = []
     add_result_list = []
+    race_order = form["race_order"]
     for x in form.keys():
         bib_changed = True
-        if x.startswith("form_rank_"):
+        if x.startswith(f"{race_order}_form_rank_"):
             new_bib = form[x]
-            _rank = int(x[10:])
+            rank_pos = x.find("rank_") + 5
+            _rank = int(x[rank_pos:])
             # check if anything is changed and delete old registration
-            if form[f"old_form_rank_{_rank}"]:
-                old_bib = form[f"old_form_rank_{_rank}"]
+            if form[f"{race_order}_old_form_rank_{_rank}"]:
+                old_bib = form[f"{race_order}_old_form_rank_{_rank}"]
                 if old_bib == new_bib:
                     bib_changed = False
                 else:
                     # append time event to be deleted
                     delete_entry = {
-                        "time_event_id": form[f"time_event_id_{_rank}"],
+                        "time_event_id": form[f"{race_order}_time_event_id_{_rank}"],
                     }
                     delete_result_list.append(delete_entry)
             if new_bib.isnumeric() and bib_changed:
