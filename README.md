@@ -135,7 +135,7 @@ sudo git clone https://github.com/langrenn-sprint/result-service-gui.git
 copy .env file og secrets (inkl GOOGLE_APPLICATION_CREDENTIALS)
 Endre fra test til latest i docker-compose.yml
 sudo usermod -aG docker $USER #deretter logge ut og inn igjen
-sudo docker-compose up --build
+docker-compose up --build
 
 ## AZURE remote access
 ssh -i /home/heming/github/sprint-ubuntu_key.pem azureuser@sprint.northeurope.cloudapp.azure.com

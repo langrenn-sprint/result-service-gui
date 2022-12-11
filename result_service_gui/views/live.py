@@ -148,7 +148,6 @@ async def get_races_for_live(
         elif _tmp_race["round"] == "S":
             if len(_tmp_race["results"]) > 0:
                 semi_results_registered = True
-
     for _tmp_race in _tmp_races:
         race = await RaceplansAdapter().get_race_by_id(token, _tmp_race["id"])
         race["finish_results"] = RaceclassResultsService().get_finish_rank_for_race(

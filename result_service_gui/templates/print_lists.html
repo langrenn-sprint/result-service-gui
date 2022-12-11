@@ -19,13 +19,13 @@
             <div id=pagebreak></div>
           {% endif %}
           <div id=adminpagetitle>
-            {% if race.list_type == "start" %}
+            {% if action == "live" %}
+              Live resultater <img id=header_icon src="../static/icon_live.png"> {{ race.raceclass }}
+            {% elif race.list_type == "start" %}
               Startliste <img id=header_icon src="../static/icon_start.png"> {{ race.raceclass }}
               {% if valgt_runde == "Q"%}semifinaler
               {% elif valgt_runde == "S"%}finaler
               {% endif %}
-            {% elif race.list_type == "live" %}
-              Live resultater <img id=header_icon src="../static/icon_live.png"> {{ race.raceclass }}
             {% else %}
               Resultater <img id=header_icon src="../static/icon_result.png"> {{ race.raceclass }}
               {% if valgt_runde == "Q"%}kvartfinaler
@@ -89,7 +89,8 @@
             </tr>
         {% endfor %}
         <tr id=tablespacer><td>&nbsp;</td></tr>
-      {% elif race.list_type == "result" %} {# print results #}
+      {# print results #}
+      {% elif race.list_type in ("live", "result") %} 
         <tr id=headerprint>
           <td colspan=3>
             Resultater {{ race.raceclass }}
@@ -111,15 +112,15 @@
           {% endif %}
         </tr>
         {% for loper in race.finish_results %}
-            <tr{% if loper.bib == valgt_startnr %} id=black{% endif %}>
-              <td align="center">{{ loper.rank }}{% if loper.status != "OK" %} {{ loper.status }}{% endif %}</td>
-              <td align="center">{{ loper.bib }}</td>
-              <td>{{ loper.name }}</td>
-              <td>{{ loper.club }}{% if loper.team %} / {{ loper.team }}{% endif %}</td>
-              <td>
-                {% if race.round != "F" %} {{ loper.next_race }}{% endif %}
-              </td>
-            </tr>
+          <tr{% if loper.bib == valgt_startnr %} id=black{% endif %}>
+            <td align="center">{{ loper.rank }}{% if loper.status != "OK" %} {{ loper.status }}{% endif %}</td>
+            <td align="center">{{ loper.bib }}</td>
+            <td>{{ loper.name }}</td>
+            <td>{{ loper.club }}{% if loper.team %} / {{ loper.team }}{% endif %}</td>
+            <td>
+              {% if race.round != "F" %} {{ loper.next_race }}{% endif %}
+            </td>
+          </tr>
         {% endfor %}
       {% endif %}
     {% endfor %}

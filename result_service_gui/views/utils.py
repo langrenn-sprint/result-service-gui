@@ -514,13 +514,17 @@ async def get_races_for_print(
                     race["next_race"] = get_qualification_text(race)
                     race["start_time"] = race["start_time"][-8:]
                     # get start list details
-                    if (
-                        action == "start" or len(race["results"]) == 0
-                    ) and action != "result":
+                    if (action == "live"):
                         race["list_type"] = "start"
-                        race["startliste"] = await get_enrichced_startlist(user, race)
+                        if race['results']:
+                            if "Finish" in race['results'].keys():  # type: ignore
+                                race["list_type"] = "result"
                     else:
                         race["list_type"] = action
+
+                    if (race["list_type"] == "start"):
+                        race["startliste"] = await get_enrichced_startlist(user, race)
+                    else:
                         race[
                             "finish_results"
                         ] = RaceclassResultsService().get_finish_rank_for_race(race)
