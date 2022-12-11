@@ -11,7 +11,8 @@
 {% block refresh %}0{% endblock %}
 
 {% block content %}
-  <table>
+<div class="w3-container" id=info>{{ informasjon }}</div>
+<table>
     {% for race in races %}
       {% if race.first_in_class %}
         </table>
