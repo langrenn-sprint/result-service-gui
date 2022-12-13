@@ -60,7 +60,6 @@ class PrintLists(web.View):
                 _tmp_races = await RaceplansAdapter().get_all_races(
                     user["token"], event_id
                 )
-
             races = await get_races(
                 user,
                 action,
