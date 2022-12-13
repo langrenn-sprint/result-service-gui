@@ -60,14 +60,6 @@ class PrintLists(web.View):
                 _tmp_races = await RaceplansAdapter().get_all_races(
                     user["token"], event_id
                 )
-            if action == "raceplan":
-                html_template = "print_raceplan.html"
-                raceplan_summary = get_raceplan_summary(_tmp_races, raceclasses)
-            elif action == "result":
-                html_template = "print_results.html"
-                resultlist = await RaceclassResultsAdapter().get_raceclass_result(
-                    event_id, valgt_klasse
-                )
             races = await get_races(
                 user,
                 action,
@@ -78,6 +70,19 @@ class PrintLists(web.View):
             )
             if len(races) == 0:
                 informasjon = "Ingen kjøreplaner funnet."
+
+            if action == "raceplan":
+                html_template = "print_raceplan.html"
+                raceplan_summary = get_raceplan_summary(_tmp_races, raceclasses)
+            elif action == "result":
+                html_template = "print_results.html"
+                try:
+                    resultlist = await RaceclassResultsAdapter().get_raceclass_result(
+                        event_id, valgt_klasse
+                    )
+                except Exception as e:
+                    logging.error(f"Functional error: {e}")
+                    informasjon = "Ingen resultatlister funnet."
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
