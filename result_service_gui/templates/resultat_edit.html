@@ -26,18 +26,27 @@
   <li class=dropdown id=topborder>
     <a href=javascript:void(0) class=dropbtn>Velg runde</a>
     <div class=dropdown-content>
-      <a  href=resultat_edit?event_id={{ event_id }}&heat=0>Starter nå</a>
-      {% if current_races %}
-          <a href=resultat_edit?event_id={{ event_id }}&heat={{ (current_races|first).order - 1 }}>Forrige runde</a>
-          <a href=resultat_edit?event_id={{ event_id }}&heat={{ (current_races|last).order + 1 }}>Neste runde</a>
-      {% endif %}
-      {% for raceclass in raceplan_summary %}
-        {% if raceclass.ranking %}
-          <a href=resultat_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=Q>{{ raceclass.name }} kvart</a>
-          <a href=resultat_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=S>{{ raceclass.name }} semi</a>
-          <a href=resultat_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=F>{{ raceclass.name }} finaler</a>
+      <table>
+        <tr><td colspan="3">
+            <a  href=resultat_edit?event_id={{ event_id }}&heat=0>Starter nå</a>
+        </td></tr>
+        {% if current_races %}
+          <tr><td>
+            <nobr><a href=resultat_edit?event_id={{ event_id }}&heat={{ (current_races|first).order - 1 }}>Forrige runde</a></nobr>
+          </td><td colspan="2">
+            <nobr><a href=resultat_edit?event_id={{ event_id }}&heat={{ (current_races|last).order + 1 }}>Neste runde</a></nobr>
+          </tr>
         {% endif %}
-      {% endfor %}
+        {% for raceclass in raceplan_summary %}
+          <tr>
+          {% if raceclass.ranking %}
+            <td><nobr><a href=resultat_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=Q>{{ raceclass.name }}  kvart</a></nobr></td>
+            <td><nobr><a href=resultat_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=S>&nbsp;&nbsp; semi</a></nobr></td>
+            <td><nobr><a href=resultat_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=F>&nbsp;&nbsp; finaler</a></nobr></td>
+          {% endif %}
+          </tr>
+        {% endfor %}
+      </table>
     </div>
   </li>
 {% endblock %}
