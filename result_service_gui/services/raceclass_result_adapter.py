@@ -2,6 +2,7 @@
 import logging
 import os
 from typing import List
+import urllib.parse
 
 from aiohttp import ClientSession
 from aiohttp import hdrs
@@ -28,7 +29,6 @@ class RaceclassResultsAdapter:
                 (hdrs.AUTHORIZATION, f"Bearer {token}"),
             ]
         )
-
         async with ClientSession() as session:
             async with session.post(
                 f"{EVENT_SERVICE_URL}/events/{event_id}/results",
@@ -88,9 +88,10 @@ class RaceclassResultsAdapter:
         )
         servicename = "get_raceclass_result"
         raceclass_result = {}
+        raceclass_url = urllib.parse.quote(raceclass, safe='')
         async with ClientSession() as session:
             async with session.get(
-                f"{EVENT_SERVICE_URL}/events/{event_id}/results/{raceclass}",
+                f"{EVENT_SERVICE_URL}/events/{event_id}/results/{raceclass_url}",
                 headers=headers,
             ) as resp:
                 logging.debug(f"{servicename} - got response {resp.status}")
