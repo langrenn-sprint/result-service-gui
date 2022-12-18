@@ -171,6 +171,7 @@ class ResultatEdit(web.View):
             race = await RaceplansAdapter().get_race_by_id(user["token"], str(form["race_id"]))
             response = {
                 "race_results": race['results']['Finish']['ranking_sequence'],
+                "race_results_status": race['results']['Finish']['status'],
                 "informasjon": informasjon
             }
             json_response = json.dumps(response)

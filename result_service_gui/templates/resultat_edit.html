@@ -81,6 +81,7 @@
             // load new info
             const jsonDoc = JSON.parse(this.response);
             const race_results = jsonDoc.race_results;
+            const race_results_status = jsonDoc.race_results_status;
 
             // refresh data - first delete
             for (let i = 0; i < 12; i++) {
@@ -102,6 +103,9 @@
             }
             const info = jsonDoc.informasjon.replace("<br>", ", ");
             validation_colors(race_order);
+            if (race_results_status == 2) {
+              document.getElementById(race_order + "_status").innerHTML = " - resultat publisert."
+            }
             alert(info);
           }
           catch(err) {
@@ -195,11 +199,13 @@
       {{ race.raceclass }}{{ race.round }}{{ race.index }}
       {% if race.round != "F" %}{{ race.heat }}{% endif %}
       &nbsp;kl {{ race.start_time[-8:] }} (heat {{ race.order }})
-      {% if race.results.Finish and (race.results.Finish.status == 2) %}
-        - resultat publisert. 
-      {% elif not race.startliste %}
-        - ingen deltakere.          
-      {% endif %}
+      <span id="{{ race.order }}_status">
+        {% if race.results.Finish and (race.results.Finish.status == 2) %}
+          - resultat publisert. 
+        {% elif not race.startliste %}
+          - ingen deltakere.          
+        {% endif %}
+      </span>
       <a data-toggle="collapse" href="#demo_{{ race.order }}">Vis/skjul.</a>
     </div>
     <div id=spacer></div>
