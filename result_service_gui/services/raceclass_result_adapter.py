@@ -59,10 +59,11 @@ class RaceclassResultsAdapter:
         headers = {
             hdrs.AUTHORIZATION: f"Bearer {token}",
         }
+        raceclass_url = urllib.parse.quote(raceclass, safe='')
 
         async with ClientSession() as session:
             async with session.delete(
-                f"{EVENT_SERVICE_URL}/events/{event_id}/results/{raceclass}",
+                f"{EVENT_SERVICE_URL}/events/{event_id}/results/{raceclass_url}",
                 headers=headers,
             ) as resp:
                 res = resp.status
