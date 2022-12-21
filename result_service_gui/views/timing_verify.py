@@ -62,7 +62,7 @@ class TimingVerify(web.View):
                     all_races = await RaceplansAdapter().get_all_races(
                         user["token"], event_id
                     )
-                    valgt_runde = await find_round(all_races, heat)
+                    valgt_runde = await find_round(event, all_races, heat)
                 except Exception:
                     informasjon = f"Velg runde i menyen. {informasjon}"
                     logging.debug("Ingen runde valgt")
@@ -197,7 +197,7 @@ async def delete_start(user: dict, form: dict) -> str:
     return informasjon
 
 
-async def find_round(all_races, heat) -> dict:
+async def find_round(event, all_races, heat) -> dict:
     """Analyse selected round and determine next round(s)."""
     valgt_runde = {
         "klasse": "",
@@ -205,7 +205,7 @@ async def find_round(all_races, heat) -> dict:
     }
     if heat == 0:
         # find race starting now
-        races = get_races_for_live_view(all_races, 0, 1)
+        races = get_races_for_live_view(event, all_races, 0, 1)
         if len(races) > 0:
             valgt_runde = {
                 "klasse": races[0]["raceclass"],

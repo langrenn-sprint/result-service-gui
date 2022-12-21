@@ -4,11 +4,10 @@ import logging
 from aiohttp import web
 import aiohttp_jinja2
 
-from result_service_gui.services import FotoService, PhotosAdapter
+from result_service_gui.services import EventsAdapter, FotoService, PhotosAdapter
 from .utils import (
     check_login_google_photos,
     get_event,
-    get_local_time,
 )
 
 
@@ -47,7 +46,7 @@ class PhotosEdit(web.View):
                     "event": event,
                     "event_id": event_id,
                     "informasjon": informasjon,
-                    "local_time_now": get_local_time("HH:MM"),
+                    "local_time_now": EventsAdapter().get_local_time(event, "HH:MM"),
                     "photos": photos,
                     "username": user["name"],
                 },

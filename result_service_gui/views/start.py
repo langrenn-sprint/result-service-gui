@@ -6,6 +6,7 @@ from aiohttp import web
 import aiohttp_jinja2
 
 from result_service_gui.services import (
+    EventsAdapter,
     RaceclassesAdapter,
     RaceplansAdapter,
 )
@@ -13,7 +14,6 @@ from .utils import (
     check_login_open,
     get_enrichced_startlist,
     get_event,
-    get_local_time,
     get_qualification_text,
     get_raceplan_summary,
     get_races_for_live_view,
@@ -51,7 +51,7 @@ class Start(web.View):
             # get startlister for klasse
             _tmp_races = await RaceplansAdapter().get_all_races(user["token"], event_id)
             if "live" == valgt_klasse:
-                _tmp_races = get_races_for_live_view(_tmp_races, 0, 9)
+                _tmp_races = get_races_for_live_view(event, _tmp_races, 0, 9)
                 colseparators = [3, 6]
                 colclass = "w3-third"
 
@@ -91,7 +91,7 @@ class Start(web.View):
                     "raceclasses": raceclasses,
                     "races": races,
                     "raceplan_summary": raceplan_summary,
-                    "local_time_now": get_local_time("HH:MM"),
+                    "local_time_now": EventsAdapter().get_local_time(event, "HH:MM"),
                     "username": user["name"],
                 },
             )

@@ -40,11 +40,12 @@ class StartAdapter:
                 elif resp.status == 401:
                     raise web.HTTPBadRequest(reason=f"401 Unathorized - {servicename}")
                 else:
+                    body = await resp.json()
                     logging.error(
-                        f"generate_startlist_for_event failed - {resp.status}"
+                        f"{servicename} failed: {resp.status} - {body['detail']}"
                     )
                     raise web.HTTPBadRequest(
-                        reason="Generate_startlist_for_event failed."
+                        reason=f"{servicename} failed - {body['detail']}."
                     )
 
         return informasjon
@@ -96,9 +97,11 @@ class StartAdapter:
                     raise web.HTTPBadRequest(reason=f"401 Unathorized - {servicename}")
                 else:
                     body = await resp.json()
-                    logging.error(f"{servicename} failed - {resp.status} - {body}")
+                    logging.error(
+                        f"{servicename} failed: {resp.status} - {body['detail']}"
+                    )
                     raise web.HTTPBadRequest(
-                        reason=f"Error - {resp.status}: {body['detail']}."
+                        reason=f"{servicename} failed - {body['detail']}."
                     )
         return str(res)
 
@@ -125,9 +128,11 @@ class StartAdapter:
                 else:
                     servicename = "get_start_entries_by_race_id"
                     body = await resp.json()
-                    logging.error(f"{servicename} failed - {resp.status} - {body}")
+                    logging.error(
+                        f"{servicename} failed: {resp.status} - {body['detail']}"
+                    )
                     raise web.HTTPBadRequest(
-                        reason=f"Error - {resp.status}: {body['detail']}."
+                        reason=f"{servicename} failed - {body['detail']}."
                     )
         return start_entries
 
@@ -218,10 +223,10 @@ class StartAdapter:
                 else:
                     body = await resp.json()
                     logging.error(
-                        f"{servicename} failed - {resp.status} - {body} {new_start}"
+                        f"{servicename} failed: {resp.status} - {body['detail']}"
                     )
                     raise web.HTTPBadRequest(
-                        reason=f"Error - {resp.status}: {body['detail']}."
+                        reason=f"{servicename} failed - {body['detail']}."
                     )
         return resp.status
 
@@ -247,9 +252,9 @@ class StartAdapter:
                 else:
                     body = await resp.json()
                     logging.error(
-                        f"{servicename} failed - {resp.status} - {body} {new_start}"
+                        f"{servicename} failed: {resp.status} - {body['detail']}"
                     )
                     raise web.HTTPBadRequest(
-                        reason=f"Error - {resp.status}: {body['detail']}."
+                        reason=f"{servicename} failed - {body['detail']}."
                     )
         return resp.status

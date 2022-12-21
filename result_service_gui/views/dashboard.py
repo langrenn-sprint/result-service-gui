@@ -5,13 +5,13 @@ from aiohttp import web
 import aiohttp_jinja2
 
 from result_service_gui.services import (
+    EventsAdapter,
     RaceclassesAdapter,
     RaceplansAdapter,
 )
 from .utils import (
     check_login,
     get_event,
-    get_local_time,
     get_races_for_live_view,
 )
 
@@ -39,7 +39,7 @@ class Dashboard(web.View):
             )
             all_races = await RaceplansAdapter().get_all_races(user["token"], event_id)
 
-            races = get_races_for_live_view(all_races, 0, 1)
+            races = get_races_for_live_view(event, all_races, 0, 1)
 
             return await aiohttp_jinja2.render_template_async(
                 "dashboard.html",
@@ -49,7 +49,7 @@ class Dashboard(web.View):
                     "event": event,
                     "event_id": event_id,
                     "informasjon": informasjon,
-                    "local_time_now": get_local_time("HH:MM"),
+                    "local_time_now": EventsAdapter().get_local_time(event, "HH:MM"),
                     "raceclasses": raceclasses,
                     "races": races,
                     "username": user["name"],

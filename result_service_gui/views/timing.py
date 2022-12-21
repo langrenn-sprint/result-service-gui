@@ -5,6 +5,7 @@ from aiohttp import web
 import aiohttp_jinja2
 
 from result_service_gui.services import (
+    EventsAdapter,
     RaceclassesAdapter,
     RaceplansAdapter,
     TimeEventsAdapter,
@@ -15,7 +16,6 @@ from .utils import (
     get_enrichced_startlist,
     get_event,
     get_finish_timings,
-    get_local_time,
 )
 
 
@@ -55,7 +55,7 @@ class Timing(web.View):
                 all_races = await RaceplansAdapter().get_all_races(
                     user["token"], event_id
                 )
-                time_now = get_local_time("HH:MM:SS")
+                time_now = EventsAdapter().get_local_time(event, "HH:MM:SS")
                 # find next race on start
                 valgt_heat = 1
                 for tmp_race in all_races:
