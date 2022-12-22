@@ -116,13 +116,14 @@
             if (race_results_status == 2) {
               document.getElementById(race_order + "_status").innerHTML = " - resultat publisert."
             }
-            alert(info);
+            document.getElementById(race_order + "_result").innerHTML = info;
           }
           catch(err) {
             if (err.message.indexOf("401") > 0) {
               alert("Error 401 - Logg inn på nytt.");
             }
             else {
+              document.getElementById(race_order + "_result").innerHTML = err;
               alert(err);
             }
           }
@@ -233,11 +234,11 @@
           <th width=40>Pos</th>
           <th width=40>Nr</th>
           <th></th>
-          <th>&nbsp;Navn</th>
-          <th>Klubb</th>
-          <th id=resultborder>Plass</th>
-          <th align=center>Startnr</th>
-          <th>Navn</th>
+          <th width="200">&nbsp;Navn</th>
+          <th width="200">Klubb</th>
+          <th width=50 id=resultborder>Plass</th>
+          <th width=80 align=center>Startnr</th>
+          <th width=200>Navn</th>
           <th>
             {% if valgt_runde.runde != "F" %}
               Videre til
@@ -335,8 +336,8 @@
                 <input type="hidden" name=timing_point value="Finish">
                 <input type="hidden" name=event_id value="{{ event_id }}">
                 <input type="hidden" name=update_result value="true">
-                <input type="submit" name=submit_update value="  Lagre  " >
-                <button type="button" onclick=update_results_ajax(this); >Lagre (beta)</button>
+                <input type="hidden" name=submit_update value="  Lagre  " >
+                <button type="button" onclick=update_results_ajax(this); >Lagre</button>
                 &nbsp;<input type="checkbox" name=publish checked> Publisere
               </td>
             </tr>
@@ -344,7 +345,7 @@
           {% if race.startliste %}
             <tr>
               <form action=/resultat_edit method=post>
-                <td colspan=6>
+                <td colspan=5>
                   <input type="text" name="starting_position" value="" size=3>
                   <input type="text" name="bib" value="" min=1 max=9999 size=3>
                   <input type="submit" name=create_start value=" Legg til ">
@@ -356,7 +357,9 @@
                   <input type="hidden" name=event_id value="{{ event_id }}">
                 </td>
               </form>
-              <td colspan=4>&nbsp;</td>
+              <td colspan=5 id="orange">
+                <span id="{{ race.order }}_result"></span>
+              </td>
             </tr>
           {% endif %}
         </table>

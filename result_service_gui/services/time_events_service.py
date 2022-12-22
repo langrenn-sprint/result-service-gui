@@ -102,10 +102,11 @@ class TimeEventsService:
             id = await TimeEventsAdapter().update_time_event(
                 token, time_event["id"], time_event
             )
-            informasjon += f" Updated time event {id}. "
+            logging.debug(f"Updated time event: {time_event['bib']} - result: {id}")
+            informasjon += f" Oppdatert startnr {time_event['bib']}. "
         else:
             new_t_e = await TimeEventsAdapter().create_time_event(token, time_event)
-            informasjon += f" Bib {new_t_e['bib']}: {new_t_e['status']}. "
+            informasjon += f" {new_t_e['bib']}: {new_t_e['status']}. "
 
         return informasjon
 
@@ -177,7 +178,7 @@ class TimeEventsService:
                 else:
                     new_t_e = await TimeEventsAdapter().create_time_event(token, time_event)
                     if new_t_e["status"] == "OK":
-                        informasjon += f"- Bib {new_t_e['bib']}: {new_t_e['status']}. "
+                        informasjon += f"{new_t_e['bib']}: {new_t_e['rank']} pl. "
                         result_ok = True
                     else:
                         # error, return info to user

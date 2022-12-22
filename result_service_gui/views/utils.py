@@ -219,12 +219,13 @@ async def delete_result(user: dict, form: dict) -> str:
                 id = await StartAdapter().delete_start_entry(
                     user["token"], start_entry["race_id"], start_entry["id"]
                 )
-                informasjon = f"Slettet start entry i neste heat. Resultat: {id}"
+                informasjon = f"Slettet neste start ({time_event['bib']}). "
+                logging.debug(f"Deleted start - result {id}")
     id2 = await TimeEventsAdapter().delete_time_event(
         user["token"], form["time_event_id"]
     )
     logging.debug(f"Time event deleted: {id2} - {form['time_event_id']}")
-    informasjon = f"Slettet målpassering bib: {time_event['bib']}  {informasjon}"
+    informasjon = f"Slettet passering ({time_event['bib']}). {informasjon}"
     return informasjon
 
 

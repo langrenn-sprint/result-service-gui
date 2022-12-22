@@ -142,11 +142,11 @@ class ResultatEdit(web.View):
             if "create_start" in form.keys():
                 informasjon += "<br>" + await create_start(user, form)  # type: ignore
             elif "update_result" in form.keys():
-                informasjon += "<br>" + await update_result(user, form)  # type: ignore
+                informasjon += "<br>Passeringer: " + await update_result(user, form)  # type: ignore
                 # set results to official
                 if "publish" in form.keys():
                     res = await ResultAdapter().update_result_status(user["token"], form["race_id"], 2)  # type: ignore
-                    informasjon = f"Heat resultat er publisert ({res}). " + informasjon
+                    informasjon = f"Resultat er publisert ({res}). " + informasjon
                     race_round = str(form["race"])
                     if race_round.find("FA") > -1:
                         res = await RaceclassResultsService().create_raceclass_results(
