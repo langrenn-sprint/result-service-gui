@@ -99,10 +99,20 @@
             <li class=dropdown>
               <a href=javascript:void(0) class=dropbtn>Startliste (pr klasse)</a>
               <div class=dropdown-content>
-                <a target=_new href=print_lists?event_id={{ event_id }}&action=start>Alle</a>
-                {% for klasse in raceclasses %}
-                  <a target=_new href=print_lists?klasse={{ klasse.name }}&event_id={{ event_id }}&action=start>{{ klasse.name }}</a>
-                {% endfor %}
+                <table>
+                  <tr><td colspan="5">
+                    <a target=_new href=print_lists?event_id={{ event_id }}&action=start>Alle</a>
+                  </td></tr>
+                  {% for raceclass in raceclasses %}
+                    <tr>
+                      <td id="black">{{ raceclass.name }}</td>
+                      <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=start>Alle</a></nobr></td>
+                      <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=start&runde=Q>Kvart</a></nobr></td>
+                      <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=start&runde=S>Semi</a></nobr></td>
+                      <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=start&runde=F>Finale</a></nobr></td>
+                    </tr>
+                  {% endfor %}
+                </table>
               </div>
             </li>
           </ul>
@@ -112,9 +122,17 @@
             <li class=dropdown>
               <a href=javascript:void(0) class=dropbtn>Live (heat resultater)</a>
               <div class=dropdown-content>
-                {% for klasse in raceclasses %}
-                  <a target=_new href=print_lists?klasse={{ klasse.name }}&event_id={{ event_id }}&action=live>{{ klasse.name }}</a>
-                {% endfor %}
+                <table>
+                  {% for raceclass in raceclasses %}
+                    <tr>
+                      <td id="black">{{ raceclass.name }}</td>
+                      <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=live>Alle</a></nobr></td>
+                      <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=live&runde=Q>Kvart</a></nobr></td>
+                      <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=live&runde=S>Semi</a></nobr></td>
+                      <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=live&runde=F>Finale</a></nobr></td>
+                    </tr>
+                  {% endfor %}
+                </table>
               </div>
             </li>
           </ul>

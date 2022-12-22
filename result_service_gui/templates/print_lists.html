@@ -11,6 +11,24 @@
 {% block refresh %}0{% endblock %}
 
 {% block content %}
+<div id=adminpagetitle>
+  {% if action == "live" %}
+    Live resultater <img id=header_icon src="../static/icon_live.png"> {{ valgt_klasse }}
+  {% elif action == "start" %}
+    Startliste <img id=header_icon src="../static/icon_start.png"> {{ valgt_klasse }}
+    {% if valgt_runde == "Q"%}kvartfinaler
+    {% elif valgt_runde == "S"%}semifinaler
+    {% elif valgt_runde == "F"%}finaler
+    {% endif %}
+  {% else %}
+    Resultater <img id=header_icon src="../static/icon_result.png"> {{ valgt_klasse }}
+    {% if valgt_runde == "Q"%}kvartfinaler
+    {% elif valgt_runde == "S"%}semifinaler
+    {% elif valgt_runde == "F"%}finaler
+    {% endif %}
+  {% endif %}
+</div>
+<div align=right>{{ event.name }}, {{ event.date_of_event }}</div>
 <div class="w3-container" id=info>{{ informasjon }}</div>
 <table>
     {% for race in races %}
@@ -19,23 +37,6 @@
           {% if not loop.first %}
             <div id=pagebreak></div>
           {% endif %}
-          <div id=adminpagetitle>
-            {% if action == "live" %}
-              Live resultater <img id=header_icon src="../static/icon_live.png"> {{ race.raceclass }}
-            {% elif race.list_type == "start" %}
-              Startliste <img id=header_icon src="../static/icon_start.png"> {{ race.raceclass }}
-              {% if valgt_runde == "Q"%}semifinaler
-              {% elif valgt_runde == "S"%}finaler
-              {% endif %}
-            {% else %}
-              Resultater <img id=header_icon src="../static/icon_result.png"> {{ race.raceclass }}
-              {% if valgt_runde == "Q"%}kvartfinaler
-              {% elif valgt_runde == "S"%}semifinaler
-              {% elif valgt_runde == "F"%}finaler
-              {% endif %}
-            {% endif %}
-          </div>
-          <div align=right>{{ event.name }}, {{ event.date_of_event }}</div>
           {% if raceplan_summary|length > 0 %}
             <table>
               <tr id=spacer></tr>
@@ -89,7 +90,6 @@
               <td></td>
             </tr>
         {% endfor %}
-        <tr id=tablespacer><td>&nbsp;</td></tr>
       {# print results #}
       {% elif race.list_type in ("live", "result") %} 
         <tr id=headerprint>
@@ -124,6 +124,7 @@
           </tr>
         {% endfor %}
       {% endif %}
+      <tr id=tablespacer><td>&nbsp;</td></tr>
     {% endfor %}
   </table>
 {% endblock %}

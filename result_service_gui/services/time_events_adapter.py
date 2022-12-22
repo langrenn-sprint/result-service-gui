@@ -70,9 +70,10 @@ class TimeEventsAdapter:
             elif resp.status == 401:
                 raise web.HTTPBadRequest(reason=f"401 Unathorized - {servicename}")
             else:
-                logging.error(f"delete_time_event failed - {resp.status}, {resp}")
+                body = await resp.json()
+                logging.error(f"{servicename} failed - {resp.status} - {body}")
                 raise web.HTTPBadRequest(
-                    reason=f"Delete time_event failed {resp.status}."
+                    reason=f"Error - {resp.status}: {body['detail']}."
                 )
         return resp.status
 

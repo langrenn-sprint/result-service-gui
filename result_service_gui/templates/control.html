@@ -20,10 +20,10 @@
     <li class=dropdown id=topborder>
       <a href=javascript:void(0) class=dropbtn>Velg klasse</a>
       <div class=dropdown-content>
-        <a href=control?&event_id={{ event_id }}&action={{ action }}>Alle</a>
+        <a href=control?&event_id={{ event_id }}&action=control>Alle</a>
         {% for klasse in raceclasses %}
           {% if klasse.ranking %}
-            <a href=control?valgt_klasse={{ klasse.name }}&event_id={{ event_id }}&action={{ action }}>{{ klasse.name }}</a>
+            <a href=control?valgt_klasse={{ klasse.name }}&event_id={{ event_id }}&action=control>{{ klasse.name }}</a>
           {% endif %}
         {% endfor %}
       </div>
@@ -41,7 +41,9 @@
 {% block content %}
   <div id=spacer></div>
   {% if action != "c" %}
-    <div class="w3-container" id=info>Funnet {{ passeringer|length }} events med error. (Pro tip: Hvis du vil se alle passeringer, klikk <a href="control?event_id={{ event_id }}&action=c">her</a>)</div>
+    <div class="w3-container" id=info>Funnet {{ passeringer|length }} passeringer med error. (Pro tip: Hvis du vil se alle passeringer, klikk <a href="control?event_id={{ event_id }}&valgt_klasse={{ valgt_klasse }}&action=c">her</a>)</div>
+  {% else %}
+    <div class="w3-container" id=info>Funnet {{ passeringer|length }} passeringer.</div>
   {% endif %}
   <div id=spacer></div>
     <table>

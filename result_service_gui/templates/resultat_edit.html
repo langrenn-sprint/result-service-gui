@@ -27,11 +27,11 @@
     <a href=javascript:void(0) class=dropbtn>Velg runde</a>
     <div class=dropdown-content>
       <table>
-        <tr><td colspan="3">
-            <a  href=resultat_edit?event_id={{ event_id }}&heat=0>Starter nå</a>
+        <tr><td colspan="4">
+            <a href=resultat_edit?event_id={{ event_id }}&heat=0>Starter nå</a>
         </td></tr>
         {% if current_races %}
-          <tr><td>
+          <tr><td colspan="2">
             <nobr><a href=resultat_edit?event_id={{ event_id }}&heat={{ (current_races|first).order - 1 }}>Forrige runde</a></nobr>
           </td><td colspan="2">
             <nobr><a href=resultat_edit?event_id={{ event_id }}&heat={{ (current_races|last).order + 1 }}>Neste runde</a></nobr>
@@ -40,9 +40,10 @@
         {% for raceclass in raceplan_summary %}
           <tr>
           {% if raceclass.ranking %}
-            <td><nobr><a href=resultat_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=Q>{{ raceclass.name }}  kvart</a></nobr></td>
-            <td><nobr><a href=resultat_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=S>&nbsp;&nbsp; semi</a></nobr></td>
-            <td><nobr><a href=resultat_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=F>&nbsp;&nbsp; finaler</a></nobr></td>
+            <td id="black">{{ raceclass.name }}</td>
+            <td><nobr><a href=resultat_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=Q>Kvart</a></nobr></td>
+            <td><nobr><a href=resultat_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=S>Semi</a></nobr></td>
+            <td><nobr><a href=resultat_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=F>Finale</a></nobr></td>
           {% endif %}
           </tr>
         {% endfor %}
@@ -201,6 +202,7 @@
   {% for info in info_list %}
     <div class="w3-container" id=info>{{ info }}</div>
   {% endfor %}
+  <div class="w3-container" id=info>{{ valgt_runde.informasjon }}</div>
 
 <div class="w3-row-padding">
   {% for race in current_races %}
@@ -391,7 +393,10 @@
         {% endif %}
         <td width=200>
           {% if current_races %}
-            <a href=resultat_edit?event_id={{ event_id }}&heat={{ (current_races|last).order + 1 }}>&nbsp;Neste runde</a>
+            <nobr>
+              <a href=resultat_edit?event_id={{ event_id }}&heat={{ (current_races|first).order - 1 }}>&nbsp;Forrige runde</a>
+              <a href=resultat_edit?event_id={{ event_id }}&heat={{ (current_races|last).order + 1 }}>&nbsp;Neste runde</a>
+            </nobr>
           {% endif %}
           </td>
       </tr>

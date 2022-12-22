@@ -163,7 +163,6 @@ class TimeEventsService:
                 else:
                     time_event["next_race"] = "Ute"
                     time_event["next_race_id"] = ""
-
                 # add name and club to time_event
                 time_event["name"] = f"{contestant['first_name']} {contestant['last_name']}"
                 time_event["club"] = contestant["club"]
@@ -181,9 +180,8 @@ class TimeEventsService:
                         informasjon += f"- Bib {new_t_e['bib']}: {new_t_e['status']}. "
                         result_ok = True
                     else:
-                        # error, add last comment from changelog
+                        # error, return info to user
                         if new_t_e['changelog']:
-                            informasjon += f"<br> - Bib {new_t_e['bib']}: {new_t_e['status']}. "
                             informasjon += f"{new_t_e['changelog'][-1]['comment']} <br>"
                 if time_event["next_race"] != "Ute" and result_ok:
                     id = await StartAdapter().create_start_entry(token, next_start_entry)

@@ -39,7 +39,6 @@ class PrintLists(web.View):
             raceplan_summary = []
             resultlist = {}
             html_template = "print_lists.html"
-
             try:
                 valgt_klasse = self.request.rel_url.query["klasse"]
             except Exception:
@@ -56,6 +55,12 @@ class PrintLists(web.View):
                 _tmp_races = await RaceplansAdapter().get_races_by_racesclass(
                     user["token"], event_id, valgt_klasse
                 )
+                if valgt_runde:
+                    filtered_races = []
+                    for race in _tmp_races:
+                        if race['round'] == valgt_runde:
+                            filtered_races.append(race)
+                    _tmp_races = filtered_races
             else:
                 _tmp_races = await RaceplansAdapter().get_all_races(
                     user["token"], event_id

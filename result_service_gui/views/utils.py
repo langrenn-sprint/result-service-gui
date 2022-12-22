@@ -348,9 +348,16 @@ async def get_passeringer(
 ) -> list:
     """Return list of passeringer for selected action."""
     passeringer = []
-    tmp_passeringer = await TimeEventsAdapter().get_time_events_by_event_id(
+    _tmp_passeringer = await TimeEventsAdapter().get_time_events_by_event_id(
         token, event_id
     )
+
+    # filter based upon raceclass
+    tmp_passeringer = []
+    for passering in _tmp_passeringer:
+        if passering['race'].startswith(valgt_klasse):
+            tmp_passeringer.append(passering)
+
     if action == "control":
         for passering in reversed(tmp_passeringer):
             if not valgt_klasse or valgt_klasse in passering["race"]:
