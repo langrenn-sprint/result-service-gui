@@ -5,7 +5,7 @@
 
 {% block titleheader %}{{ lopsinfo }}{% endblock %}
 {% block headercontainer %}{{ lopsinfo }} <img id=header_icon src="../static/icon_event.png"> {% endblock %}
-{% block refresh %}{% endblock %}
+{% block refresh %}300{% endblock %}
 {% block titlemain %} <img id=menu_icon src="../static/icon_event.png"> {{ lopsinfo }}{% endblock %}
 {% block menuitems %}
 {% endblock %}
@@ -14,7 +14,7 @@
 <div id=spacer></div>
 <table cellpadding=8>
   <tr id=subheader id=black>
-    <td colspan=5 id=black>Arbeidsflyt - under rennet</td>
+    <td colspan=5 id=black>{{ event.name }} - oversiktsinformasjon. Oppdatert kl. <b>{{ local_time_now }}</b></td>
   </tr>
 </table>
 <div class="w3-row-padding">
@@ -23,14 +23,23 @@
       <tr>
         <td colspan=5 id=spacer></td>
       </tr>
+      <tr id=headerblue>
+        <td colspan=5>Fremdrift i rennet</td>
+      </tr>
       <tr>
-        <td>Lokal tid er <b>{{ local_time_now }}</b></td>
+        <td></td>
         <td colspan=4>
           Neste start
           <b>{% for race in races %}
             {{ race.raceclass }}-{{ race.round }}{{ race.index }}{{ race.heat }} kl. {{ race.start_time }} (heat nr. {{ race.order }})<br>
           {% endfor %}</b>
         </td>
+      </tr>
+      <tr>
+        <td colspan=5 id=spacer>&nbsp;</td>
+      </tr>
+      <tr id=headerblue>
+        <td id=table_border colspan=5>Registrere passeringer og resultater</td>
       </tr>
       <tr>
         <td colspan=5 id=spacer>&nbsp;</td>
@@ -97,7 +106,7 @@
         <td width=200>
           <ul>
             <li class=dropdown>
-              <a href=javascript:void(0) class=dropbtn>Startliste (pr klasse)</a>
+              <a href=javascript:void(0) class=dropbtn>Startlister</a>
               <div class=dropdown-content>
                 <table>
                   <tr><td colspan="5">
@@ -120,7 +129,7 @@
         <td width=200>
           <ul>
             <li class=dropdown>
-              <a href=javascript:void(0) class=dropbtn>Live (heat resultater)</a>
+              <a href=javascript:void(0) class=dropbtn>Live resultater (heat)</a>
               <div class=dropdown-content>
                 <table>
                   {% for raceclass in raceclasses %}
@@ -140,7 +149,7 @@
         <td width=200>
           <ul>
             <li class=dropdown>
-              <a href=javascript:void(0) class=dropbtn>Resultater (pr klasse)</a>
+              <a href=javascript:void(0) class=dropbtn>Resultater (for klassen)</a>
               <div class=dropdown-content>
                 {% for klasse in raceclasses %}
                   <a target=_new href=print_lists?klasse={{ klasse.name }}&event_id={{ event_id }}&action=result>{{ klasse.name }}</a>

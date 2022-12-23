@@ -179,7 +179,7 @@ class FotoService:
                     i_c += 1
 
             # update album register
-            sync_album.last_sync_time = datetime.datetime.now()
+            sync_album.last_sync_time = EventsAdapter().get_local_datetime_now(event)
             resU = await AlbumsAdapter().update_album(user["token"], sync_album.id, sync_album)
             logging.debug(f"Synked album - {sync_album.g_id}, stored locally {resU}")
 

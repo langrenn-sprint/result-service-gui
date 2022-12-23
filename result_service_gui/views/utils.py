@@ -124,11 +124,10 @@ async def check_login_open(self) -> dict:
     return user
 
 
-async def create_start_time_events(user: dict, form: dict) -> str:
+async def create_start_time_events(user: dict, event: dict, form: dict) -> str:
     """Extract form data and create time_events for start."""
     informasjon = ""
-    time_now = datetime.datetime.now()
-    time_stamp_now = f"{time_now.strftime('%Y')}-{time_now.strftime('%m')}-{time_now.strftime('%d')}T{time_now.strftime('%X')}"
+    time_stamp_now = EventsAdapter().get_local_time(event, "log")
 
     request_body = {
         "id": "",
@@ -138,18 +137,15 @@ async def create_start_time_events(user: dict, form: dict) -> str:
         "race_id": form["race_id"],
         "timing_point": "",
         "rank": "",
-        "registration_time": time_now.strftime("%X"),
+        "registration_time": time_stamp_now,
         "next_race": "",
         "next_race_id": "",
         "next_race_position": 0,
         "status": "OK",
         "changelog": [],
     }
-    i = 0
-    informasjon = ""
-    time_now = datetime.datetime.now()
-    time_stamp_now = f"{time_now.strftime('%Y')}-{time_now.strftime('%m')}-{time_now.strftime('%d')}T{time_now.strftime('%X')}"
 
+    i = 0
     if "bib" in form.keys():
         biblist = form["bib"].rsplit(" ")
         for bib in biblist:
@@ -229,15 +225,18 @@ async def delete_result(user: dict, form: dict) -> str:
     return informasjon
 
 
-def get_display_style(start_time: str) -> str:
+def get_display_style(start_time: str, event: dict) -> str:
     """Calculate time remaining to start and return table header style."""
+    time_now = EventsAdapter().get_local_datetime_now(event)
     start_time_obj = datetime.datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%S")
-    delta_time = start_time_obj - datetime.datetime.now()
+    # make sure timezone is correct
+    start_time_obj = start_time_obj.replace(tzinfo=time_now.tzinfo)
+    delta_time = start_time_obj - time_now
     delta_seconds = delta_time.total_seconds()
     display_style = ""
-    if delta_seconds < 240:
+    if delta_seconds < 300:
         display_style = "table_header_red"
-    elif delta_seconds < 480:
+    elif delta_seconds < 600:
         display_style = "table_header_orange"
     else:
         display_style = "table_header_green"
@@ -472,20 +471,23 @@ def get_races_for_live_view(event: dict, races: list, valgt_heat: int, number_of
     filtered_racelist = []
     i = 0
     time_now = EventsAdapter().get_local_time(
-        event, "HH:MM"
+        event, "log"
     )
     # find next race on start
     if valgt_heat == 0:
         for race in races:
-            if time_now < race["start_time"][-8:]:
+            if time_now < race["start_time"]:
                 valgt_heat = race["order"]
                 break
+        else:
+            if valgt_heat == 0:
+                # all races have already started
+                valgt_heat = len(races) + 1
 
     for race in races:
         # from heat number (order) if selected
         if (race["order"] >= valgt_heat) and (i < number_of_races):
             race["next_race"] = get_qualification_text(race)
-            race["display_color"] = get_display_style(race["start_time"])
             race["start_time"] = race["start_time"][-8:]
             filtered_racelist.append(race)
             i += 1
@@ -586,11 +588,10 @@ async def update_finish_time_events(
     return informasjon
 
 
-async def update_time_event(user: dict, form: dict) -> str:
+async def update_time_event(user: dict, event: dict, form: dict) -> str:
     """Register time event - return information."""
     informasjon = ""
-    time_now = datetime.datetime.now()
-    time_stamp_now = f"{time_now.strftime('%Y')}-{time_now.strftime('%m')}-{time_now.strftime('%d')}T{time_now.strftime('%X')}"
+    time_stamp_now = EventsAdapter().get_local_time(event, "log")
     request_body = await TimeEventsAdapter().get_time_event_by_id(
         user["token"], form["id"]
     )

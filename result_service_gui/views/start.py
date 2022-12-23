@@ -12,6 +12,7 @@ from result_service_gui.services import (
 )
 from .utils import (
     check_login_open,
+    get_display_style,
     get_enrichced_startlist,
     get_event,
     get_qualification_text,
@@ -64,6 +65,7 @@ class Start(web.View):
                             user["token"], race["id"]
                         )
                         race["next_race"] = get_qualification_text(race)
+                        race["display_color"] = get_display_style(race["start_time"], event)
                         race["start_time"] = race["start_time"][-8:]
                         # get start list details
                         race["startliste"] = await get_enrichced_startlist(user, race)

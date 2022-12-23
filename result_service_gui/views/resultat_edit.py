@@ -1,5 +1,4 @@
 """Resource module for verificatoin of timing registration."""
-import datetime
 import json
 import logging
 
@@ -8,6 +7,7 @@ import aiohttp_jinja2
 
 from result_service_gui.services import (
     ContestantsAdapter,
+    EventsAdapter,
     PhotosAdapter,
     RaceclassesAdapter,
     RaceclassResultsService,
@@ -136,13 +136,14 @@ class ResultatEdit(web.View):
         try:
             logging.debug(f"Form {form}")
             event_id = str(form["event_id"])
+            event = await get_event(user, event_id)
             valgt_runde["klasse"] = str(form["klasse"])
             valgt_runde["runde"] = str(form["runde"])
 
             if "create_start" in form.keys():
                 informasjon += "<br>" + await create_start(user, form)  # type: ignore
             elif "update_result" in form.keys():
-                informasjon += "<br>Passeringer: " + await update_result(user, form)  # type: ignore
+                informasjon += "<br>Passeringer: " + await update_result(user, event, form)  # type: ignore
                 # set results to official
                 if "publish" in form.keys():
                     res = await ResultAdapter().update_result_status(user["token"], form["race_id"], 2)  # type: ignore
@@ -287,10 +288,9 @@ def get_finish_rank_from_photos(user: dict, photos: list, camera_side: str) -> l
     return biblist
 
 
-async def update_result(user: dict, form: dict) -> str:
+async def update_result(user: dict, event: dict, form: dict) -> str:
     """Extract form data and update result and corresponding start event."""
-    time_now = datetime.datetime.now()
-    time_stamp_now = f"{time_now.strftime('%Y')}-{time_now.strftime('%m')}-{time_now.strftime('%d')}T{time_now.strftime('%X')}"
+    time_stamp_now = EventsAdapter().get_local_time(event, "log")
     delete_result_list = []
     add_result_list = []
     race_order = form["race_order"]
