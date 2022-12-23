@@ -1,5 +1,4 @@
 """Resource module for verificatoin of timing registration."""
-import datetime
 import logging
 
 from aiohttp import web
@@ -7,6 +6,7 @@ import aiohttp_jinja2
 
 from result_service_gui.services import (
     ContestantsAdapter,
+    EventsAdapter,
     RaceclassesAdapter,
     RaceplansAdapter,
     ResultAdapter,
@@ -134,6 +134,7 @@ class TimingVerify(web.View):
             form = await self.request.post()
             logging.debug(f"Form {form}")
             event_id = str(form["event_id"])
+            event = await get_event(user, event_id)
             valgt_runde["klasse"] = str(form["klasse"])
             valgt_runde["runde"] = str(form["runde"])
 
@@ -144,7 +145,7 @@ class TimingVerify(web.View):
             elif "delete_start" in form.keys():
                 informasjon = await delete_start(user, form)  # type: ignore
             elif "update_result" in form.keys():
-                informasjon = await update_result(user, form)  # type: ignore
+                informasjon = await update_result(user, event, form)  # type: ignore
                 # set results to official
                 if "submit_publish" in form.keys():
                     res = await ResultAdapter().update_result_status(user["token"], form["race_id"], 2)  # type: ignore
@@ -235,10 +236,9 @@ def get_next_round(valgt_runde: dict) -> list:
     return next_round
 
 
-async def update_result(user: dict, form: dict) -> str:
+async def update_result(user: dict, event: dict, form: dict) -> str:
     """Extract form data and update one result and corresponding start event."""
-    time_now = datetime.datetime.now()
-    time_stamp_now = f"{time_now.strftime('%Y')}-{time_now.strftime('%m')}-{time_now.strftime('%d')}T{time_now.strftime('%X')}"
+    time_stamp_now = EventsAdapter().get_local_time(event, "log")
     delete_result_list = []
     add_result_list = []
     for x in form.keys():
