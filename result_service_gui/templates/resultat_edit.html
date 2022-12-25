@@ -134,6 +134,16 @@
       }
     }
 
+    /* this function will update value of checkbox when clicked
+    */
+    function update_checkbox(box, race_order) {
+      if (box.checked) {
+        document.getElementById(race_order + "_publish").value = "true"
+      } else  {
+        document.getElementById(race_order + "_publish").value = "false"
+      }
+    }
+
     /* this function will indicate with red or green colors if entered values are correct or not
       if bib exist in heat, the bib will be green,
       if bib not exist in heat or it is a duplicate, the entered value will be red 
@@ -338,7 +348,7 @@
                 <input type="hidden" name=update_result value="true">
                 <input type="hidden" name=submit_update value="  Lagre  " >
                 <button type="button" onclick=update_results_ajax(this); >Lagre</button>
-                &nbsp;<input type="checkbox" name=publish checked> Publisere
+                &nbsp;<div><input type="checkbox" id={{ race.order }}_publish name=publish value="true" checked onchange="update_checkbox(this, {{ race.order }});"> Publisere</div>
               </td>
             </tr>
           </form>

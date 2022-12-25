@@ -146,14 +146,15 @@ class ResultatEdit(web.View):
                 informasjon += "<br>Passeringer: " + await update_result(user, event, form)  # type: ignore
                 # set results to official
                 if "publish" in form.keys():
-                    res = await ResultAdapter().update_result_status(user["token"], form["race_id"], 2)  # type: ignore
-                    informasjon = f"Resultat er publisert ({res}). " + informasjon
-                    race_round = str(form["race"])
-                    if race_round.find("FA") > -1:
-                        res = await RaceclassResultsService().create_raceclass_results(
-                            user["token"], event_id, valgt_runde["klasse"]
-                        )  # type: ignore
-                        informasjon = f" Klassens resultat er publisert ({res}). " + informasjon
+                    if form['publish'] != "false":
+                        res = await ResultAdapter().update_result_status(user["token"], form["race_id"], 2)  # type: ignore
+                        informasjon = f"Resultat er publisert ({res}). " + informasjon
+                        race_round = str(form["race"])
+                        if race_round.find("FA") > -1:
+                            res = await RaceclassResultsService().create_raceclass_results(
+                                user["token"], event_id, valgt_runde["klasse"]
+                            )  # type: ignore
+                            informasjon = f" Klassens resultat er publisert ({res}). " + informasjon
         except Exception as e:
             logging.error(f"Error: {e}")
             error_reason = str(e)
