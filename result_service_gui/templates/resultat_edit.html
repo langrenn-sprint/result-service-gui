@@ -38,14 +38,14 @@
           </tr>
         {% endif %}
         {% for raceclass in raceplan_summary %}
-          <tr>
           {% if raceclass.ranking %}
+          <tr>
             <td id="black">{{ raceclass.name }}</td>
             <td><nobr><a href=resultat_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=Q>Kvart</a></nobr></td>
             <td><nobr><a href=resultat_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=S>Semi</a></nobr></td>
             <td><nobr><a href=resultat_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=F>Finale</a></nobr></td>
-          {% endif %}
           </tr>
+          {% endif %}
         {% endfor %}
       </table>
     </div>
@@ -70,6 +70,8 @@
     /* this function will send results to backend without reloading the page */
     function update_results_ajax(button) {
       try {
+        document.getElementById(button.id).innerHTML = " Sender... ";
+        document.getElementById(button.id).disabled = true;
         var xhttp = new XMLHttpRequest();
         xhttp.open("POST", "/resultat_edit", true);
         xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -117,6 +119,8 @@
               document.getElementById(race_order + "_status").innerHTML = " - resultat publisert."
             }
             document.getElementById(race_order + "_result").innerHTML = info;
+            document.getElementById(button.id).innerHTML = " Lagre ";
+            document.getElementById(button.id).disabled = false;
           }
           catch(err) {
             if (err.message.indexOf("401") > 0) {
@@ -126,6 +130,8 @@
               document.getElementById(race_order + "_result").innerHTML = err;
               alert(err);
             }
+            document.getElementById(button.id).innerHTML = " Lagre ";
+            document.getElementById(button.id).disabled = false;
           }
         }
       }
@@ -347,7 +353,7 @@
                 <input type="hidden" name=event_id value="{{ event_id }}">
                 <input type="hidden" name=update_result value="true">
                 <input type="hidden" name=submit_update value="  Lagre  " >
-                <button type="button" onclick=update_results_ajax(this); >Lagre</button>
+                <button type="button" id="{{ race.order }}_button" onclick=update_results_ajax(this); >Lagre</button>
                 &nbsp;<div><input type="checkbox" id={{ race.order }}_publish name=publish value="true" checked onchange="update_checkbox(this, {{ race.order }});"> Publisere</div>
               </td>
             </tr>
