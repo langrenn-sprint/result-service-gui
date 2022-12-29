@@ -354,7 +354,7 @@
                 <input type="hidden" name=update_result value="true">
                 <input type="hidden" name=submit_update value="  Lagre  " >
                 <button type="button" id="{{ race.order }}_button" onclick=update_results_ajax(this); >Lagre</button>
-                &nbsp;<div><input type="checkbox" id={{ race.order }}_publish name=publish value="true" checked onchange="update_checkbox(this, {{ race.order }});"> Publisere</div>
+                &nbsp;<input type="checkbox" id={{ race.order }}_publish name=publish value="true" checked onchange="update_checkbox(this, {{ race.order }});"> Publisere
               </td>
             </tr>
           </form>

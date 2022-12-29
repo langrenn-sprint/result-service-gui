@@ -5,27 +5,19 @@
 {% endblock %}
 
 {% block titleheader %}
-  Utskrift {{ valgt_klubb }}{{ valgt_klasse }}
+  {{ valgt_klubb }}{{ valgt_klasse }}  
+  {% if action == "start" %}startlister{% else %}live resultater{% endif %}
+
 {% endblock %}
 
 {% block refresh %}0{% endblock %}
 
 {% block content %}
 <div id=adminpagetitle>
-  {% if action == "live" %}
-    Live resultater <img id=header_icon src="../static/icon_live.png"> {{ valgt_klasse }}
-  {% elif action == "start" %}
-    Startliste <img id=header_icon src="../static/icon_start.png"> {{ valgt_klasse }}
-    {% if valgt_runde == "Q"%}kvartfinaler
-    {% elif valgt_runde == "S"%}semifinaler
-    {% elif valgt_runde == "F"%}finaler
-    {% endif %}
+  {% if action == "start" %}
+    Startlister <img id=header_icon src="../static/icon_start.png"> {{ valgt_klasse }}
   {% else %}
-    Resultater <img id=header_icon src="../static/icon_result.png"> {{ valgt_klasse }}
-    {% if valgt_runde == "Q"%}kvartfinaler
-    {% elif valgt_runde == "S"%}semifinaler
-    {% elif valgt_runde == "F"%}finaler
-    {% endif %}
+    Live resultater <img id=header_icon src="../static/icon_result.png"> {{ valgt_klasse }}
   {% endif %}
 </div>
 <div align=right>{{ event.name }}, {{ event.date_of_event }}</div>

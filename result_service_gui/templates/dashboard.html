@@ -14,15 +14,12 @@
 <div id=spacer></div>
 <table cellpadding=8>
   <tr id=subheader id=black>
-    <td colspan=5 id=black>{{ event.name }} - oversiktsinformasjon. Oppdatert kl. <b>{{ local_time_now }}</b></td>
+    <td colspan=5 id=black align="center">{{ event.name }} - oversiktsinformasjon. Kl. <b>{{ local_time_now }}</b></td>
   </tr>
 </table>
 <div class="w3-row-padding">
   <div class="w3-half">
-    <table cellpadding=4>
-      <tr>
-        <td colspan=5 id=spacer></td>
-      </tr>
+    <table>
       <tr id=headerblue>
         <td colspan=5>Fremdrift i rennet</td>
       </tr>
@@ -34,12 +31,6 @@
             {{ race.raceclass }}-{{ race.round }}{{ race.index }}{{ race.heat }} kl. {{ race.start_time }} (heat nr. {{ race.order }})<br>
           {% endfor %}</b>
         </td>
-      </tr>
-      <tr>
-        <td colspan=5 id=spacer>&nbsp;</td>
-      </tr>
-      <tr id=headerblue>
-        <td id=table_border colspan=5>Registrere passeringer og resultater</td>
       </tr>
       <tr>
         <td colspan=5 id=spacer>&nbsp;</td>
@@ -173,11 +164,8 @@
       <tr>
         <td id=table_border colspan=5 id=spacer></td>
       </tr>
-      <tr>
-        <td colspan=5 id=spacer>&nbsp;</td>
-      </tr>
       <tr id=headerblue>
-        <td id=table_border colspan=5>Avanserte funksjoner</td>
+        <td id=table_border colspan=5>Avikshåndtering</td>
       </tr>
       <tr>
         <td id=table_border colspan=5 id=spacer></td>
@@ -190,8 +178,21 @@
         <td id=table_border colspan=5 id=spacer></td>
       </tr>
       <tr>
-        <td class=visible_link><a class=visible_link href=timing_verify?event_id={{ event_id }}&heat=0>Tidtaker admin</a></td>
-        <td id=table_border colspan=4>Oversiktsside for tidtaker. Mulighet for både registrering og korringeringer</td>
+        <td class=visible_link><a class=visible_link id="mySeeTime" onclick="event_gui_href('mySeeTime', 'raceplans?event_id={{ event_id }}&action=edit_time')" href=>Rediger i tidskjema</a></td>
+        <td colspan=4>Utsette (eller forsere) kjøreplanen</td>
+      </tr>
+      <tr>
+        <td id=table_border colspan=5 id=spacer></td>
+      </tr>
+      <tr>
+        <td class=visible_link><a class=visible_link href=timing_verify?event_id={{ event_id }}>Re-generer resultatliste</a></td>
+        <td id=table_border colspan=4>Til bruk dersom det har vært endringer i resultater etter at finaleheat er registrert.</td>
+      </tr>
+      <tr>
+        <td id=table_border colspan=5 id=spacer></td>
+      </tr>
+      <tr id=headerblue>
+        <td id=table_border colspan=5>Avanserte funksjoner</td>
       </tr>
       <tr>
         <td id=table_border colspan=5 id=spacer></td>
@@ -199,13 +200,6 @@
       <tr>
         <td class=visible_link><a class=visible_link href=/control?event_id={{ event_id }}&action=control>Feil</a></td>
         <td id=table_border colspan=4>Registreringer har feilet i systemet</td>
-      </tr>
-      <tr>
-        <td id=table_border colspan=5 id=spacer></td>
-      </tr>
-      <tr>
-        <td class=visible_link><a class=visible_link id="mySeeTime" onclick="event_gui_href('mySeeTime', 'raceplans?event_id={{ event_id }}&action=edit_time')" href=>Tidskjema</a></td>
-        <td colspan=4>Utsette (eller forsere) kjøreplanen</td>
       </tr>
       <tr>
         <td id=table_border colspan=5 id=spacer></td>
