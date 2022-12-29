@@ -107,13 +107,14 @@ class Timing(web.View):
             form = await self.request.post()
             logging.debug(f"Form {form}")
             event_id = str(form["event_id"])
+            event = await get_event(user, event_id)
             action = str(form["action"])
             valgt_heat = str(form["heat"])
 
             if "finish" in action:
                 informasjon = "Funksjon ikke støttet, bruk hovedside for tidtaker"
             elif "start" in action:
-                informasjon = await create_start_time_events(user, form)  # type: ignore
+                informasjon = await create_start_time_events(user, event, form)  # type: ignore
             else:
                 informasjon = "Ugylding action - ingen endringer"
 

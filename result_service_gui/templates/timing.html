@@ -42,7 +42,14 @@
       {% for race in races %}
         <tr id=headerblue>
           <td></td>
-          <td colspan=3><b>{{ race.raceclass }}{{ race.round }}{{ race.index }}{{ race.heat }}  kl:{{ race.start_time }}</b></td>
+          <td colspan=3><b>
+            {{ race.raceclass }}
+            {% if race.round == "Q" %}Kvartfinale {{ race.heat }}
+            {% elif race.round == "S" %}Semifinale {{ race.index }}{{ race.heat }}
+            {% elif race.round == "F" %}Finale {{ race.index }}
+            {% endif %}
+            kl: {{ race.start_time[-8:] }}
+          </b></td>
           <td>Heat {{ race.order }}</td>
           <td>Videre til: {{ race.next_race }}</td>
           {% if action == "finish_bib" %}
@@ -52,8 +59,8 @@
         <tr>
           <td></td>
           <td width=50>Startnr</td>
-          <td>Navn</td>
-          <td>Klubb</td>
+          <td></td>
+          <td></td>
           <td colspan=2></td>
           {% if action == "finish_bib" %}
             <td id=resultborder>Plass</td>
@@ -67,6 +74,7 @@
                 {% if action == "start" %}
                   <td>{{ start.starting_position }}</td>
                   <td align=center>{{ start.bib }}</td>
+                  <td>{% if start.club_logo %}<img width=15 src={{ start.club_logo }} title="{{ start.club }}"> {% endif %}{{ start.name }}</td>
                   <td>
                     <input type="radio" name="form_start_{{ start.bib }}" value="OK"><label for="OK">Startet</label>
                     <input type="radio" name="form_start_{{ start.bib }}" value="DNS"><label for="OK">DNS</label>
@@ -74,12 +82,12 @@
                 {% elif action == "finish_bib" %}
                   <td>{{ start.start_status }}</td>
                   <td id={{ start.bib }} align=center>{{ start.bib }}</td>
+                  <td>{% if start.club_logo %}<img width=15 src={{ start.club_logo }} title="{{ start.club }}"> {% endif %}{{ start.name }}</td>
                   <td></td>
                 {% endif %}
-              <td>{{ start.name }}</td>
-              <td>{{ start.club }}</td>
-              <td>{{ start.info }}</td>
-              {% if action == "finish_bib" %}
+                <td>{{ start.info }}</td>
+                <td></td>
+                {% if action == "finish_bib" %}
                 {% if race.finish_timings[loop.index0] and race.finish_timings[loop.index0].bib > 0 %}
                   <td id=resultborder align=center>{{ race.finish_timings[loop.index0].rank }}</td>
                   <td align=center>
@@ -110,32 +118,6 @@
                 <input type="submit" name="{{ action }}" value="  Lagre  ">
               </td>
           </tr>
-          </form>
-          <form action=/timing method=post>
-              <tr>
-                <td id=spacer colspan=7>&nbsp;</td>
-              </tr>
-              <tr id=headerblue>
-                <td id=spacer colspan=7>Registrer startnummer - merk at løpere som ikke er i startlista blir registrert som en error</td>
-              </tr>
-              <tr>
-                <td colspan=2>
-                    Startnr
-                </td>
-                <td colspan=1><input type=number name="bib" value="" max=9999 min=1></td>
-                <td colspan=4>Tips: Ved flere passeringer, bruk space mellom startnummer. Eksempel: 2 4</td>
-              </tr>
-              <tr>
-                  <td colspan=2></td>
-                  <td colspan=5>
-                    <input type="hidden" name="race" value="{{ race.raceclass }}-{{ race.round }}{{ race.heat }}{{ race.index }}">
-                    <input type="hidden" name="race_id" value="{{ race.id }}">
-                    <input type="hidden" name="event_id" value="{{ event_id }}">
-                    <input type="hidden" name="heat" value="{{ valgt_heat }}">
-                    <input type="hidden" name="action" value="{{ action }}">
-                    <input type="submit" name="finish" value="  Lagre  ">
-                  </td>
-              </tr>
         {% elif action == "finish_bib" %}
         <tr>
             <td colspan=6></td>

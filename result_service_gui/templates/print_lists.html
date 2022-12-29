@@ -67,15 +67,10 @@
       {# print startlist if start-entries #}
       {% if race.list_type == "start" and race.startliste %}
         <tr id=headerprint>
-          <td colspan=3>Kl. {{ race.start_time }} {{ race.raceclass }}
+          <td colspan=3>Start kl. {{ race.start_time }} {{ race.raceclass }}
             {% if race.round == "Q" %}Kvart {{ race.heat }}
             {% elif race.round == "S" %}Semi {{ race.index }}{{ race.heat }}
             {% elif race.round == "F" %}Finale {{ race.index }}
-            {% endif %}
-            {% if race.round == "F" %}
-              ({{ race.raceclass }}{{ race.round }}{{ race.index }})
-            {% else %}
-              ({{ race.raceclass }}{{ race.round }}{{ race.index }}{{ race.heat }})
             {% endif %}
           </td>
           <td>{% if race.round != "F" %}Neste heat: {{ race.next_race }}{% endif %}</td>
@@ -86,7 +81,7 @@
               <td align="center">{{ loper.starting_position }}</td>
               <td align="center"><div id={{ loper.bib }}></div>{{ loper.bib }}</td>
               <td>{{ loper.name }}</td>
-              <td>{{ loper.club }}{% if loper.team %} / {{ loper.team }}{% endif %}</td>
+              <td>{% if loper.club_logo %}<img width=15 src={{ loper.club_logo }}> {% endif %}{{ loper.club }}{% if loper.team %} / {{ loper.team }}{% endif %}</td>
               <td></td>
             </tr>
         {% endfor %}
@@ -95,14 +90,9 @@
         <tr id=headerprint>
           <td colspan=3>
             Resultater {{ race.raceclass }}
-            {% if race.round == "Q" %}Kvart {{ race.heat }}
-            {% elif race.round == "S" %}Semi {{ race.index }}{{ race.heat }}
+            {% if race.round == "Q" %}Kvartfinale {{ race.heat }}
+            {% elif race.round == "S" %}Semifinale {{ race.index }}{{ race.heat }}
             {% elif race.round == "F" %}Finale {{ race.index }}
-            {% endif %}
-            {% if race.round == "F" %}
-              ({{ race.raceclass }}{{ race.round }}{{ race.index }})
-            {% else %}
-              ({{ race.raceclass }}{{ race.round }}{{ race.index }}{{ race.heat }})
             {% endif %}
             </td>
           <td></td>
@@ -117,7 +107,7 @@
             <td align="center">{{ loper.rank }}{% if loper.status != "OK" %} {{ loper.status }}{% endif %}</td>
             <td align="center">{{ loper.bib }}</td>
             <td>{{ loper.name }}</td>
-            <td>{{ loper.club }}{% if loper.team %} / {{ loper.team }}{% endif %}</td>
+            <td>{% if loper.club_logo %}<img width=15 src={{ loper.club_logo }}> {% endif %}{{ loper.club }}{% if loper.team %} / {{ loper.team }}{% endif %}</td>
             <td>
               {% if race.round != "F" %} {{ loper.next_race }}{% endif %}
             </td>

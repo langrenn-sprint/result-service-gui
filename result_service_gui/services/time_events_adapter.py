@@ -63,18 +63,17 @@ class TimeEventsAdapter:
         url = f"{RACE_SERVICE_URL}/time-events/{id}"
         async with ClientSession() as session:
             async with session.delete(url, headers=headers) as resp:
-                pass
-            logging.debug(f"Delete time_event: {id} - res {resp.status}")
-            if resp.status == 204:
-                logging.debug(f"result - got response {resp}")
-            elif resp.status == 401:
-                raise web.HTTPBadRequest(reason=f"401 Unathorized - {servicename}")
-            else:
-                body = await resp.json()
-                logging.error(f"{servicename} failed - {resp.status} - {body}")
-                raise web.HTTPBadRequest(
-                    reason=f"Error - {resp.status}: {body['detail']}."
-                )
+                logging.debug(f"Delete time_event: {id} - res {resp.status}")
+                if resp.status == 204:
+                    logging.debug(f"result - got response {resp}")
+                elif resp.status == 401:
+                    raise web.HTTPBadRequest(reason=f"401 Unathorized - {servicename}")
+                else:
+                    body = await resp.json()
+                    logging.error(f"{servicename} failed - {resp.status} - {body}")
+                    raise web.HTTPBadRequest(
+                        reason=f"Error - {resp.status}: {body['detail']}."
+                    )
         return resp.status
 
     async def update_time_event(self, token: str, id: str, time_event: dict) -> int:
