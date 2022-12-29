@@ -60,8 +60,9 @@
               <tr id=headerblack>
                 <td colspan=4>
                   <b>{{ race.raceclass }}
-                  {% if race.round == "Q" %}{{ race.round }}{{ race.heat }}
-                  {% else %}{{ race.round }}{{ race.index }}{{ race.heat }}
+                  {% if race.round == "Q" %}Kvartfinale {{ race.heat }}
+                  {% elif race.round == "F" %}Finale {{ race.index }}
+                  {% else %}Semifinale {{ race.index }}{{ race.heat }}
                   {% endif %} -
                   {% if race.results.Finish and (race.results.Finish.status == 2) %}
                     Resultat
@@ -83,10 +84,9 @@
                       {% if race.results.Finish and (race.results.Finish.status != 2) %}&nbsp;<img width=15 src="../static/warning.png" title="Uoffisielt resultat">{% endif %}
                     </td>
                     <td align=center>{{ loper.bib }}</td>
-                    <td align=center>{% if loper.club_logo %}<img width=20 src={{ loper.club_logo }}>{% endif %}</td>
+                    <td align=center>{% if loper.club_logo %}<img width=15 src={{ loper.club_logo }}>{% endif %}</td>
                     <td>
                         <a href=live?klasse={{ valgt_klasse }}&startnr={{ loper.bib }}&event_id={{ event_id }}>{{ loper.name }}</a>
-                        <br><div id=smalltext>{{ loper.club }}</div>
                     </td>
                     <td align=center id=table_border>{% if race.round != "F" %}{{ loper.next_race }}{% endif %}</td>
                   </tr>
@@ -95,9 +95,9 @@
               <tr id=headerblue>
                 <td colspan=4>
                   <b>{{ race.raceclass }}
-                  {% if race.round == "Q" %}{{ race.round }}{{ race.heat }}
-                  {% elif race.round == "S" %}{{ race.round }}{{ race.index }}{{ race.heat }}
-                  {% else %}{{ race.round }}{{ race.index }}
+                  {% if race.round == "Q" %}Kvartfinale {{ race.heat }}
+                  {% elif race.round == "S" %}Semifinale {{ race.index }}{{ race.heat }}
+                  {% else %}Finale {{ race.index }}
                   {% endif %} - Kl. {{ race.start_time }}</b>
                 </td>
                 <td></td>
@@ -107,10 +107,9 @@
                       <tr{% if loper.bib == valgt_startnr %} id=black{% endif %}>
                          <td align=center id=table_border>{{ loper.starting_position }}</td>
                          <td align=center>{{ loper.bib }}</td>
-                         <td align=center>{% if loper.club_logo %}<img width=20 src={{ loper.club_logo }}>{% endif %}</td>
+                         <td align=center>{% if loper.club_logo %}<img width=15 src={{ loper.club_logo }}>{% endif %}</td>
                          <td>
                            <a href=live?klasse={{ valgt_klasse }}&startnr={{ loper.bib }}&event_id={{ event_id }}>{{ loper.name }}</a>
-                           <br><div id=smalltext>{{ loper.club }}</div>
                          </td>
                          <td id=table_border></td>
                        </tr>

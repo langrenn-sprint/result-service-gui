@@ -85,7 +85,7 @@ tr:nth-child(even) {
 
 td {
   border-bottom: 1px solid #ddd;
-  padding: 4px 4px 4px 4px;
+  padding: 2px 2px 2px 2px;
 }
 
 #table_border {
@@ -134,6 +134,12 @@ td {
     border-bottom: 0px;
 }
 
+#danger-zone {
+  color: white;
+  background-color: lightcoral;
+  vertical-align: top;
+}
+
 #smalltext {
   font-size: 0.7em;
 }
@@ -159,25 +165,25 @@ td {
 #bredde {
   vertical-align: top;
 }
-{'Q': {'A': 9}, 'S': {'A': 4, 'C': 5}, 'F': {'A': 1, 'B1': 1, 'B2': 1, 'B3': 1, 'C1': 1, 'C2': 1, 'C3': 1, 'C4': 1, 'C5': 1}}
-{'Q': {'A': {'S': {'A': 5, 'C': 'REST'}}}, 'S': {'A': {'F': {'A': 2, 'B1': 2, 'B2': 2, 'B3': 2, 'B4': 'REST'}}, 'C': {'F': {'C1': 2, 'C2': 2, 'C3': 2, 'C4': 2, 'C5': 'REST'}}}}
+
 #subheader {
     background-color: lightgrey;
 }
+
 #subheaderbold {
-    background-color: lightgrey;
-    font-weight: bold;
-    text-align: center;
+  background-color: lightgrey;
+  font-weight: bold;
+  text-align: center;
 }
 
 #table_header_red {
-    background-color: red;
-    font-weight: bold;
+  background-color: red;
+  font-weight: bold;
 }
 
 #table_header_orange {
-    background-color: orange;
-    font-weight: bold;
+  background-color: orange;
+  font-weight: bold;
 }
 
 #table_header_green {
@@ -298,6 +304,16 @@ async function savefile(inp)
 .w3-quart {
   float:left;width:100%;
   width:25%;
+}
+
+.w3-fifth {
+  float:left;width:100%;
+  width:20%;
+}
+
+.w3-sixth {
+  float:left;width:100%;
+  width:16.6%;
 }
 
 .w3-10 {

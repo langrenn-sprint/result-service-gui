@@ -70,9 +70,17 @@
             <li class=dropdown>
               <a href=javascript:void(0) class=dropbtn>Rediger startliste</a>
               <div class=dropdown-content>
-                {% for klasse in raceclasses %}
-                  <a target=_new href=start_edit?event_id={{ event_id }}&klasse={{ klasse.name }}>{{ klasse.name }}</a>
-                {% endfor %}
+                <table>
+                  {% for raceclass in raceclasses %}
+                    <tr>
+                      <td id="black">{{ raceclass.name }}</td>
+                      <td><nobr><a target=_new href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}>Alle</a></nobr></td>
+                      <td><nobr><a target=_new href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=Q>Kvart</a></nobr></td>
+                      <td><nobr><a target=_new href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=S>Semi</a></nobr></td>
+                      <td><nobr><a target=_new href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=F>Finale</a></nobr></td>
+                    </tr>
+                  {% endfor %}
+                </table>
               </div>
             </li>
           </ul>

@@ -31,7 +31,11 @@
   </li>
   {% if valgt_klasse %}
     <li class=dropdown id=topborder>
-      <a target=_blank href=/csv?event_id={{ event_id }}&action=results&klasse={{ valgt_klasse }}>CSV fil</a>
+      <a href=javascript:void(0) class=dropbtn>Utskrift</a>
+      <div class=dropdown-content>
+        <a target=_blank href=/csv?event_id={{ event_id }}&action=results&klasse={{ valgt_klasse }}>CSV</a>
+        <a target=_blank href=print_lists?klasse={{ valgt_klasse }}&event_id={{ event_id }}&action=result>Papir</a>
+      </div>
     </li>
   {% endif %}
 {% endblock %}

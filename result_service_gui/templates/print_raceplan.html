@@ -51,10 +51,10 @@
         <tr>
           <td align=center>{{ race.start_time }}</td>
           <td align=center>{{ race.raceclass }}</td>
-          <td> {{ race.round }}{{ race.index }}{{ race.heat }}
-            {% if race.round == "Q" %}Kvartfinale
-            {% elif race.round == "S" %}Semifinale
-            {% elif race.round == "F" %}Finale
+          <td>
+            {% if race.round == "Q" %}Kvartfinale {{ race.heat }}
+            {% elif race.round == "S" %}Semifinale {{ race.index }}{{ race.heat }}
+            {% elif race.round == "F" %}Finale {{ race.index }}
             {% endif %}
           </td>
           <td>{% if race.round != "F" %}Neste heat: {{ race.next_race }}{% endif %}</td>
