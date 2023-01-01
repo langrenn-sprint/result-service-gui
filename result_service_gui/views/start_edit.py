@@ -159,7 +159,8 @@ async def create_start(user: dict, form: dict) -> str:
         "club": contestant["club"],
     }
     id = await StartAdapter().create_start_entry(user["token"], new_start)
-    informasjon = f"Opprettet ny start. Resultat: {id}"
+    logging.debug(f"create_start {id} - {new_start}")
+    informasjon = f"Lagt til nr {new_start['bib']}"
     return informasjon
 
 
@@ -169,7 +170,8 @@ async def delete_start(user: dict, form: dict) -> str:
     id = await StartAdapter().delete_start_entry(
         user["token"], form["race_id"], form["start_id"]
     )
-    informasjon = f"Slettet start. Resultat: {id}"
+    logging.debug(f"delete_start {id} - {form}")
+    informasjon = "Slettet start."
     return informasjon
 
 

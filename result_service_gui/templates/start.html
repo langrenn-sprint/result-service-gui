@@ -34,7 +34,14 @@
 
 {% block content %}
   {% if valgt_klasse == "live" %}
-  <div id="tid" class=timetitle>Klokken er {{ local_time_now }}</div>
+  <table>
+    <tr>
+      <td id="tid" class=timetitle>Klokken er {{ local_time_now }}</td>
+      <td id="table_header_red" align="center"> < 5 min til start </td>
+      <td id="table_header_orange" align="center"> < 10 min til start</td>
+    </tr>
+  </table>
+  
   {% endif %}
 
   {% if event.competition_format == "Interval Start" %}
