@@ -73,7 +73,11 @@
               <td align="center">{{ loper.starting_position }}</td>
               <td align="center"><div id={{ loper.bib }}></div>{{ loper.bib }}</td>
               <td>{{ loper.name }}</td>
-              <td>{% if loper.club_logo %}<img width=15 src={{ loper.club_logo }}> {% endif %}{{ loper.club }}{% if loper.team %} / {{ loper.team }}{% endif %}</td>
+              <td>
+                {% if loper.club_logo %}<img width=12 src={{ loper.club_logo }}> {% endif %}
+                {% if deltaker.club %}{{ deltaker.club[:25] }}{% endif %}
+                {% if loper.team %} / {{ loper.team }}{% endif %}
+              </td>
               <td></td>
             </tr>
         {% endfor %}

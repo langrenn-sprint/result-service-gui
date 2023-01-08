@@ -117,19 +117,11 @@ class RaceclassResultsAdapter:
         )
         async with ClientSession() as session:
             async with session.get(
-                f"{EVENT_SERVICE_URL}/events/{event_id}/raceclasses", headers=headers
+                f"{EVENT_SERVICE_URL}/events/{event_id}/results", headers=headers
             ) as resp:
                 logging.debug(f"{servicename} - got response {resp.status}")
                 if resp.status == 200:
-                    all_raceclasses = await resp.json()
-                    for raceclass in all_raceclasses:
-                        logging.debug(f"Raceclasses order: {raceclass['order']}.")
-
-                        try:
-                            if raceclass["event_id"] == event_id:
-                                raceclass_results.append(raceclass)
-                        except Exception as e:
-                            logging.error(f"Error - data quality: {e}")
+                    raceclass_results = await resp.json()
                 else:
                     body = await resp.json()
                     logging.error(f"{servicename} failed - {resp.status} - {body}")

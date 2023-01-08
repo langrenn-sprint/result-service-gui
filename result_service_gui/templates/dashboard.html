@@ -150,6 +150,7 @@
             <li class=dropdown>
               <a href=javascript:void(0) class=dropbtn>Resultater (for klassen)</a>
               <div class=dropdown-content>
+                <a target=_new href=print_lists?event_id={{ event_id }}&action=result>Alle</a>
                 {% for klasse in raceclasses %}
                   <a target=_new href=print_lists?klasse={{ klasse.name }}&event_id={{ event_id }}&action=result>{{ klasse.name }}</a>
                 {% endfor %}

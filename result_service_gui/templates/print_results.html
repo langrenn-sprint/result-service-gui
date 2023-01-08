@@ -11,36 +11,41 @@
 {% block refresh %}0{% endblock %}
 
 {% block content %}
-  <div id=adminpagetitle>
-      Offisielle resultater <img id=header_icon src="../static/icon_result.png"> {{ valgt_klasse }}
-  </div>
-  <div align=right>{{ event.name }}, {{ event.date_of_event }}</div>
-  <div class="w3-container" id=info>{{ informasjon }}</div>
-  <table>
-    <tr id=headerprint>
-      <td width=60>Plass</td>
-      <td width=60>Startnr</td>
-      <td>Navn</td>
-      <td>Klubb</td>
-      <td>Runde</td>
-      <td>Aldersklasse</td>
-    </tr>
-    {% for deltaker in resultlist.ranking_sequence %}
-      <tr>
-        <td align=center>{{ deltaker.rank }}</td>
-        <td align=center>{{ deltaker.bib }}</td>
-        <td>{{ deltaker.name }}</td>
-        <td>
-          {% if deltaker.club_logo %}<img width=15 src={{ deltaker.time_event.club_logo }}>{% endif %}
-          {{ deltaker.club }}
-        </td>
-        <td align=center>{{ deltaker.round }}</td>
-        <td>{{ deltaker.ageclass }}</td>
+  {% for resultlist in resultlists %}
+    {% if not loop.first %}
+      <div id=pagebreak></div>
+    {% endif %}
+    <div id=adminpagetitle>
+        Offisielle resultater <img id=header_icon src="../static/icon_result.png"> {{ resultlist.raceclass }}
+    </div>
+    <div align=right>{{ event.name }}, {{ event.date_of_event }}</div>
+    <div class="w3-container" id=info>{{ informasjon }}</div>
+    <table>
+      <tr id=headerprint>
+        <td width=40>Pl.</td>
+        <td width=40>Nr.</td>
+        <td>Navn</td>
+        <td>Klubb</td>
+        <td>Runde</td>
+        <td>Klasse</td>
       </tr>
+      {% for deltaker in resultlist.ranking_sequence %}
+        <tr>
+          <td align=center>{{ deltaker.rank }}</td>
+          <td align=center>{{ deltaker.bib }}</td>
+          <td>{% if deltaker.name %}{{ deltaker.name[:40] }}{% endif %}</td>
+          <td>
+            {% if deltaker.club_logo %}<img width=12 src={{ deltaker.time_event.club_logo }}>{% endif %}
+            {% if deltaker.club %}{{ deltaker.club[:25] }}{% endif %}
+          </td>
+          <td align=center>{{ deltaker.round }}</td>
+          <td>{{ deltaker.ageclass }}</td>
+        </tr>
+      {% endfor %}
+        <tr>
+          <td colspan=3></td>
+          <td colspan=3 align=center>Antall løpere: {{ resultlist.no_of_contestants }}</td>
+        </tr>
+      </table>
     {% endfor %}
-    <tr>
-      <td colspan=4></td>
-     <td colspan=2 align=center>Antall løpere: {{ resultlist.no_of_contestants }}</td>
-   </tr>
-  </table>
-{% endblock %}
+  {% endblock %}
