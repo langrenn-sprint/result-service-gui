@@ -20,7 +20,6 @@ from .utils import (
     get_enrichced_startlist,
     get_event,
     get_finish_timings,
-    get_passeringer,
     get_qualification_text,
     get_raceplan_summary,
     get_races_for_live_view,
@@ -35,7 +34,6 @@ class ResultatEdit(web.View):
         """Get route function that return the passeringer page."""
         current_races = []
         raceplan_summary = []
-        error_passeringer = []
         valgt_runde = {
             "klasse": "",
             "runde": "",
@@ -97,11 +95,6 @@ class ResultatEdit(web.View):
                         )
                         current_races.append(race)
 
-                # get passeringer with error
-                error_passeringer = await get_passeringer(
-                    user["token"], event_id, "control", valgt_runde["klasse"]
-                )
-
             if len(current_races) == 0:
                 informasjon = f"{informasjon} Ingen heat i denne runden."
 
@@ -110,7 +103,6 @@ class ResultatEdit(web.View):
                 "resultat_edit.html",
                 self.request,
                 {
-                    "error_passeringer": error_passeringer,
                     "event": event,
                     "event_id": event_id,
                     "informasjon": informasjon,

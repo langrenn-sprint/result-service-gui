@@ -45,6 +45,10 @@ a {
   page-break-after: always;
 }
 
+#samepage {
+	break-inside: avoid;
+}
+
 
 #footeradmin {
     color: grey;

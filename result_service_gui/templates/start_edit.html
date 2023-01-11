@@ -25,9 +25,15 @@
           <tr>
             <td id="black">{{ raceclass.name }}</td>
             <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&action={{ action }}>Alle</a></nobr></td>
-            <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&action={{ action }}&runde=Q>Kvart</a></nobr></td>
-            <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&action={{ action }}&runde=S>Semi</a></nobr></td>
-            <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&action={{ action }}&runde=F>Finale</a></nobr></td>
+            {% if raceclass.ranking %}
+              <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=Q>Kvart</a></nobr></td>
+              <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=S>Semi</a></nobr></td>
+              <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=F>Finale</a></nobr></td>
+            {% else %}
+              <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=R1>Runde 1</a></nobr></td>
+              <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=R2>Runde 2</a></nobr></td>
+              <td></td>
+            {% endif %}
           </tr>
         {% endfor %}
       </table>

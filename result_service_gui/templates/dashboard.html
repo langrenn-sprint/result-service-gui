@@ -42,8 +42,15 @@
         <td id=table_border colspan=5 id=spacer></td>
       </tr>
       <tr>
-        <td class=visible_link><a class=visible_link href=/timing?event_id={{ event_id }}&action=start>Start/DNS registrering</a></td>
+        <td class=visible_link><a class=visible_link href=/timing?event_id={{ event_id }}&action=start>DNS registrering ved start</a></td>
         <td id=table_border colspan=4>For starter. Krysse av start og DNS på liste</td>
+      </tr>
+      <tr>
+        <td id=table_border colspan=5 id=spacer></td>
+      </tr>
+      <tr>
+        <td class=visible_link><a class=visible_link href=/timing?event_id={{ event_id }}&action=start>DNS registrering fra rennkontor</a></td>
+        <td id=table_border colspan=4>Skrive inn startnummer på løpere som meldes at ikke stiller til start</td>
       </tr>
       <tr>
         <td id=table_border colspan=5 id=spacer></td>
@@ -66,10 +73,16 @@
                     <tr>
                       <td id="black">{{ raceclass.name }}</td>
                       <td><nobr><a target=_new href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}>Alle</a></nobr></td>
-                      <td><nobr><a target=_new href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=Q>Kvart</a></nobr></td>
-                      <td><nobr><a target=_new href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=S>Semi</a></nobr></td>
-                      <td><nobr><a target=_new href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=F>Finale</a></nobr></td>
-                    </tr>
+                      {% if raceclass.ranking %}
+                        <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=Q>Kvart</a></nobr></td>
+                        <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=S>Semi</a></nobr></td>
+                        <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=F>Finale</a></nobr></td>
+                      {% else %}
+                        <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=R1>Runde 1</a></nobr></td>
+                        <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=R2>Runde 2</a></nobr></td>
+                        <td></td>
+                      {% endif %}
+                      </tr>
                   {% endfor %}
                 </table>
               </div>
@@ -131,6 +144,9 @@
               <a href=javascript:void(0) class=dropbtn>Live resultater (heat)</a>
               <div class=dropdown-content>
                 <table>
+                  <tr>
+                    <td><a target=_new href=print_lists?event_id={{ event_id }}&action=live>Alle</a></td>
+                  </tr>
                   {% for raceclass in raceclasses %}
                     <tr>
                       <td id="black">{{ raceclass.name }}</td>

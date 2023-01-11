@@ -8,11 +8,12 @@ from result_service_gui.services import (
     EventsAdapter,
     RaceclassesAdapter,
     RaceplansAdapter,
+    StartAdapter,
     TimeEventsAdapter,
+    TimeEventsService,
 )
 from .utils import (
     check_login,
-    create_start_time_events,
     get_enrichced_startlist,
     get_event,
     get_finish_timings,
@@ -113,8 +114,10 @@ class Timing(web.View):
 
             if "finish" in action:
                 informasjon = "Funksjon ikke støttet, bruk hovedside for tidtaker"
-            elif "start" in action:
-                informasjon = await create_start_time_events(user, event, form)  # type: ignore
+            elif action == "start":
+                informasjon = await create_start_time_events_for_race(user, event, form)  # type: ignore
+            elif action == "dns_manual":
+                informasjon = await create_dns_time_events_manual(user, event, form)  # type: ignore
             else:
                 informasjon = "Ugylding action - ingen endringer"
 
@@ -130,6 +133,103 @@ class Timing(web.View):
         return web.HTTPSeeOther(
             location=f"/timing?event_id={event_id}&informasjon={informasjon}&action={action}&heat={valgt_heat}"
         )
+
+
+async def create_dns_time_events_manual(user: dict, event: dict, form: dict) -> str:
+    """Extract form data and create time_events for start."""
+    informasjon = ""
+    time_stamp_now = EventsAdapter().get_local_time(event, "log")
+    request_body = {
+        "id": "",
+        "bib": 0,
+        "event_id": form["event_id"],
+        "race": "",
+        "race_id": "",
+        "timing_point": "",
+        "rank": "",
+        "registration_time": time_stamp_now,
+        "next_race": "",
+        "next_race_id": "",
+        "next_race_position": 0,
+        "status": "OK",
+        "changelog": [],
+    }
+    i = 0
+    if "bib" in form.keys():
+        biblist = form["bib"].rsplit(" ")
+        for bib in biblist:
+            request_body["timing_point"] = "DNS"
+            changelog_comment = "DNS registrert. "
+            request_body["bib"] = int(bib)
+            i += 1
+            request_body["changelog"] = [
+                {
+                    "timestamp": time_stamp_now,
+                    "user_id": user["name"],
+                    "comment": changelog_comment,
+                }
+            ]
+            # find race - always pick the latest start if several results
+            start_entries = await StartAdapter().get_start_entries_by_bib(user["token"], event["id"], int(bib))
+            if start_entries:
+                start_entry = start_entries[len(start_entries) - 1]
+                request_body["race_id"] = start_entry["race_id"]
+
+            id = await TimeEventsService().create_start_time_event(
+                user["token"], request_body
+            )
+            informasjon += f" {request_body['bib']}-{changelog_comment}. "
+            logging.debug(f"Registrering: {id} - body: {request_body}")
+    informasjon = f" {i} registreringer lagret."
+    return informasjon
+
+
+async def create_start_time_events_for_race(user: dict, event: dict, form: dict) -> str:
+    """Extract form data and create time_events for start."""
+    informasjon = ""
+    time_stamp_now = EventsAdapter().get_local_time(event, "log")
+    request_body = {
+        "id": "",
+        "bib": 0,
+        "event_id": form["event_id"],
+        "race": form["race"],
+        "race_id": form["race_id"],
+        "timing_point": "",
+        "rank": "",
+        "registration_time": time_stamp_now,
+        "next_race": "",
+        "next_race_id": "",
+        "next_race_position": 0,
+        "status": "OK",
+        "changelog": [],
+    }
+
+    i = 0
+    for x in form.keys():
+        if x.startswith("form_start_"):
+            request_body["bib"] = int(x[11:])
+            if form[x] == "DNS":
+                # register DNS
+                request_body["timing_point"] = "DNS"
+                changelog_comment = "DNS registrert. "
+            else:
+                # register normal start
+                request_body["timing_point"] = "Start"
+                changelog_comment = "Start registrert. "
+            i += 1
+            request_body["changelog"] = [
+                {
+                    "timestamp": time_stamp_now,
+                    "user_id": user["name"],
+                    "comment": changelog_comment,
+                }
+            ]
+            id = await TimeEventsService().create_start_time_event(
+                user["token"], request_body
+            )
+            logging.debug(f"Registrering: {id} - body: {request_body}")
+    informasjon = f" {i} registreringer lagret. "
+    return informasjon
 
 
 async def get_passeringer(token: str, event_id: str, action: str) -> list:

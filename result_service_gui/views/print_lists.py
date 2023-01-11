@@ -124,6 +124,7 @@ async def get_races(
             if (race["raceclass"] == valgt_klasse) or ("" == valgt_klasse):
                 race["next_race"] = get_qualification_text(race)
                 race["start_time"] = race["start_time"][-8:]
+                race["first_in_group"] = check_group_order(race, raceclasses)
                 races.append(race)
     elif action.startswith("round_"):
         races = await get_races_for_round_result(
@@ -140,3 +141,18 @@ async def get_races(
             user, _tmp_races, raceclasses, valgt_klasse, action
         )
     return races
+
+
+def check_group_order(race: dict, raceclasses: list) -> bool:
+    """Return true if race is first in group."""
+    if race["round"] in ["Q", "R1"] and race["heat"] == 1:
+        group_index = 0
+        for raceclass in raceclasses:
+            if race["raceclass"] == raceclass["name"]:
+                if raceclass["group"] > group_index:
+                    return True
+                else:
+                    return False
+            else:
+                group_index = raceclass["group"]
+    return False

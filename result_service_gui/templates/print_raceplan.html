@@ -40,26 +40,38 @@
   {% endif %}
 
   <table>
-    <tr id=headerprint>
-      <td>Tid</td>
-      <td>Klasse</td>
-      <td>Runde</td>
-      <td>Videre til</td>
-      <td>Heat</td>
-    </tr>
     {% for race in races %}
-        <tr>
-          <td align=center>{{ race.start_time }}</td>
-          <td align=center>{{ race.raceclass }}</td>
-          <td>
-            {% if race.round == "Q" %}Kvartfinale {{ race.heat }}
-            {% elif race.round == "S" %}Semifinale {{ race.index }}{{ race.heat }}
-            {% elif race.round == "F" %}Finale {{ race.index }}
-            {% endif %}
-          </td>
-          <td>{% if race.round != "F" %}Neste heat: {{ race.next_race }}{% endif %}</td>
-          <td align=center>{{ race.order }}</td>
+      {% if race.first_in_group %}
+      </table>
+        {% if not valgt_klasse %}
+          <div id=pagebreak></div>
+          <div id=adminpagetitle>Kjøreplan <img id=header_icon src="../static/icon_timing.png"> {{ valgt_klasse }}</div>
+          <div align=right>{{ event.name }}, {{ event.date_of_event }}</div>
+        {% endif %}
+        <div id=spacer></div>
+      <table>
+        <tr id=headerprint>
+          <td>Tid</td>
+          <td>Klasse</td>
+          <td>Runde</td>
+          <td>Videre til</td>
+          <td>Heat</td>
         </tr>
+      {% endif %}
+      <tr>
+        <td align=center>{{ race.start_time }}</td>
+        <td align=center>{{ race.raceclass }}</td>
+        <td>
+          {% if race.round == "Q" %}Kvartfinale {{ race.heat }}
+          {% elif race.round == "S" %}Semifinale {{ race.index }}{{ race.heat }}
+          {% elif race.round == "F" %}Finale {{ race.index }}
+          {% elif race.round == "R1" %}Runde 1, heat {{ race.heat }}
+          {% elif race.round == "R2" %}Runde 2, heat {{ race.heat }}
+          {% endif %}
+        </td>
+        <td>{% if race.round != "F" %}Neste heat: {{ race.next_race }}{% endif %}</td>
+        <td align=center>{{ race.order }}</td>
+      </tr>
     {% endfor %}
   </table>
 {% endblock %}

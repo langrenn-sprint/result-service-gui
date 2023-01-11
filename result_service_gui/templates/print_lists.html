@@ -15,9 +15,9 @@
 {% block content %}
 <div id=adminpagetitle>
   {% if action == "start" %}
-    Startlister <img id=header_icon src="../static/icon_start.png"> {{ valgt_klasse }}
+    Startlister <img id=header_icon src="../static/icon_start.png"> {% if valgt_klasse %}{{ valgt_klasse }}{% else %}{{ event.name }}{% endif %}
   {% else %}
-    Live resultater <img id=header_icon src="../static/icon_result.png"> {{ valgt_klasse }}
+    Live resultater <img id=header_icon src="../static/icon_result.png"> {% if valgt_klasse %}{{ valgt_klasse }}{% else %}{{ event.name }}{% endif %}
   {% endif %}
 </div>
 <div align=right>{{ event.name }}, {{ event.date_of_event }}</div>
@@ -58,29 +58,31 @@
 
       {# print startlist if start-entries #}
       {% if race.list_type == "start" and race.startliste %}
-        <tr id=headerprint>
-          <td colspan=3>Start kl. {{ race.start_time }} {{ race.raceclass }}
-            {% if race.round == "Q" %}Kvart {{ race.heat }}
-            {% elif race.round == "S" %}Semi {{ race.index }}{{ race.heat }}
-            {% elif race.round == "F" %}Finale {{ race.index }}
-            {% endif %}
-          </td>
-          <td>{% if race.round != "F" %}Neste heat: {{ race.next_race }}{% endif %}</td>
-          <td></td>
-        </tr>
-        {% for loper in race.startliste %}
-            <tr>
-              <td align="center">{{ loper.starting_position }}</td>
-              <td align="center"><div id={{ loper.bib }}></div>{{ loper.bib }}</td>
-              <td>{{ loper.name }}</td>
-              <td>
-                {% if loper.club_logo %}<img width=12 src={{ loper.club_logo }}> {% endif %}
-                {% if deltaker.club %}{{ deltaker.club[:25] }}{% endif %}
-                {% if loper.team %} / {{ loper.team }}{% endif %}
-              </td>
-              <td></td>
-            </tr>
-        {% endfor %}
+          <tr id=headerprint>
+            <td colspan=3>Start kl. {{ race.start_time }} {{ race.raceclass }}
+              {% if race.round == "Q" %}Kvartfinale {{ race.heat }}
+              {% elif race.round == "S" %}Semifinale {{ race.index }}{{ race.heat }}
+              {% elif race.round == "F" %}Finale {{ race.index }}
+              {% elif race.round == "R1" %}Runde 1, heat {{ race.heat }}
+              {% elif race.round == "R2" %}Runde 2, heat {{ race.heat }}
+              {% endif %}
+            </td>
+            <td>{% if race.round != "F" %}Neste heat: {{ race.next_race }}{% endif %}</td>
+            <td></td>
+          </tr>
+          {% for loper in race.startliste %}
+              <tr>
+                <td align="center">{{ loper.starting_position }}</td>
+                <td align="center"><div id={{ loper.bib }}></div>{{ loper.bib }}</td>
+                <td>{{ loper.name }}</td>
+                <td>
+                  {% if loper.club_logo %}<img width=12 src={{ loper.club_logo }}> {% endif %}
+                  {% if loper.club %}{{ loper.club[:25] }}{% endif %}
+                  {% if loper.team %} / {{ loper.team }}{% endif %}
+                </td>
+                <td></td>
+              </tr>
+          {% endfor %}
       {# print results #}
       {% elif race.list_type in ("live", "result") %} 
         <tr id=headerprint>

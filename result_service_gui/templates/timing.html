@@ -36,9 +36,7 @@
     }
   </script>
     <table>
-    {% if not action %}
-      &nbsp;<br>
-    {% elif action != "lap" %}
+    {% if action == "start" %}
       {% for race in races %}
         <tr id=headerblue>
           <td></td>
@@ -51,10 +49,6 @@
             kl: {{ race.start_time[-8:] }}
           </b></td>
           <td>Heat {{ race.order }}</td>
-          <td>Videre til: {{ race.next_race }}</td>
-          {% if action == "finish_bib" %}
-            <td colspan=3 id=resultheader>Resultat</td>
-          {% endif %}
         </tr>
         <tr>
           <td></td>
@@ -62,48 +56,21 @@
           <td></td>
           <td></td>
           <td colspan=2></td>
-          {% if action == "finish_bib" %}
-            <td id=resultborder>Plass</td>
-            <td>Startnummer</td>
-            <td>Tid registrert</td>
-          {% endif %}
         </tr>
         <form action=/timing method=post>
         {% for start in race.startliste %}
             <tr>
-                {% if action == "start" %}
-                  <td>{{ start.starting_position }}</td>
-                  <td align=center>{{ start.bib }}</td>
-                  <td>{% if start.club_logo %}<img width=15 src={{ start.club_logo }} title="{{ start.club }}"> {% endif %}{{ start.name }}</td>
-                  <td>
-                    <input type="radio" name="form_start_{{ start.bib }}" value="OK"><label for="OK">Startet</label>
-                    <input type="radio" name="form_start_{{ start.bib }}" value="DNS"><label for="OK">DNS</label>
-                  </td>
-                {% elif action == "finish_bib" %}
-                  <td>{{ start.start_status }}</td>
-                  <td id={{ start.bib }} align=center>{{ start.bib }}</td>
-                  <td>{% if start.club_logo %}<img width=15 src={{ start.club_logo }} title="{{ start.club }}"> {% endif %}{{ start.name }}</td>
-                  <td></td>
-                {% endif %}
-                <td>{{ start.info }}</td>
-                <td></td>
-                {% if action == "finish_bib" %}
-                {% if race.finish_timings[loop.index0] and race.finish_timings[loop.index0].bib > 0 %}
-                  <td id=resultborder align=center>{{ race.finish_timings[loop.index0].rank }}</td>
-                  <td align=center>
-                    {{ race.finish_timings[loop.index0].bib }}
-                  </td>
-                  <td>
-                    {{ race.finish_timings[loop.index0].registration_time }}
-                  </td>
-                {% else %}
-                  <td id=resultborder align=center>{{ loop.index }}</td>
-                  <td align=center>
-                    <input type="number" name="form_rank_{{ loop.index }}" value="" min=1 max=9999 onchange="green_bg(this.value)">
-                  </td>
-                  <td></td>
-                {% endif %}
+              {% if action == "start" %}
+                <td>{{ start.starting_position }}</td>
+                <td align=center>{{ start.bib }}</td>
+                <td>{% if start.club_logo %}<img width=15 src={{ start.club_logo }} title="{{ start.club }}"> {% endif %}{{ start.name }}</td>
+                <td>
+                  <input type="radio" name="form_start_{{ start.bib }}" value="OK"><label for="OK">Startet</label>
+                  <input type="radio" name="form_start_{{ start.bib }}" value="DNS"><label for="OK">DNS</label>
+                </td>
               {% endif %}
+              <td>{{ start.info }}</td>
+              <td></td>
             </tr>
         {% endfor %}
         {% if action == "start" %}
@@ -118,18 +85,6 @@
                 <input type="submit" name="{{ action }}" value="  Lagre  ">
               </td>
           </tr>
-        {% elif action == "finish_bib" %}
-        <tr>
-            <td colspan=6></td>
-            <td colspan=3>
-              <input type="hidden" name="race" value="{{ race.raceclass }}-{{ race.round }}{{ race.heat }}{{ race.index }}">
-              <input type="hidden" name="race_id" value="{{ race.id }}">
-              <input type="hidden" name="event_id" value="{{ event_id }}">
-              <input type="hidden" name="action" value="{{ action }}">
-              <input type="hidden" name="heat" value="{{ valgt_heat }}">
-              <input type="submit" name="{{ action }}" value="  Lagre  ">
-            </td>
-        </tr>
         {% endif %}
       </form>
         <tr id=spacer>
@@ -138,42 +93,31 @@
     </table>
   {% endif %}
 
-  {% if action == "finish_bib" or action == "lap" %}
+  {% if action == "dns_manual" %}
   <form action=/timing method=post>
     <table>
       <tr>
         <td id=spacer colspan=3>&nbsp;</td>
       </tr>
       <tr id=headerblue>
-        <td id=spacer colspan=3>Registrer 'slengere' - løpere som ikke kan knyttes til et heat</td>
+        <td id=spacer colspan=3>Registrer DNS manuelt</td>
       </tr>
-      <tr id=subheader>
-        <td width=100>Punkt</td>
-        <td>Startnummer</td>
+      <tr>
+        <td width=100></td>
+        <td></td>
         <td></td>
       </tr>
       <tr>
-        <td>
-          {% if action == "lap" %}
-            <select name="timing_point">
-                <option value="forvarsel_1">Forvarsel 1</option>
-                <option value="runde_1">Runde 1</option>
-            </select>
-          {% else %}
-            Mål
-          {% endif %}
-        </td>
+        <td>Startnummer</td>
         <td><input type=text name="bib" value=""></td>
-        <td>Tips: Ved flere passeringer, bruk space mellom startnummer. x før eller etter startnummer indikerer at løper ikke startet. Eksempel: 2 3x 4</td>
+        <td>Tips: Ved flere passeringer, bruk space (mellomrom) mellom startnummer.</td>
       </tr>
       <tr>
           <td></td>
           <td colspan=2>
-            <input type="hidden" name="race" value="">
-            <input type="hidden" name="race_id" value="">
             <input type="hidden" name="event_id" value="{{ event_id }}">
-            <input type="hidden" name="heat" value="{{ valgt_heat }}">
             <input type="hidden" name="action" value="{{ action }}">
+            <input type="hidden" name="heat" value="">
             <input type="submit" name="finish" value="  Lagre  ">
           </td>
       </tr>
