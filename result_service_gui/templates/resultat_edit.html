@@ -134,12 +134,40 @@
             document.getElementById(button.id).disabled = false;
           }
         }
+        // get dns status for next heat
+        let next_race = 1 + parseInt(race_order)
+        update_dns(next_race)
       }
       catch(err) {
         alert(err)
       }
     }
 
+    /* this function will update dns field for given race when triggered
+    */
+    function update_dns(race_order) {
+      var xhttp = new XMLHttpRequest();
+      var url = "/timing_info?action=DNS&event_id={{ event_id }}&race_order=" + race_order;
+      xhttp.open("GET", url, true);
+      xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+      xhttp.send();
+      xhttp.onload = function() {
+        try { 
+            // load new info
+            const jsonDoc = JSON.parse(this.response);
+            const dns_list = new Array(jsonDoc.dns_list);
+
+            dns_list[0].forEach(myFunction);
+            function myFunction(value, index, array) {
+              var myId = race_order.toString() + value + "_start_status"
+              document.getElementById(myId).innerHTML = "DNS"
+            }
+          }
+          catch(err) {}
+        }
+      }
+ 
     /* this function will update value of checkbox when clicked
     */
     function update_checkbox(box, race_order) {
@@ -249,7 +277,7 @@
         <tr>
           <th width=40>Pos</th>
           <th width=40>Nr</th>
-          <th></th>
+          <th width=40></th>
           <th width="200">&nbsp;Navn</th>
           <th width="200">Klubb</th>
           <th width=50 id=resultborder>Plass</th>
@@ -267,8 +295,8 @@
             <tr>
               <td align="center">{{ start.starting_position }}</td>
               <td id="{{ race.order }}{{ start.bib }}" align="center">{{ start.bib }}</td>
-                <td>
-                  {{ start.start_status }}
+                <td align="center">
+                  <span id="{{ race.order }}{{ start.bib }}_start_status">{{ start.start_status }}</span>
                   {% for bilde in race.photo_start %}
                     {% if start.bib in bilde.biblist %}
                     <a class="tooltip_photo_left">

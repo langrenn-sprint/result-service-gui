@@ -19,4 +19,4 @@ from .resultat_edit import ResultatEdit
 from .start import Start
 from .start_edit import StartEdit
 from .timing import Timing
-from .timing_verify import TimingVerify
+from .timing_info import TimingInfo
