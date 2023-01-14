@@ -22,7 +22,7 @@ class TimeEventsService:
         time_stamp_now = EventsAdapter().get_local_time(event, "log")
         time_event = {
             "bib": 0,
-            "event_id": event['id'],
+            "event_id": event["id"],
             "race": "",
             "race_id": "",
             "timing_point": "Template",
@@ -37,7 +37,7 @@ class TimeEventsService:
         # 1. delete all existing Template time events
         current_templates = (
             await TimeEventsAdapter().get_time_events_by_event_id_and_timing_point(
-                token, event['id'], "Template"
+                token, event["id"], "Template"
             )
         )
         for template in current_templates:
@@ -45,19 +45,19 @@ class TimeEventsService:
             logging.debug(f"Deleted template time_event id {id}")
 
         # 2. get list of all races and loop, except finals.
-        races = await RaceplansAdapter().get_all_races(token, event['id'])
+        races = await RaceplansAdapter().get_all_races(token, event["id"])
         if len(races) == 0:
             informasjon = f"{informasjon} Ingen kjøreplaner funnet."
         else:
             for race in races:
-                if race["round"] != "F":
+                if race["round"] in ["Q", "S"]:
                     time_event[
                         "race"
                     ] = f"{race['raceclass']}-{race['round']}{race['index']}{race['heat']}"
                     time_event["race_id"] = race["id"]
 
-                    # loop and simulate result for pos 1 to 8
-                    for x in range(1, 9):
+                    # loop and simulate result for pos 1 to 10
+                    for x in range(1, race['max_no_of_contestants'] + 1):
                         time_event["rank"] = x
                         next_start_entry = get_next_start_entry(
                             token, time_event, races
@@ -193,33 +193,20 @@ class TimeEventsService:
 def get_next_start_entry(token: str, time_event: dict, races: list) -> dict:
     """Generate start_entry - empty result if not qualified."""
     start_entry = {}
-    next_race = next_race_template()
 
     # find relevant race and get next race rule
-    for race in races:
-        if race["id"] == time_event["race_id"]:
-            for key, value in race["rule"].items():
-                if key == "S":
-                    for x, y in value.items():
-                        if x == "A" and y > 0:
-                            next_race[0]["qualified"] = y
-                        elif x == "C" and y > 0:
-                            next_race[1]["qualified"] = y
-                elif key == "F":
-                    for x, y in value.items():
-                        if x == "A":
-                            next_race[2]["qualified"] = y
-                        elif x == "B":
-                            next_race[3]["qualified"] = y
-                        elif x == "C":
-                            next_race[4]["qualified"] = y
+    next_race = populate_next_race(time_event, races, next_race_template())
 
     # interpret rule part 2 - find next round and get race id
     ilimitplace = 0
     ilimitcurrent = 0
     for race_item in next_race:
-        ilimitcurrent = race_item["qualified"]
-        limit_rank = ilimitcurrent + ilimitplace
+        try:
+            ilimitcurrent = race_item["qualified"]
+            limit_rank = ilimitcurrent + ilimitplace
+        except Exception:
+            # if error assume all remaining racers are qualified
+            limit_rank = 99
         if time_event["rank"] <= limit_rank:
             race_item["current_contestant_qualified"] = True
             # now we have next round - get race id
@@ -288,9 +275,14 @@ def calculate_next_start_entry(
                 logging.debug(f"Found next race: {race}")
                 start_entry["race_id"] = race.get("id")
                 start_entry["scheduled_start_time"] = race.get("start_time")
-                start_entry[
-                    "race_round"
-                ] = f"{race.get('round')}{race.get('index')}{race.get('heat')}"
+                if race.get("round") == "F":
+                    start_entry[
+                        "race_round"
+                    ] = f"{race.get('round')}{race.get('index')}"
+                else:
+                    start_entry[
+                        "race_round"
+                    ] = f"{race.get('round')}{race.get('index')}{race.get('heat')}"
         start_entry["starting_position"] = next_race_position
 
         logging.debug(
@@ -309,6 +301,42 @@ async def find_race_id_from_time_event(token: str, time_event: dict) -> str:
 
     # validate registration time_for confirmation
     return race_id
+
+
+def populate_next_race(time_event: dict, races: list, next_race: list) -> list:
+    """Return rules matrix for next race."""
+    for race in races:
+        if race["id"] == time_event["race_id"]:
+            for key, value in race["rule"].items():
+                if key == "S":
+                    for x, y in value.items():
+                        if x == "A":
+                            next_race[0]["qualified"] = y
+                        elif x == "C":
+                            next_race[1]["qualified"] = y
+                elif key == "F":
+                    for x, y in value.items():
+                        if x == "A":
+                            next_race[2]["qualified"] = y
+                        elif x == "B":
+                            next_race[3]["qualified"] = y
+                        elif x == "B1":
+                            next_race[4]["qualified"] = y
+                        elif x == "B2":
+                            next_race[5]["qualified"] = y
+                        elif x == "B3":
+                            next_race[6]["qualified"] = y
+                        elif x == "C":
+                            next_race[7]["qualified"] = y
+                        elif x == "C1":
+                            next_race[8]["qualified"] = y
+                        elif x == "C2":
+                            next_race[9]["qualified"] = y
+                        elif x == "C3":
+                            next_race[10]["qualified"] = y
+                        elif x == "C4":
+                            next_race[11]["qualified"] = y
+    return next_race
 
 
 def next_race_template() -> list:
@@ -335,7 +363,42 @@ def next_race_template() -> list:
             "current_contestant_qualified": False,
         },
         {
+            "round": "FB1",
+            "qualified": 0,
+            "current_contestant_qualified": False,
+        },
+        {
+            "round": "FB2",
+            "qualified": 0,
+            "current_contestant_qualified": False,
+        },
+        {
+            "round": "FB3",
+            "qualified": 0,
+            "current_contestant_qualified": False,
+        },
+        {
             "round": "FC",
+            "qualified": 0,
+            "current_contestant_qualified": False,
+        },
+        {
+            "round": "FC1",
+            "qualified": 0,
+            "current_contestant_qualified": False,
+        },
+        {
+            "round": "FC2",
+            "qualified": 0,
+            "current_contestant_qualified": False,
+        },
+        {
+            "round": "FC3",
+            "qualified": 0,
+            "current_contestant_qualified": False,
+        },
+        {
+            "round": "FC4",
             "qualified": 0,
             "current_contestant_qualified": False,
         },

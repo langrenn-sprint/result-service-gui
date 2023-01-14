@@ -198,10 +198,10 @@ async def get_enrichced_startlist(user: dict, race: dict) -> list:
                 # check if start or DNS is registered
                 elif time_event["timing_point"] == "Start":
                     if time_event["bib"] == start_entry["bib"]:
-                        start_entry["start_status"] = "Started"
+                        start_entry["start_status"] = "Start"
                         start_entry[
                             "info"
-                        ] = f"Started registered at {time_event['registration_time']}"
+                        ] = f"Start registered at {time_event['registration_time']}"
                 elif time_event["timing_point"] == "DNS":
                     if time_event["bib"] == start_entry["bib"]:
                         start_entry["start_status"] = "DNS"
@@ -216,11 +216,13 @@ async def get_enrichced_startlist(user: dict, race: dict) -> list:
 async def get_finish_timings(user: dict, race_id: str) -> list:
     """Get finish events for race, Template event if no result is registered."""
     finish_events = []
+    race = await RaceplansAdapter().get_race_by_id(user["token"], race_id)
+
     # get time-events registered
     time_events = await TimeEventsAdapter().get_time_events_by_race_id(
         user["token"], race_id
     )
-    for i in range(1, 11):
+    for i in range(1, race['max_no_of_contestants'] + 1):
         bfound_event = False
         for time_event in time_events:
             if time_event["timing_point"] == "Finish" and time_event["status"] == "OK":
@@ -247,26 +249,6 @@ async def get_event(user: dict, event_id: str) -> dict:
         event = await EventsAdapter().get_event(user["token"], event_id)
 
     return event
-
-
-def get_next_race_info(next_race_time_events: list, race_id: str) -> list:
-    """Enrich start list with next race info."""
-    startlist = []
-    # get videre til information - loop and simulate result for pos 1 to 8
-    for x in range(1, 9):
-        for template in next_race_time_events:
-            start_entry = {}
-            _rank = template["rank"]
-            if template["timing_point"] == "Template":
-                if _rank == x:
-                    start_entry["race_id"] = race_id
-                    start_entry["starting_position"] = x  # type: ignore
-                    if template["next_race"].startswith("Ute"):
-                        start_entry["next_race"] = "Ute"
-                    else:
-                        start_entry["next_race"] = template["next_race"]
-                    startlist.append(start_entry)
-    return startlist
 
 
 async def get_passeringer(
@@ -356,12 +338,11 @@ async def get_race_id_by_name(
 ) -> str:
     """Get race_id for a given race."""
     race_id = ""
-    races = await RaceplansAdapter().get_all_races(user["token"], event_id)
+    races = await RaceplansAdapter().get_races_by_racesclass(user["token"], event_id, raceclass)
     for race in races:
-        if race["raceclass"] == raceclass:
-            tmp_next_race = f"{race['round']}{race['index']}{race['heat']}"
-            if next_race == tmp_next_race:
-                return race["id"]
+        tmp_next_race = f"{race['round']}{race['index']}{race['heat']}"
+        if next_race == tmp_next_race:
+            return race["id"]
     return race_id
 
 
@@ -511,45 +492,4 @@ async def update_finish_time_events(
     )
     informasjon += info
     logging.debug(f"Registreringer: {info} - body: {add_result_list}")
-    return informasjon
-
-
-async def update_time_event(user: dict, event: dict, form: dict) -> str:
-    """Register time event - return information."""
-    informasjon = ""
-    time_stamp_now = EventsAdapter().get_local_time(event, "log")
-    request_body = await TimeEventsAdapter().get_time_event_by_id(
-        user["token"], form["id"]
-    )
-    if "update" in form.keys():
-        request_body["changelog"] = [
-            {
-                "timestamp": time_stamp_now,
-                "user_id": user["name"],
-                "comment": f"Oppdatering - tidligere informasjon: {request_body}. ",
-            }
-        ]
-        request_body["timing_point"] = form["timing_point"]
-        request_body["registration_time"] = form["registration_time"]
-        request_body["rank"] = form["rank"]
-    elif "update_template" in form.keys():
-        request_body["changelog"] = [
-            {
-                "timestamp": time_stamp_now,
-                "user_id": user["name"],
-                "comment": f"Oppdatering - old info, next_race {request_body['next_race']}-{request_body['next_race_position']}. ",
-            }
-        ]
-        request_body["next_race_position"] = form["next_race_position"]
-        raceclass = form["race"].split("-")
-        request_body["next_race_id"] = await get_race_id_by_name(
-            user, form["event_id"], form["next_race"], raceclass[0]
-        )
-        request_body["next_race"] = form["next_race"]
-    elif "delete" in form.keys():
-        response = await TimeEventsAdapter().delete_time_event(
-            user["token"], form["id"]
-        )
-    logging.debug(f"Control result: {response}")
-    informasjon = f"Oppdatert - {response}  "
     return informasjon

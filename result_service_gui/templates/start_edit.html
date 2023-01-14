@@ -26,9 +26,9 @@
             <td id="black">{{ raceclass.name }}</td>
             <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&action={{ action }}>Alle</a></nobr></td>
             {% if raceclass.ranking %}
-              <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=Q>Kvart</a></nobr></td>
-              <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=S>Semi</a></nobr></td>
-              <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=F>Finale</a></nobr></td>
+              <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&action={{ action }}&runde=Q>Kvart</a></nobr></td>
+              <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&action={{ action }}&runde=S>Semi</a></nobr></td>
+              <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&action={{ action }}&runde=F>Finale</a></nobr></td>
             {% else %}
               <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=R1>Runde 1</a></nobr></td>
               <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=R2>Runde 2</a></nobr></td>
@@ -48,7 +48,7 @@
           <td colspan=5>&nbsp;</td>
         </tr>
         <tr>
-          <td colspan=3><b>{{ race.raceclass }} {{ race.round }}{{ race.index }}{% if race.round != "F" %}{{ race.heat }}{% endif %}</b></td>
+          <td colspan=3><b>{{ race.raceclass }} {{ race.round }}{{ race.index }} {{ race.heat }}</b> - max antall: {{ race.max_no_of_contestants }}</td>
           <td colspan=2><b>{{ race.start_time[-8:] }}</b> (heat {{ race.order }})</td>
         </tr>
         {% if action == "Template" %}
@@ -73,7 +73,7 @@
             {% endif %}
           {% endfor %}
             <tr>
-              <td align=right><input type=number name="rank_new" value="" max=99 min=0></td>
+              <td align=center><input type=number name="rank_new" value="" max=99 min=0></td>
               <td></td>
               <td colspan=2>
                 <input type=text name="next_race_new" value="" size=4>&nbsp;-&nbsp;

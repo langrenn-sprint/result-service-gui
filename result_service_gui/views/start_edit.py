@@ -19,7 +19,6 @@ from .utils import (
     get_passeringer,
     get_qualification_text,
     get_race_id_by_name,
-    update_time_event,
 )
 
 
@@ -177,22 +176,29 @@ async def delete_start(user: dict, form: dict) -> str:
 
 async def update_template_events(user: dict, event: dict, form: dict) -> str:
     """Extract form data and update template event."""
-    informasjon = "Control result: "
-    for i in range(1, 11):
+    race = await RaceplansAdapter().get_race_by_id(user["token"], form["race_id"])
+    informasjon = "Update templates, result: "
+    # update
+    for i in range(1, race['max_no_of_contestants'] + 1):
         if f"next_race_{i}" in form.keys():
             if form[f"next_race_{i}"]:
-                request_body = {
-                    "event_id": form["event_id"],
-                    "id": form[f"id_{i}"],
-                    "update_template": True,
-                    "next_race": form[f"next_race_{i}"],
-                    "next_race_position": form[f"next_race_position_{i}"],
-                    "race": form["race"],
-                }
-                informasjon += await update_time_event(user, event, request_body)
+                request_body = await TimeEventsAdapter().get_time_event_by_id(user["token"], form[f"id_{i}"])
+                request_body["next_race"] = form[f"next_race_{i}"]
+                request_body["next_race_position"] = int(form[f"next_race_position_{i}"])
+                response = await TimeEventsAdapter().update_time_event(user["token"], request_body['id'], request_body)
+                if response == 204:
+                    informasjon += f"Oppdatert heat {request_body['race']}, pos {request_body['rank']}. "
+                else:
+                    informasjon += f"Feil ved oppdatering {response}. Heat {request_body['race']}. "
+    # add new
     if form["rank_new"]:
+        next_race_name = form["next_race_new"]
+        # add index 1 to finals
+        if next_race_name.startswith("F"):
+            next_race_name += "1"
+
         next_race_id = await get_race_id_by_name(
-            user, form["event_id"], form["next_race_new"], form["klasse"]
+            user, form["event_id"], next_race_name, form["klasse"]
         )
         time_stamp_now = EventsAdapter().get_local_time(event, "log")
         time_event = {
@@ -201,11 +207,11 @@ async def update_template_events(user: dict, event: dict, form: dict) -> str:
             "race": form["race"],
             "race_id": form["race_id"],
             "timing_point": "Template",
-            "rank": form["rank_new"],
+            "rank": int(form["rank_new"]),
             "registration_time": time_stamp_now,
             "next_race": form["next_race_new"],
             "next_race_id": next_race_id,
-            "next_race_position": form["next_race_position_new"],
+            "next_race_position": int(form["next_race_position_new"]),
             "status": "OK",
             "changelog": [],
         }

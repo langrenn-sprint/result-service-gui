@@ -65,8 +65,8 @@
                 <td align=center>{{ start.bib }}</td>
                 <td>{% if start.club_logo %}<img width=15 src={{ start.club_logo }} title="{{ start.club }}"> {% endif %}{{ start.name }}</td>
                 <td>
-                  <input type="radio" name="form_start_{{ start.bib }}" value="OK"><label for="OK">Startet</label>
-                  <input type="radio" name="form_start_{{ start.bib }}" value="DNS"><label for="OK">DNS</label>
+                  <input type="radio" name="form_start_{{ start.bib }}" value="Start"><label for="Start">Startet</label>
+                  <input type="radio" name="form_start_{{ start.bib }}" value="DNS"><label for="DNS">DNS</label>
                 </td>
               {% endif %}
               <td>{{ start.info }}</td>
