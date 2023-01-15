@@ -48,7 +48,6 @@ class ContestantsAdapter:
     ) -> str:
         """Create new contestant function."""
         servicename = "create_contestant"
-        id = ""
         headers = MultiDict(
             [
                 (hdrs.CONTENT_TYPE, "application/json"),
@@ -63,32 +62,13 @@ class ContestantsAdapter:
             ) as resp:
                 if resp.status == 201:
                     logging.debug(f"result - got response {resp}")
-                    location = resp.headers[hdrs.LOCATION]
-                    id = location.split(os.path.sep)[-1]
                 elif resp.status == 401:
                     raise web.HTTPBadRequest(reason=f"401 Unathorized - {servicename}")
                 else:
                     body = await resp.json()
                     logging.error(f"{servicename} failed - {resp.status} - {body}")
-                    raise web.HTTPBadRequest(
-                        reason=f"Error - {resp.status}: {body['detail']}."
-                    )
-        # update number of contestants in raceclass
-        try:
-            klasse = await RaceclassesAdapter().get_raceclass_by_ageclass(
-                token, event_id, request_body["ageclass"]
-            )
-            if klasse:
-                klasse["no_of_contestants"] = klasse["no_of_contestants"] + 1
-            result = await RaceclassesAdapter().update_raceclass(
-                token, event_id, klasse["id"], klasse
-            )
-            logging.debug(f"No_of_contestants updated - {result}")
-        except Exception as e:
-            logging.error(
-                f"{servicename} failed on update no of contestants in raceclass {e} - {request_body}"
-            )
-        return id
+                    return body["detail"]
+        return "201"
 
     async def create_contestants(self, token: str, event_id: str, inputfile) -> str:
         """Create new contestants function."""
@@ -390,6 +370,34 @@ class ContestantsAdapter:
                         reason=f"Error - {resp.status}: {body['detail']}."
                     )
         return contestant
+
+    async def search_contestants_by_name(self, token: str, event_id: str, search_text: str) -> list:
+        """Search contestant by name - first or last function."""
+        contestants = []
+        servicename = "search_contestants_by_name"
+        request_body = {"name": search_text}
+        headers = MultiDict(
+            [
+                (hdrs.CONTENT_TYPE, "application/json"),
+                (hdrs.AUTHORIZATION, f"Bearer {token}"),
+            ]
+        )
+        async with ClientSession() as session:
+            async with session.post(
+                f"{EVENT_SERVICE_URL}/events/{event_id}/contestants/search",
+                headers=headers,
+                json=request_body,
+            ) as resp:
+                if resp.status == 200:
+                    contestants = await resp.json()
+                    logging.debug(f"result - got response {resp}")
+                elif resp.status == 401:
+                    raise web.HTTPBadRequest(reason=f"401 Unathorized - {servicename}")
+                else:
+                    body = await resp.json()
+                    logging.error(f"{servicename} failed - {resp.status} - {body}")
+                    raise web.HTTPBadRequest(reason=f"{resp.status} Error - {body['detail']}")
+        return contestants
 
     async def update_contestant(
         self, token: str, event_id: str, contestant: dict

@@ -31,9 +31,33 @@
 {% block content %}
   <div id=spacer></div>
   <script>
-    function green_bg(id) {
-      document.getElementById(id).style.backgroundColor = "green";
-    }
+    /* this function will update dns field for given race when triggered
+    */
+    function search_contestant(search_string) {
+      var xhttp = new XMLHttpRequest();
+      var url = "/timing_info?action=search_contestant&event_id={{ event_id }}&search_string=" + search_string;
+      xhttp.open("GET", url, true);
+      xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+      xhttp.send();
+      xhttp.onload = function() {
+        try {
+            // clean old results
+            for (let i = 0; i < 20; i++) {
+              document.getElementById("search_result_" +  i).innerHTML = "";
+            }
+            // load new info
+            const jsonDoc = JSON.parse(this.response);
+            const contestants = jsonDoc.contestants;
+            contestants.forEach(myFunction);
+            function myFunction(value, index, array) {
+              contestant = value.bib + " - " + value.first_name + " " + value.last_name + ", " + value.club + " - " + value.ageclass;
+              document.getElementById("search_result_" +  index).innerHTML = contestant;
+            }
+          }
+          catch(err) {}
+        }
+      }
   </script>
     <table>
     {% if action == "start" %}
@@ -123,6 +147,77 @@
       </tr>
       <tr>
         <td id=spacer colspan=3>&nbsp;</td>
+      </tr>
+      <tr id=headerblue>
+        <td id=spacer colspan=3>Søk etter deltaker</td>
+      </tr>
+      <tr>
+        <td>Navn</td>
+        <td><input type=text name="search_name" value="" onchange="search_contestant(this.value);">&nbsp;<button onclick="return false;">Søk</button></td>
+        <td>Tips: Det søkes på alle navn (fornavn og etternavn). Velg det du tror gir færrest treff. </td>
+      </tr>
+      <tr>
+        <td id=spacer colspan=3>&nbsp;</td>
+      </tr>
+      <tr>
+        <td colspan=3><span id="search_result_0"></span></td>
+      </tr>
+      <tr>
+        <td colspan=3><span id="search_result_1"></span></td>
+      </tr>
+      <tr>
+        <td colspan=3><span id="search_result_2"></span></td>
+      </tr>
+      <tr>
+        <td colspan=3><span id="search_result_3"></span></td>
+      </tr>
+      <tr>
+        <td colspan=3><span id="search_result_4"></span></td>
+      </tr>
+      <tr>
+        <td colspan=3><span id="search_result_5"></span></td>
+      </tr>
+      <tr>
+        <td colspan=3><span id="search_result_6"></span></td>
+      </tr>
+      <tr>
+        <td colspan=3><span id="search_result_7"></span></td>
+      </tr>
+      <tr>
+        <td colspan=3><span id="search_result_8"></span></td>
+      </tr>
+      <tr>
+        <td colspan=3><span id="search_result_9"></span></td>
+      </tr>
+      <tr>
+        <td colspan=3><span id="search_result_10"></span></td>
+      </tr>
+      <tr>
+        <td colspan=3><span id="search_result_11"></span></td>
+      </tr>
+      <tr>
+        <td colspan=3><span id="search_result_12"></span></td>
+      </tr>
+      <tr>
+        <td colspan=3><span id="search_result_13"></span></td>
+      </tr>
+      <tr>
+        <td colspan=3><span id="search_result_14"></span></td>
+      </tr>
+      <tr>
+        <td colspan=3><span id="search_result_15"></span></td>
+      </tr>
+      <tr>
+        <td colspan=3><span id="search_result_16"></span></td>
+      </tr>
+      <tr>
+        <td colspan=3><span id="search_result_17"></span></td>
+      </tr>
+      <tr>
+        <td colspan=3><span id="search_result_18"></span></td>
+      </tr>
+      <tr>
+        <td colspan=3><span id="search_result_19"></span></td>
       </tr>
     </table>
   </form>

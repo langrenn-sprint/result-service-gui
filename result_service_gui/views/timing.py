@@ -99,14 +99,12 @@ class Timing(web.View):
             return web.HTTPSeeOther(location=f"/?informasjon={e}")
 
     async def post(self) -> web.Response:
-        """Post route function that creates deltakerliste."""
+        """Post route function that register started or DNS."""
         # check login
         user = await check_login(self)
         informasjon = ""
-        action = ""
         try:
             form = await self.request.post()
-            logging.debug(f"Form {form}")
             event_id = str(form["event_id"])
             event = await get_event(user, event_id)
             action = str(form["action"])
@@ -158,29 +156,34 @@ async def create_dns_time_events_manual(user: dict, event: dict, form: dict) -> 
     if "bib" in form.keys():
         biblist = form["bib"].rsplit(" ")
         for bib in biblist:
-            request_body["timing_point"] = "DNS"
-            changelog_comment = "DNS registrert. "
-            request_body["bib"] = int(bib)
-            i += 1
-            request_body["changelog"] = [
-                {
-                    "timestamp": time_stamp_now,
-                    "user_id": user["name"],
-                    "comment": changelog_comment,
-                }
-            ]
-            # find race - always pick the latest start if several results
-            start_entries = await StartAdapter().get_start_entries_by_bib(user["token"], event["id"], int(bib))
-            if start_entries:
-                start_entry = start_entries[len(start_entries) - 1]
-                request_body["race_id"] = start_entry["race_id"]
+            try:
+                if bib.isnumeric():
+                    request_body["timing_point"] = "DNS"
+                    changelog_comment = "DNS registrert. "
+                    request_body["bib"] = int(bib)
+                    request_body["changelog"] = [
+                        {
+                            "timestamp": time_stamp_now,
+                            "user_id": user["name"],
+                            "comment": changelog_comment,
+                        }
+                    ]
+                    # find race - always pick the latest start if several results
+                    start_entries = await StartAdapter().get_start_entries_by_bib(user["token"], event["id"], int(bib))
+                    if start_entries:
+                        start_entry = start_entries[len(start_entries) - 1]
+                        request_body["race_id"] = start_entry["race_id"]
 
-            id = await TimeEventsService().create_start_time_event(
-                user["token"], request_body
-            )
-            informasjon += f" {request_body['bib']}-{changelog_comment}. "
-            logging.debug(f"Registrering: {id} - body: {request_body}")
-    informasjon = f" {i} registreringer lagret."
+                    id = await TimeEventsService().create_start_time_event(
+                        user["token"], request_body
+                    )
+                    i += 1
+                    informasjon += f" {request_body['bib']}-{changelog_comment}. "
+                    logging.debug(f"Registrering: {id} - body: {request_body}")
+            except Exception as e:
+                informasjon += f"Error: {e}"
+
+    informasjon = f" {i} registreringer lagret. {informasjon}"
     return informasjon
 
 
