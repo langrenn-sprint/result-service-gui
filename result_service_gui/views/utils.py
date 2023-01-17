@@ -432,7 +432,7 @@ async def get_races_for_print(
                     else:
                         race[
                             "finish_results"
-                        ] = RaceclassResultsService().get_finish_rank_for_race(race)
+                        ] = RaceclassResultsService().get_finish_rank_for_race(race, False)
                     if first_in_class:
                         first_in_class = False
                     races.append(race)
@@ -464,7 +464,7 @@ async def get_races_for_round_result(
                     race["list_type"] = "result"
                     race[
                         "finish_results"
-                    ] = RaceclassResultsService().get_finish_rank_for_race(race)
+                    ] = RaceclassResultsService().get_finish_rank_for_race(race, False)
                     races.append(race)
             elif race["round"] in next_round:
                 if action.count("start") > 0:

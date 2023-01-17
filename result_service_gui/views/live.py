@@ -28,14 +28,19 @@ class Live(web.View):
         except Exception:
             event_id = ""
         try:
+            action = self.request.rel_url.query["action"]
+        except Exception:
+            action = ""
+        try:
             informasjon = self.request.rel_url.query["informasjon"]
         except Exception:
             informasjon = ""
         try:
             user = await check_login_open(self)
             event = await get_event(user, event_id)
-
             races = []
+            colseparators = []
+            colclass = "w3-third"
 
             try:
                 valgt_klasse = self.request.rel_url.query["klasse"]
@@ -51,19 +56,18 @@ class Live(web.View):
                 user["token"], event_id
             )
 
-            colseparators = []
-            colclass = "w3-third"
-            races = await get_races(user["token"], event_id, valgt_klasse, valgt_startnr)
-            if len(races) == 0:
-                informasjon = f"{informasjon} Ingen kjøreplaner funnet."
+            if valgt_klasse:
+                races = await get_races(user["token"], event_id, valgt_klasse, valgt_startnr, action)
+                if len(races) == 0:
+                    informasjon = f"{informasjon} Ingen kjøreplaner funnet."
 
-            colseparators = get_colseparators(races)
-            if len(colseparators) == 3:
-                colclass = "w3-quart"
-            elif len(colseparators) == 4:
-                colclass = "w3-fifth"
-            elif len(colseparators) == 5:
-                colclass = "w3-sixth"
+                colseparators = get_colseparators(races)
+                if len(colseparators) == 3:
+                    colclass = "w3-quart"
+                elif len(colseparators) == 4:
+                    colclass = "w3-fifth"
+                elif len(colseparators) == 5:
+                    colclass = "w3-sixth"
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
@@ -120,14 +124,14 @@ def get_colseparators(races: list) -> list:
 
 
 async def get_races(
-    token: str, event_id: str, valgt_klasse: str, valgt_startnr: int
+    token: str, event_id: str, valgt_klasse: str, valgt_startnr: int, action: str
 ) -> list:
     """Get races for selected live view."""
     races = []
 
     if valgt_klasse:
         races = await get_races_for_live(
-            token, event_id, valgt_klasse, valgt_startnr
+            token, event_id, valgt_klasse, valgt_startnr, action
         )
         # sort start list by starting position and append club_logo
         for race in races:
@@ -143,7 +147,7 @@ async def get_races(
 
 
 async def get_races_for_live(
-    token: str, event_id: str, valgt_klasse: str, valgt_startnr: int
+    token: str, event_id: str, valgt_klasse: str, valgt_startnr: int, action: str
 ) -> list:
     """Extract races with enriched content for live view."""
     races = []
@@ -162,7 +166,7 @@ async def get_races_for_live(
     for _tmp_race in _tmp_races:
         race = await RaceplansAdapter().get_race_by_id(token, _tmp_race["id"])
         race["finish_results"] = RaceclassResultsService().get_finish_rank_for_race(
-            race
+            race, False
         )
         race["next_race"] = get_qualification_text(race)
         race["start_time"] = race["start_time"][-8:]
@@ -171,9 +175,9 @@ async def get_races_for_live(
         # avoid quarter finals or finals, depending on semi final status
         if valgt_startnr == 0:
             if races_count_q > 4:
-                if semi_results_registered and race["round"] == "Q":
+                if semi_results_registered and race["round"] == "Q" and action != "all":
                     pass
-                elif not semi_results_registered and race["round"] == "F":
+                elif not semi_results_registered and race["round"] == "F" and action != "all":
                     pass
                 else:
                     races.append(race)

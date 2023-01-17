@@ -98,7 +98,7 @@
                   {% if race.round == "Q" %}Kvartfinale {{ race.heat }}
                   {% elif race.round == "S" %}Semifinale {{ race.index }}{{ race.heat }}
                   {% else %}Finale {{ race.index }}
-                  {% endif %} - Kl. {{ race.start_time }}</b>
+                  {% endif %} - Start kl. {{ race.start_time }}</b>
                 </td>
                 <td></td>
               </tr>
@@ -127,4 +127,7 @@
       </table>
     </div>
   </div>
+  {% if valgt_klasse %}
+    <div align="center"><a href="live?klasse={{ valgt_klasse }}&event_id={{ event_id }}&action=all">Vis alle heat</a></div>
+  {% endif %}
 {% endblock %}

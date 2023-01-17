@@ -116,6 +116,6 @@ def get_fields_results() -> list:
         "club",
         "ageclass",
         "round",
-        # "minidrett_id",
+        "minidrett_id",
     ]
     return fields

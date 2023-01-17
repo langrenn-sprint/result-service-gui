@@ -8,8 +8,6 @@ from result_service_gui.services import (
     PhotosAdapter,
     RaceclassesAdapter,
     RaceclassResultsAdapter,
-    RaceclassResultsService,
-    RaceplansAdapter,
 )
 from .utils import (
     check_login_open,
@@ -84,20 +82,3 @@ class Resultat(web.View):
         except Exception as e:
             logging.error(f"Error: {e}. Redirect to main page.")
             return web.HTTPSeeOther(location=f"/?informasjon={e}")
-
-
-async def get_races_for_result_view(
-    token: str, event_id: str, valgt_klasse: str
-) -> list:
-    """Extract races with enriched results."""
-    races = []
-    _tmp_races = await RaceplansAdapter().get_races_by_racesclass(
-        token, event_id, valgt_klasse
-    )
-    for _tmp_race in _tmp_races:
-        race = await RaceplansAdapter().get_race_by_id(token, _tmp_race["id"])
-        race["finish_results"] = RaceclassResultsService().get_finish_rank_for_race(
-            race
-        )
-        races.append(race)
-    return races

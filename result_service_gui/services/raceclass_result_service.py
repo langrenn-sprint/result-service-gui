@@ -40,6 +40,7 @@ class RaceclassResultsService:
             for contestant in contestants:
                 if contestant["bib"] == racer["bib"]:
                     racer["ageclass"] = contestant["ageclass"]
+                    racer["minidrett_id"] = contestant["minidrett_id"]
                     break
 
         # and store to db
@@ -49,9 +50,10 @@ class RaceclassResultsService:
 
         return res
 
-    def get_finish_rank_for_race(self, race: dict) -> list:
+    def get_finish_rank_for_race(self, race: dict, indlude_dnf: bool) -> list:
         """Extract timing events from finish and append club logo."""
         finish_rank = []
+        finish_bibs = []
         results = race["results"]
         if len(results) > 0:
             logging.debug(f"Resultst: {results}")
@@ -68,14 +70,29 @@ class RaceclassResultsService:
                                     rank_event["club"]
                                 )
                                 finish_rank.append(rank_event)
-
+                                finish_bibs.append(rank_event["bib"])
+        if indlude_dnf:
+            for start in race['start_entries']:
+                if not start['bib'] in finish_bibs:
+                    dnf_entry = {
+                        "next_race_id": "",
+                        "bib": start['bib'],
+                        "round": f"{race['round']}{race['index']}",
+                        "name": start["name"],
+                        "club": start["club"],
+                        "club_logo": EventsAdapter().get_club_logo_url(start["club"]),
+                        "ageclass": "",
+                        "time_event": {},
+                        "status": "DNF"
+                    }
+                    finish_rank.append(dnf_entry)
         return finish_rank
 
 
 async def get_results_by_raceclass(
     token: str, event_id: str, valgt_klasse: str
 ) -> dict:
-    """Get results for raceclass - return sorted list."""
+    """Get results for raceclass - return sorted list. With our without DNF."""
     results = {
         "event_id": event_id,
         "raceclass": valgt_klasse,
@@ -112,7 +129,7 @@ async def get_results_by_raceclass(
         if race["round"] != "Q":
             race_details = await RaceplansAdapter().get_race_by_id(token, race["id"])
             finish_results = RaceclassResultsService().get_finish_rank_for_race(
-                race_details
+                race_details, True
             )
             for _tmp_result in finish_results:
                 # skip results if racer has more races
@@ -124,6 +141,7 @@ async def get_results_by_raceclass(
                         "club": _tmp_result["club"],
                         "club_logo": _tmp_result["club_logo"],
                         "ageclass": "",
+                        "minidrett_id": "",
                         "time_event": _tmp_result,
                     }
                     if _tmp_result["status"] == "DNF":
