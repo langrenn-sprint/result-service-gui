@@ -234,24 +234,44 @@ td {
   vertical-align: bottom;
 }
 
-function naviger(id) {
-  var elmnt = document.getElementById(id);
-  elmnt.scrollIntoView();
+/**** Colors and tooltip for race dashboard - KPIs ****/
+#kpi1 {background-color: rgba(255, 255, 255, 0.6); padding: 4px;}  /* 1 not started */
+#kpi2 {background-color: rgba(255, 255, 255, 0.2); padding: 4px;}  /* 2 not started - with DNS */
+#kpi3 {background-color: rgba(255, 255, 0, 0.5); padding: 4px;}  /* 3 started - no results */
+#kpi4 {background-color: rgba(0, 255, 0, 0.5); padding: 4px;}  /* 4 partial results - with DNF */
+#kpi5 {background-color: rgba(0, 255, 0, 1.0); padding: 4px;}  /* 5 all results ok */
+#kpi6 {background-color: rgba(255, 0, 1.0); padding: 4px;}  /* 6 other error */
+
+.tooltip_race {
+  position: relative;
+  display: inline-block;
 }
-
-async function savefile(inp)
-{
-    let formData = new FormData();
-    let file = inp.files[0];
-
-    formData.append("file", file);
-
-    const ctrl = new AbortController()    // timeout
-    setTimeout(() => ctrl.abort(), 5000);
-
-    let r = await fetch('/contestants',
-      {method: "POST", body: formData, signal: ctrl.signal});
-
+.tooltip_race .tooltiptext_race {
+  visibility: hidden;
+  width: 120px;
+  background-color: black;
+  color: #fff;
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 0;
+  position: absolute;
+  z-index: 1;
+  bottom: 150%;
+  left: 50%;
+  margin-left: -60px;
+}
+.tooltip_race .tooltiptext_race::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: black transparent transparent transparent;
+}
+.tooltip_race:hover .tooltiptext_race {
+  visibility: visible;
 }
 
 /**** Responsivt design ****/

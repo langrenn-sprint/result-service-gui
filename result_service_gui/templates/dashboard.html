@@ -23,18 +23,63 @@
       <tr id=headerblue>
         <td colspan=5>Fremdrift i rennet</td>
       </tr>
-      <tr>
-        <td></td>
-        <td colspan=4>
-          Neste start
-          <b>{% for race in races %}
-            {{ race.raceclass }}-{{ race.round }}{{ race.index }}{{ race.heat }} kl. {{ race.start_time }} (heat nr. {{ race.order }})<br>
-          {% endfor %}</b>
-        </td>
+      <tr id="subheader">
+        <td>Løpsklasse</td>
+        <td>Start</td>
+        <td>Kvartfinaler</td>
+        <td>Semifinaler</td>
+        <td>Finaler</td>
       </tr>
+    {% for raceclass in raceplan_kpis %}
+        <tr>
+          <td align="center"><a href="live?event_id={{ event_id }}&klasse={{ raceclass.name }}"><b>{{ raceclass.name }}</b></a></td>
+          <td align="center">{{ raceclass.timeQ }}</td>
+          <td>
+            {% for race in raceclass.racesQ %}
+              <span class=tooltip_race id=kpi{{ race.progress }}>
+                <a href="resultat_edit?event_id={{ event_id }}&heat={{ race.order }}">{{ race.name }}</a>
+                <span class="tooltiptext_race">
+                  Kl: {{ race.start_time }}
+                  Starter: {{ race.count_starts}}<br>
+                  DNS: {{ race.count_dns}}<br>
+                  Målpassering: {{ race.count_results}}<br>
+                </span>
+              </span>
+            {% endfor %}
+          </td>
+          <td>
+            {% for race in raceclass.racesS %}
+              <span class=tooltip_race id=kpi{{ race.progress }}>
+                <a href="resultat_edit?event_id={{ event_id }}&heat={{ race.order }}">{{ race.name }}</a>
+                <span class="tooltiptext_race">
+                  Starter: {{ race.count_starts}}<br>
+                  DNS: {{ race.count_dns}}<br>
+                  Målpassering: {{ race.count_results}}<br>
+                </span>
+              </span>
+            {% endfor %}
+          </td>
+          <td>
+            {% for race in raceclass.racesF %}
+              <span class=tooltip_race id=kpi{{ race.progress }}>
+                <a href="resultat_edit?event_id={{ event_id }}&heat={{ race.order }}">{{ race.name }}</a>
+                <span class="tooltiptext_race">
+                  Starter: {{ race.count_starts}}<br>
+                  DNS: {{ race.count_dns}}<br>
+                  Målpassering: {{ race.count_results}}<br>
+                </span>
+              </span>
+            {% endfor %}
+          </td>
+        </tr>
+      {% endfor %}
       <tr>
         <td colspan=5 id=spacer>&nbsp;</td>
       </tr>
+    </table>
+  </div>
+  <div class="w3-half">
+    <table cellpadding=4>
       <tr id=headerblue>
         <td id=table_border colspan=5>Registrere passeringer og resultater</td>
       </tr>
@@ -92,12 +137,11 @@
         <td colspan=4>Redigere i starlister - optimalsere: likt antall løpere i heat, fylle opp C-finaler osv.</td>
       </tr>
       <tr>
+        <td id=table_border colspan=5 id=spacer></td>
+      </tr>
+      <tr>
         <td colspan=5 id=spacer>&nbsp;</td>
       </tr>
-    </table>
-  </div>
-  <div class="w3-half">
-    <table cellpadding=4>
       <tr id=headerblue>
         <td id=table_border colspan=5>Utskrifter</td>
       </tr>
@@ -179,7 +223,7 @@
         <td id=table_border colspan=5>Tips: Utskrift kommer i eget vindu. Bruk Ctrl+P for å skrive ut.</td>
       </tr>
       <tr>
-        <td id=table_border colspan=5 id=spacer></td>
+        <td colspan=5 id=spacer>&nbsp;</td>
       </tr>
       <tr id=headerblue>
         <td id=table_border colspan=5>Avikshåndtering</td>
@@ -206,7 +250,7 @@
         <td id=table_border colspan=4>Til bruk dersom det har vært endringer i resultater etter at finaleheat er registrert.</td>
       </tr>
       <tr>
-        <td id=table_border colspan=5 id=spacer></td>
+        <td colspan=5 id=spacer>&nbsp;</td>
       </tr>
       <tr id=headerblue>
         <td id=table_border colspan=5>Avanserte funksjoner</td>
