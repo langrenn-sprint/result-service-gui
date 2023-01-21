@@ -77,11 +77,11 @@ async def get_race_kpis(token: str, event: dict, raceclasses: list) -> list:
             except Exception:
                 count_starts = 0
             try:
-                count_results = len(race['results']['Finish'])
+                count_results = len(race['results']['Finish']['ranking_sequence'])
             except Exception:
                 count_results = 0
             try:
-                count_dns = len(race['results']['DNS'])
+                count_dns = len(race['results']['DNS']['ranking_sequence'])
             except Exception:
                 count_dns = 0
 
