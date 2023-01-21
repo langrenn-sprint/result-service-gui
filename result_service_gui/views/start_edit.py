@@ -147,19 +147,21 @@ async def create_start(user: dict, form: dict) -> str:
     contestant = await ContestantsAdapter().get_contestant_by_bib(
         user["token"], form["event_id"], form["bib"]
     )
-
-    new_start = {
-        "startlist_id": form["startlist_id"],
-        "race_id": form["race_id"],
-        "bib": int(form["bib"]),
-        "starting_position": int(form["starting_position"]),
-        "scheduled_start_time": form["start_time"],
-        "name": f"{contestant['first_name']} {contestant['last_name']}",
-        "club": contestant["club"],
-    }
-    id = await StartAdapter().create_start_entry(user["token"], new_start)
-    logging.debug(f"create_start {id} - {new_start}")
-    informasjon = f"Lagt til nr {new_start['bib']}"
+    if contestant:
+        new_start = {
+            "startlist_id": form["startlist_id"],
+            "race_id": form["race_id"],
+            "bib": int(form["bib"]),
+            "starting_position": int(form["starting_position"]),
+            "scheduled_start_time": form["start_time"],
+            "name": f"{contestant['first_name']} {contestant['last_name']}",
+            "club": contestant["club"],
+        }
+        id = await StartAdapter().create_start_entry(user["token"], new_start)
+        logging.debug(f"create_start {id} - {new_start}")
+        informasjon = f"Lagt til nr {new_start['bib']}"
+    else:
+        informasjon = f"Error! Fant ikke deltaker med startnr {form['bib']}."
     return informasjon
 
 
