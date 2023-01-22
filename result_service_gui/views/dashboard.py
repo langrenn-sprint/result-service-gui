@@ -101,9 +101,9 @@ async def get_race_kpis(token: str, event: dict, raceclasses: list) -> list:
                 "progress": race_progress,
                 "start_time": race["start_time"][-8:]
             }
-            if race['round'] == "Q":
+            if race['round'] in ["Q", "R1"]:
                 racesQ.append(race_summary)
-            elif race['round'] == "S":
+            elif race['round'] in ["S", "R2"]:
                 racesS.append(race_summary)
             elif race['round'] == "F":
                 racesF.append(race_summary)
