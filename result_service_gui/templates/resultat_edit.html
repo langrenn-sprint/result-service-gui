@@ -119,6 +119,7 @@
               document.getElementById(race_order + "_status").innerHTML = " - resultat publisert."
             }
             document.getElementById(race_order + "_result").innerHTML = info;
+            document.getElementById(race_order + "_result_toggle").innerHTML = "(Skjul) ";
             document.getElementById(button.id).innerHTML = " Lagre ";
             document.getElementById(button.id).disabled = false;
           }
@@ -266,7 +267,7 @@
     </div>
     <div id=spacer></div>
     <div id="demo_{{ race.order }}" class="collapse in">
-      <table>
+      <table border="1">
         <tr id=headerblack>
           <td colspan=3>Startliste</td>
           <td colspan=2></td>
@@ -278,11 +279,11 @@
           <th width=40>Pos</th>
           <th width=40>Nr</th>
           <th width=40></th>
-          <th width="200">&nbsp;Navn</th>
+          <th width="250">&nbsp;Navn</th>
           <th width="200">Klubb</th>
           <th width=50 id=resultborder>Plass</th>
-          <th width=80 align=center>Startnr</th>
-          <th width=200>Navn</th>
+          <th width=80>Startnr</th>
+          <th width=250>Navn</th>
           <th>
             {% if valgt_runde.runde != "F" %}
               Videre til
@@ -371,7 +372,7 @@
           {% endfor %}
             <tr>
               <td colspan=6></td>
-              <td colspan=4>
+              <td colspan=5>
                 <input type="hidden" name="race" value="{{ race.raceclass }}-{{ race.round }}{{ race.index }}{{ race.heat }}">
                 <input type="hidden" name="race_id" value="{{ race.id }}">
                 <input type="hidden" name="race_order" value="{{ race.order }}">
@@ -401,8 +402,8 @@
                   <input type="hidden" name=event_id value="{{ event_id }}">
                 </td>
               </form>
-              <td colspan=5 id="orange">
-                <span id="{{ race.order }}_result"></span>
+              <td colspan=6 id="orange">
+                <a data-toggle="collapse" id="{{ race.order }}_result_toggle" href="#demo_{{ race.order }}"></a><span id="{{ race.order }}_result"></span>
               </td>
             </tr>
           {% endif %}

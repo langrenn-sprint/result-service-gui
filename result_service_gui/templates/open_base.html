@@ -37,6 +37,10 @@
         var elmnt = document.getElementById(id);
         elmnt.scrollIntoView();
       }
+      function save_message(id) {
+        document.getElementById(id).value = "  Lagrer, vennligst vent... ";
+        return true;
+      }
 
       async function savefile(inp)
       {
