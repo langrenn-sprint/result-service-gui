@@ -117,9 +117,9 @@
             {% elif race.round == "F" %}
               Finale {{ race.index }}
             {% elif race.round == "R1" %}
-              Runde 1
+              Runde 1 - heat {{ race.heat }}
             {% elif race.round == "R2" %}
-              Runde 2
+              Runde 2 - heat {{ race.heat }}
             {% endif %}
           </td>
           <td colspan=2>{% if race.next_race %}Neste heat: {{ race.next_race }}{% endif %}</td>

@@ -1,4 +1,4 @@
-"""Resource module for photo edit view."""
+"""Resource module for photo update through ajax."""
 import logging
 
 from aiohttp import web
@@ -32,4 +32,5 @@ class PhotoUpdate(web.View):
                 logging.debug(f"Un-Starred photo - {res}")
         except Exception as e:
             result = f"Det har oppstått en feil: {e}"
+            logging.error(f"Un-Starred photo - {e}")
         return web.Response(text=result)

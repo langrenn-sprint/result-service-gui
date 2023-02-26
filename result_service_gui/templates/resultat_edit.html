@@ -244,6 +244,17 @@
 
       }
 
+    function dnf_toggle(bib, race_name, race_order, race_id, checked) {
+      console.log("DNS for bib: " + bib);
+      var xhttp = new XMLHttpRequest();
+      xhttp.open("POST", "/resultat_update", true);
+      xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xhttp.send("bib=" + bib + "&event_id={{ event_id }}&race=" + race_name + "&race_id=" + race_id + "&action=dnf&checked=" + checked);
+      xhttp.onload = function() {
+        document.getElementById(race_order + "_result").innerHTML = this.responseText;
+      }
+    }
+
   </script>
   {% for info in info_list %}
     <div class="w3-container" id=info>{{ info }}</div>
@@ -278,7 +289,7 @@
         <tr>
           <th width=40>Pos</th>
           <th width=40>Nr</th>
-          <th width=40></th>
+          <th width=40>DNF</th>
           <th width="250">&nbsp;Navn</th>
           <th width="200">Klubb</th>
           <th width=50 id=resultborder>Plass</th>
@@ -297,7 +308,13 @@
               <td align="center">{{ start.starting_position }}</td>
               <td id="{{ race.order }}{{ start.bib }}" align="center">{{ start.bib }}</td>
                 <td align="center">
-                  <span id="{{ race.order }}{{ start.bib }}_start_status">{{ start.start_status }}</span>
+                  <span id="{{ race.order }}{{ start.bib }}_start_status">
+                    {% if start.start_status %}
+                      {{ start.start_status }}
+                    {% else %}
+                      <input type=checkbox id="dns_{{ start.bib }}" onclick="dnf_toggle('{{ start.bib }}', '{{ race.raceclass }}-{{ race.round }}{{ race.index }}{{ race.heat }}', '{{ race.order }}', '{{ race.id }}', this.checked);">
+                    {% endif %}
+                  </span>
                   {% for bilde in race.photo_start %}
                     {% if start.bib in bilde.biblist %}
                     <a class="tooltip_photo_left">
