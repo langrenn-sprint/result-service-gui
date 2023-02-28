@@ -39,7 +39,7 @@ async def create_dnf(user: dict, form: dict) -> str:
     if form['checked'] == "true":
         request_body = {
             "id": "",
-            "bib": form["bib"],
+            "bib": int(form["bib"]),
             "event_id": event_id,
             "race": form["race"],
             "race_id": form["race_id"],

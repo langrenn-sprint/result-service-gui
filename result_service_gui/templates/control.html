@@ -40,12 +40,6 @@
 {% endblock %}
 {% block content %}
   <div id=spacer></div>
-  {% if action != "c" %}
-    <div class="w3-container" id=info>Funnet {{ passeringer|length }} passeringer med error. (Pro tip: Hvis du vil se alle passeringer, klikk <a href="control?event_id={{ event_id }}&valgt_klasse={{ valgt_klasse }}&action=c">her</a>)</div>
-  {% else %}
-    <div class="w3-container" id=info>Funnet {{ passeringer|length }} passeringer.</div>
-  {% endif %}
-  <div id=spacer></div>
     <table>
       <form action=/control method=post>
         <tr>

@@ -84,8 +84,12 @@ async def get_race_kpis(token: str, event: dict, raceclasses: list) -> list:
                 count_dns = len(race['results']['DNS']['ranking_sequence'])
             except Exception:
                 count_dns = 0
+            try:
+                count_dnf = len(race['results']['DNF']['ranking_sequence'])
+            except Exception:
+                count_dnf = 0
 
-            race_progress = get_race_progress(event, race, count_starts, count_dns, count_results)
+            race_progress = get_race_progress(event, race, count_starts, count_dns, count_dnf, count_results)
 
             if race["round"] == "F":
                 race_name = f"{race['round']}{race['index']}"
@@ -98,6 +102,7 @@ async def get_race_kpis(token: str, event: dict, raceclasses: list) -> list:
                 "count_starts": count_starts,
                 "count_results": count_results,
                 "count_dns": count_dns,
+                "count_dnf": count_dnf,
                 "progress": race_progress,
                 "start_time": race["start_time"][-8:]
             }
@@ -114,7 +119,7 @@ async def get_race_kpis(token: str, event: dict, raceclasses: list) -> list:
     return summary_kpis
 
 
-def get_race_progress(event: dict, race: dict, count_starts: int, count_dns: int, count_results: int) -> str:
+def get_race_progress(event: dict, race: dict, count_starts: int, count_dns: int, count_dnf: int, count_results: int) -> str:
     """Evaluate race progress and return a code to indicate coloring in dashboard."""
     progress = "6"
     # 1 not started
@@ -128,15 +133,17 @@ def get_race_progress(event: dict, race: dict, count_starts: int, count_dns: int
     if start_time > time_now:
         if count_results > 0:
             progress = "6"
+        elif count_dnf > 0:
+            progress = "6"
         elif count_dns == 0:
             progress = "1"
         else:
             progress = "2"
     elif count_results == 0:
         progress = "3"
-    elif (count_results + count_dns) < count_starts:
+    elif (count_results + count_dns + count_dnf) < count_starts:
         progress = "4"
-    elif (count_results + count_dns) > count_starts:
+    elif (count_results + count_dns + count_dnf) > count_starts:
         progress = "6"
     else:
         progress = "5"
