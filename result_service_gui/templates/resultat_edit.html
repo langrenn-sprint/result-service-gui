@@ -252,6 +252,7 @@
       xhttp.send("bib=" + bib + "&event_id={{ event_id }}&race=" + race_name + "&race_id=" + race_id + "&action=dnf&checked=" + checked);
       xhttp.onload = function() {
         document.getElementById(race_order + "_result").innerHTML = this.responseText;
+        document.getElementById(race_order + bib).style.backgroundColor = "Grey";
       }
     }
 
@@ -309,8 +310,9 @@
               <td id="{{ race.order }}{{ start.bib }}" align="center">{{ start.bib }}</td>
                 <td align="center">
                   <span id="{{ race.order }}{{ start.bib }}_start_status">
-                    {% if start.start_status %}
+                    {% if start.start_status in ["DNS", "DNF"] %}
                       <a href="control?event_id={{ event_id }}&action=c&heat={{ race.raceclass }}-{{ race.round }}{{ race.index }}{{ race.heat }}">{{ start.start_status }}</a>
+                      <script>document.getElementById({{ race.order }}{{ start.bib }}).style.backgroundColor = "Grey";</script>
                     {% else %}
                       <input type=checkbox id="dnf_{{ start.bib }}" onclick="dnf_toggle('{{ start.bib }}', '{{ race.raceclass }}-{{ race.round }}{{ race.index }}{{ race.heat }}', '{{ race.order }}', '{{ race.id }}', this.checked);">
                     {% endif %}
