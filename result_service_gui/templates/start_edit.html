@@ -51,52 +51,6 @@
           <td colspan=3><b>{{ race.raceclass }} {{ race.round }}{{ race.index }} {{ race.heat }}</b> - max antall: {{ race.max_no_of_contestants }}</td>
           <td colspan=3><b>{{ race.start_time[-8:] }}</b> (heat {{ race.order }})</td>
         </tr>
-        {% if action == "Template" %}
-        <form action=/start_edit method=post>
-          <tr id=headerblue>
-            <td>Plass</td>
-            <td colspan=2>Videre til</td>
-            <td colspan=3>Ny verdi</td>
-          </tr>
-          {% for template in templates %}
-            {% if template.race_id == race.id %}
-            <tr>
-              <td align=center>{{ template.rank }}</td>
-              <td>{{ template.next_race }}&nbsp;-&nbsp;{{ template.next_race_position }}</td>
-              <td colspan=2>
-                <input type=text name="next_race_{{ template.rank }}" value="" size=4>&nbsp;-&nbsp;
-                <input type=number name="next_race_position_{{ template.rank }}" value="" max=99 min=0>
-                <input type="hidden" name="id_{{ template.rank }}" value="{{ template.id }}">
-              </td>
-              <td></td>
-              <td></td>
-            </tr>
-            {% endif %}
-          {% endfor %}
-            <tr>
-              <td align=center><input type=number name="rank_new" value="" max=99 min=0></td>
-              <td></td>
-              <td colspan=2>
-                <input type=text name="next_race_new" value="" size=4>&nbsp;-&nbsp;
-                <input type=number name="next_race_position_new" value="" max=99 min=0>
-              </td>
-              <td>Opprett ny template event</td>
-              <td></td>
-          </tr>
-            <tr>
-              <td colspan=6>
-                <input type="hidden" name="action" value="{{ action }}">
-                <input type="hidden" name="event_id" value="{{ event_id }}">
-                <input type="hidden" name="race" value="{{ race.raceclass }}-{{ race.round }}{{ race.index }}{{ race.heat }}">
-                <input type="hidden" name="race_id" value="{{ race.id }}">
-                <input type="hidden" name="timing_point" value="{{ action }}">
-                <input type="hidden" name="klasse" value="{{ valgt_klasse }}">
-                <input type="hidden" name="runde" value="{{ valgt_runde }}">
-                <input type="submit" name="update_templates" value="  Lagre  ">
-              </td>
-            </tr>
-          </form>
-        {% else %}
           <tr id=headerblue>
             <td>Pos</td>
             <td>Startnr</td>
@@ -142,7 +96,6 @@
             <td></td>
           </tr>
           {% endif %}
-        {% endif %}
         <tr id=spacer></tr>
       {% endfor %}
     </table>

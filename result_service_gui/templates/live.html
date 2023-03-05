@@ -9,7 +9,7 @@
 
 {% block headercontainer %}Live resultater {{ valgt_klasse }} <img id=header_icon src="../static/icon_live.png"> {% endblock %}
 
-{% block refresh %}120{% endblock %}
+{% block refresh %}{{ refresh }}{% endblock %}
 
 {% block titlemain %}
   <img id=menu_icon src="../static/icon_live.png"> Live scroll {{ valgt_klasse }}
@@ -22,7 +22,7 @@
       {% for klasse in raceclasses %}
         {% if klasse.ranking %}
           {% for ac_name in klasse.ageclasses %}
-            <a href=live?klasse={{ klasse.name }}&event_id={{ event_id }}>{{ ac_name }}</a>
+            <a href=live?klasse={{ klasse.name }}&event_id={{ event_id }}&refresh={{ refresh }}>{{ ac_name }}</a>
           {% endfor %}
         {% endif %}
       {% endfor %}
@@ -40,8 +40,8 @@
       <table>
         {% for race in races %}
             {% if loop.index0 == 0 %}
-              <div id=subheaderbold>{% if race.round == "Q" %}Kvartfinaler
-              {% elif race.round == "S" %}Semifinaler
+              <div id=subheaderbold>{% if race.round == "Q" %}Kvart
+              {% elif race.round == "S" %}Semi
                 {% if race.index == "C" %}C{% else %}A{% endif %}
               {% elif race.round == "F" %}Finaler
               {% endif %}</div>
@@ -49,8 +49,8 @@
                 </table>
               </div>
               <div class="{{ colclass }}">
-                <div id=subheaderbold>{% if race.round == "Q" %}Kvartfinaler
-                {% elif race.round == "S" %}Semifinaler
+                <div id=subheaderbold>{% if race.round == "Q" %}Kvart
+                {% elif race.round == "S" %}Semi
                   {% if race.index == "C" %}C{% else %}A{% endif %}
                 {% elif race.round == "F" %}Finaler
                 {% endif %}</div>
@@ -60,9 +60,9 @@
               <tr id=headerblack>
                 <td colspan=4>
                   <b>{{ race.raceclass }}
-                  {% if race.round == "Q" %}Kvartfinale {{ race.heat }}
+                  {% if race.round == "Q" %}Kvart {{ race.heat }}
                   {% elif race.round == "F" %}Finale {{ race.index }}
-                  {% else %}Semifinale {{ race.index }}{{ race.heat }}
+                  {% else %}Semi {{ race.index }}{{ race.heat }}
                   {% endif %} -
                   {% if race.results.Finish and (race.results.Finish.status == 2) %}
                     Resultat
@@ -95,8 +95,8 @@
               <tr id=headerblue>
                 <td colspan=4>
                   <b>{{ race.raceclass }}
-                  {% if race.round == "Q" %}Kvartfinale {{ race.heat }}
-                  {% elif race.round == "S" %}Semifinale {{ race.index }}{{ race.heat }}
+                  {% if race.round == "Q" %}Kvart {{ race.heat }}
+                  {% elif race.round == "S" %}Semi {{ race.index }}{{ race.heat }}
                   {% else %}Finale {{ race.index }}
                   {% endif %} - Start kl. {{ race.start_time }}</b>
                 </td>

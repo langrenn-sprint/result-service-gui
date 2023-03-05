@@ -249,7 +249,7 @@
       var xhttp = new XMLHttpRequest();
       xhttp.open("POST", "/resultat_update", true);
       xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-      xhttp.send("bib=" + bib + "&event_id={{ event_id }}&race=" + race_name + "&race_id=" + race_id + "&action=dnf&checked=" + checked);
+      xhttp.send("bib=" + bib + "&event_id={{ event_id }}&race=" + race_name + "&race_id=" + race_id + "&action=DNF&checked=" + checked);
       xhttp.onload = function() {
         document.getElementById(race_order + "_result").innerHTML = this.responseText;
         document.getElementById(race_order + bib).style.backgroundColor = "Grey";
@@ -310,11 +310,14 @@
               <td id="{{ race.order }}{{ start.bib }}" align="center">{{ start.bib }}</td>
                 <td align="center">
                   <span id="{{ race.order }}{{ start.bib }}_start_status">
-                    {% if start.start_status in ["DNS", "DNF"] %}
-                      <a href="control?event_id={{ event_id }}&action=c&heat={{ race.raceclass }}-{{ race.round }}{{ race.index }}{{ race.heat }}">{{ start.start_status }}</a>
+                    {% if start.status in ["DNS"] %}
+                      <a href="control?event_id={{ event_id }}&action=c&heat={{ race.raceclass }}-{{ race.round }}{{ race.index }}{{ race.heat }}">{{ start.status }}</a>
                       <script>document.getElementById({{ race.order }}{{ start.bib }}).style.backgroundColor = "Grey";</script>
                     {% else %}
-                      <input type=checkbox id="dnf_{{ start.bib }}" onclick="dnf_toggle('{{ start.bib }}', '{{ race.raceclass }}-{{ race.round }}{{ race.index }}{{ race.heat }}', '{{ race.order }}', '{{ race.id }}', this.checked);">
+                      <input type=checkbox id="dnf_{{ start.bib }}" tabindex="-1" onclick="dnf_toggle('{{ start.bib }}', '{{ race.raceclass }}-{{ race.round }}{{ race.index }}{{ race.heat }}', '{{ race.order }}', '{{ race.id }}', this.checked);"{% if start.status == "DNF" %} checked{% endif %}>
+                      {% if start.status == "DNF" %}
+                        <script>document.getElementById('{{ race.order }}{{ start.bib }}').style.backgroundColor = "Grey";</script>
+                      {% endif %}
                     {% endif %}
                   </span>
                   {% for bilde in race.photo_start %}
@@ -326,7 +329,7 @@
                         </span>
                     </a></td>
                     {% endif %}
-                  {% endfor %}
+                    {% endfor %}
                 </td>
                 <td>&nbsp;{{ start.name }}</td>
                 <td>{{ start.club }}</td>

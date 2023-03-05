@@ -198,10 +198,8 @@ async def get_enrichced_startlist(user: dict, race: dict) -> list:
                 # check if start, DNS or DNF is registered
                 elif time_event["timing_point"] in ["Start", "DNS", "DNF"]:
                     if time_event["bib"] == start_entry["bib"]:
-                        start_entry["start_status"] = time_event["timing_point"]
-                        start_entry[
-                            "info"
-                        ] = f"{time_event['timing_point']} registered at {time_event['registration_time']}"
+                        start_entry["status"] = time_event["timing_point"]
+                        start_entry["status_id"] = time_event["id"]
             startlist.append(start_entry)
     return startlist
 

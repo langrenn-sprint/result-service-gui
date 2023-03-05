@@ -51,6 +51,10 @@ class Live(web.View):
                 valgt_startnr = int(self.request.rel_url.query["startnr"])
             except Exception:
                 valgt_startnr = 0
+            try:
+                refresh = int(self.request.rel_url.query["refresh"])
+            except Exception:
+                refresh = 120
 
             raceclasses = await RaceclassesAdapter().get_raceclasses(
                 user["token"], event_id
@@ -84,6 +88,7 @@ class Live(web.View):
                     "raceclasses": raceclasses,
                     "raceplan_summary": [],
                     "races": races,
+                    "refresh": refresh,
                     "username": user["name"],
                 },
             )

@@ -22,16 +22,16 @@ class ResultatUpdate(web.View):
             form = await self.request.post()
             action = form['action']
             user = await check_login(self)
-            if action == "dnf":
-                result = await create_dnf(user, form)  # type: ignore
+            if action in ["DNF", "DNS", "Start"]:
+                result = await create_event(user, form, action)  # type: ignore
         except Exception as e:
             result = f"Det har oppstått en feil: {e}"
             logging.error(f"Result update - {e}")
         return web.Response(text=result)
 
 
-async def create_dnf(user: dict, form: dict) -> str:
-    """Extract form data and create one DNF time_event."""
+async def create_event(user: dict, form: dict, action: str) -> str:
+    """Extract form data and create one time_event, DNS, DNF or Start."""
     informasjon = ""
     event_id = form["event_id"]
     event = await get_event(user, event_id)
@@ -43,7 +43,7 @@ async def create_dnf(user: dict, form: dict) -> str:
             "event_id": event_id,
             "race": form["race"],
             "race_id": form["race_id"],
-            "timing_point": "DNF",
+            "timing_point": action,
             "rank": "",
             "registration_time": time_stamp_now,
             "next_race": "",
@@ -54,12 +54,21 @@ async def create_dnf(user: dict, form: dict) -> str:
                 {
                     "timestamp": time_stamp_now,
                     "user_id": user["name"],
-                    "comment": "DNF created",
+                    "comment": f"{action} created",
                 }
             ],
         }
         new_t_e = await TimeEventsAdapter().create_time_event(user["token"], request_body)
-        informasjon = f" DNF opprettet for bib {new_t_e['bib']}. "
+        informasjon = f" Nr {new_t_e['bib']} - {action} registrert. "
     else:
         informasjon = " DNF må slettes manuelt "
+
+    # delete old entry if existing
+    try:
+        if form['old_id']:
+            await TimeEventsAdapter().delete_time_event(user["token"], form['old_id'])
+            informasjon += " Slettet gammel registrering."
+    except Exception as e:
+        logging.debug(f"Delete failed - ignoring {e}")
+
     return informasjon

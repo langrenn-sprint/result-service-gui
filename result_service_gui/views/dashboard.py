@@ -140,7 +140,10 @@ def get_race_progress(event: dict, race: dict, count_starts: int, count_dns: int
         else:
             progress = "2"
     elif count_results == 0:
-        progress = "3"
+        if count_starts == 0:
+            progress = "5"
+        else:
+            progress = "3"
     elif (count_results + count_dns + count_dnf) < count_starts:
         progress = "4"
     elif (count_results + count_dns + count_dnf) > count_starts:

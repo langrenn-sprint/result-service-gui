@@ -6,19 +6,15 @@ import aiohttp_jinja2
 
 from result_service_gui.services import (
     ContestantsAdapter,
-    EventsAdapter,
     RaceclassesAdapter,
     RaceplansAdapter,
     StartAdapter,
-    TimeEventsAdapter,
 )
 from .utils import (
     check_login,
     get_enrichced_startlist,
     get_event,
-    get_passeringer,
     get_qualification_text,
-    get_race_id_by_name,
 )
 
 
@@ -28,7 +24,6 @@ class StartEdit(web.View):
     async def get(self) -> web.Response:
         """Get route function that return the passeringer page."""
         next_races = []
-        templates = []
         valgt_klasse = ""
 
         try:
@@ -78,13 +73,6 @@ class StartEdit(web.View):
                         filtered_races.append(race)
                 next_races = filtered_races
 
-            # get templates
-            if action == "Template":
-                # get passeringer
-                templates = await get_passeringer(
-                    user["token"], event_id, action, valgt_klasse
-                )
-
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
                 "start_edit.html",
@@ -96,7 +84,6 @@ class StartEdit(web.View):
                     "informasjon": informasjon,
                     "next_races": next_races,
                     "raceclasses": raceclasses,
-                    "templates": templates,
                     "username": user["name"],
                     "valgt_klasse": valgt_klasse,
                     "valgt_runde": valgt_runde,
@@ -117,7 +104,6 @@ class StartEdit(web.View):
             form = await self.request.post()
             logging.debug(f"Form {form}")
             event_id = str(form["event_id"])
-            event = await get_event(user, event_id)
             valgt_klasse = str(form["klasse"])
             valgt_runde = str(form["runde"])
 
@@ -125,9 +111,6 @@ class StartEdit(web.View):
                 informasjon = await create_start(user, form)  # type: ignore
             elif "delete_start" in form.keys():
                 informasjon = await delete_start(user, form)  # type: ignore
-            if "update_templates" in form.keys():
-                action = str(form["action"])
-                informasjon = await update_template_events(user, event, form)  # type: ignore
         except Exception as e:
             logging.error(f"Error: {e}")
             informasjon = f"Det har oppstått en feil - {e.args}."
@@ -173,50 +156,4 @@ async def delete_start(user: dict, form: dict) -> str:
     )
     logging.debug(f"delete_start {id} - {form}")
     informasjon = "Slettet start."
-    return informasjon
-
-
-async def update_template_events(user: dict, event: dict, form: dict) -> str:
-    """Extract form data and update template event."""
-    race = await RaceplansAdapter().get_race_by_id(user["token"], form["race_id"])
-    informasjon = "Update templates, result: "
-    # update
-    for i in range(1, race['max_no_of_contestants'] + 1):
-        if f"next_race_{i}" in form.keys():
-            if form[f"next_race_{i}"]:
-                request_body = await TimeEventsAdapter().get_time_event_by_id(user["token"], form[f"id_{i}"])
-                request_body["next_race"] = form[f"next_race_{i}"]
-                request_body["next_race_position"] = int(form[f"next_race_position_{i}"])
-                response = await TimeEventsAdapter().update_time_event(user["token"], request_body['id'], request_body)
-                if response == 204:
-                    informasjon += f"Oppdatert heat {request_body['race']}, pos {request_body['rank']}. "
-                else:
-                    informasjon += f"Feil ved oppdatering {response}. Heat {request_body['race']}. "
-    # add new
-    if form["rank_new"]:
-        next_race_name = form["next_race_new"]
-        # add index 1 to finals
-        if next_race_name.startswith("F"):
-            next_race_name += "1"
-
-        next_race_id = await get_race_id_by_name(
-            user, form["event_id"], next_race_name, form["klasse"]
-        )
-        time_stamp_now = EventsAdapter().get_local_time(event, "log")
-        time_event = {
-            "bib": 0,
-            "event_id": form["event_id"],
-            "race": form["race"],
-            "race_id": form["race_id"],
-            "timing_point": "Template",
-            "rank": int(form["rank_new"]),
-            "registration_time": time_stamp_now,
-            "next_race": form["next_race_new"],
-            "next_race_id": next_race_id,
-            "next_race_position": int(form["next_race_position_new"]),
-            "status": "OK",
-            "changelog": [],
-        }
-        id = await TimeEventsAdapter().create_time_event(user["token"], time_event)
-        informasjon += f" Added new {id} "
     return informasjon
