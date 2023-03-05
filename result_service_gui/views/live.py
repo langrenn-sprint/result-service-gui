@@ -83,6 +83,7 @@ class Live(web.View):
                     "event": event,
                     "event_id": event_id,
                     "informasjon": informasjon,
+                    "local_time_now": EventsAdapter().get_local_time(event, "HH:MM"),
                     "valgt_klasse": valgt_klasse,
                     "valgt_startnr": valgt_startnr,
                     "raceclasses": raceclasses,

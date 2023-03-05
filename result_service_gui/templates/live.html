@@ -28,7 +28,10 @@
       {% endfor %}
     </div>
   </li>
-{% endblock %}
+  <li class=dropdown id=topborder style="float:right">
+    <a class=dropbtn>Kl: {{ local_time_now }}</a>
+  </li>
+  {% endblock %}
 
 {% block content %}
   <div id=spacer></div>
