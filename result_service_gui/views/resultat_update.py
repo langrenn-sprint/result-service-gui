@@ -61,7 +61,8 @@ async def create_event(user: dict, form: dict, action: str) -> str:
         new_t_e = await TimeEventsAdapter().create_time_event(user["token"], request_body)
         informasjon = f" Nr {new_t_e['bib']} - {action} registrert. "
     else:
-        informasjon = " DNF må slettes manuelt "
+        await TimeEventsAdapter().delete_time_event(user["token"], form['time_event_id'])
+        informasjon = f" Nr {form['bib']} - {action} slettet. "
 
     # delete old entry if existing
     try:

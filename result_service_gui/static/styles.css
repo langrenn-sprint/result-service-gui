@@ -236,7 +236,7 @@ td {
 
 /**** Colors and tooltip for race dashboard - KPIs ****/
 #kpi1 {background-color: rgba(200, 200, 200, 0.7); padding: 4px;}  /* 1 not started */
-#kpi2 {background-color: rgba(100, 100, 100, 0.7); padding: 4px;}  /* 2 not started - with DNS */
+#kpi2 {background-image: linear-gradient(to right, rgba(200, 200, 200, 0.7), white, rgba(255, 255, 0, 0.7)); padding: 4px;}  /* 2 not started - with DNS */
 #kpi3 {background-color: rgba(255, 255, 0, 0.7); padding: 4px;}  /* 3 started - no results */
 #kpi4 {background-image: linear-gradient(to right, rgba(255, 255, 0, 0.7), white, rgba(0, 255, 0, 0.7)); padding: 4px;}  /* 4 partial results - with DNF */
 #kpix {background-color: rgba(155, 255, 0, 0.7); padding: 4px;}

@@ -244,15 +244,21 @@
 
       }
 
-    function dnf_toggle(bib, race_name, race_order, race_id, checked) {
+    function dnf_toggle(bib, race_name, race_order, race_id, checked, time_event_id) {
       console.log("DNS for bib: " + bib);
       var xhttp = new XMLHttpRequest();
       xhttp.open("POST", "/resultat_update", true);
       xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-      xhttp.send("bib=" + bib + "&event_id={{ event_id }}&race=" + race_name + "&race_id=" + race_id + "&action=DNF&checked=" + checked);
+      xhttp.send("bib=" + bib + "&event_id={{ event_id }}&race=" + race_name + "&race_id=" + race_id + "&action=DNF&checked=" + checked + "&time_event_id=" + time_event_id);
       xhttp.onload = function() {
         document.getElementById(race_order + "_result").innerHTML = this.responseText;
-        document.getElementById(race_order + bib).style.backgroundColor = "Grey";
+        if (checked) {
+          document.getElementById(race_order + bib).style.backgroundColor = "Grey";
+        }
+        else {
+          document.getElementById(race_order + bib).style.backgroundColor = "White";
+          validation_colors(race_order)
+        }
       }
     }
 
@@ -314,7 +320,7 @@
                       <a href="control?event_id={{ event_id }}&action=c&heat={{ race.raceclass }}-{{ race.round }}{{ race.index }}{{ race.heat }}">{{ start.status }}</a>
                       <script>document.getElementById({{ race.order }}{{ start.bib }}).style.backgroundColor = "Grey";</script>
                     {% else %}
-                      <input type=checkbox id="dnf_{{ start.bib }}" tabindex="-1" onclick="dnf_toggle('{{ start.bib }}', '{{ race.raceclass }}-{{ race.round }}{{ race.index }}{{ race.heat }}', '{{ race.order }}', '{{ race.id }}', this.checked);"{% if start.status == "DNF" %} checked{% endif %}>
+                      <input type=checkbox value="{{ start.status_id }}" id="dnf_{{ start.bib }}" tabindex="-1" onclick="dnf_toggle('{{ start.bib }}', '{{ race.raceclass }}-{{ race.round }}{{ race.index }}{{ race.heat }}', '{{ race.order }}', '{{ race.id }}', this.checked, this.value);"{% if start.status == "DNF" %} checked{% endif %}>
                       {% if start.status == "DNF" %}
                         <script>document.getElementById('{{ race.order }}{{ start.bib }}').style.backgroundColor = "Grey";</script>
                       {% endif %}
