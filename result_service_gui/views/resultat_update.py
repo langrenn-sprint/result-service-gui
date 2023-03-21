@@ -40,6 +40,8 @@ async def create_event(user: dict, form: dict, action: str) -> str:
         request_body = {
             "id": "",
             "bib": int(form["bib"]),
+            "name": form["name"],
+            "club": form["club"],
             "event_id": event_id,
             "race": form["race"],
             "race_id": form["race_id"],

@@ -58,12 +58,12 @@
         }
       }
 
-    function dns_start_toggle(bib, race_name, race_order, race_id, action, old_id) {
+    function dns_start_toggle(bib, name, club, race_name, race_order, race_id, action, old_id) {
       console.log(action + " for bib: " + bib);
       var xhttp = new XMLHttpRequest();
       xhttp.open("POST", "/resultat_update", true);
       xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-      xhttp.send("bib=" + bib + "&event_id={{ event_id }}&race=" + race_name + "&race_id=" + race_id + "&checked=true&action=" + action + "&old_id=" + old_id);
+      xhttp.send("bib=" + bib + "&name=" + name + "&club=" + club + "&event_id={{ event_id }}&race=" + race_name + "&race_id=" + race_id + "&checked=true&action=" + action + "&old_id=" + old_id);
       xhttp.onload = function() {
         document.getElementById(race_order + "_start_status").innerHTML = this.responseText;
         if (action == "DNS") {
@@ -91,21 +91,20 @@
     {% if action == "start" %}
       {% for race in races %}
         <tr id=headerblue>
-          <td colspan=3><b>
+          <td colspan=4><b>
             {{ race.raceclass }}
-            {% if race.round == "Q" %}Kvartfinale {{ race.heat }}
-            {% elif race.round == "S" %}Semifinale {{ race.index }}{{ race.heat }}
+            {% if race.round == "Q" %}Kvart {{ race.heat }}
+            {% elif race.round == "S" %}Semi {{ race.index }}{{ race.heat }}
             {% elif race.round == "F" %}Finale {{ race.index }}
             {% endif %}
             kl: {{ race.start_time[-8:] }}
-          </b></td>
-          <td>Heat {{ race.order }}</td>
+          </b> Heat {{ race.order }}</td>
         </tr>
         <tr>
-          <td>Pos</td>
-          <td>Nr</td>
-          <td></td>
-          <td></td>
+          <td width="40">Pos</td>
+          <td width="40">Nr</td>
+          <td width="150"></td>
+          <td>Navn</td>
         </tr>
         <form action=/timing method=post>
         {% for start in race.startliste %}
@@ -113,11 +112,11 @@
             {% if action == "start" %}
               <td>{{ start.starting_position }}</td>
               <td id="{{ race.order }}{{ start.bib }}" align="center">{{ start.bib }}</td>
-              <td>&nbsp;{% if start.club_logo %}<img width=15 src={{ start.club_logo }} title="{{ start.club }}"> {% endif %}{{ start.name }}</td>
-              <td width="150">
-                <input type="radio" name="form_start_{{ start.bib }}" value="Start" onclick="dns_start_toggle('{{ start.bib }}', '{{ race.raceclass }}-{{ race.round }}{{ race.index }}{{ race.heat }}', '{{ race.order }}', '{{ race.id }}', this.value, '{{ start.status_id }}');"{% if start.status == "Start" %} checked{% endif %}><label for="Start">Start</label>
-                <input type="radio" name="form_start_{{ start.bib }}" value="DNS"  onclick="dns_start_toggle('{{ start.bib }}', '{{ race.raceclass }}-{{ race.round }}{{ race.index }}{{ race.heat }}', '{{ race.order }}', '{{ race.id }}', this.value, '{{ start.status_id }}');"{% if start.status == "DNS" %} checked{% endif %}><label for="DNS">DNS</label>
+              <td>
+                <input type="radio" name="form_start_{{ start.bib }}" value="Start" onclick="dns_start_toggle('{{ start.bib }}', '{{ start.name }}', '{{ start.club }}', '{{ race.raceclass }}-{{ race.round }}{{ race.index }}{{ race.heat }}', '{{ race.order }}', '{{ race.id }}', this.value, '{{ start.status_id }}');"{% if start.status == "Start" %} checked{% endif %}><label for="Start">Start</label>
+                <input type="radio" name="form_start_{{ start.bib }}" value="DNS"  onclick="dns_start_toggle('{{ start.bib }}', '{{ start.name }}', '{{ start.club }}', '{{ race.raceclass }}-{{ race.round }}{{ race.index }}{{ race.heat }}', '{{ race.order }}', '{{ race.id }}', this.value, '{{ start.status_id }}');"{% if start.status == "DNS" %} checked{% endif %}><label for="DNS">DNS</label>
               </td>
+              <td>&nbsp;{% if start.club_logo %}<img width=15 src={{ start.club_logo }} title="{{ start.club }}"> {% endif %}{{ start.name }}</td>
             {% endif %}
           </tr>
           {% if start.status %}
@@ -126,10 +125,11 @@
         {% endfor %}
         <tr><td colspan="4" id="orange"><span id="{{ race.order }}_start_status"></span></td></tr>
           <tr>
-              <td colspan=4 align="center">
-                <a href=timing?&event_id={{ event_id }}&action={{ action }}&heat={{ valgt_heat - 1 }}><< Forrige heat</a>&nbsp;&nbsp;&nbsp;
-                <a href=timing?&event_id={{ event_id }}&action={{ action }}&heat={{ valgt_heat + 1 }}>Neste heat >></a>
-              </td>
+            <td colspan=2></td>
+            <td colspan=2>
+              <a href=timing?&event_id={{ event_id }}&action={{ action }}&heat={{ valgt_heat - 1 }}><< Forrige heat</a>&nbsp;&nbsp;&nbsp;
+              <a href=timing?&event_id={{ event_id }}&action={{ action }}&heat={{ valgt_heat + 1 }}>Neste heat >></a>
+            </td>
           </tr>
       </form>
         {% endfor %}

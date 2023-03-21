@@ -266,11 +266,11 @@ async def get_passeringer(
                 ):
                     passeringer.append(passering)
     elif action in [
-        "Template",
+        "Template", "DNS"
     ]:
         for passering in tmp_passeringer:
             if valgt_klasse in passering["race"]:
-                if passering["timing_point"] == "Template":
+                if passering["timing_point"] == action:
                     passeringer.append(passering)
     else:
         for passering in tmp_passeringer:
