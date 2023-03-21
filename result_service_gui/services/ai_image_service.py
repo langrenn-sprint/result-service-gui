@@ -3,6 +3,7 @@ import logging
 
 from google.cloud import vision  # type: ignore
 import requests
+from requests.exceptions import ConnectionError, Timeout
 
 from .events_adapter import EventsAdapter
 
@@ -81,11 +82,14 @@ class AiImageService:
             # Instantiates a client
             client = vision.ImageAnnotatorClient()
             # Loads the image into memory
-            content = requests.get(image_uri).content
+            content = requests.get(image_uri, timeout=5).content
             image = vision.Image(content=content)
-        except Exception as e:
+        except Timeout as e:
+            logging.error(f"Timeout when connecting to VisionAI service: {e}")
+            raise Exception(f"Timeout Kunne ikke koble til GoogleVisionAI: {e}") from e
+        except ConnectionError as e:
             logging.error(f"Error connecting to VisionAI service: {e}")
-            raise Exception(f"Kunne ikke koble til GoogleVisionAI. {e}") from e
+            raise Exception(f"Kunne ikke koble til GoogleVisionAI: {e}") from e
 
         # Performs object detection on the image file
         objects = client.object_localization(image=image).localized_object_annotations

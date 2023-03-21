@@ -7,7 +7,7 @@ from typing import Any
 from aiohttp.test_utils import TestClient as _TestClient
 import pytest
 import requests
-from requests.exceptions import ConnectionError
+from requests.exceptions import ConnectionError, Timeout
 
 from result_service_gui import create_app
 
@@ -26,10 +26,12 @@ def is_responsive(url: Any) -> Any:
     """Return true if response from service is 200."""
     url = f"{url}/ping"
     try:
-        response = requests.get(url)
+        response = requests.get(url, timeout=5)
         if response.status_code == 200:
             time.sleep(2)  # sleep extra 2 sec
             return True
+    except Timeout:
+        return False
     except ConnectionError:
         return False
 
