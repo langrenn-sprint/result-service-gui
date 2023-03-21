@@ -43,7 +43,7 @@
     <table>
       <form action=/control method=post>
         <tr>
-          <td id=spacer colspan=9>
+          <td id=spacer colspan=11>
             <input type="hidden" name="action" value="{{ action }}">
             <input type="hidden" name="event_id" value="{{ event_id }}">
             <input type="hidden" name="valgt_klasse" value="{{ valgt_klasse }}">
@@ -53,6 +53,8 @@
         <tr id=headerblue>
           <td></td>
           <td>Startnr</td>
+          <td>Navn</td>
+          <td>Klubb</td>
           <td>Heat</td>
           <td>Passeringspunkt</td>
           <td>Tid</td>
@@ -68,6 +70,8 @@
                 <input type="checkbox" name="resolved_{{ loop.index }}" value="{{ passering.id }}">
               </td>
               <td align=center>{{ passering.bib }}</td>
+              <td>{{ passering.name }}</td>
+              <td>{{ passering.club }}</td>
               <td>{{ passering.race }}</td>
               <td>{{ passering.timing_point }}</td>
               <td>{{ passering.registration_time }}</td>
@@ -83,7 +87,7 @@
           {% endif %}
         {% endfor %}
         <tr>
-          <td id=spacer colspan=9>
+          <td id=spacer colspan=11>
             <input type="hidden" name="action" value="{{ action }}">
             <input type="hidden" name="event_id" value="{{ event_id }}">
             <input type="hidden" name="valgt_klasse" value="{{ valgt_klasse }}">
@@ -92,7 +96,7 @@
         </tr>
       </form>
       <tr>
-        <td id=spacer colspan=9>&nbsp; </td>
+        <td id=spacer colspan=11>&nbsp; </td>
       </tr>
     </table>
 {% endblock %}
