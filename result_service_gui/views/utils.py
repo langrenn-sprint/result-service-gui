@@ -294,6 +294,12 @@ async def get_passeringer(
             passering["last_in_heat"] = True
         last_race = passering["race"]
 
+    # sort by time
+    def myfunc(n):
+        return n['registration_time']
+    passeringer.sort(key = myfunc )
+    passeringer.reverse()
+
     return passeringer
 
 

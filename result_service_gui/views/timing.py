@@ -9,14 +9,12 @@ from result_service_gui.services import (
     RaceclassesAdapter,
     RaceplansAdapter,
     StartAdapter,
-    TimeEventsAdapter,
     TimeEventsService,
 )
 from .utils import (
     check_login,
     get_enrichced_startlist,
     get_event,
-    get_finish_timings,
 )
 
 
@@ -24,7 +22,7 @@ class Timing(web.View):
     """Class representing the start view."""
 
     async def get(self) -> web.Response:
-        """Get route function that return the passeringer page."""
+        """Get route function that return the timing registration page."""
         informasjon = ""
         try:
             event_id = self.request.rel_url.query["event_id"]
@@ -69,14 +67,10 @@ class Timing(web.View):
             races.append(race)
             if len(races) > 0:
                 for race in races:
-                    # get start and finish list detail
+                    # get start list detail
                     race["startliste"] = await get_enrichced_startlist(user, race)
-                    race["finish_timings"] = await get_finish_timings(user, race["id"])
             else:
                 informasjon = "Fant ingen heat. Velg på nytt."
-
-            # get passeringer
-            passeringer = await get_passeringer(user["token"], event_id, action)
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
@@ -87,7 +81,6 @@ class Timing(web.View):
                     "event": event,
                     "event_id": event_id,
                     "informasjon": informasjon,
-                    "passeringer": passeringer,
                     "raceclasses": raceclasses,
                     "races": races,
                     "username": user["name"],
@@ -238,21 +231,3 @@ async def create_start_time_events_for_race(user: dict, event: dict, form: dict)
             logging.debug(f"Registrering: {id} - body: {request_body}")
     informasjon = f" {i} registreringer lagret. "
     return informasjon
-
-
-async def get_passeringer(token: str, event_id: str, action: str) -> list:
-    """Return list of passeringer for selected action."""
-    passeringer = []
-    if action == "control" or action == "Template":
-        tmp_passeringer = await TimeEventsAdapter().get_time_events_by_event_id(
-            token, event_id
-        )
-        for passering in tmp_passeringer:
-            if passering["timing_point"] == "Template":
-                if action == "Template":
-                    passeringer.append(passering)
-            elif passering["status"] == "Error":
-                if action == "control":
-                    passeringer.append(passering)
-
-    return passeringer
