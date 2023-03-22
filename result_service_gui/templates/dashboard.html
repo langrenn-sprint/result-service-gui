@@ -11,6 +11,19 @@
 {% endblock %}
 
 {% block content %}
+<script>
+      function generate_resultlist(raceclass) {
+      console.log("Re-generate results: " + raceclass);
+      var xhttp = new XMLHttpRequest();
+      xhttp.open("POST", "/resultat_update", true);
+      xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+      xhttp.send("event_id={{ event_id }}&raceclass=" + raceclass + "&action=generate_resultlist");
+      xhttp.onload = function() {
+        alert(this.responseText);
+      }
+    }
+</script>
+
 <div id=spacer></div>
 <table cellpadding=8>
   <tr id=subheader id=black>
@@ -268,7 +281,18 @@
         <td id=table_border colspan=5 id=spacer></td>
       </tr>
       <tr>
-        <td class=visible_link><a class=visible_link href=timing_verify?event_id={{ event_id }}>Re-generer resultatliste</a></td>
+        <td width=200>
+          <ul>
+            <li class=dropdown>
+              <a href=javascript:void(0) class=dropbtn>Re-generer resultatliste</a>
+              <div class=dropdown-content>
+                  {% for raceclass in raceclasses %}
+                      <a onclick=generate_resultlist('{{ raceclass.name }}')>{{ raceclass.name }}</a>
+                  {% endfor %}
+              </div>
+            </li>
+          </ul>
+        </td>
         <td id=table_border colspan=4>Til bruk dersom det har vært endringer i resultater etter at finaleheat er registrert.</td>
       </tr>
       <tr>

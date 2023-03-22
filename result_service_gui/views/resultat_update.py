@@ -5,6 +5,7 @@ from aiohttp import web
 
 from result_service_gui.services import (
     EventsAdapter,
+    RaceclassResultsService,
     TimeEventsAdapter,
 )
 from .utils import (
@@ -24,6 +25,14 @@ class ResultatUpdate(web.View):
             user = await check_login(self)
             if action in ["DNF", "DNS", "Start"]:
                 result = await create_event(user, form, action)  # type: ignore
+            elif action == "generate_resultlist":
+                event_id = str(form['event_id'])
+                raceclass = str(form['raceclass'])
+                res = await RaceclassResultsService().create_raceclass_results(
+                    user["token"], event_id, raceclass
+                )  # type: ignore
+                logging.debug(f"Resultat for {raceclass} er publisert. {res}")
+                result = f"Resultat for {raceclass} er publisert. "
         except Exception as e:
             result = f"Det har oppstått en feil: {e}"
             logging.error(f"Result update - {e}")
