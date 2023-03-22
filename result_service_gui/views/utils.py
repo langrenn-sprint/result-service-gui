@@ -295,9 +295,9 @@ async def get_passeringer(
         last_race = passering["race"]
 
     # sort by time
-    def myfunc(n):
+    def myfunc(n) -> str:
         return n['registration_time']
-    passeringer.sort(key = myfunc )
+    passeringer.sort(key=myfunc)
     passeringer.reverse()
 
     return passeringer
