@@ -154,20 +154,21 @@ async def get_results_by_raceclass(
 
     # now - get the order and rank right.
     biblist = []
-    ranking = 1
+    already_ranked = 0
     racers_count = 0
     for round_res in grouped_results:
         for one_res in grouped_results[round_res]:
             if one_res["bib"] not in biblist:  # avoid duplicates, keep only best result
                 if one_res["round"] != "DNF":
-                    one_res["rank"] = ranking
+                    if one_res["round"].startswith("F"):
+                        one_res["rank"] = already_ranked + one_res['time_event']['rank']
+                    else:
+                        one_res["rank"] = already_ranked + 1
                 biblist.append(one_res['bib'])
                 results["ranking_sequence"].append(one_res)  # type: ignore
                 racers_count += 1
-                if one_res["round"].startswith("F"):
-                    ranking += 1
         else:
-            ranking = racers_count + 1
+            already_ranked = racers_count
 
     results["no_of_contestants"] = racers_count
 

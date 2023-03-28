@@ -105,13 +105,17 @@
               }
               catch(err) {}
             }
-            // refresh data - set updated info
+            // refresh data - set updated info - rank, name and id.
             for (let i = 0; i < race_results.length; i++) {
-              /* do the stuff */
-              document.getElementById(race_order + "_name_" + race_results[i].rank).innerHTML = race_results[i].name
-              document.getElementById(race_order + "_form_rank_" + race_results[i].rank).value = race_results[i].bib
-              document.getElementById(race_order + "_old_form_rank_" + race_results[i].rank).value = race_results[i].bib
-              document.getElementById(race_order + "_time_event_id_" + race_results[i].rank).value = race_results[i].id
+              /* check for the duplicate case */
+              let pos = race_results[i].rank;
+              if ((i>0) && (race_results[i].rank == race_results[i-1].rank)) {
+                pos = pos + 1
+              }
+              document.getElementById(race_order + "_form_rank_" + pos).value = race_results[i].bib
+              document.getElementById(race_order + "_old_form_rank_" + pos).value = race_results[i].bib
+              document.getElementById(race_order + "_name_" + pos).innerHTML = race_results[i].name
+              document.getElementById(race_order + "_time_event_id_" + pos).value = race_results[i].id
             }
             const info = jsonDoc.informasjon.replace("<br>", ", ");
             validation_colors(race_order);
@@ -242,14 +246,47 @@
           }
         }
 
+        // 5. set delt checkbox
+        for (let i = 0; i < 12; i++) {
+          try { 
+            if (document.getElementById(race_order + "_pos_" + i).value == document.getElementById(race_order + "_pos_" + (i-1)).value) {
+              if (document.getElementById(race_order + "_pos_" + i).value != "") {
+                document.getElementById(race_order + "_delt_" + i).checked = "true";
+                document.getElementById(race_order + "_delt_" + i).value = "true";
+              }
+            }
+          } catch(err) {}
+        }
+
+
       }
 
-    function dnf_toggle(bib, race_name, race_order, race_id, checked, time_event_id) {
+    function delt_toggle(field, delt_with_field, pos) {
+      // update value and position field
+      let field_name = field.name
+      let place_field_name = field_name.replace("_delt_", "_place_");
+      let pos_field_name = field_name.replace("_delt_", "_pos_");
+      let old_pos_field_name = field_name.replace("_delt_", "_old_pos_");
+      if (field.checked) {
+        field.value = "true"
+        document.getElementById(place_field_name).innerHTML = document.getElementById(delt_with_field).innerHTML;
+        document.getElementById(old_pos_field_name).value = document.getElementById(pos_field_name).value
+        document.getElementById(pos_field_name).value = document.getElementById(delt_with_field).innerHTML;
+      }
+      else {
+        field.value = "false"
+        document.getElementById(place_field_name).innerHTML = pos;
+        document.getElementById(old_pos_field_name).value = document.getElementById(pos_field_name).value
+        document.getElementById(pos_field_name).value = pos;
+      }
+    }
+
+    function dnf_toggle(bib, name, club, race_name, race_order, race_id, checked, time_event_id) {
       console.log("DNS for bib: " + bib);
       var xhttp = new XMLHttpRequest();
       xhttp.open("POST", "/resultat_update", true);
       xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-      xhttp.send("bib=" + bib + "&event_id={{ event_id }}&race=" + race_name + "&race_id=" + race_id + "&action=DNF&checked=" + checked + "&time_event_id=" + time_event_id);
+      xhttp.send("bib=" + bib + "&name=" + name + "&club=" + club + "&event_id={{ event_id }}&race=" + race_name + "&race_id=" + race_id + "&action=DNF&checked=" + checked + "&time_event_id=" + time_event_id);
       xhttp.onload = function() {
         document.getElementById(race_order + "_result").innerHTML = this.responseText;
         if (checked) {
@@ -301,13 +338,9 @@
           <th width="200">Klubb</th>
           <th width=50 id=resultborder>Plass</th>
           <th width=60>Startnr</th>
-          <th width=50>Delt</th>
+          <th width=50>{% if valgt_runde.runde == "F" %}Delt{% endif %}</th>
           <th width=250>Navn</th>
-          <th>
-            {% if valgt_runde.runde != "F" %}
-              Videre til
-            {% endif %}
-          </th>
+          <th>{% if valgt_runde.runde != "F" %}Videre til{% endif %}</th>
           <th></th>
         </tr>
         <form action=/resultat_edit method=post onsubmit="return checkform(this);">
@@ -321,7 +354,7 @@
                       <a href="control?event_id={{ event_id }}&action=c&heat={{ race.raceclass }}-{{ race.round }}{{ race.index }}{{ race.heat }}">{{ start.status }}</a>
                       <script>document.getElementById({{ race.order }}{{ start.bib }}).style.backgroundColor = "Grey";</script>
                     {% else %}
-                      <input type=checkbox value="{{ start.status_id }}" id="dnf_{{ start.bib }}" tabindex="-1" onclick="dnf_toggle('{{ start.bib }}', '{{ race.raceclass }}-{{ race.round }}{{ race.index }}{{ race.heat }}', '{{ race.order }}', '{{ race.id }}', this.checked, this.value);"{% if start.status == "DNF" %} checked{% endif %}>
+                      <input type=checkbox value="{{ start.status_id }}" id="dnf_{{ start.bib }}" tabindex="-1" onclick="dnf_toggle('{{ start.bib }}', '{{ start.name }}', '{{ start.club }}', '{{ race.raceclass }}-{{ race.round }}{{ race.index }}{{ race.heat }}', '{{ race.order }}', '{{ race.id }}', this.checked, this.value);"{% if start.status == "DNF" %} checked{% endif %}>
                       {% if start.status == "DNF" %}
                         <script>document.getElementById('{{ race.order }}{{ start.bib }}').style.backgroundColor = "Grey";</script>
                       {% endif %}
@@ -340,16 +373,18 @@
                 </td>
                 <td>&nbsp;{{ start.name }}</td>
                 <td>{{ start.club }}</td>
-                <td id=resultborder align=center>{{ loop.index }}</td>
-                {% if race.finish_timings[loop.index0] %}
+                {% if race.finish_timings[loop.index0] and race.finish_timings[loop.index0].bib %}
+                  <td id=resultborder align=center><span id="{{ race.order }}_place_{{ loop.index }}">{{ race.finish_timings[loop.index0].rank }}</span></td>
                   <td>
                     <input type="text" id="{{ race.order }}_form_rank_{{ loop.index }}" name="{{ race.order }}_form_rank_{{ loop.index }}" value="{% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}" size=3 onfocus="this.oldvalue = this.value;" onchange="validation_colors({{ race.order }})">
+                    <input type="hidden" id="{{ race.order }}_old_pos_{{ loop.index }}" name="{{ race.order }}_old_pos_{{ loop.index }}" value="{{ race.finish_timings[loop.index0].rank }}">
+                    <input type="hidden" id="{{ race.order }}_pos_{{ loop.index }}" name="{{ race.order }}_pos_{{ loop.index }}" value="{{ race.finish_timings[loop.index0].rank }}">
                     <input type="hidden" id="{{ race.order }}_old_form_rank_{{ loop.index }}" name="{{ race.order }}_old_form_rank_{{ loop.index }}" value="{% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}">
                     <input type="hidden" id="{{ race.order }}_time_event_id_{{ loop.index }}" name="{{ race.order }}_time_event_id_{{ loop.index }}" value="{{ race.finish_timings[loop.index0].id }}">
                   </td>
                   <td>
-                    {% if valgt_runde.runde == "F" %}
-                      <input type="checkbox" id='{{ race.order }}_delt_{{ loop.index }}' name='{{ race.order }}_delt_{{ loop.index }}' value="{{ loop.index }}">
+                    {% if (valgt_runde.runde == "F") and (loop.index0 > 0) %}
+                      <input type="checkbox" id='{{ race.order }}_delt_{{ loop.index }}' name='{{ race.order }}_delt_{{ loop.index }}' value="" tabindex="-1" onclick="delt_toggle(this, '{{ race.order }}_place_{{ loop.index - 1}}', {{ loop.index }});">
                     {% endif %}
                   </td>
                   <td id="{{ race.order }}_name_{{ loop.index }}">{{ race.finish_timings[loop.index0].name }}</td>
@@ -359,14 +394,17 @@
                     {% endif %}
                   </td>
                 {% else %}
+                  <td id=resultborder align=center><span id="{{ race.order }}_place_{{ loop.index }}">{{ loop.index }}</span></td>
                   <td>
                     <input type="text" id="{{ race.order }}_form_rank_{{ loop.index }}" name="{{ race.order }}_form_rank_{{ loop.index }}" value="" size=3 onfocus="this.oldvalue = this.value;" onchange="validation_colors({{ race.order }})">
+                    <input type="hidden" id="{{ race.order }}_old_pos_{{ loop.index }}" name="{{ race.order }}_old_pos_{{ loop.index }}" value="{{ loop.index }}">
+                    <input type="hidden" id="{{ race.order }}_pos_{{ loop.index }}" name="{{ race.order }}_pos_{{ loop.index }}" value="{{ loop.index }}">
                     <input type="hidden" id="{{ race.order }}_old_form_rank_{{ loop.index }}" name="{{ race.order }}_old_form_rank_{{ loop.index }}" value="">
                     <input type="hidden" id="{{ race.order }}_time_event_id_{{ loop.index }}" name="{{ race.order }}_time_event_id_{{ loop.index }}" value="">
                   </td>
                   <td>
-                    {% if valgt_runde.runde == "F" %}
-                      <input type="checkbox" id='{{ race.order }}_delt_{{ loop.index }}' name='{{ race.order }}_delt_{{ loop.index }}' value="{{ loop.index }}">
+                    {% if (valgt_runde.runde == "F") and (loop.index0 > 0) %}
+                      <input type="checkbox" id='{{ race.order }}_delt_{{ loop.index }}' name='{{ race.order }}_delt_{{ loop.index }}' value="" tabindex="-1" onclick="delt_toggle(this, '{{ race.order }}_place_{{ loop.index - 1}}', {{ loop.index }});">
                     {% endif %}
                   </td>
                   <td id="{{ race.order }}_name_{{ loop.index }}"></td>

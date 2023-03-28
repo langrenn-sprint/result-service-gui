@@ -79,7 +79,7 @@ class ResultatEdit(web.View):
                 foto = await PhotosAdapter().get_photos_by_raceclass(
                     user["token"], event_id, valgt_runde["klasse"], 4
                 )
-                # filter for selected races and enrich
+                # filter for selected races and enrich results
                 for race in all_races:
                     if valgt_runde["runde"] == race["round"]:
                         race["next_race"] = get_qualification_text(race)
@@ -288,23 +288,25 @@ async def update_result(user: dict, event: dict, form: dict) -> str:
     add_result_list = []
     race_order = form["race_order"]
     for x in form.keys():
-        bib_changed = True
+        any_change = True
         if x.startswith(f"{race_order}_form_rank_"):
             new_bib = form[x]
             rank_pos = x.find("rank_") + 5
             _rank = int(x[rank_pos:])
+            new_rank = int(form[f"{race_order}_pos_{_rank}"])
+            old_rank = int(form[f"{race_order}_old_pos_{_rank}"])
             # check if anything is changed and delete old registration
             if form[f"{race_order}_old_form_rank_{_rank}"]:
                 old_bib = form[f"{race_order}_old_form_rank_{_rank}"]
-                if old_bib == new_bib:
-                    bib_changed = False
+                if (old_bib == new_bib) and (old_rank == new_rank):
+                    any_change = False
                 else:
                     # append time event to be deleted
                     delete_entry = {
                         "time_event_id": form[f"{race_order}_time_event_id_{_rank}"],
                     }
                     delete_result_list.append(delete_entry)
-            if new_bib.isnumeric() and bib_changed:
+            if new_bib.isnumeric() and any_change:
                 # append new entry
                 new_entry = {
                     "id": "",
@@ -313,7 +315,7 @@ async def update_result(user: dict, event: dict, form: dict) -> str:
                     "race": form["race"],
                     "race_id": form["race_id"],
                     "timing_point": form["timing_point"],
-                    "rank": _rank,
+                    "rank": new_rank,
                     "registration_time": time_stamp_now,
                     "next_race": "",
                     "next_race_id": "",

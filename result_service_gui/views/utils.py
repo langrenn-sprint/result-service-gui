@@ -213,22 +213,26 @@ async def get_finish_timings(user: dict, race_id: str) -> list:
     time_events = await TimeEventsAdapter().get_time_events_by_race_id(
         user["token"], race_id
     )
+    found_events = 0
     for i in range(1, race['max_no_of_contestants'] + 1):
-        bfound_event = False
         for time_event in time_events:
             if time_event["timing_point"] == "Finish" and time_event["status"] == "OK":
                 if i == time_event["rank"]:
-                    bfound_event = True
+                    found_events += 1
                     finish_events.append(time_event)
-                    break
-        if (not bfound_event) and (i < 11):
-            for time_event in time_events:
-                if (time_event["timing_point"] == "Template") and (
-                    i == time_event["rank"]
-                ):
-                    bfound_event = True
-                    finish_events.append(time_event)
-                    break
+        if (found_events == 0):
+            if race['round'] == "F":
+                dummy_event = {"rank": i}
+                finish_events.append(dummy_event)
+            else:
+                for time_event in time_events:
+                    if (time_event["timing_point"] == "Template") and (
+                        i == time_event["rank"]
+                    ):
+                        finish_events.append(time_event)
+                        break
+        else:
+            found_events = found_events - 1
     return finish_events
 
 
