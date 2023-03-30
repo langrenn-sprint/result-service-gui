@@ -5,13 +5,13 @@ from aiohttp import web
 import aiohttp_jinja2
 
 from result_service_gui.services import (
-    ContestantsAdapter,
     RaceclassesAdapter,
     RaceplansAdapter,
-    StartAdapter,
 )
 from .utils import (
     check_login,
+    create_start,
+    delete_start,
     get_enrichced_startlist,
     get_event,
     get_qualification_text,
@@ -123,37 +123,3 @@ class StartEdit(web.View):
         return web.HTTPSeeOther(
             location=f"/start_edit?event_id={event_id}&informasjon={info}"
         )
-
-
-async def create_start(user: dict, form: dict) -> str:
-    """Extract form data and create one start."""
-    contestant = await ContestantsAdapter().get_contestant_by_bib(
-        user["token"], form["event_id"], form["bib"]
-    )
-    if contestant:
-        new_start = {
-            "startlist_id": form["startlist_id"],
-            "race_id": form["race_id"],
-            "bib": int(form["bib"]),
-            "starting_position": int(form["starting_position"]),
-            "scheduled_start_time": form["start_time"],
-            "name": f"{contestant['first_name']} {contestant['last_name']}",
-            "club": contestant["club"],
-        }
-        id = await StartAdapter().create_start_entry(user["token"], new_start)
-        logging.debug(f"create_start {id} - {new_start}")
-        informasjon = f"Lagt til nr {new_start['bib']}"
-    else:
-        informasjon = f"Error! Fant ikke deltaker med startnr {form['bib']}."
-    return informasjon
-
-
-async def delete_start(user: dict, form: dict) -> str:
-    """Extract form data and delete one start event."""
-    informasjon = "delete_start"
-    id = await StartAdapter().delete_start_entry(
-        user["token"], form["race_id"], form["start_id"]
-    )
-    logging.debug(f"delete_start {id} - {form}")
-    informasjon = "Slettet start."
-    return informasjon

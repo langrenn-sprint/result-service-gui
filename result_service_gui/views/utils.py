@@ -6,6 +6,7 @@ from aiohttp import web
 from aiohttp_session import get_session, new_session
 
 from result_service_gui.services import (
+    ContestantsAdapter,
     EventsAdapter,
     GooglePhotosAdapter,
     RaceclassResultsService,
@@ -493,4 +494,65 @@ async def update_finish_time_events(
     )
     informasjon += info
     logging.debug(f"Registreringer: {info} - body: {add_result_list}")
+    return informasjon
+
+
+async def create_start(user: dict, form: dict) -> str:
+    """Extract form data and create one start."""
+    bib = int(form["bib"])
+    contestant = await ContestantsAdapter().get_contestant_by_bib(
+        user["token"], form["event_id"], bib
+    )
+    if contestant:
+        new_start = {
+            "startlist_id": form["startlist_id"],
+            "race_id": form["race_id"],
+            "bib": bib,
+            "starting_position": int(form["starting_position"]),
+            "scheduled_start_time": form["start_time"],
+            "name": f"{contestant['first_name']} {contestant['last_name']}",
+            "club": contestant["club"],
+        }
+        # validation - check that bib not already is in start entry for round
+        new_race = await RaceplansAdapter().get_race_by_id(user["token"], new_start["race_id"])
+        start_entries = await StartAdapter().get_start_entries_by_bib(user["token"], form['event_id'], bib)
+        for start_entry in start_entries:
+            race = await RaceplansAdapter().get_race_by_id(user["token"], start_entry["race_id"])
+            if (new_race['round'] == race['round']):
+                raise web.HTTPBadRequest(reason=f"405 Bib already exists in round - {race['round']}")
+
+        id = await StartAdapter().create_start_entry(user["token"], new_start)
+        logging.debug(f"create_start {id} - {new_start}")
+        informasjon = f"Lagt til nr {bib}"
+
+        # update previous result with correct "videre til"
+        time_events = await TimeEventsAdapter().get_time_events_by_event_id_and_bib(user["token"], form['event_id'], bib)
+        latest_result: dict = {}
+        for time_event in time_events:
+            if (time_event['timing_point'] == "Finish") and (time_event['bib'] == bib):
+                if (not latest_result) or (time_event['registration_time'] > latest_result['registration_time']):
+                    latest_result = time_event
+        if (latest_result):
+            latest_result['next_race_id'] = new_race['id']
+            if new_race['round'] == "F":
+                latest_result['next_race'] = f"{new_race['round']}{new_race['index']}"
+            else:
+                latest_result['next_race'] = f"{new_race['round']}{new_race['index']}{new_race['heat']}"
+            latest_result['next_race_position'] = new_start['starting_position']
+            id = await TimeEventsAdapter().update_time_event(user["token"], latest_result['id'], latest_result)
+            logging.debug(f"updated time event {id} - {latest_result}")
+            informasjon += " Oppdatert videre til fra forrige runde."
+    else:
+        informasjon = f"Error. Fant ikke deltaker med startnr {form['bib']}."
+    return informasjon
+
+
+async def delete_start(user: dict, form: dict) -> str:
+    """Extract form data and delete one start event."""
+    informasjon = "delete_start"
+    id = await StartAdapter().delete_start_entry(
+        user["token"], form["race_id"], form["start_id"]
+    )
+    logging.debug(f"delete_start {id} - {form}")
+    informasjon = "Slettet start."
     return informasjon

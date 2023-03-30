@@ -6,17 +6,16 @@ from aiohttp import web
 import aiohttp_jinja2
 
 from result_service_gui.services import (
-    ContestantsAdapter,
     EventsAdapter,
     PhotosAdapter,
     RaceclassesAdapter,
     RaceclassResultsService,
     RaceplansAdapter,
     ResultAdapter,
-    StartAdapter,
 )
 from .utils import (
     check_login,
+    create_start,
     get_enrichced_startlist,
     get_event,
     get_finish_timings,
@@ -184,28 +183,6 @@ class ResultatEdit(web.View):
         return web.HTTPSeeOther(
             location=f"/resultat_edit?event_id={event_id}&informasjon={info}"
         )
-
-
-async def create_start(user: dict, form: dict) -> str:
-    """Extract form data and create one start."""
-    informasjon = ""
-    contestant = await ContestantsAdapter().get_contestant_by_bib(
-        user["token"], form["event_id"], form["bib"]
-    )
-
-    new_start = {
-        "startlist_id": form["startlist_id"],
-        "race_id": form["race_id"],
-        "bib": int(form["bib"]),
-        "starting_position": int(form["starting_position"]),
-        "scheduled_start_time": form["start_time"],
-        "name": f"{contestant['first_name']} {contestant['last_name']}",
-        "club": contestant["club"],
-    }
-    id = await StartAdapter().create_start_entry(user["token"], new_start)
-    informasjon += f"Lagt til bib {form['bib']} i startliste."
-    logging.debug(f"Opprettet start {id}")
-    return informasjon
 
 
 async def find_round(token: str, event: dict, raceclasses: list, heat_order: int) -> dict:
