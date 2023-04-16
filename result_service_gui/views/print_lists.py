@@ -122,7 +122,7 @@ async def get_races(
     if action == "raceplan":
         for race in _tmp_races:
             if (race["raceclass"] == valgt_klasse) or ("" == valgt_klasse):
-                race["next_race"] = get_qualification_text(race)
+                race.next_race = get_qualification_text(race)
                 race["start_time"] = race["start_time"][-8:]
                 race["first_in_group"] = check_group_order(race, raceclasses)
                 races.append(race)
@@ -134,7 +134,7 @@ async def get_races(
         if valgt_runde:
             filtered_races = []
             for race in races:
-                if race['round'] == valgt_runde:
+                if race.round == valgt_runde:
                     filtered_races.append(race)
             races = filtered_races
         races = await get_races_for_print(

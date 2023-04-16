@@ -67,7 +67,7 @@
               {% elif race.round == "R2" %}Runde 2, heat {{ race.heat }}
               {% endif %}
             </td>
-            <td>{% if race.round != "F" %}Neste heat: {{ race.next_race }}{% endif %}</td>
+            <td>{% if race.round != "F" %}Neste heat: {{ race.next_round_info }}{% endif %}</td>
             <td></td>
           </tr>
           {% for loper in race.startliste %}

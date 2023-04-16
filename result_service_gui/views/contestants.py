@@ -238,8 +238,8 @@ async def get_heat_separators(token: str, event_id: str, raceclass: str) -> list
     races = await RaceplansAdapter().get_races_by_racesclass(token, event_id, raceclass)
     count = 0
     for race in races:
-        if race["round"] == "Q":
-            count += race["no_of_contestants"]
+        if race.round == "Q":
+            count += race.no_of_contestants
             heat_separators.append(count)
     return heat_separators
 

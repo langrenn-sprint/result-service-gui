@@ -1,6 +1,7 @@
 """Module for raceclass results adapter."""
 import logging
 
+from result_service_gui.model import Race
 from .contestants_adapter import ContestantsAdapter
 from .events_adapter import EventsAdapter
 from .raceclass_result_adapter import RaceclassResultsAdapter
@@ -50,11 +51,11 @@ class RaceclassResultsService:
 
         return res
 
-    def get_finish_rank_for_race(self, race: dict, indlude_dnf: bool) -> list:
+    def get_finish_rank_for_race(self, race: Race, indlude_dnf: bool) -> list:
         """Extract timing events from finish and append club logo."""
         finish_rank = []
         finish_bibs = []
-        results = race["results"]
+        results = race.results
         if len(results) > 0:
             logging.debug(f"Resultst: {results}")
             if "Finish" in results.keys():
@@ -72,12 +73,12 @@ class RaceclassResultsService:
                                 finish_rank.append(rank_event)
                                 finish_bibs.append(rank_event["bib"])
         if indlude_dnf:
-            for start in race['start_entries']:
+            for start in race.start_entries:
                 if not start['bib'] in finish_bibs:
                     dnf_entry = {
                         "next_race_id": "",
                         "bib": start['bib'],
-                        "round": f"{race['round']}{race['index']}",
+                        "round": f"{race.round}{race.index}",
                         "name": start["name"],
                         "club": start["club"],
                         "club_logo": EventsAdapter().get_club_logo_url(start["club"]),
@@ -122,12 +123,12 @@ async def get_results_by_raceclass(
     # first - extract all result-items
     for race in races:
         # need results for A final - exit if not
-        if race["round"] == "F" and race["index"] == "A":
-            if len(race["results"]) == 0:
+        if race.round == "F" and race.index == "A":
+            if len(race.results) == 0:
                 return {}
         # skip results from qualification
-        if race["round"] != "Q":
-            race_details = await RaceplansAdapter().get_race_by_id(token, race["id"])
+        if race.round != "Q":
+            race_details = await RaceplansAdapter().get_race_by_id(token, race.id)
             finish_results = RaceclassResultsService().get_finish_rank_for_race(
                 race_details, True
             )
@@ -136,7 +137,7 @@ async def get_results_by_raceclass(
                 if _tmp_result["next_race_id"] == "":
                     new_result: dict = {
                         "bib": _tmp_result["bib"],
-                        "round": f"{race['round']}{race['index']}",
+                        "round": f"{race.round}{race.index}",
                         "name": _tmp_result["name"],
                         "club": _tmp_result["club"],
                         "club_logo": _tmp_result["club_logo"],
@@ -148,7 +149,7 @@ async def get_results_by_raceclass(
                         new_result["round"] = "DNF"
                         grouped_results["DNF"].append(new_result)
                     else:
-                        grouped_results[f"{race['round']}{race['index']}"].append(
+                        grouped_results[f"{race.round}{race.index}"].append(
                             new_result
                         )
 

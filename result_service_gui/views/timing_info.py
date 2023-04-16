@@ -47,7 +47,7 @@ async def get_dns(user: dict, event_id: str, race_order: int) -> dict:
     race = await RaceplansAdapter().get_race_by_order(user["token"], event_id, race_order)
     if race:
         dns_time_events = await TimeEventsAdapter().get_time_events_by_race_id(
-            user["token"], race["id"]
+            user["token"], race.id
         )
         dns_list = []
         for entry in dns_time_events:

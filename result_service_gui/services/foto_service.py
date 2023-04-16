@@ -310,8 +310,8 @@ async def verify_heat_time(
     if datetime_foto is not None:
         race = await RaceplansAdapter().get_race_by_id(token, race_id)
         if race is not None:
-            seconds = get_seconds_diff(datetime_foto, race["start_time"])
+            seconds = get_seconds_diff(datetime_foto, race.start_time)
             if -300 < seconds < (300 + raceduration):
-                foundheat = race["id"]
+                foundheat = race.id
 
     return foundheat

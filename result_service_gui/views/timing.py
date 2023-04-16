@@ -58,8 +58,8 @@ class Timing(web.View):
                 # find next race on start
                 valgt_heat = 1
                 for tmp_race in all_races:
-                    if time_now < tmp_race["start_time"][-8:]:
-                        valgt_heat = tmp_race["order"]
+                    if time_now < tmp_race.start_time[-8:]:
+                        valgt_heat = tmp_race.order
                         break
             race = await RaceplansAdapter().get_race_by_order(
                 user["token"], event_id, valgt_heat
@@ -68,7 +68,7 @@ class Timing(web.View):
             if len(races) > 0:
                 for race in races:
                     # get start list detail
-                    race["startliste"] = await get_enrichced_startlist(user, race)
+                    race.startliste = await get_enrichced_startlist(user, race)
             else:
                 informasjon = "Fant ingen heat. Velg på nytt."
 
@@ -170,7 +170,7 @@ async def create_dns_time_events_manual(user: dict, event: dict, form: dict) -> 
                         request_body["name"] = start_entry["name"]
                         request_body["club"] = start_entry["club"]
                         request_body["race_id"] = race_id
-                        request_body["race"] = f"{race['raceclass']}-{race['round']}{race['index']}{race['heat']}"
+                        request_body["race"] = f"{race.raceclass}-{race.round}{race.index}{race.heat}"
 
                     id = await TimeEventsService().create_start_time_event(
                         user["token"], request_body

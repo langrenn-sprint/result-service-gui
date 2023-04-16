@@ -329,7 +329,7 @@
           <td colspan=3>Startliste</td>
           <td colspan=2></td>
           <td colspan=2 id=resultheaderfirst>Resultater</td>
-          <td colspan=3 id=resultheader align=center>{{ race.next_race }}</td>
+          <td colspan=3 id=resultheader align=center>{{ race.next_round_info }}</td>
           <td id=resultheader>Bilder</td>
         </tr>
         <tr>
@@ -362,7 +362,7 @@
                       {% endif %}
                     {% endif %}
                   </span>
-                  {% for bilde in race.photo_start %}
+                  {% for bilde in race.photos.photo_start %}
                     {% if start.bib in bilde.biblist %}
                     <a class="tooltip_photo_left">
                       &nbsp;<img src={{ bilde.g_base_url }}=w30-h25-c>
@@ -417,7 +417,7 @@
                     /* populate_rank: populate race rank based upon analysis of photos
                       */
                     function populate_rank_{{ race.order }}() {
-                      biblist = {{ race.photo_bib_rank }};
+                      biblist = {{ race.photos.photo_bib_rank }};
                       for (let i = 0; i < biblist.length; i++) {
                           position = i + 1;
                           the_element = "{{ race.order }}_form_rank_" + position;
@@ -428,7 +428,7 @@
                   </script>
                   <td rowspan="{{ loop.length }}">
                     <table><tr>
-                    {% for bilde in race.photo_finish %}
+                    {% for bilde in race.photos.photo_finish %}
                       {% if loop.first %}
                         <td colspan=5><button type="button" name="button" onclick="populate_rank_{{ race.order }}()">Hent resultat fra bilder</button></td></tr><tr>
                       {% endif %}

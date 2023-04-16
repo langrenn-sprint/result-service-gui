@@ -60,23 +60,22 @@ class Start(web.View):
                 informasjon = f"{informasjon} Ingen løp funnet."
             else:
                 for race in _tmp_races:
-                    if (race["raceclass"] == valgt_klasse) or ("live" == valgt_klasse):
+                    if (race.raceclass == valgt_klasse) or ("live" == valgt_klasse):
                         race = await RaceplansAdapter().get_race_by_id(
-                            user["token"], race["id"]
+                            user["token"], race.id
                         )
-                        race["next_race"] = get_qualification_text(race)
-                        race["display_color"] = get_display_style(race["start_time"], event)
-                        race["start_time"] = race["start_time"][-8:]
+                        race.next_round_info = get_qualification_text(race)
+                        race["display_color"] = get_display_style(race.start_time, event)
                         # get start list details
-                        race["startliste"] = await get_enrichced_startlist(user, race)
+                        race.startliste = await get_enrichced_startlist(user, race)
                         races.append(race)
                 raceplan_summary = get_raceplan_summary(_tmp_races, raceclasses)
 
             # sort start list by starting position
             for race in races:
-                if len(race["startliste"]) > 1:
-                    race["startliste"] = sorted(
-                        race["startliste"], key=itemgetter("starting_position")
+                if len(race.startliste) > 1:
+                    race.startliste = sorted(
+                        race.startliste, key=itemgetter("starting_position")
                     )
 
             """Get route function."""

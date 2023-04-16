@@ -3,6 +3,7 @@ import logging
 
 from aiohttp import web
 
+from result_service_gui.model import Race
 from result_service_gui.services import (
     ContestantsAdapter,
     EventsAdapter,
@@ -50,14 +51,14 @@ class TimeEventsService:
             informasjon = f"{informasjon} Ingen kjøreplaner funnet."
         else:
             for race in races:
-                if race["round"] in ["Q", "S"]:
+                if race.round in ["Q", "S"]:
                     time_event[
                         "race"
-                    ] = f"{race['raceclass']}-{race['round']}{race['index']}{race['heat']}"
-                    time_event["race_id"] = race["id"]
+                    ] = f"{race.raceclass}-{race.round}{race.index}{race.heat}"
+                    time_event["race_id"] = race.id
 
                     # loop and simulate result for pos 1 to 10
-                    for x in range(1, race['max_no_of_contestants'] + 1):
+                    for x in range(1, race.max_no_of_contestants + 1):
                         time_event["rank"] = x
                         next_start_entry = get_next_start_entry(
                             token, time_event, races
@@ -157,7 +158,7 @@ class TimeEventsService:
                         "bib": time_event["bib"],
                         "name": f"{contestant['first_name']} {contestant['last_name']}",
                         "club": contestant["club"],
-                        "scheduled_start_time": next_race["start_time"],
+                        "scheduled_start_time": next_race.start_time,
                         "starting_position": time_event["next_race_position"],
                         "status": "OK",
                     }
@@ -231,7 +232,7 @@ def calculate_next_start_entry(
         "scheduled_start_time": "",
         "starting_position": time_event["rank_qualified"],
     }
-    previous_race = {}
+    previous_race = Race()
     previous_heat_count = 0
     next_race_candidates = []
     next_race_count = 0
@@ -256,7 +257,7 @@ def calculate_next_start_entry(
     if next_race_count > 0:
         # estimated rank from previous round is:
         previous_heat_rank = time_event["rank_qualified"]
-        previous_heat_number = int(previous_race["heat"])
+        previous_heat_number = int(previous_race.heat)
         previous_round_rank = (
             previous_heat_count * (previous_heat_rank - 1) + previous_heat_number
         )
@@ -306,8 +307,8 @@ async def find_race_id_from_time_event(token: str, time_event: dict) -> str:
 def populate_next_race(time_event: dict, races: list, next_race: list) -> list:
     """Return rules matrix for next race."""
     for race in races:
-        if race["id"] == time_event["race_id"]:
-            for key, value in race["rule"].items():
+        if race.id == time_event["race_id"]:
+            for key, value in race.rule.items():
                 if key == "S":
                     for x, y in value.items():
                         if x == "A":

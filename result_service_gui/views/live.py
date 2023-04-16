@@ -141,11 +141,11 @@ async def get_races(
         )
         # sort start list by starting position and append club_logo
         for race in races:
-            if len(race["start_entries"]) > 1:
-                race["start_entries"] = sorted(
-                    race["start_entries"], key=itemgetter("starting_position")
+            if len(race.start_entries) > 1:
+                race.start_entries = sorted(
+                    race.start_entries, key=itemgetter("starting_position")
                 )
-                for entry in race["start_entries"]:
+                for entry in race.start_entries:
                     entry["club_logo"] = EventsAdapter().get_club_logo_url(
                         entry["club"]
                     )
@@ -164,26 +164,26 @@ async def get_races_for_live(
     races_count_q = 0
     semi_results_registered = False
     for _tmp_race in _tmp_races:
-        if _tmp_race["round"] == "Q":
+        if _tmp_race.round == "Q":
             races_count_q += 1
-        elif _tmp_race["round"] == "S":
-            if len(_tmp_race["results"]) > 0:
+        elif _tmp_race.round == "S":
+            if len(_tmp_race.results) > 0:
                 semi_results_registered = True
     for _tmp_race in _tmp_races:
-        race = await RaceplansAdapter().get_race_by_id(token, _tmp_race["id"])
-        race["finish_results"] = RaceclassResultsService().get_finish_rank_for_race(
+        race = await RaceplansAdapter().get_race_by_id(token, _tmp_race.id)
+        race.finish_results = RaceclassResultsService().get_finish_rank_for_race(
             race, False
         )
-        race["next_race"] = get_qualification_text(race)
-        race["start_time"] = race["start_time"][-8:]
+        race.next_round_info = get_qualification_text(race)
+        race.start_time = race.start_time[-8:]
         # append race if selected starter is inside or not selected
         # optimize heats to show if more than 4 quarter finals
         # avoid quarter finals or finals, depending on semi final status
         if valgt_startnr == 0:
             if races_count_q > 4:
-                if semi_results_registered and race["round"] == "Q" and action != "all":
+                if semi_results_registered and race.round == "Q" and action != "all":
                     pass
-                elif not semi_results_registered and race["round"] == "F" and action != "all":
+                elif not semi_results_registered and race.round == "F" and action != "all":
                     pass
                 else:
                     races.append(race)
@@ -191,12 +191,12 @@ async def get_races_for_live(
                 races.append(race)
         else:
             appended = False
-            for entry in race["start_entries"]:
+            for entry in race.start_entries:
                 if entry["bib"] == valgt_startnr:
                     races.append(race)
                     appended = True
             if not appended:
-                for entry in race["finish_results"]:
+                for entry in race.finish_results:
                     if entry["bib"] == valgt_startnr:
                         races.append(race)
     return races

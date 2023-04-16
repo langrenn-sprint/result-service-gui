@@ -9,6 +9,8 @@ from aiohttp import hdrs
 from aiohttp import web
 from multidict import MultiDict
 
+from result_service_gui.model import Race, RaceSchema
+
 RACE_HOST_SERVER = os.getenv("RACE_HOST_SERVER", "localhost")
 RACE_HOST_PORT = os.getenv("RACE_HOST_PORT", "8088")
 RACE_SERVICE_URL = f"http://{RACE_HOST_SERVER}:{RACE_HOST_PORT}"
@@ -123,7 +125,7 @@ class RaceplansAdapter:
                     )
         return raceplans
 
-    async def get_all_races(self, token: str, event_id: str) -> List:
+    async def get_all_races(self, token: str, event_id: str) -> List[Race]:
         """Get all races for event function."""
         headers = MultiDict(
             [
@@ -147,9 +149,13 @@ class RaceplansAdapter:
                     raise web.HTTPBadRequest(
                         reason=f"Error - {resp.status}: {body['detail']}."
                     )
-        return races
+        # Convert races to Race objects
+        ds_race = []
+        schema = RaceSchema(many=True)
+        ds_race = schema.load(races)
+        return ds_race
 
-    async def get_race_by_id(self, token: str, race_id: str) -> dict:
+    async def get_race_by_id(self, token: str, race_id: str) -> Race:
         """Get one race for event function."""
         headers = MultiDict(
             [
@@ -173,22 +179,23 @@ class RaceplansAdapter:
                     raise web.HTTPBadRequest(
                         reason=f"Error - {resp.status}: {body['detail']}."
                     )
-        return race
+        ds_race = RaceSchema().load(race)
+        return ds_race
 
     async def get_race_by_order(
         self, token: str, event_id: str, race_order: int
-    ) -> dict:
+    ) -> Race:
         """Get one race for event function."""
+        race = Race()
         all_races = await RaceplansAdapter().get_all_races(token, event_id)
-        race = {}
         for _race in all_races:
-            if _race["order"] == race_order:
-                race = await RaceplansAdapter().get_race_by_id(token, _race["id"])
+            if _race.order == race_order:
+                race = await RaceplansAdapter().get_race_by_id(token, _race.id)
         return race
 
     async def get_races_by_racesclass(
         self, token: str, event_id: str, valgt_klasse: str
-    ) -> list:
+    ) -> list[Race]:
         """Get all get_races_by_racesclass function."""
         headers = MultiDict(
             [
@@ -215,13 +222,17 @@ class RaceplansAdapter:
                     raise web.HTTPBadRequest(
                         reason=f"Error - {resp.status}: {body['detail']}."
                     )
-        return races
+        # Convert races to Race objects
+        ds_races = []
+        schema = RaceSchema(many=True)
+        ds_races = schema.load(races)
+        return ds_races
 
     async def update_order(self, token: str, race_id: str, new_order: int) -> str:
         """Update race order function."""
         race = await RaceplansAdapter().get_race_by_id(token, race_id)
-        race["order"] = new_order
-        res = await RaceplansAdapter().update_race(token, race["id"], race)
+        race.order = new_order
+        res = await RaceplansAdapter().update_race(token, race.id, race)
         logging.debug(f"Raceplan update order, result: {res}. {race}")
         informasjon = f"Oppdatert heat {new_order}."
 
@@ -258,10 +269,11 @@ class RaceplansAdapter:
 
         return returncode
 
-    async def update_race(self, token: str, id: str, new_data: dict) -> int:
+    async def update_race(self, token: str, id: str, race: Race) -> int:
         """Update one race function."""
         servicename = "update_race"
         returncode = 201
+        new_data = RaceSchema().dump(race)
         headers = MultiDict(
             [
                 (hdrs.CONTENT_TYPE, "application/json"),
@@ -289,7 +301,7 @@ class RaceplansAdapter:
 
         return returncode
 
-    async def update_race_start_time(
+    async def update_raceplan_start_time(
         self, token: str, event_id: str, order: str, new_time: str
     ) -> str:
         """Update race start-time function."""
@@ -337,13 +349,13 @@ class RaceplansAdapter:
         races = await RaceplansAdapter().get_all_races(token, event_id)
         for race in races:
             old_time_obj = datetime.datetime.strptime(
-                race["start_time"], "%Y-%m-%dT%H:%M:%S"
+                race.start_time, "%Y-%m-%dT%H:%M:%S"
             )
-            if race["order"] >= order:
+            if race.order >= order:
                 # calculate time difference, delta seconds
-                if race["order"] == order:
+                if race.order == order:
                     new_time_obj = datetime.datetime.strptime(
-                        f"{race['start_time'][:11]}{new_time}", "%Y-%m-%dT%H:%M:%S"
+                        f"{race.start_time[:11]}{new_time}", "%Y-%m-%dT%H:%M:%S"
                     )
                     delta_time = new_time_obj - old_time_obj
                     delta_seconds = delta_time.total_seconds()
@@ -351,8 +363,8 @@ class RaceplansAdapter:
                 # calculate new time
                 x = old_time_obj + datetime.timedelta(seconds=delta_seconds)
                 new_time = x.strftime("%X")
-                race["start_time"] = f"{race['start_time'][:11]}{new_time}"
-                res = await RaceplansAdapter().update_race(token, race["id"], race)
+                race.start_time = f"{race.start_time[:11]}{new_time}"
+                res = await RaceplansAdapter().update_race(token, race.id, race)
                 logging.debug(f"Raceplan update time, result: {res}. {race}")
 
         informasjon = (

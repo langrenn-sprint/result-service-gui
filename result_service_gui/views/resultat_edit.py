@@ -5,6 +5,7 @@ import logging
 from aiohttp import web
 import aiohttp_jinja2
 
+from result_service_gui.model import Race
 from result_service_gui.services import (
     EventsAdapter,
     PhotosAdapter,
@@ -80,17 +81,17 @@ class ResultatEdit(web.View):
                 )
                 # filter for selected races and enrich results
                 for race in all_races:
-                    if valgt_runde["runde"] == race["round"]:
-                        race["next_race"] = get_qualification_text(race)
+                    if valgt_runde["runde"] == race.round:
+                        race.next_race = get_qualification_text(race)
                         # get start list detail
-                        race["startliste"] = await get_enrichced_startlist(user, race)
-                        race["finish_timings"] = await get_finish_timings(
-                            user, race["id"]
+                        race.startliste = await get_enrichced_startlist(user, race)
+                        race.finish_timings = await get_finish_timings(
+                            user, race.id
                         )
-                        race["photo_finish"] = get_foto_finish_for_race(user, race, foto)
-                        race["photo_start"] = get_foto_start_for_race(user, race, foto)
-                        race["photo_bib_rank"] = get_finish_rank_from_photos(
-                            user, race["photo_finish"], "right"
+                        race.photos["photo_finish"] = get_foto_finish_for_race(race, foto)
+                        race.photos["photo_start"] = get_foto_start_for_race(race, foto)
+                        race.photos["photo_bib_rank"] = get_finish_rank_from_photos(
+                            race.photos["photo_finish"], "right"
                         )
                         current_races.append(race)
 
@@ -162,10 +163,10 @@ class ResultatEdit(web.View):
         if "ajax" in form.keys():
             race = await RaceplansAdapter().get_race_by_id(user["token"], str(form["race_id"]))
             response = {}
-            if race['results']:
+            if race.results:
                 response = {
-                    "race_results": race['results']['Finish']['ranking_sequence'],
-                    "race_results_status": race['results']['Finish']['status'],
+                    "race_results": race.results['Finish']['ranking_sequence'],
+                    "race_results_status": race.results['Finish']['status'],
                     "informasjon": informasjon
                 }
             else:
@@ -211,39 +212,39 @@ async def find_round(token: str, event: dict, raceclasses: list, heat_order: int
         )
         if race:
             valgt_runde = {
-                "klasse": race["raceclass"],
-                "runde": race["round"],
+                "klasse": race.raceclass,
+                "runde": race.round,
                 "informasjon": "",
             }
             # check if raceclass is without ranking
             for raceclass in raceclasses:
-                if race["raceclass"] == raceclass["name"]:
+                if race.raceclass == raceclass["name"]:
                     if not raceclass['ranking']:
                         valgt_runde["informasjon"] = "OBS: Denne løpsklassen er urangert, resultater vil ikke vises."
     return valgt_runde
 
 
-def get_foto_finish_for_race(user: dict, race: dict, photos: list) -> list:
+def get_foto_finish_for_race(race: Race, photos: list) -> list:
     """Loop throgh photos and return relevant finish photo(s)."""
     fotos = []
     for photo in photos:
-        if photo["race_id"] == race["id"]:
+        if photo["race_id"] == race.id:
             if photo["is_photo_finish"]:
                 fotos.append(photo)
     return fotos
 
 
-def get_foto_start_for_race(user: dict, race: dict, photos: list) -> list:
+def get_foto_start_for_race(race: Race, photos: list) -> list:
     """Loop throgh photos and return relevant finish photo(s)."""
     fotos = []
     for photo in photos:
-        if photo["race_id"] == race["id"]:
+        if photo["race_id"] == race.id:
             if photo["is_start_registration"]:
                 fotos.append(photo)
     return fotos
 
 
-def get_finish_rank_from_photos(user: dict, photos: list, camera_side: str) -> list:
+def get_finish_rank_from_photos(photos: list, camera_side: str) -> list:
     """Loop throgh photos and return bib(s) in sorted order."""
     biblist = []
     for photo in photos:

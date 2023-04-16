@@ -4,6 +4,7 @@ import logging
 from aiohttp import web
 import aiohttp_jinja2
 
+from result_service_gui.model import Race
 from result_service_gui.services import (
     EventsAdapter,
     RaceclassesAdapter,
@@ -73,44 +74,44 @@ async def get_race_kpis(token: str, event: dict, raceclasses: list) -> list:
         for race in races:
             # calculate key kpis pr race
             try:
-                count_starts = len(race['start_entries'])
+                count_starts = len(race.start_entries)
             except Exception:
                 count_starts = 0
             try:
-                count_results = len(race['results']['Finish']['ranking_sequence'])
+                count_results = len(race.results['Finish']['ranking_sequence'])
             except Exception:
                 count_results = 0
             try:
-                count_dns = len(race['results']['DNS']['ranking_sequence'])
+                count_dns = len(race.results['DNS']['ranking_sequence'])
             except Exception:
                 count_dns = 0
             try:
-                count_dnf = len(race['results']['DNF']['ranking_sequence'])
+                count_dnf = len(race.results['DNF']['ranking_sequence'])
             except Exception:
                 count_dnf = 0
 
             race_progress = get_race_progress(event, race, count_starts, count_dns, count_dnf, count_results)
 
-            if race["round"] == "F":
-                race_name = f"{race['round']}{race['index']}"
+            if race.round == "F":
+                race_name = f"{race.round}{race.index}"
             else:
-                race_name = f"{race['round']}{race['index']}{race['heat']}"
+                race_name = f"{race.round}{race.index}{race.heat}"
 
             race_summary = {
                 "name": race_name,
-                "order": race["order"],
+                "order": race.order,
                 "count_starts": count_starts,
                 "count_results": count_results,
                 "count_dns": count_dns,
                 "count_dnf": count_dnf,
                 "progress": race_progress,
-                "start_time": race["start_time"][-8:]
+                "start_time": race.start_time[-8:]
             }
-            if race['round'] in ["Q", "R1"]:
+            if race.round in ["Q", "R1"]:
                 racesQ.append(race_summary)
-            elif race['round'] in ["S", "R2"]:
+            elif race.round in ["S", "R2"]:
                 racesS.append(race_summary)
-            elif race['round'] == "F":
+            elif race.round == "F":
                 racesF.append(race_summary)
         raceclass['racesQ'] = racesQ
         raceclass['racesS'] = racesS
@@ -119,7 +120,7 @@ async def get_race_kpis(token: str, event: dict, raceclasses: list) -> list:
     return summary_kpis
 
 
-def get_race_progress(event: dict, race: dict, count_starts: int, count_dns: int, count_dnf: int, count_results: int) -> str:
+def get_race_progress(event: dict, race: Race, count_starts: int, count_dns: int, count_dnf: int, count_results: int) -> str:
     """Evaluate race progress and return a code to indicate coloring in dashboard."""
     progress = "6"
     # 1 not started
@@ -129,7 +130,7 @@ def get_race_progress(event: dict, race: dict, count_starts: int, count_dns: int
     # 5 all results ok */
     # 6 error in race results */
     time_now = EventsAdapter().get_local_time(event, "log")
-    start_time = race["start_time"]
+    start_time = race.start_time
     if start_time > time_now:
         if count_results > 0:
             progress = "6"

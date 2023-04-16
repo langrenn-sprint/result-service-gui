@@ -57,19 +57,19 @@ class StartEdit(web.View):
 
             # filter for selected races and enrich
             for race in all_races:
-                if valgt_klasse == race["raceclass"]:
+                if valgt_klasse == race.raceclass:
                     race = await RaceplansAdapter().get_race_by_id(
-                        user["token"], race["id"]
+                        user["token"], race.id
                     )
-                    race["next_race"] = get_qualification_text(race)
+                    race.next_round_info = get_qualification_text(race)
                     # get start list detail
-                    race["startliste"] = await get_enrichced_startlist(user, race)
+                    race.startliste = await get_enrichced_startlist(user, race)
                     next_races.append(race)
 
             if valgt_runde:
                 filtered_races = []
                 for race in next_races:
-                    if race['round'] == valgt_runde:
+                    if race.round == valgt_runde:
                         filtered_races.append(race)
                 next_races = filtered_races
 
