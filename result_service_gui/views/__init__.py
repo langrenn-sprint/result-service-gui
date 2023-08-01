@@ -21,3 +21,4 @@ from .start import Start
 from .start_edit import StartEdit
 from .timing import Timing
 from .timing_info import TimingInfo
+from .video_events import VideoEvents

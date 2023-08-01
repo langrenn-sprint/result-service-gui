@@ -20,7 +20,6 @@ class PhotosAdapter:
     async def get_all_photos(self, token: str, event_id: str, limit: Optional[int] = None) -> List:
         """Get all photos function."""
         photos = []
-        logging.debug(f"Need to handle event_id {event_id}")
         headers = MultiDict(
             [
                 (hdrs.CONTENT_TYPE, "application/json"),
@@ -42,6 +41,31 @@ class PhotosAdapter:
                 else:
                     logging.error(f"Error {resp.status} getting photos: {resp} ")
         return photos
+
+    async def get_all_video_events(self, token: str, event_id: str, limit: Optional[int] = None) -> List:
+        """Get all video events function."""
+        video_events = []
+        headers = MultiDict(
+            [
+                (hdrs.CONTENT_TYPE, "application/json"),
+                (hdrs.AUTHORIZATION, f"Bearer {token}"),
+            ]
+        )
+        url = f"{PHOTO_SERVICE_URL}/video_events?eventId={event_id}"
+        if limit:
+            url += f"&limit={limit}"
+
+        async with ClientSession() as session:
+            async with session.get(url, headers=headers) as resp:
+                logging.debug(f"get_all_video_events - got response {resp.status}")
+                if resp.status == 200:
+                    video_events = await resp.json()
+                    logging.debug(f"video_events - got response {video_events}")
+                elif resp.status == 401:
+                    raise Exception(f"Login expired: {resp}")
+                else:
+                    logging.error(f"Error {resp.status} getting video_events: {resp} ")
+        return video_events
 
     async def get_photo(self, token: str, id: str) -> dict:
         """Get photo function."""
@@ -203,3 +227,33 @@ class PhotosAdapter:
                     )
             logging.debug(f"Updated photo: {id} - res {resp.status}")
         return str(resp.status)
+
+    async def update_video_events(self, token: str, event_id: str, queue_name: str) -> str:
+        """Create new photo function."""
+        servicename = "update_video_events"
+        informasjon = ""
+        headers = MultiDict(
+            [
+                (hdrs.CONTENT_TYPE, "application/json"),
+                (hdrs.AUTHORIZATION, f"Bearer {token}"),
+            ]
+        )
+        url = f"{PHOTO_SERVICE_URL}/video_events?eventId={event_id}&queueName={queue_name}"
+
+        async with ClientSession() as session:
+            async with session.post(
+                url, headers=headers
+            ) as resp:
+                if resp.status == 201:
+                    logging.debug(f"result - got response {resp}")
+                    informasjon = "201: Events er oppdatert"
+                elif resp.status == 401:
+                    raise web.HTTPBadRequest(reason=f"401 Unathorized - {servicename}")
+                else:
+                    body = await resp.json()
+                    logging.error(f"{servicename} failed - {resp.status} - {body}")
+                    raise web.HTTPBadRequest(
+                        reason=f"Error - {resp.status}: {body['detail']}."
+                    )
+
+        return informasjon

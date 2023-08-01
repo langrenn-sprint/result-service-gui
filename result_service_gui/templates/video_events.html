@@ -1,0 +1,112 @@
+{% extends "open_base.html" %}
+{% block titlecontainer %}
+<div class="w3-10"></div>
+<div class="w3-80">
+{% endblock %}
+
+{% block titleheader %}
+  Video events {{ valgt_klasse }}
+{% endblock %}
+
+{% block headercontainer %}Video events {{ valgt_klasse }} <img id=header_icon src="../static/icon_photos.png"> {% endblock %}
+
+{% block titlemain %}
+  <img id=menu_icon src="../static/icon_photos.png"> Video events {{ valgt_klasse }}
+{% endblock %}
+
+{% block menuitems %}
+  <li class=dropdown id=topborder>
+    <a href=javascript:void(0) class=dropbtn>Velg klasse</a>
+    <div class=dropdown-content>
+      <a href=video_events?klasse=&event_id={{ event_id }}>Alle video events</a>
+      {% for klasse in raceclasses %}
+        {% for ac_name in klasse.ageclasses %}
+          <a href=video_events?klasse={{ klasse.name }}&event_id={{ event_id }}>{{ ac_name }}</a>
+        {% endfor %}
+      {% endfor %}
+    </div>
+  </li>
+{% endblock %}
+
+{% block content %}
+  <script>
+    /* this function will send results to backend without reloading the page */
+    function import_new_events(button) {
+      document.getElementById(button.id).innerHTML = " Sender... ";
+      document.getElementById(button.id).disabled = true;
+      var xhttp = new XMLHttpRequest();
+      xhttp.open("POST", "/video_events", true);
+      xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+      var my_form = button.form;
+      var formData = "";
+      for (let i = 0; i < my_form.length; i++) {
+        formData += my_form[i].name + "=" + my_form[i].value + "&";
+      }
+      formData += "event_id={{ event_id }}&action=service_bus"
+
+      xhttp.send(formData);
+      xhttp.onload = function() {
+        try {
+          // load new info
+          document.getElementById("info_result").innerHTML = this.response;
+          document.getElementById(button.id).innerHTML = " Hent nye events ";
+          document.getElementById(button.id).disabled = false;
+        }
+        catch(err) {
+          if (err.message.indexOf("401") > 0) {
+            alert("Error 401 - Logg inn på nytt.");
+          }
+          else {
+            alert(err);
+          }
+        }
+      }
+    }
+  </script>
+
+  <table>
+    <tr>
+      <form action=/video_events method=post>
+        <td align=right>
+          Velg kø: <input type="text" id="queue_name" name="queue_name" value="langrenn-queue">
+          <button type="button" id="import_events" onclick=import_new_events(this); >Hent nye events</button>
+        </td>
+      </form>
+    </tr>
+    <tr>
+        <td align=right id="orange">
+      <span id="info_result"></span>
+    </td>
+    </tr>
+  </table>
+  <table>
+    <tr>
+      <th>Events</th>
+      <th>Timestamp</th>
+      <th>Detections</th>
+      <th>Info</th>
+    </tr>
+    {% for video_event in video_events %}
+    <tr>
+      <td>
+        {% for event in video_event.events %}
+          {{ event.type }} - {{ event.properties.status }}<br>
+        {% endfor %}
+      </td>
+      <td>
+        {{ video_event.sourceInfo.timestamp }}
+      </td>
+      <td>
+        {% for detection in video_event.detections %}
+          Type: {{ detection.type }} - region: {{ detection.region }} - attributes: {{ detection.attributes }}<br>
+        {% endfor %}
+      </td>
+      <td>
+        <a title="{{ video_event }}">Full Details</a> - <a title="{{ video_event.keys() }}">keys</a>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+{% endblock %}
+</div>
