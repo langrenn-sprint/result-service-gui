@@ -112,7 +112,7 @@ class TimeEventsService:
 
     async def create_finish_time_events(self, token: str, time_events: list) -> str:
         """Validate, enrich and create finish time_event."""
-        # Get next race from template
+        # Get next race from template.
         id = 0
         informasjon = ""
         next_start_entries = []

@@ -63,50 +63,72 @@
         }
       }
     }
+
+    /* this function will pull events from queue without reloading the page */
+    function pull_events(button) {
+      try {
+        document.getElementById(button.id).innerHTML = " Henter... ";
+        document.getElementById(button.id).disabled = true;
+        var max_lengt_info = 600;
+        var old_info = document.getElementById("pull_result").innerHTML;
+        if (old_info.length > max_lengt_info) {
+          old_info = old_info.substring(0, max_lengt_info);
+        }
+
+        // get current time, hours, minutes
+        var d = new Date();
+        var current_time = d.toLocaleTimeString();
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("POST", "/video_events", true);
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+        var formData = "";
+        formData += "action=pull_google&event_id={{ event_id }}"
+
+        xhttp.send(formData);
+        xhttp.onload = function() {
+          try {
+            // load new info
+            const info = this.response;
+            document.getElementById("pull_result").innerHTML = current_time + " - " + info + "<br>" + old_info;
+            document.getElementById(button.id).innerHTML = " Hent events ";
+            document.getElementById(button.id).disabled = false;
+          }
+          catch(err) {
+            if (err.message.indexOf("401") > 0) {
+              alert("Error 401 - Logg inn på nytt.");
+            }
+            else {
+              document.getElementById("pull_result").innerHTML = err;
+              document.getElementById(button.id).innerHTML = " Hent events ";
+              document.getElementById(button.id).disabled = false;
+              alert(err);
+            }
+          }
+        }
+      }
+      catch(err) {
+          document.getElementById(button.id).innerHTML = " Hent events ";
+          document.getElementById(button.id).disabled = false;
+          alert(err);
+        }
+        return false; // avoid to execute the actual submit of the form.
+      }
+
   </script>
 
   <table>
     <tr>
-      <form action=/video_events method=post>
-        <td align=right>
-          Velg kø: <input type="text" id="queue_name" name="queue_name" value="langrenn-queue">
-          <button type="button" id="import_events" onclick=import_new_events(this); >Hent nye events</button>
-        </td>
-      </form>
-    </tr>
-    <tr>
-        <td align=right id="orange">
-      <span id="info_result"></span>
-    </td>
-    </tr>
-  </table>
-  <table>
-    <tr>
-      <th>Events</th>
-      <th>Timestamp</th>
-      <th>Detections</th>
-      <th>Info</th>
-    </tr>
-    {% for video_event in video_events %}
-    <tr>
-      <td>
-        {% for event in video_event.events %}
-          {{ event.type }} - {{ event.properties.status }}<br>
-        {% endfor %}
-      </td>
-      <td>
-        {{ video_event.sourceInfo.timestamp }}
-      </td>
-      <td>
-        {% for detection in video_event.detections %}
-          Type: {{ detection.type }} - region: {{ detection.region }} - attributes: {{ detection.attributes }}<br>
-        {% endfor %}
-      </td>
-      <td>
-        <a title="{{ video_event }}">Full Details</a> - <a title="{{ video_event.keys() }}">keys</a>
+      <td align=center>
+        <button type="button" id="pull_events_button" onclick="pull_events(this);" > Hent events </button>
       </td>
     </tr>
-    {% endfor %}
-  </table>
+    <tr height="500">
+      <td id="orange" valign="top">
+        <span id="pull_result"></span>
+      </td>
+  </tr>
+</table>
 {% endblock %}
 </div>

@@ -35,7 +35,7 @@
       <tr>
         <td align=center>
         {% for bilde in photos %}
-          <a href="{{ bilde.g_product_url }}" title="{{ bilde.raceclass }}" target=_blank><img width=20% src={{ bilde.g_base_url }}=w200-h100-c></a>
+          <a href="{{ bilde.g_base_url }}" title="{{ bilde.raceclass }}" target=_blank><img width=20% src="{{ bilde.g_base_url }}"></a>
           {% if loop.index % 4 == 0 %}
             <br>
           {% endif %}

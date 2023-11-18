@@ -121,6 +121,34 @@ class PhotosAdapter:
                     logging.error(f"Error {resp.status} getting photos: {resp} ")
         return photos
 
+    async def get_photo_by_g_base_url(self, token: str, g_base_url: str) -> dict:
+        """Get photo by google id function."""
+        photo = {}
+        headers = MultiDict(
+            [
+                (hdrs.CONTENT_TYPE, "application/json"),
+                (hdrs.AUTHORIZATION, f"Bearer {token}"),
+            ]
+        )
+
+        async with ClientSession() as session:
+            async with session.get(
+                f"{PHOTO_SERVICE_URL}/photos?gBaseUrl={g_base_url}", headers=headers
+            ) as resp:
+                logging.debug(f"get_photo_by_g_base_url {g_base_url} - got response {resp.status}")
+                if resp.status == 200:
+                    photo = await resp.json()
+                elif resp.status == 401:
+                    raise Exception(f"Login expired: {resp}")
+                else:
+                    servicename = "get_photo_by_g_base_url"
+                    body = await resp.json()
+                    logging.debug(f"{servicename} failed - {resp.status} - {body}")
+                    raise web.HTTPBadRequest(
+                        reason=f"Error - {resp.status}: {body['detail']}."
+                    )
+        return photo
+
     async def get_photo_by_g_id(self, token: str, g_id: str) -> dict:
         """Get photo by google id function."""
         photo = {}

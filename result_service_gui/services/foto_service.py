@@ -2,11 +2,11 @@
 import datetime
 import json
 import logging
+import os
 
 from aiohttp import web
 
 from result_service_gui.model import Album
-from .ai_image_service import AiImageService
 from .albums_adapter import AlbumsAdapter
 from .contestants_adapter import ContestantsAdapter
 from .events_adapter import EventsAdapter
@@ -103,6 +103,82 @@ class FotoService:
         informasjon = f"Oppdatert {iCount} bilder."
         return informasjon
 
+    async def sync_photos_from_pubsub(
+        self,
+        user: dict,
+        event: dict,
+        pull_messages: list,
+    ) -> str:
+        """Get events from pubsub and sync with local database."""
+        informasjon = ""
+        i_c = 0
+        i_u = 0
+        raceclasses = await RaceclassesAdapter().get_raceclasses(
+            user["token"], event["id"]
+        )
+        for message in pull_messages:
+            # use message data to identify contestant/bib and race
+            # then create photo
+            # check if message event_id is same as event_id
+            if message["event_id"] == event["id"]:
+                # get time of event
+                try:
+                    creation_time = message["photo_info"]["passeringstid"]
+                except Exception:
+                    creation_time = ""
+                # update or create record in db
+                try:
+                    photo = await PhotosAdapter().get_photo_by_g_base_url(
+                        user["token"], message["photo_url"]
+                    )
+                except Exception:
+                    photo = {}
+                if photo:
+                    # update existing photo
+                    photo["name"] = os.path.basename(message["photo_url"])
+                    photo["g_product_url"] = ""
+                    photo["g_base_url"] = message["photo_url"]
+                    if message["photo_info"]["passeringspunkt"] in ["Finish", "Mål"]:
+                        photo["is_photo_finish"] = True
+                    if message["photo_info"]["passeringspunkt"] == "Start":
+                        photo["is_start_registration"] = True
+                    photo_id = await PhotosAdapter().update_photo(
+                        user["token"], photo["id"], photo
+                    )
+                    logging.debug(f"Updated photo with id {photo_id}")
+                    i_u += 1
+                else:
+                    # create new photo
+                    request_body = {
+                        "name": os.path.basename(message["photo_url"]),
+                        "is_photo_finish": False,
+                        "is_start_registration": False,
+                        "starred": False,
+                        "event_id": event["id"],
+                        "creation_time": format_zulu_time(creation_time),
+                        "information": "",
+                        "race_id": "",
+                        "raceclass": "",
+                        "biblist": [],
+                        "clublist": [],
+                        "g_id": "",
+                        "g_product_url": message["crop_url"],
+                        "g_base_url": message["photo_url"],
+                    }
+
+                    # new photo - try to link with event activities
+                    if message["ai_information"]:
+                        for nummer in message["ai_information"]["ai_numbers"]:
+                            result = await find_race_info_from_bib(user["token"], nummer, request_body, event, raceclasses)
+                            logging.debug(f"Link to race info, result {result}")
+                    photo_id = await PhotosAdapter().create_photo(
+                        user["token"], request_body
+                    )
+                    logging.debug(f"Created photo with id {photo_id}")
+                    i_c += 1
+        informasjon = f"Synkronisert bilder fra PubSub. {i_u} oppdatert og {i_c} opprettet."
+        return informasjon
+
     async def sync_photos_from_google(
         self,
         user: dict,
@@ -159,13 +235,6 @@ class FotoService:
                         "g_product_url": g_photo["productUrl"],
                         "g_base_url": g_photo["baseUrl"],
                     }
-
-                    # new photo - analyze content
-                    request_body[
-                        "ai_information"
-                    ] = AiImageService().analyze_photo_with_google_for_langrenn(
-                        f"{g_photo['baseUrl']}=w800-h800"
-                    )
 
                     # new photo - try to link with event activities
                     result = await get_link_to_event_info_from_ai(

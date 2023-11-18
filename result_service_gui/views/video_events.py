@@ -5,6 +5,8 @@ from aiohttp import web
 import aiohttp_jinja2
 
 from result_service_gui.services import (
+    FotoService,
+    GooglePubSubAdapter,
     PhotosAdapter,
     RaceclassesAdapter,
 )
@@ -59,16 +61,25 @@ class VideoEvents(web.View):
         try:
             result = ""
             form = await self.request.post()
-            event_id = form["event_id"]
-            queue_name = form["queue_name"]
-            action = form['action']
+            event_id = str(form["event_id"])
             user = await check_login(self)
+            event = await get_event(user, event_id)
+            action = form['action']
             if action in ["service_bus"]:
+                queue_name = form["queue_name"]
                 result = await PhotosAdapter().update_video_events(user["token"], event_id, queue_name)  # type: ignore
+            elif action in ["pull_google"]:
+                messages = await GooglePubSubAdapter().pull_messages()
+                if len(messages) == 0:
+                    result = "Ingen meldinger i køen."
+                else:
+                    result = f"{len(messages)} meldinger hentet fra køen.<br>"
+                    r = await FotoService().sync_photos_from_pubsub(user, event, messages)
+                    result += f"  {r}<br>"
         except Exception as e:
             if "401" in str(e):
                 result = "401 unathorized: Logg inn for å hente events."
             else:
-                result = "Det har oppstått en feil ved henting av video events."
+                result = f"Det har oppstått en feil ved henting av video events. {e}"
             logging.error(f"Video events update - {e}")
         return web.Response(text=result)
