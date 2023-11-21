@@ -48,10 +48,16 @@ li:hover, .dropdown:hover, .dropbtn:hover {
     background-color: #94b5e0;
 }
 
-
 #adminpagetitle {
   text-align: center;
   color: white;
   font-size: 2.0em;
 	background-color: #94b5e0;
+}
+
+#footeradmin {
+  background-color: #94b5e0;
+  color: white;
+  text-align: center;
+  padding: 5px 5px 5px 5px;
 }
