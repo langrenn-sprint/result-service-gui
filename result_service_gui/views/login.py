@@ -7,7 +7,7 @@ import aiohttp_jinja2
 from aiohttp_session import new_session
 
 from result_service_gui.services import UserAdapter
-from .utils import check_login, check_login_open
+from .utils import check_login_open
 
 
 class Login(web.View):
@@ -72,16 +72,6 @@ class Login(web.View):
                 )
                 if result == 200:
                     informasjon = "Innlogget!"
-                else:
-                    informasjon = f"Innlogging feilet - {result}"
-            elif action == "g_login":
-                user = await check_login(self)
-                g_jwt = str(form["g_jwt"])
-                # get public key from google and store in session
-                session = await new_session(self.request)
-                result = UserAdapter().login_google(g_jwt, user, session)
-                if result == 200:
-                    informasjon = "Innlogget Google!"
                 else:
                     informasjon = f"Innlogging feilet - {result}"
 

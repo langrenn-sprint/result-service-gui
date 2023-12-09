@@ -5,7 +5,7 @@ from aiohttp import web
 
 from result_service_gui.services import FotoService
 from .utils import (
-    check_login_google_photos,
+    check_login,
 )
 
 
@@ -18,7 +18,7 @@ class PhotoUpdate(web.View):
         try:
             form = await self.request.post()
             action = form['action']
-            user = await check_login_google_photos(self, "")
+            user = await check_login(self)
             photo_id = str(form['photo_id'])
             if action == "star_on":
                 res = await FotoService().star_photo(

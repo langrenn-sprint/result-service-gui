@@ -146,6 +146,27 @@ class ResultatEdit(web.View):
                                 user["token"], event_id, valgt_runde["klasse"]
                             )  # type: ignore
                             informasjon = f" Klassens resultat er publisert ({res}). " + informasjon
+
+            # check for update without reload - return latest race results
+            if "ajax" in form.keys():
+                race = await RaceplansAdapter().get_race_by_id(user["token"], str(form["race_id"]))
+                response = {}
+                if race['results']:
+                    response = {
+                        "race_results": race['results']['Finish']['ranking_sequence'],
+                        "race_results_status": race['results']['Finish']['status'],
+                        "informasjon": informasjon
+                    }
+                else:
+                    response = {
+                        "race_results": [],
+                        "race_results_status": 0,
+                        "informasjon": informasjon
+                    }
+                response["informasjon"] = response["informasjon"].replace("<br>", " ")
+                json_response = json.dumps(response)
+                return web.Response(body=json_response)
+
         except Exception as e:
             logging.error(f"Error: {e}")
             error_reason = str(e)
@@ -158,25 +179,6 @@ class ResultatEdit(web.View):
                     location=f"/login?informasjon={informasjon}"
                 )
             informasjon += f"{error_reason}. " + informasjon
-        # check for update without reload - return latest race results
-        if "ajax" in form.keys():
-            race = await RaceplansAdapter().get_race_by_id(user["token"], str(form["race_id"]))
-            response = {}
-            if race['results']:
-                response = {
-                    "race_results": race['results']['Finish']['ranking_sequence'],
-                    "race_results_status": race['results']['Finish']['status'],
-                    "informasjon": informasjon
-                }
-            else:
-                response = {
-                    "race_results": [],
-                    "race_results_status": 0,
-                    "informasjon": informasjon
-                }
-            response["informasjon"] = response["informasjon"].replace("<br>", " ")
-            json_response = json.dumps(response)
-            return web.Response(body=json_response)
         info = (
             f"{informasjon}&klasse={valgt_runde['klasse']}&runde={valgt_runde['runde']}"
         )

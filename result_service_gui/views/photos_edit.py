@@ -6,7 +6,7 @@ import aiohttp_jinja2
 
 from result_service_gui.services import EventsAdapter, FotoService, PhotosAdapter
 from .utils import (
-    check_login_google_photos,
+    check_login,
     get_event,
 )
 
@@ -29,7 +29,7 @@ class PhotosEdit(web.View):
         except Exception:
             informasjon = ""
         try:
-            user = await check_login_google_photos(self, event_id)
+            user = await check_login(self)
         except Exception as e:
             return web.HTTPSeeOther(location=f"{e}")
 
@@ -60,7 +60,7 @@ class PhotosEdit(web.View):
         informasjon = ""
         form = await self.request.post()
         event_id = str(form["event_id"])
-        user = await check_login_google_photos(self, event_id)
+        user = await check_login(self)
 
         try:
             if "update_race_info" in form.keys():
