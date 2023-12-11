@@ -14,7 +14,6 @@ nox.options.sessions = (
     "mypy",
     "pytype",
     "integration_tests",
-    "contract_tests",
 )
 
 
