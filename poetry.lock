@@ -33,6 +33,18 @@ Pygments = ">=2.2.0"
 watchfiles = ">=0.10"
 
 [[package]]
+name = "aiohttp-jinja2"
+version = "1.6"
+description = "jinja2 template renderer for aiohttp.web (http server for asyncio)"
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[package.dependencies]
+aiohttp = ">=3.9.0"
+jinja2 = ">=3.0.0"
+
+[[package]]
 name = "aiohttp-middlewares"
 version = "2.2.1"
 description = "Collection of useful middlewares for aiohttp applications."
@@ -254,7 +266,7 @@ python-versions = ">=3.6"
 name = "cffi"
 version = "1.16.0"
 description = "Foreign Function Interface for Python calling C code."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.8"
 
@@ -352,7 +364,7 @@ python-versions = ">=3.7,<4.0"
 name = "cryptography"
 version = "41.0.7"
 description = "cryptography is a package which provides cryptographic recipes and primitives to Python developers."
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=3.7"
 
@@ -1416,7 +1428,7 @@ python-versions = ">=3.8"
 name = "pycparser"
 version = "2.21"
 description = "C parser in Python"
-category = "dev"
+category = "main"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 
@@ -2009,7 +2021,7 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [metadata]
 lock-version = "1.1"
 python-versions = ">=3.9,<4"
-content-hash = "46b0e7c07b8d1fe36677197a47317b14cb31d77ea801125b9621cc49cea28fdb"
+content-hash = "86a8aac7b090cb9fda963797615760c15e417454b830e9d5bb0c641789f339a3"
 
 [metadata.files]
 aiohttp = [
@@ -2093,6 +2105,10 @@ aiohttp = [
 aiohttp-devtools = [
     {file = "aiohttp-devtools-1.1.2.tar.gz", hash = "sha256:aae66fc9dd36b6c13e1ca381004dfaa4db6ba0dd50764c8ae3a49c1ed43f9587"},
     {file = "aiohttp_devtools-1.1.2-py38.py39.py310.py311-none-any.whl", hash = "sha256:d8545e217146df97459b3765fd786c98d0851c79d56162ad8d4145f719ab0391"},
+]
+aiohttp-jinja2 = [
+    {file = "aiohttp-jinja2-1.6.tar.gz", hash = "sha256:a3a7ff5264e5bca52e8ae547bbfd0761b72495230d438d05b6c0915be619b0e2"},
+    {file = "aiohttp_jinja2-1.6-py3-none-any.whl", hash = "sha256:0df405ee6ad1b58e5a068a105407dc7dcc1704544c559f1938babde954f945c7"},
 ]
 aiohttp-middlewares = [
     {file = "aiohttp_middlewares-2.2.1-py3-none-any.whl", hash = "sha256:502c0f8c9581908fca43e066a829e1b4f7e910ebb504ad8aa995b0ba10b4dba1"},
