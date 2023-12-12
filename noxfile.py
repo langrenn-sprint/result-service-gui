@@ -13,57 +13,13 @@ nox.options.sessions = (
     "lint",
     "mypy",
     "pytype",
+    "safety",
     "integration_tests",
+    "contract_tests",
 )
 
 
-@session(python=["3.11"])
-def clean(session: Session) -> None:
-    """Clean the project."""
-    session.run(
-        "py3clean",
-        ".",
-        external=True,
-    )
-    session.run(
-        "rm",
-        "-rf",
-        ".cache",
-        external=True,
-    )
-    session.run(
-        "rm",
-        "-rf",
-        ".pytest_cache",
-        external=True,
-    )
-    session.run(
-        "rm",
-        "-rf",
-        ".pytype",
-        external=True,
-    )
-    session.run(
-        "rm",
-        "-rf",
-        "dist",
-        external=True,
-    )
-    session.run(
-        "rm",
-        "-rf",
-        ".mypy_cache",
-        external=True,
-    )
-    session.run(
-        "rm",
-        "-f",
-        ".coverage",
-        external=True,
-    )
-
-
-@session(python=["3.11"])
+@session
 def integration_tests(session: Session) -> None:
     """Run the integration test suite."""
     args = session.posargs or ["--cov"]
@@ -74,8 +30,9 @@ def integration_tests(session: Session) -> None:
         "pytest-cov",
         "pytest-mock",
         "pytest-aiohttp",
-        "aioresponses",
         "requests",
+        "aioresponses",
+        "pygments",
     )
     session.run(
         "pytest",
@@ -87,11 +44,49 @@ def integration_tests(session: Session) -> None:
             "JWT_SECRET": "secret",
             "ADMIN_USERNAME": "admin",
             "ADMIN_PASSWORD": "password",
+            "EVENTS_HOST_SERVER": "events.example.com",
+            "EVENTS_HOST_PORT": "8080",
+            "USERS_HOST_SERVER": "users.example.com",
+            "USERS_HOST_PORT": "8081",
         },
     )
 
 
-@session(python=["3.10", "3.11"])
+@session
+def contract_tests(session: Session) -> None:
+    """Run the contract test suite."""
+    args = session.posargs
+    session.install(".")
+    session.install(
+        "pytest",
+        "pytest-docker",
+        "pytest_mock",
+        "pytest-asyncio",
+        "requests",
+        "aioresponses",
+    )
+    session.run(
+        "pytest",
+        "-m contract",
+        "-rA",
+        *args,
+        env={
+            "CONFIG": "test",
+            "ADMIN_USERNAME": "admin",
+            "ADMIN_PASSWORD": "password",
+            "EVENTS_HOST_SERVER": "localhost",
+            "EVENTS_HOST_PORT": "8080",
+            "USERS_HOST_SERVER": "localhost",
+            "USERS_HOST_PORT": "8081",
+            "JWT_EXP_DELTA_SECONDS": "60",
+            "DB_USER": "event-service",
+            "DB_PASSWORD": "password",
+            "LOGGING_LEVEL": "INFO",
+        },
+    )
+
+
+@session
 def black(session: Session) -> None:
     """Run black code formatter."""
     args = session.posargs or locations
@@ -99,7 +94,7 @@ def black(session: Session) -> None:
     session.run("black", *args)
 
 
-@session(python=["3.10", "3.11"])
+@session
 def lint(session: Session) -> None:
     """Lint using flake8."""
     args = session.posargs or locations
@@ -113,11 +108,12 @@ def lint(session: Session) -> None:
         "flake8-import-order",
         "darglint",
         "flake8-assertive",
+        "flake8-eradicate",
     )
     session.run("flake8", *args)
 
 
-@session(python=["3.10", "3.11"])
+@session
 def safety(session: Session) -> None:
     """Scan dependencies for insecure packages."""
     requirements = session.poetry.export_requirements()
@@ -125,7 +121,7 @@ def safety(session: Session) -> None:
     session.run("safety", "check", "--full-report", f"--file={requirements}")
 
 
-@session(python=["3.10", "3.11"])
+@session
 def mypy(session: Session) -> None:
     """Type-check using mypy."""
     args = session.posargs or [
@@ -141,7 +137,7 @@ def mypy(session: Session) -> None:
         session.run("mypy", f"--python-executable={sys.executable}", "noxfile.py")
 
 
-@session(python=["3.10"])
+@session
 def pytype(session: Session) -> None:
     """Run the static type checker using pytype."""
     args = session.posargs or ["--disable=import-error", *locations]
@@ -149,24 +145,7 @@ def pytype(session: Session) -> None:
     session.run("pytype", *args)
 
 
-@session(python=["3.10", "3.11"])
-def xdoctest(session: Session) -> None:
-    """Run examples with xdoctest."""
-    args = session.posargs or ["all"]
-    session.install(".")
-    session.install("xdoctest")
-    session.run("python", "-m", "xdoctest", package, *args)
-
-
-@session(python=["3.10", "3.11"])
-def docs(session: Session) -> None:
-    """Build the documentation."""
-    session.install(".")
-    session.install("sphinx", "sphinx_autodoc_typehints")
-    session.run("sphinx-build", "docs", "docs/_build")
-
-
-@session(python=["3.10", "3.11"])
+@session
 def coverage(session: Session) -> None:
     """Upload coverage data."""
     session.install("coverage[toml]", "codecov")
