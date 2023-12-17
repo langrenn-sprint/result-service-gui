@@ -55,7 +55,7 @@ async def create_event(user: dict, form: dict, action: str) -> str:
             "race": form["race"],
             "race_id": form["race_id"],
             "timing_point": action,
-            "rank": "",
+            "rank": 0,
             "registration_time": time_stamp_now,
             "next_race": "",
             "next_race_id": "",

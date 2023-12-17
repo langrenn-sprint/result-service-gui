@@ -168,24 +168,28 @@ class TimeEventsService:
                 time_event["name"] = f"{contestant['first_name']} {contestant['last_name']}"
                 time_event["club"] = contestant["club"]
                 result_ok = False
-                if len(time_event["id"]) > 0:
-                    # update existing time event
-                    id = await TimeEventsAdapter().update_time_event(
-                        token, time_event["id"], time_event
-                    )
-                    result_ok = True
-                    informasjon += f" Updated time event {id}. "
-                else:
-                    new_t_e = await TimeEventsAdapter().create_time_event(token, time_event)
-                    if new_t_e["status"] == "OK":
-                        informasjon += f"{new_t_e['bib']}: {new_t_e['rank']} pl. "
+                try:
+                    if len(time_event["id"]) > 0:
+                        # update existing time event
+                        id = await TimeEventsAdapter().update_time_event(
+                            token, time_event["id"], time_event
+                        )
                         result_ok = True
+                        informasjon += f" Updated time event {id}. "
                     else:
-                        # error, return info to user
-                        if new_t_e['changelog']:
-                            informasjon += f"{new_t_e['changelog'][-1]['comment']} <br>"
-                if time_event["next_race"] != "Ute" and result_ok:
-                    id = await StartAdapter().create_start_entry(token, next_start_entry)
+                        new_t_e = await TimeEventsAdapter().create_time_event(token, time_event)
+                        if new_t_e["status"] == "OK":
+                            informasjon += f"{new_t_e['bib']}: {new_t_e['rank']} pl. "
+                            result_ok = True
+                        else:
+                            # error, return info to user
+                            if new_t_e['changelog']:
+                                informasjon += f"{new_t_e['changelog'][-1]['comment']} <br>"
+                    if time_event["next_race"] != "Ute" and result_ok:
+                        id = await StartAdapter().create_start_entry(token, next_start_entry)
+                except Exception as e:
+                    logging.error(f"Error: {e}")
+                    informasjon += f" Error: {e} <br>"
 
         return informasjon
 

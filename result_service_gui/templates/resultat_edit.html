@@ -116,8 +116,10 @@
               document.getElementById(race_order + "_form_rank_" + pos).value = race_results[i].bib
               document.getElementById(race_order + "_old_form_rank_" + pos).value = race_results[i].bib
               document.getElementById(race_order + "_name_" + pos).innerHTML = race_results[i].name
-              document.getElementById(race_order + "_videre_til_" + pos).innerHTML = race_results[i].next_race + "-" + race_results[i].next_race_position
               document.getElementById(race_order + "_time_event_id_" + pos).value = race_results[i].id
+              if (race_results[i].next_race != "Ute") {
+                document.getElementById(race_order + "_videre_til_" + pos).innerHTML = race_results[i].next_race + "-" + race_results[i].next_race_position
+              }
             }
             const info = jsonDoc.informasjon.replace("<br>", ", ");
             validation_colors(race_order);
