@@ -4,7 +4,7 @@
   "CONFIDENCE_LIMIT": "0.7",
   "CSV_FILE_DIR": "result_service_gui/files",
   "DATE_PATTERNS": "%Y-%m-%dT%H:%M:%S;%Y:%m:%d %H:%M:%S;%d.%m.%Y %H:%M:%S;%Y%m%d %H:%M:%S",
-  "GOOGLE_PUBSUB_NUM_MESSAGES": 1,
+  "GOOGLE_PUBSUB_NUM_MESSAGES": 20,
   "GOOGLE_PUBSUB_PROJECT_ID": "sigma-celerity-257719",
   "GOOGLE_PUBSUB_TOPIC_ID": "langrenn-sprint",
   "GOOGLE_PUBSUB_SUBSCRIPTION_ID": "langrenn-sprint-sub",
@@ -15,8 +15,8 @@
   "PHOTO_THUMB_HEIGTH": "160",
   "PHOTO_OUTPUT_MAXSIZE": "4000",
   "PHOTO_WATERMARK_TEXT": "Ragdesprinten",
-  "RACE_DURATION_SECS": "240",
-  "RACE_TIME_DEVIATION_ALLOWED": "1000",
+  "RACE_DURATION_ESTIMATE": "300",
+  "RACE_TIME_DEVIATION_ALLOWED": "3000",
   "SPORTS_CLUBS": "Bækkelaget;Heming;Kjelsås;Koll;Lillomarka;Lyn;Njård;Rustad;Røa;Try;Årvoll",
   "TIME_ZONE_OFFSET_G_PHOTOS": "2"
 }

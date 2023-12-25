@@ -93,12 +93,11 @@
         {% endif %}
         <td width=220>
           <a class="tooltip">
-            <img width=200 src={{ foto.g_base_url }}=w200-h100-c>
+            <img width=200 src={{ foto.g_base_url }}>
              <span>
-                 <img id=tooltipimage src="{{ foto.g_base_url }}=w800-h800">
+                 <img id=tooltipimage src="{{ foto.g_base_url }}">
              </span>
           </a><br>
-          <a target=_blank href={{ foto.g_product_url }}>Bilde i Google</a>
         </td>
         <td id=table_border_r>
           <table>
@@ -109,8 +108,8 @@
               {% endif %}
               {% if foto.is_photo_finish %} MÅLFOTO{% endif %}
               {% if foto.is_start_registration %} START{% endif %}
-              </td><td>{{ foto.creation_time }} / {{ foto.name }}</td></tr>
-            <tr><td>AI info</td><td>{{ foto.ai_information }}</td></tr>
+              </td><td>{{ foto.creation_time }} / <a target=_blank href={{ foto.g_base_url }}>{{ foto.name }}</a></td></tr>
+            <tr><td>Info</td><td>{{ foto.information }}<br>{{ foto.ai_information }}</td></tr>
             <tr><td>Klasse</td><td>{{ foto.raceclass }}, race_id: {{ foto.race_id }}</td></tr>
             <tr><td>Bibs / clubs</td><td>
               {% if action == "update_race_info" %}

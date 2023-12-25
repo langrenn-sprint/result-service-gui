@@ -121,8 +121,9 @@ class FotoService:
                         "is_start_registration": False,
                         "starred": False,
                         "event_id": event["id"],
-                        "creation_time": format_zulu_time(creation_time),
-                        "information": "",
+                        "creation_time": format_time(creation_time, False),
+                        "ai_information": message["ai_information"],
+                        "information": message['photo_info'],
                         "race_id": "",
                         "raceclass": "",
                         "biblist": [],
@@ -132,6 +133,10 @@ class FotoService:
                         "g_base_url": message["photo_url"],
                     }
                     # new photo - try to link with event activities
+                    if message["photo_info"]["passeringspunkt"] in ["Finish", "Mål"]:
+                        request_body["is_photo_finish"] = True
+                    if message["photo_info"]["passeringspunkt"] == "Start":
+                        request_body["is_start_registration"] = True
                     if message["ai_information"]:
                         for nummer in message["ai_information"]["ai_numbers"]:
                             result = await find_race_info_from_bib(user["token"], nummer, request_body, event, raceclasses)
@@ -161,7 +166,7 @@ async def find_race_info_from_bib(
 ) -> int:
     """Analyse photo ai info and add race info to photo."""
     foundheat = ""
-    raceduration = 200  # TODO: move race duration to propert file
+    raceduration = int(EventsAdapter().get_global_setting("RACE_DURATION_ESTIMATE"))
     starter = await StartAdapter().get_start_entries_by_bib(token, event["id"], bib)
     if len(starter) > 0:
         for start in starter:
@@ -205,27 +210,32 @@ def find_raceclass(ageclass: str, raceclasses: list) -> str:
     return funnetklasse
 
 
-def format_zulu_time(timez: str) -> str:
-    """Convert from zulu time to normalized time - string formats."""
-    TIME_ZONE_OFFSET_G_PHOTOS = EventsAdapter().get_global_setting(
+def format_time(timez: str, zulu: bool) -> str:
+    """Convert to normalized time - string formats."""
+    t2 = None
+    time_zone_offset_g_photos = EventsAdapter().get_global_setting(
         "TIME_ZONE_OFFSET_G_PHOTOS"
     )
-    DATE_PATTERNS = EventsAdapter().get_global_setting(
+    date_patterns = EventsAdapter().get_global_setting(
         "DATE_PATTERNS"
     )
-    date_pattern_list = DATE_PATTERNS.split(";")
+    date_pattern_list = date_patterns.split(";")
     for pattern in date_pattern_list:
         try:
             t1 = datetime.datetime.strptime(timez, pattern)
             # calculate new time
-            delta_seconds = int(TIME_ZONE_OFFSET_G_PHOTOS) * 3600  # type: ignore
-            t2 = t1 + datetime.timedelta(seconds=delta_seconds)
+            delta_seconds = int(time_zone_offset_g_photos) * 3600  # type: ignore
+            if zulu:
+                t2 = t1 + datetime.timedelta(seconds=delta_seconds)
+            else:
+                t2 = t1
             break
         except ValueError:
             logging.debug(f"Got error parsing time {ValueError}")
-            return ""
-
-    time = f"{t2.strftime('%Y')}-{t2.strftime('%m')}-{t2.strftime('%d')}T{t2.strftime('%X')}"
+    if t2:
+        time = f"{t2.strftime('%Y')}-{t2.strftime('%m')}-{t2.strftime('%d')}T{t2.strftime('%X')}"
+    else:
+        time = ""
     return time
 
 
@@ -234,10 +244,10 @@ def get_seconds_diff(time1: str, time2: str) -> int:
     t1 = datetime.datetime.strptime("1", "%S")  # nitialize time to zero
     t2 = datetime.datetime.strptime("1", "%S")
 
-    DATE_PATTERNS = EventsAdapter().get_global_setting(
+    date_patterns = EventsAdapter().get_global_setting(
         "DATE_PATTERNS"
     )
-    date_pattern_list = DATE_PATTERNS.split(";")
+    date_pattern_list = date_patterns.split(";")
     for pattern in date_pattern_list:
         try:
             t1 = datetime.datetime.strptime(time1, pattern)

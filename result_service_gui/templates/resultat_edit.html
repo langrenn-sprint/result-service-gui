@@ -367,9 +367,9 @@
                   {% for bilde in race.photo_start %}
                     {% if start.bib in bilde.biblist %}
                     <a class="tooltip_photo_left">
-                      &nbsp;<img src={{ bilde.g_base_url }}=w30-h25-c>
+                      &nbsp;<img src={{ bilde.g_base_url }} width="30">
                         <span>
-                            <img src="{{ bilde.g_base_url }}=w900-h900" title="Photo time: {{ bilde.creation_time[-8:] }}">
+                            <img src="{{ bilde.g_base_url }}" title="Photo time: {{ bilde.creation_time[-8:] }}">
                         </span>
                     </a></td>
                     {% endif %}
@@ -435,9 +435,9 @@
                         <td colspan=5><button type="button" name="button" onclick="populate_rank_{{ race.order }}()">Hent resultat fra bilder</button></td></tr><tr>
                       {% endif %}
                       <td width=100><a class="tooltip_photo" href="">
-                        <img src={{ bilde.g_base_url }}=w100-h100-c>
+                        <img src={{ bilde.g_base_url }} width="100">
                          <span>
-                             <img src="{{ bilde.g_base_url }}=w900-h900" tabindex=99><br>
+                             <img src="{{ bilde.g_base_url }}" tabindex=99><br>
                              <div id=headerblack>Photo time: {{ bilde.creation_time[-8:] }} Bibs: {{ bilde.biblist }}</div>
                          </span>
                       </a></td>
