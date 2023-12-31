@@ -26,7 +26,7 @@ class FotoService:
 
     async def delete_all_local_photos(self, token: str, event_id: str) -> str:
         """Delete all local copies of photo information."""
-        photos = await PhotosAdapter().get_all_photos(token, event_id)
+        photos = await PhotosAdapter().get_all_photos(token, event_id, False)
         for photo in photos:
             result = await PhotosAdapter().delete_photo(token, photo["id"])
             logging.debug(f"Deleted photo with id {photo['id']}, result {result}")
@@ -48,7 +48,7 @@ class FotoService:
     async def update_race_info(self, token: str, event_id: str, form: dict) -> str:
         """Update race information in phostos, biblist."""
         informasjon = ""
-        iCount = 0
+        icount = 0
         for key in form.keys():
             if key.startswith("biblist_"):
                 try:
@@ -61,12 +61,12 @@ class FotoService:
                         result = await PhotosAdapter().update_photo(
                             token, photo["id"], photo
                         )
-                        iCount += 1
+                        icount += 1
                         logging.debug(f"Updated photo with id {photo_id} for event {event_id} - {result}")
                 except Exception as e:
                     logging.error(f"Error reading biblist - {form[key]}: {e}")
                     informasjon += "En Feil oppstod. "
-        informasjon = f"Oppdatert {iCount} bilder."
+        informasjon = f"Oppdatert {icount} bilder."
         return informasjon
 
     async def sync_photos_from_pubsub(
@@ -87,7 +87,6 @@ class FotoService:
             # then create photo
             # check if message event_id is same as event_id
             if message["event_id"] == event["id"]:
-                # get time of event
                 try:
                     creation_time = message["photo_info"]["passeringstid"]
                 except Exception:
@@ -168,6 +167,7 @@ async def find_race_info_from_bib(
     foundheat = ""
     raceduration = int(EventsAdapter().get_global_setting("RACE_DURATION_ESTIMATE"))
     starter = await StartAdapter().get_start_entries_by_bib(token, event["id"], bib)
+    breakpoint()
     if len(starter) > 0:
         for start in starter:
             # check heat (if not already found)

@@ -7,8 +7,6 @@ import aiohttp_jinja2
 from result_service_gui.services import (
     FotoService,
     GooglePubSubAdapter,
-    PhotosAdapter,
-    RaceclassesAdapter,
 )
 from .utils import (
     check_login,
@@ -31,14 +29,6 @@ class VideoEvents(web.View):
             user = await check_login_open(self)
             event = await get_event(user, event_id)
 
-            raceclasses = await RaceclassesAdapter().get_raceclasses(
-                user["token"], event_id
-            )
-            video_events = []
-            video_events = await PhotosAdapter().get_all_video_events(
-                user["token"], event_id
-            )
-
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
                 "video_events.html",
@@ -47,8 +37,6 @@ class VideoEvents(web.View):
                     "event": event,
                     "event_id": event_id,
                     "informasjon": informasjon,
-                    "raceclasses": raceclasses,
-                    "video_events": video_events,
                     "username": user["name"],
                 },
             )
@@ -65,10 +53,7 @@ class VideoEvents(web.View):
             user = await check_login(self)
             event = await get_event(user, event_id)
             action = form['action']
-            if action in ["service_bus"]:
-                queue_name = form["queue_name"]
-                result = await PhotosAdapter().update_video_events(user["token"], event_id, queue_name)  # type: ignore
-            elif action in ["pull_google"]:
+            if action in ["pull_google"]:
                 messages = await GooglePubSubAdapter().pull_messages()
                 if len(messages) == 0:
                     result = "Ingen meldinger i køen."

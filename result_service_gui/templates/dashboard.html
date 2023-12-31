@@ -53,7 +53,7 @@
             {% for race in raceclass.racesQ %}
               <span class=tooltip_race id=kpi{{ race.progress }}>
                 {% if race.progress == "6" %}
-                  <a href="control?event_id={{ event_id }}&action=c&heat={{ raceclass.name }}-{{ race.name }}">{{ race.name }}</a>
+                  <a href="control?event_id={{ event_id }}&action=c&heat={{ raceclass.name }}-{{ race.name }}&informasjon=Korrigering">{{ race.name }}</a>
                 {% else %}
                   <a href="resultat_edit?event_id={{ event_id }}&heat={{ race.order }}">{{ race.name }}</a>
                 {% endif %}
@@ -70,8 +70,13 @@
           <td>
             {% for race in raceclass.racesS %}
               <span class=tooltip_race id=kpi{{ race.progress }}>
-                <a href="resultat_edit?event_id={{ event_id }}&heat={{ race.order }}">{{ race.name }}</a>
+                {% if race.progress == "6" %}
+                  <a href="control?event_id={{ event_id }}&action=c&heat={{ raceclass.name }}-{{ race.name }}&informasjon=Korrigering">{{ race.name }}</a>
+                {% else %}
+                  <a href="resultat_edit?event_id={{ event_id }}&heat={{ race.order }}">{{ race.name }}</a>
+                {% endif %}
                 <span class="tooltiptext_race">
+                  Kl: {{ race.start_time }}
                   Starter: {{ race.count_starts}}<br>
                   DNS: {{ race.count_dns}}<br>
                   DNF: {{ race.count_dnf}}<br>
@@ -83,8 +88,13 @@
           <td>
             {% for race in raceclass.racesF %}
               <span class=tooltip_race id=kpi{{ race.progress }}>
-                <a href="resultat_edit?event_id={{ event_id }}&heat={{ race.order }}">{{ race.name }}</a>
+                {% if race.progress == "6" %}
+                  <a href="control?event_id={{ event_id }}&action=c&heat={{ raceclass.name }}-{{ race.name }}&informasjon=Korrigering">{{ race.name }}</a>
+                {% else %}
+                  <a href="resultat_edit?event_id={{ event_id }}&heat={{ race.order }}">{{ race.name }}</a>
+                {% endif %}
                 <span class="tooltiptext_race">
+                  Kl: {{ race.start_time }}
                   Starter: {{ race.count_starts}}<br>
                   DNS: {{ race.count_dns}}<br>
                   DNF: {{ race.count_dnf}}<br>

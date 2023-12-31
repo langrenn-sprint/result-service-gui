@@ -45,10 +45,10 @@ class Photos(web.View):
             )
             photos = []
             if not valgt_klasse:
-                photos = await PhotosAdapter().get_all_photos(user["token"], event_id, 50)
+                photos = await PhotosAdapter().get_all_photos(user["token"], event_id, True, 50)
             else:
                 photos = await PhotosAdapter().get_photos_by_raceclass(
-                    user["token"], event_id, valgt_klasse
+                    user["token"], event_id, valgt_klasse, True
                 )
 
             """Get route function."""

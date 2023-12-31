@@ -76,7 +76,11 @@
               <td>{{ passering.timing_point }}</td>
               <td>{{ passering.registration_time }}</td>
               <td>{{ passering.rank }}</td>
-              <td>{{ passering.next_race }}-{{ passering.next_race_position }}</td>
+              <td>
+                {% if passering.next_race %}
+                  {{ passering.next_race }}-{{ passering.next_race_position }}
+              {% endif %}
+              </td>
               <td>{{ passering.status }}</td>
               <td>
                 {% for log_entry in passering.changelog %}

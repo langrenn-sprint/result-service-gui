@@ -76,7 +76,7 @@ class ResultatEdit(web.View):
 
             if valgt_runde["klasse"]:
                 foto = await PhotosAdapter().get_photos_by_raceclass(
-                    user["token"], event_id, valgt_runde["klasse"], 4
+                    user["token"], event_id, valgt_runde["klasse"], False, 4
                 )
                 # filter for selected races and enrich results
                 for race in all_races:

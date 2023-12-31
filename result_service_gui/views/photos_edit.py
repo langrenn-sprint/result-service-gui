@@ -35,7 +35,7 @@ class PhotosEdit(web.View):
 
         try:
             event = await get_event(user, event_id)
-            photos = await PhotosAdapter().get_all_photos(user["token"], event_id)
+            photos = await PhotosAdapter().get_all_photos(user["token"], event_id, False)
 
             return await aiohttp_jinja2.render_template_async(
                 "photos_edit.html",
