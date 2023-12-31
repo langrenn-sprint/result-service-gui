@@ -71,6 +71,22 @@ async def create_event(user: dict, form: dict, action: str) -> str:
         }
         new_t_e = await TimeEventsAdapter().create_time_event(user["token"], request_body)
         informasjon = f" Nr {new_t_e['bib']} - {action} registrert. "
+
+        # if Start event delete DNS event if it exists
+        if action == "Start":
+            # get dns event for bib
+            dns_time_events = await TimeEventsAdapter().get_time_events_by_event_id_and_bib(
+                user["token"], event_id, int(form["bib"])
+            )
+            for dns_time_event in dns_time_events:
+                if dns_time_event["timing_point"] == "DNS":
+                    # delete
+                    id = await TimeEventsAdapter().delete_time_event(
+                        user["token"], dns_time_event["id"]
+                    )
+                    logging.debug(f"Deleted DNS time_event id {id}")
+                    informasjon += " Slettet DNS registrering. "
+
     else:
         await TimeEventsAdapter().delete_time_event(user["token"], form['time_event_id'])
         informasjon = f" Nr {form['bib']} - {action} slettet. "

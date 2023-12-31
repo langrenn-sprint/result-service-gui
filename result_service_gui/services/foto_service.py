@@ -167,7 +167,6 @@ async def find_race_info_from_bib(
     foundheat = ""
     raceduration = int(EventsAdapter().get_global_setting("RACE_DURATION_ESTIMATE"))
     starter = await StartAdapter().get_start_entries_by_bib(token, event["id"], bib)
-    breakpoint()
     if len(starter) > 0:
         for start in starter:
             # check heat (if not already found)

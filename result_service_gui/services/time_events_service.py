@@ -108,6 +108,21 @@ class TimeEventsService:
             new_t_e = await TimeEventsAdapter().create_time_event(token, time_event)
             informasjon += f" {new_t_e['bib']}: {new_t_e['status']}. "
 
+        # if Start event delete DNS event if it exists
+        if time_event["timing_point"] == "Start":
+            # get dns event for bib
+            dns_time_events = await TimeEventsAdapter().get_time_events_by_event_id_and_bib(
+                token, time_event["event_id"], time_event["bib"]
+            )
+            for dns_time_event in dns_time_events:
+                if dns_time_event["timing_point"] == "DNS":
+                    # delete
+                    id = await TimeEventsAdapter().delete_time_event(
+                        token, dns_time_event["id"]
+                    )
+                    logging.debug(f"Deleted DNS time_event id {id}")
+                    informasjon += " Slettet DNS registrering. "
+
         return informasjon
 
     async def create_finish_time_events(self, token: str, time_events: list) -> str:
