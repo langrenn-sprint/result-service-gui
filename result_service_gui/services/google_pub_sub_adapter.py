@@ -1,6 +1,7 @@
 """Module for google pub/sub adapter."""
 import json
 import logging
+import os
 
 from google.api_core import retry
 from google.cloud import pubsub_v1  # type: ignore[attr-defined]
@@ -66,6 +67,9 @@ class GooglePubSubAdapter:
                 )
         except Exception as err:
             logging.error(f"{servicename}. Error: {err}")
+            # write current path to error log
+            logging.error(f"Current directory: {os.getcwd()}")
+
             raise err
 
         return message_body

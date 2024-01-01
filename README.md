@@ -41,6 +41,7 @@ Du må sette opp ei .env fil med miljøvariable. Eksempel:
 JWT_SECRET=secret
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=password
+GOOGLE_APPLICATION_CREDENTIALS=/home/heming/github/secrets/application_default_credentials.json
 COMPETITION_FORMAT_HOST_PORT=8094
 COMPETITION_FORMAT_HOST_SERVER=localhost
 DB_USER=admin
