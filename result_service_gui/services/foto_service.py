@@ -7,6 +7,7 @@ import os
 from .albums_adapter import AlbumsAdapter
 from .contestants_adapter import ContestantsAdapter
 from .events_adapter import EventsAdapter
+from .google_pub_sub_adapter import GooglePubSubAdapter
 from .photos_adapter import PhotosAdapter
 from .raceclasses_adapter import RaceclassesAdapter
 from .raceplans_adapter import RaceplansAdapter
@@ -73,79 +74,89 @@ class FotoService:
         self,
         user: dict,
         event: dict,
-        pull_messages: list,
     ) -> str:
         """Get events from pubsub and sync with local database."""
         informasjon = ""
         i_c = 0
         i_u = 0
-        raceclasses = await RaceclassesAdapter().get_raceclasses(
-            user["token"], event["id"]
-        )
-        for message in pull_messages:
-            # use message data to identify contestant/bib and race
-            # then create photo
-            # check if message event_id is same as event_id
-            if message["event_id"] == event["id"]:
-                try:
-                    creation_time = message["photo_info"]["passeringstid"]
-                except Exception:
-                    creation_time = ""
-                # update or create record in db
-                try:
-                    photo = await PhotosAdapter().get_photo_by_g_base_url(
-                        user["token"], message["photo_url"]
-                    )
-                except Exception:
-                    photo = {}
-                if photo:
-                    # update existing photo
-                    photo["name"] = os.path.basename(message["photo_url"])
-                    photo["g_product_url"] = ""
-                    photo["g_base_url"] = message["photo_url"]
-                    if message["photo_info"]["passeringspunkt"] in ["Finish", "Mål"]:
-                        photo["is_photo_finish"] = True
-                    if message["photo_info"]["passeringspunkt"] == "Start":
-                        photo["is_start_registration"] = True
-                    photo_id = await PhotosAdapter().update_photo(
-                        user["token"], photo["id"], photo
-                    )
-                    logging.debug(f"Updated photo with id {photo_id}")
-                    i_u += 1
+        i_other = 0
+        # get all messages from pubsub
+
+        pull_messages = await GooglePubSubAdapter().pull_messages()
+        if len(pull_messages) == 0:
+            informasjon = "Ingen bilder funnet."
+        else:
+            raceclasses = await RaceclassesAdapter().get_raceclasses(
+                user["token"], event["id"]
+            )
+            for message in pull_messages:
+                # use message data to identify contestant/bib and race
+                # then create photo
+                # check if message event_id is same as event_id
+                if message["event_id"] == event["id"]:
+                    try:
+                        creation_time = message["photo_info"]["passeringstid"]
+                    except Exception:
+                        creation_time = ""
+                    # update or create record in db
+                    try:
+                        photo = await PhotosAdapter().get_photo_by_g_base_url(
+                            user["token"], message["photo_url"]
+                        )
+                    except Exception:
+                        photo = {}
+                    if photo:
+                        # update existing photo
+                        photo["name"] = os.path.basename(message["photo_url"])
+                        photo["g_product_url"] = ""
+                        photo["g_base_url"] = message["photo_url"]
+                        if message["photo_info"]["passeringspunkt"] in ["Finish", "Mål"]:
+                            photo["is_photo_finish"] = True
+                        if message["photo_info"]["passeringspunkt"] == "Start":
+                            photo["is_start_registration"] = True
+                        photo_id = await PhotosAdapter().update_photo(
+                            user["token"], photo["id"], photo
+                        )
+                        logging.debug(f"Updated photo with id {photo_id}")
+                        i_u += 1
+                    else:
+                        # create new photo
+                        request_body = {
+                            "name": os.path.basename(message["photo_url"]),
+                            "is_photo_finish": False,
+                            "is_start_registration": False,
+                            "starred": False,
+                            "event_id": event["id"],
+                            "creation_time": format_time(creation_time, False),
+                            "ai_information": message["ai_information"],
+                            "information": message['photo_info'],
+                            "race_id": "",
+                            "raceclass": "",
+                            "biblist": [],
+                            "clublist": [],
+                            "g_id": "",
+                            "g_product_url": message["crop_url"],
+                            "g_base_url": message["photo_url"],
+                        }
+                        # new photo - try to link with event activities
+                        if message["photo_info"]["passeringspunkt"] in ["Finish", "Mål"]:
+                            request_body["is_photo_finish"] = True
+                        if message["photo_info"]["passeringspunkt"] == "Start":
+                            request_body["is_start_registration"] = True
+                        if message["ai_information"]:
+                            for nummer in message["ai_information"]["ai_numbers"]:
+                                result = await find_race_info_from_bib(user["token"], nummer, request_body, event, raceclasses)
+                                logging.debug(f"Link to race info, result {result}")
+                        photo_id = await PhotosAdapter().create_photo(
+                            user["token"], request_body
+                        )
+                        logging.debug(f"Created photo with id {photo_id}")
+                        i_c += 1
                 else:
-                    # create new photo
-                    request_body = {
-                        "name": os.path.basename(message["photo_url"]),
-                        "is_photo_finish": False,
-                        "is_start_registration": False,
-                        "starred": False,
-                        "event_id": event["id"],
-                        "creation_time": format_time(creation_time, False),
-                        "ai_information": message["ai_information"],
-                        "information": message['photo_info'],
-                        "race_id": "",
-                        "raceclass": "",
-                        "biblist": [],
-                        "clublist": [],
-                        "g_id": "",
-                        "g_product_url": message["crop_url"],
-                        "g_base_url": message["photo_url"],
-                    }
-                    # new photo - try to link with event activities
-                    if message["photo_info"]["passeringspunkt"] in ["Finish", "Mål"]:
-                        request_body["is_photo_finish"] = True
-                    if message["photo_info"]["passeringspunkt"] == "Start":
-                        request_body["is_start_registration"] = True
-                    if message["ai_information"]:
-                        for nummer in message["ai_information"]["ai_numbers"]:
-                            result = await find_race_info_from_bib(user["token"], nummer, request_body, event, raceclasses)
-                            logging.debug(f"Link to race info, result {result}")
-                    photo_id = await PhotosAdapter().create_photo(
-                        user["token"], request_body
-                    )
-                    logging.debug(f"Created photo with id {photo_id}")
-                    i_c += 1
-        informasjon = f"Synkronisert bilder fra PubSub. {i_u} oppdatert og {i_c} opprettet."
+                    i_other += 1
+            informasjon = f"Synkronisert bilder fra PubSub. {i_u} oppdatert og {i_c} opprettet."
+            if i_other > 0:
+                informasjon += f" Forkastet {i_other} meldinger som ikke tilhører dette arrangementet."
         return informasjon
 
 

@@ -5,7 +5,7 @@
 
 {% block titleheader %}{{ lopsinfo }}{% endblock %}
 {% block headercontainer %}{{ lopsinfo }} <img id=header_icon src="../static/icon_event.png"> {% endblock %}
-{% block refresh %}120{% endblock %}
+{% block refresh %}60{% endblock %}
 {% block titlemain %} <img id=menu_icon src="../static/icon_event.png"> {{ lopsinfo }}{% endblock %}
 {% block menuitems %}
 {% endblock %}
@@ -20,6 +20,44 @@
       xhttp.send("event_id={{ event_id }}&raceclass=" + raceclass + "&action=generate_resultlist");
       xhttp.onload = function() {
         alert(this.responseText);
+      }
+    }
+
+    /* this function will pull events from queue without reloading the page */
+    function pull_events() {
+    try {
+
+      // get current time, hours, minutes
+      var d = new Date();
+      var current_time = d.toLocaleTimeString();
+      document.getElementById("pull_result").innerHTML = "Foto import: Sjekker..." ;
+
+      var xhttp = new XMLHttpRequest();
+      xhttp.open("POST", "/video_events", true);
+      xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+      var formData = "";
+      formData += "action=pull_google&event_id={{ event_id }}"
+
+      xhttp.send(formData);
+      xhttp.onload = function() {
+        try {
+          // load new info
+          const info = this.response;
+          document.getElementById("pull_result").innerHTML = "Foto import: " + current_time + " - " + info;
+        }
+        catch(err) {
+          if (err.message.indexOf("401") > 0) {
+            document.getElementById("pull_result").innerHTML = "Foto import: Error 401 - Logg inn på nytt.";
+          }
+          else {
+            document.getElementById("pull_result").innerHTML = err;
+          }
+        }
+      }
+    }
+    catch(err) {
+        alert(err);
       }
     }
 </script>
@@ -119,6 +157,11 @@
         </td>
       </tr>
       <tr>
+        <td colspan=6 id="orange" valign="top">
+          &nbsp;&nbsp;&nbsp;<span id="pull_result"></span>
+        </td>
+      </tr>
+        <tr>
         <td colspan=6 id="spacer"></td>
       </tr>
     </table>
@@ -283,13 +326,6 @@
       <tr>
         <td colspan=5 id=spacer></td>
       </tr>
-      <tr>
-        <td class=visible_link><a class=visible_link href=video_events?event_id={{ event_id }}>Kameraer i løypa</a></td>
-        <td id=table_border colspan=4>Oppsett for kameraer plassert ute i løypa - for innsamling av passeringer og foto</td>
-      </tr>
-      <tr>
-        <td colspan=5 id=spacer>&nbsp;</td>
-      </tr>
       <tr id=headerblue>
         <td id=table_border colspan=5>Avikshåndtering</td>
       </tr>
@@ -371,4 +407,8 @@
     </table>
   </div>
 </div>
+<script>
+    // run script when page is loading
+    pull_events();
+</script>
 {% endblock %}
