@@ -11,7 +11,7 @@ from .events_adapter import EventsAdapter
 project_id = EventsAdapter().get_global_setting("GOOGLE_PUBSUB_PROJECT_ID")
 topic_id = EventsAdapter().get_global_setting("GOOGLE_PUBSUB_TOPIC_ID")
 subscription_id = EventsAdapter().get_global_setting("GOOGLE_PUBSUB_SUBSCRIPTION_ID")
-num_messages = int(EventsAdapter().get_global_setting("GOOGLE_PUBSUB_NUM_MESSAGES"))
+num_messages = int(os.getenv("GOOGLE_PUBSUB_NUM_MESSAGES", "20"))
 
 
 class GooglePubSubAdapter:

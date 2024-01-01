@@ -23,10 +23,14 @@ services:
       - RACE_HOST_PORT=8080
       - USERS_HOST_SERVER=user-service
       - USERS_HOST_PORT=8080
+      - GOOGLE_PUBSUB_NUM_MESSAGES=${GOOGLE_PUBSUB_NUM_MESSAGES}
+      - RACE_DURATION_ESTIMATE=${RACE_DURATION_ESTIMATE}
+      - RACE_TIME_DEVIATION_ALLOWED=${RACE_TIME_DEVIATION_ALLOWED}
+
     volumes:
       - type: bind
-        source: .
-        target: /app
+        source: ./${GOOGLE_APPLICATION_CREDENTIALS}
+        target: /app/${GOOGLE_APPLICATION_CREDENTIALS}
     depends_on:
       - "competition-format-service"
       - "event-service"

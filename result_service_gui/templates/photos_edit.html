@@ -23,8 +23,17 @@
 {% endblock %}
 {% block content %}
 <script>
-  function star_toggle(photo_id, action) {
+  function star_toggle(photo_id) {
     console.log("Star photo: " + photo_id);
+    current_value = document.getElementById("star_" + photo_id).value;
+    action = "";
+    if (current_value == "star_on") {
+      action = "star_off";
+    }
+    else {
+      action = "star_on";
+    }
+    console.log("Current value: " + current_value);
     var xhttp = new XMLHttpRequest();
      xhttp.open("POST", "/photo_update", true);
     xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
@@ -32,6 +41,7 @@
     xhttp.onload = function() {
       if ("200" == this.responseText) {
         document.getElementById("star_" + photo_id).src = "../static/" + action + ".png";
+        document.getElementById("star_" + photo_id).value = action;
       }
       else {
         document.getElementById('informasjon').innerHTML = this.responseText;
@@ -39,6 +49,15 @@
     }
   }
 </script>
+<! --- Information --->
+  <div id=spacer></div>
+  <div id=info-header><a id=info-header data-toggle="collapse" href="#info-zone">TIPS</a></div>
+  <div id=info-zone class="collapse">
+    - Ved å stjernemerke bilder vil de bli synlige på åpne sider - i resultatlister og på bilde-siden.<br>
+    - Det er mulig å slette bilder - både enkeltvis og alle. Merk at det bare er link til bildene som slettes.<br>
+  </div>
+  <div id=spacer></div>
+<! --- End Information --->
 
 <! --- Edit menu --->
   <table>
@@ -102,9 +121,9 @@
         <td id=table_border_r>
           <table>
             <tr><td width="150">{% if foto.starred %}
-              <input type=image id="star_{{ foto.id }}" onclick="star_toggle('{{ foto.id }}','star_off');" width=20 src="../static/star_on.png">
+              <input type=image id="star_{{ foto.id }}" onclick="star_toggle('{{ foto.id }}');" width=20 src="../static/star_on.png" value="star_on">
               {% else %}
-                <input type=image id="star_{{ foto.id }}" onclick="star_toggle('{{ foto.id }}','star_on');" width=20 src="../static/star_off.png">
+                <input type=image id="star_{{ foto.id }}" onclick="star_toggle('{{ foto.id }}');" width=20 src="../static/star_off.png" value="star_off">
               {% endif %}
               {% if foto.is_photo_finish %} MÅLFOTO{% endif %}
               {% if foto.is_start_registration %} START{% endif %}

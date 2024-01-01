@@ -1,16 +1,16 @@
 {% extends "open_base.html" %}
 {% block titlecontainer %}
   <div class="w3-container">
-{% endblock %}
+{% endblock titlecontainer %}
 
-{% block titleheader %}{{ lopsinfo }}{% endblock %}
+{% block titleheader %}{{ lopsinfo }}{% endblock titleheader %}
 {% block headercontainer %}{{ lopsinfo }} <img id=header_icon src="../static/icon_event.png"> {% endblock %}
-{% block refresh %}60{% endblock %}
-{% block titlemain %} <img id=menu_icon src="../static/icon_event.png"> {{ lopsinfo }}{% endblock %}
-{% block menuitems %}
-{% endblock %}
+{% block refresh %}60{% endblock refresh %}
+{% block titlemain %} <img id=menu_icon src="../static/icon_event.png"> {{ lopsinfo }}{% endblock titlemain %}
+{% block menuitems %}{% endblock menuitems %}
 
 {% block content %}
+
 <script>
       function generate_resultlist(raceclass) {
       console.log("Re-generate results: " + raceclass);
@@ -407,8 +407,19 @@
     </table>
   </div>
 </div>
+
+<! --- Information --->
+<div id=spacer></div>
+<div id=info-header><a id=info-header data-toggle="collapse" href="#info-zone">TIPS</a></div>
+<div id=info-zone class="collapse">
+  - Dokumentasjon her: <a href=https://langrenn-sprint.github.io/docs/during_race.html>https://langrenn-sprint.github.io/docs/during_race.html</a><br>
+  - Instruksjonsvideo: <a href=https://youtu.be/HdpBOXwqcjw?si=6zlEmkp_655uONh4>https://youtu.be/HdpBOXwqcjw?si=6zlEmkp_655uONh4</a><br>
+</div>
+<div id=spacer></div>
+<! --- End Information --->
+
 <script>
     // run script when page is loading
     pull_events();
 </script>
-{% endblock %}
+{% endblock content %}

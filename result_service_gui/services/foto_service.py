@@ -176,7 +176,7 @@ async def find_race_info_from_bib(
 ) -> int:
     """Analyse photo ai info and add race info to photo."""
     foundheat = ""
-    raceduration = int(EventsAdapter().get_global_setting("RACE_DURATION_ESTIMATE"))
+    raceduration = int(os.getenv("RACE_DURATION_ESTIMATE", "300"))
     starter = await StartAdapter().get_start_entries_by_bib(token, event["id"], bib)
     if len(starter) > 0:
         for start in starter:
@@ -283,7 +283,7 @@ async def verify_heat_time(
 ) -> str:
     """Analyse photo tags and identify heat."""
     foundheat = ""
-    max_time_dev = int(EventsAdapter().get_global_setting("RACE_TIME_DEVIATION_ALLOWED"))
+    max_time_dev = int(os.getenv("RACE_TIME_DEVIATION_ALLOWED", "600"))
 
     if datetime_foto is not None:
         race = await RaceplansAdapter().get_race_by_id(token, race_id)
