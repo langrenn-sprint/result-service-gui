@@ -38,7 +38,7 @@ li:hover, .dropdown:hover, .dropbtn:hover {
 }
 
 #headercollapse {
-		text-align: center;
+		text-align: left;
 		font-size: 1.5em;
     color: white;
     background-color: #A30013;

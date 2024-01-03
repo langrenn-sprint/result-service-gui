@@ -312,7 +312,7 @@
 <div class="w3-row-padding">
   {% for race in current_races %}
     <div id=headercollapse>
-      {{ race.raceclass }}{{ race.round }}{{ race.index }}
+      {{ race.raceclass }} {{ race.round }}{{ race.index }}
       {% if race.round != "F" %}{{ race.heat }}{% endif %}
       &nbsp;kl {{ race.start_time[-8:] }} (heat {{ race.order }})
       <span id="{{ race.order }}_status">
@@ -332,7 +332,7 @@
           <td colspan=2></td>
           <td colspan=2 id=resultheaderfirst>Resultater</td>
           <td colspan=3 id=resultheader align=center>{{ race.next_race }}</td>
-          <td id=resultheader>Bilder</td>
+          <td id=resultheader>Målfoto</td>
         </tr>
         <tr>
           <th width=40>Pos</th>
@@ -428,22 +428,46 @@
                       validation_colors({{ race.order }});
                     }
                   </script>
-                  <td rowspan="{{ loop.length }}">
-                    <table><tr>
+                  <td rowspan="{{ loop.length + 1 }}">
                     {% for bilde in race.photo_finish %}
                       {% if loop.first %}
-                        <td colspan=5><button type="button" name="button" onclick="populate_rank_{{ race.order }}()">Hent resultat fra bilder</button></td></tr><tr>
+                        <!--td colspan=5><button type="button" name="button" onclick="populate_rank_{{ race.order }}()">Hent resultat fra bilder</button></td></tr><tr-->
                       {% endif %}
-                      <td width=100><a class="tooltip_photo" href="">
-                        <img src={{ bilde.g_base_url }} width="100">
-                         <span>
-                             <img src="{{ bilde.g_base_url }}" tabindex=99><br>
-                             <div id=headerblack>Photo time: {{ bilde.creation_time[-8:] }} Bibs: {{ bilde.biblist }}</div>
-                         </span>
-                      </a></td>
-                      {% if loop.index is divisibleby(4) %}<td></td></tr><tr>{% endif %}
+                        <!-- Trigger the Modal -->
+                        <img id="modalImg_{{loop.index}}" src="{{ bilde.g_base_url }}" alt="Photo time: {{ bilde.creation_time[-8:] }} Bibs: {{ bilde.biblist }}" style="width:150px">
+                        <!-- The Modal -->
+                        <div id="myModal_{{loop.index}}" class="modal">
+                          <!-- The Close Button -->
+                          <span id="close_{{loop.index}}" class="close">&times;</span>
+                          <!-- Modal Content (The Image) -->
+                          <img class="modal-content" id="img_{{loop.index}}">
+                          <!-- Modal Caption (Image Text) -->
+                          <div id="caption_{{loop.index}}"></div>
+                        </div>
+                        <script>
+                          // Get the modal
+                          var modal_{{loop.index}} = document.getElementById("myModal_{{loop.index}}");
+                          
+                          // Get the image and insert it inside the modal - use its "alt" text as a caption
+                          var img_{{loop.index}} = document.getElementById("modalImg_{{loop.index}}");
+                          var modalImg_{{loop.index}} = document.getElementById("img_{{loop.index}}");
+                          var captionText_{{loop.index}} = document.getElementById("caption_{{loop.index}}");
+                          img_{{loop.index}}.onclick = function(){
+                            modal_{{loop.index}}.style.display = "block";
+                            modalImg_{{loop.index}}.src = this.src;
+                            captionText_{{loop.index}}.innerHTML = this.alt;
+                          }
+                          
+                          // Get the <span> element that closes the modal
+                          var span_{{loop.index}} = document.getElementById("close_{{loop.index}}");
+                          
+                          // When the user clicks on <span> (x), close the modal
+                          span_{{loop.index}}.onclick = function() { 
+                            modal_{{loop.index}}.style.display = "none";
+                          }
+                        </script>
+                      {% if loop.index is divisibleby(4) %}<br>{% endif %}
                     {% endfor %}
-                    </tr></table>
                   </td>
                 {% endif %}
             </tr>
