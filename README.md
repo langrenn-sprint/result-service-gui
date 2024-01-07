@@ -94,7 +94,6 @@ Denne fila _skal_ ligge i .dockerignore og .gitignore
 
 ```Shell
 % source .env
-% export GOOGLE_APPLICATION_CREDENTIALS="/home/heming/github/secrets/application_default_credentials.json"
 % poetry run adev runserver -p 8090 result_service_gui
 % docker-compose up event-service race-service user-service photo-service mongodb competition-format-service event-service-gui
 ```
