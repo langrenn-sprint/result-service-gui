@@ -429,45 +429,80 @@
                     }
                   </script>
                   <td rowspan="{{ loop.length + 1 }}">
-                    {% for bilde in race.photo_finish %}
-                      {% if loop.first %}
-                        <!--td colspan=5><button type="button" name="button" onclick="populate_rank_{{ race.order }}()">Hent resultat fra bilder</button></td></tr><tr-->
-                      {% endif %}
-                        <!-- Trigger the Modal -->
-                        <img id="modalImg_{{loop.index}}" src="{{ bilde.g_base_url }}" alt="Photo time: {{ bilde.creation_time[-8:] }} Bibs: {{ bilde.biblist }}" style="width:150px">
-                        <!-- The Modal -->
-                        <div id="myModal_{{loop.index}}" class="modal">
-                          <!-- The Close Button -->
-                          <span id="close_{{loop.index}}" class="close">&times;</span>
-                          <!-- Modal Content (The Image) -->
-                          <img class="modal-content" id="img_{{loop.index}}">
-                          <!-- Modal Caption (Image Text) -->
-                          <div id="caption_{{loop.index}}"></div>
+                    <div class="lb_row">
+                      {% for bilde in race.photo_finish %}
+                        {% if loop.first %}
+                          <!--td colspan=5><button type="button" name="button" onclick="populate_rank_{{ race.order }}()">Hent resultat fra bilder</button></td></tr><tr-->
+                        {% endif %}
+                        <!-- Trigger the Lightbox -->
+                          <div class="lb_column">
+                            <img src="{{ bilde.g_base_url }}" style="width:100%" onclick="openModal();currentSlide({{loop.index}})" class="lb_hover-shadow cursor">
+                          </div>
+                      {% endfor %}
+                    </div>
+                    <div id="lb_myModal" class="lb_modal">
+                      <span class="lb_close cursor" onclick="closeModal()">&times;</span>
+                      <div class="lb_modal-content">
+                        {% for bilde in race.photo_finish %}
+                          <div class="lb_mySlides">
+                            <div class="lb_numbertext">{{loop.index}} / {{loop.length}}</div>
+                            <img src="{{ bilde.g_base_url }}" style="width:100%">
+                          </div>
+                        {% endfor %}
+                        <a class="lb_prev" onclick="plusSlides(-1)">&#10094;</a>
+                        <a class="lb_next" onclick="plusSlides(1)">&#10095;</a>
+                    
+                        <div class="lb_caption-container">
+                          <p id="lb_caption"></p>
                         </div>
-                        <script>
-                          // Get the modal
-                          var modal_{{loop.index}} = document.getElementById("myModal_{{loop.index}}");
-                          
-                          // Get the image and insert it inside the modal - use its "alt" text as a caption
-                          var img_{{loop.index}} = document.getElementById("modalImg_{{loop.index}}");
-                          var modalImg_{{loop.index}} = document.getElementById("img_{{loop.index}}");
-                          var captionText_{{loop.index}} = document.getElementById("caption_{{loop.index}}");
-                          img_{{loop.index}}.onclick = function(){
-                            modal_{{loop.index}}.style.display = "block";
-                            modalImg_{{loop.index}}.src = this.src;
-                            captionText_{{loop.index}}.innerHTML = this.alt;
-                          }
-                          
-                          // Get the <span> element that closes the modal
-                          var span_{{loop.index}} = document.getElementById("close_{{loop.index}}");
-                          
-                          // When the user clicks on <span> (x), close the modal
-                          span_{{loop.index}}.onclick = function() { 
-                            modal_{{loop.index}}.style.display = "none";
-                          }
-                        </script>
-                      {% if loop.index is divisibleby(4) %}<br>{% endif %}
-                    {% endfor %}
+                    
+                        {% for bilde in race.photo_finish %}
+                          <div class="lb_column">
+                            <img class="lb_demo cursor" src="{{ bilde.g_base_url }}" style="width:100%" onclick="currentSlide({{loop.index}})" alt="Photo time: {{ bilde.creation_time[-8:] }} Bibs: {{ bilde.biblist }}">
+                          </div>
+                        {% endfor %}
+                      </div>
+                    </div>
+                                                
+                    <script>
+                      // Get the Lightbox
+                      function openModal() {
+                        document.getElementById("lb_myModal").style.display = "block";
+                      }
+
+                      function closeModal() {
+                        document.getElementById("lb_myModal").style.display = "none";
+                      }
+
+                      var slideIndex = 1;
+                      showSlides(slideIndex);
+
+                      function plusSlides(n) {
+                        showSlides(slideIndex += n);
+                      }
+
+                      function currentSlide(n) {
+                        showSlides(slideIndex = n);
+                      }
+
+                      function showSlides(n) {
+                        var i;
+                        var slides = document.getElementsByClassName("lb_mySlides");
+                        var dots = document.getElementsByClassName("lb_demo");
+                        var captionText = document.getElementById("lb_caption");
+                        if (n > slides.length) {slideIndex = 1}
+                        if (n < 1) {slideIndex = slides.length}
+                        for (i = 0; i < slides.length; i++) {
+                            slides[i].style.display = "none";
+                        }
+                        for (i = 0; i < dots.length; i++) {
+                            dots[i].className = dots[i].className.replace(" active", "");
+                        }
+                        slides[slideIndex-1].style.display = "block";
+                        dots[slideIndex-1].className += " active";
+                        captionText.innerHTML = dots[slideIndex-1].alt;
+                      }
+                    </script>
                   </td>
                 {% endif %}
             </tr>
