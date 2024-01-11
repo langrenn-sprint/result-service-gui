@@ -1,5 +1,4 @@
 """Resource module for verificatoin of timing registration."""
-import json
 import logging
 
 from aiohttp import web
