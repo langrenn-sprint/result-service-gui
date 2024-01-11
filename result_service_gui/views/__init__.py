@@ -8,6 +8,7 @@ from .liveness import Ping, Ready
 from .login import Login
 from .logout import Logout
 from .main import Main
+from .photo_finish import PhotoFinish
 from .photo_update import PhotoUpdate
 from .photos import Photos
 from .photos_edit import PhotosEdit

@@ -440,11 +440,11 @@
                           </div>
                       {% endfor %}
                     </div>
-                    <div id="lb_myModal" class="lb_modal">
+                    <div id="lb_myModal_{{ race.order }}" class="lb_modal">
                       <span class="lb_close cursor" onclick="closeModal()">&times;</span>
                       <div class="lb_modal-content">
                         {% for bilde in race.photo_finish %}
-                          <div class="lb_mySlides">
+                          <div class="lb_mySlides_{{ race.order }}">
                             <div class="lb_numbertext">{{loop.index}} / {{loop.length}}</div>
                             <img src="{{ bilde.g_base_url }}" style="width:100%">
                           </div>
@@ -453,12 +453,12 @@
                         <a class="lb_next" onclick="plusSlides(1)">&#10095;</a>
                     
                         <div class="lb_caption-container">
-                          <p id="lb_caption"></p>
+                          <p id="lb_caption_{{ race.order }}"></p>
                         </div>
                     
                         {% for bilde in race.photo_finish %}
                           <div class="lb_column">
-                            <img class="lb_demo cursor" src="{{ bilde.g_base_url }}" style="width:100%" onclick="currentSlide({{loop.index}})" alt="Photo time: {{ bilde.creation_time[-8:] }} Bibs: {{ bilde.biblist }}">
+                            <img class="lb_demo_{{ race.order }} cursor" src="{{ bilde.g_base_url }}" style="width:100%" onclick="currentSlide({{loop.index}})" alt="Photo time: {{ bilde.creation_time[-8:] }} Bibs: {{ bilde.biblist }}">
                           </div>
                         {% endfor %}
                       </div>
@@ -467,11 +467,11 @@
                     <script>
                       // Get the Lightbox
                       function openModal() {
-                        document.getElementById("lb_myModal").style.display = "block";
+                        document.getElementById("lb_myModal_{{ race.order }}").style.display = "block";
                       }
 
                       function closeModal() {
-                        document.getElementById("lb_myModal").style.display = "none";
+                        document.getElementById("lb_myModal_{{ race.order }}").style.display = "none";
                       }
 
                       var slideIndex = 1;
@@ -487,9 +487,9 @@
 
                       function showSlides(n) {
                         var i;
-                        var slides = document.getElementsByClassName("lb_mySlides");
-                        var dots = document.getElementsByClassName("lb_demo");
-                        var captionText = document.getElementById("lb_caption");
+                        var slides = document.getElementsByClassName("lb_mySlides_{{ race.order }}");
+                        var dots = document.getElementsByClassName("lb_demo_{{ race.order }}");
+                        var captionText = document.getElementById("lb_caption_{{ race.order }}");
                         if (n > slides.length) {slideIndex = 1}
                         if (n < 1) {slideIndex = slides.length}
                         for (i = 0; i < slides.length; i++) {
