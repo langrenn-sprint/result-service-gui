@@ -237,7 +237,7 @@ def get_qualification_text(race: dict) -> str:
     text = ""
     if race["round"] == "R1":
         text = "Alle til runde 2"
-    elif race["round"] == "R2":
+    elif race["round"] in ["R2", "F"]:
         text = ""
     else:
         for key, value in race["rule"].items():
@@ -284,16 +284,15 @@ def get_raceplan_summary(races: list, raceclasses: list) -> list:
         # loop through races - update start time pr round pr class
         for race in reversed(races):
             if race["raceclass"] == raceclass["name"]:
-                if race["datatype"] == "individual_sprint":
-                    if race["round"] in ["Q", "R1"]:
-                        class_summary["timeQ"] = race["start_time"][-8:]
-                        class_summary["orderQ"] = race["order"]
-                    elif race["round"] in ["S", "R2"]:
-                        class_summary["timeS"] = race["start_time"][-8:]
-                        class_summary["orderS"] = race["order"]
-                    elif race["round"] == "F":
-                        class_summary["timeF"] = race["start_time"][-8:]
-                        class_summary["orderF"] = race["order"]
+                if race["round"] in ["Q", "R1"]:
+                    class_summary["timeQ"] = race["start_time"][-8:]
+                    class_summary["orderQ"] = race["order"]
+                elif race["round"] in ["S", "R2"]:
+                    class_summary["timeS"] = race["start_time"][-8:]
+                    class_summary["orderS"] = race["order"]
+                elif race["round"] == "F":
+                    class_summary["timeF"] = race["start_time"][-8:]
+                    class_summary["orderF"] = race["order"]
         summary.append(class_summary)
     logging.debug(summary)
     return summary

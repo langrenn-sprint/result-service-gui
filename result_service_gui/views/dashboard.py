@@ -91,7 +91,9 @@ async def get_race_kpis(token: str, event: dict, raceclasses: list) -> list:
 
             race_progress = get_race_progress(event, race, count_starts, count_dns, count_dnf, count_results)
 
-            if race["round"] == "F":
+            if event['competition_format'] != "Individual Sprint":
+                race_name = event['competition_format']
+            elif race["round"] == "F":
                 race_name = f"{race['round']}{race['index']}"
             else:
                 race_name = f"{race['round']}{race['index']}{race['heat']}"

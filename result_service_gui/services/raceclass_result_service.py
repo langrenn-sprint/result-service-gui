@@ -11,17 +11,17 @@ class RaceclassResultsService:
     """Class representing raceclasses."""
 
     async def create_raceclass_results(
-        self, token: str, event_id: str, valgt_klasse: str
+        self, token: str, event: dict, valgt_klasse: str
     ) -> int:
         """Create or recreate raceclass results function."""
         # first delete any old results
         try:
             resultlist = await RaceclassResultsAdapter().get_raceclass_result(
-                event_id, valgt_klasse
+                event["id"], valgt_klasse
             )
             if resultlist:
                 res = await RaceclassResultsAdapter().delete_raceclass_result(
-                    token, event_id, valgt_klasse
+                    token, event["id"], valgt_klasse
                 )
                 logging.debug(
                     f"Deleted old results for raceclass {valgt_klasse} - {res}"
@@ -30,11 +30,18 @@ class RaceclassResultsService:
             logging.debug(f"No results found, no delete required {valgt_klasse}")
 
         # generate new resultset
-        raceclass_result = await get_results_by_raceclass(token, event_id, valgt_klasse)
+        if event["competition_format"] == "Interval Start":
+            raceclass_result = await get_results_from_interval_start(
+                token, event["id"], valgt_klasse
+            )
+        else:
+            raceclass_result = await get_results_from_all_heats(
+                token, event["id"], valgt_klasse
+            )
 
         # query contestant object to add ageclass
         contestants = await ContestantsAdapter().get_all_contestants_by_raceclass(
-            token, event_id, valgt_klasse
+            token, event["id"], valgt_klasse
         )
         for racer in raceclass_result["ranking_sequence"]:
             for contestant in contestants:
@@ -45,7 +52,7 @@ class RaceclassResultsService:
 
         # and store to db
         res = await RaceclassResultsAdapter().create_raceclass_results(
-            token, event_id, raceclass_result
+            token, event["id"], raceclass_result
         )
 
         return res
@@ -89,10 +96,10 @@ class RaceclassResultsService:
         return finish_rank
 
 
-async def get_results_by_raceclass(
+async def get_results_from_all_heats(
     token: str, event_id: str, valgt_klasse: str
 ) -> dict:
-    """Get results for raceclass - return sorted list. With our without DNF."""
+    """Get sprint results - return sorted list. With our without DNF."""
     results = {
         "event_id": event_id,
         "raceclass": valgt_klasse,
@@ -169,6 +176,52 @@ async def get_results_by_raceclass(
                 racers_count += 1
         else:
             already_ranked = racers_count
+
+    results["no_of_contestants"] = racers_count
+
+    return results
+
+
+async def get_results_from_interval_start(
+    token: str, event_id: str, valgt_klasse: str
+) -> dict:
+    """Get interval start - return sorted list. With our without DNF."""
+    racers_count = 0
+    results = {
+        "event_id": event_id,
+        "raceclass": valgt_klasse,
+        "timing_point": "Finish",
+        "no_of_contestants": 0,
+        "ranking_sequence": [],
+        "status": 1,
+    }
+    races = await RaceplansAdapter().get_races_by_racesclass(
+        token, event_id, valgt_klasse
+    )
+
+    # interval start - only one race
+    if len(races) != 1:
+        raise Exception("Error: Wrong number of races.")
+    race = races[0]
+
+    race_details = await RaceplansAdapter().get_race_by_id(token, race["id"])
+    finish_results = RaceclassResultsService().get_finish_rank_for_race(
+        race_details, True
+    )
+    for _tmp_result in finish_results:
+        new_result: dict = {
+            "bib": _tmp_result["bib"],
+            "rank": f"{_tmp_result['rank']}",
+            "round": f"{race['round']}",
+            "name": _tmp_result["name"],
+            "club": _tmp_result["club"],
+            "club_logo": _tmp_result["club_logo"],
+            "ageclass": "",
+            "minidrett_id": "",
+            "time_event": _tmp_result,
+        }
+        results["ranking_sequence"].append(new_result)  # type: ignore
+        racers_count += 1
 
     results["no_of_contestants"] = racers_count
 

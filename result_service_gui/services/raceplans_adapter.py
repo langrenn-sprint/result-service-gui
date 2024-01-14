@@ -147,6 +147,12 @@ class RaceplansAdapter:
                     raise web.HTTPBadRequest(
                         reason=f"Error - {resp.status}: {body['detail']}."
                     )
+        # ensure that round always exists by setting F(inal) if missing
+        for race in races:
+            if "round" in race.keys():
+                break
+            else:
+                race["round"] = "F"
         return races
 
     async def get_race_by_id(self, token: str, race_id: str) -> dict:
@@ -173,6 +179,11 @@ class RaceplansAdapter:
                     raise web.HTTPBadRequest(
                         reason=f"Error - {resp.status}: {body['detail']}."
                     )
+        # ensure that round always exists by setting F(inal) if missing
+        if "round" in race.keys():
+            pass
+        else:
+            race["round"] = "F"
         return race
 
     async def get_race_by_order(
@@ -184,6 +195,12 @@ class RaceplansAdapter:
         for _race in all_races:
             if _race["order"] == race_order:
                 race = await RaceplansAdapter().get_race_by_id(token, _race["id"])
+                break
+        # ensure that round always exists by setting F(inal) if missing
+        if "round" in race.keys():
+            pass
+        else:
+            race["round"] = "F"
         return race
 
     async def get_races_by_racesclass(
@@ -215,6 +232,12 @@ class RaceplansAdapter:
                     raise web.HTTPBadRequest(
                         reason=f"Error - {resp.status}: {body['detail']}."
                     )
+        # ensure that round always exists by setting F(inal) if missing
+        for race in races:
+            if "round" in race.keys():
+                break
+            else:
+                race["round"] = "F"
         return races
 
     async def update_order(self, token: str, race_id: str, new_order: int) -> str:
@@ -355,8 +378,35 @@ class RaceplansAdapter:
                 res = await RaceplansAdapter().update_race(token, race["id"], race)
                 logging.debug(f"Raceplan update time, result: {res}. {race}")
 
-        informasjon = (
-            f"Suksess! Utsettelse på {delta_seconds} sekunder fra heat {order}."
-        )
+        if delta_seconds < 0:
+            delta_seconds_abs = abs(delta_seconds)
+            hours, remainder = divmod(delta_seconds_abs, 3600)
+            minutes, seconds = divmod(remainder, 60)
+            informasjon = f"Fremskyndet med {int(hours)}:{int(minutes)}:{int(seconds)} fra heat {order}. "
+        else:
+            informasjon = f"Utsettelse på {delta_time} fra heat {order}. "
 
         return informasjon
+
+    async def validate_raceplan(self, token: str, raceplan_id: str) -> dict:
+        """Validate raceplan function."""
+        servicename = "validate_raceplan"
+        validation_result = {}
+        headers = MultiDict(
+            [
+                (hdrs.AUTHORIZATION, f"Bearer {token}"),
+            ]
+        )
+        async with ClientSession() as session:
+            async with session.post(
+                f"{RACE_SERVICE_URL}/raceplans/{raceplan_id}/validate",
+                headers=headers,
+            ) as resp:
+                if resp.status == 401:
+                    raise Exception(
+                        f"401 Login expired - vennligst logg inn på nytt. Service {servicename}"
+                    )
+                else:
+                    validation_result = await resp.json()
+
+        return validation_result

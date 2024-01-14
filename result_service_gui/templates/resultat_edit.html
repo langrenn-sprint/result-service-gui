@@ -40,11 +40,15 @@
         {% for raceclass in raceplan_summary %}
           {% if raceclass.ranking %}
           <tr>
-            <td id="black">{{ raceclass.name }}</td>
-            <td><nobr><a href=resultat_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=Q>Kvart</a></nobr></td>
-            <td><nobr><a href=resultat_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=S>Semi</a></nobr></td>
-            <td><nobr><a href=resultat_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=F>Finale</a></nobr></td>
-          </tr>
+            {% if event.competition_format != "Interval Start" %}
+              <td id="black">{{ raceclass.name }}</td>
+              <td><nobr><a href=resultat_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=Q>Kvart</a></nobr></td>
+              <td><nobr><a href=resultat_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=S>Semi</a></nobr></td>
+              <td><nobr><a href=resultat_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=F>Finale</a></nobr></td>
+            {% else %}
+              <td colspan="4"><nobr><a href=resultat_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=F>{{ raceclass.name }}</a></nobr></td>
+            {% endif %}
+            </tr>
           {% endif %}
         {% endfor %}
       </table>
@@ -79,7 +83,7 @@
         var my_form = button.form;
         var formData = "";
         var race_order = 0
-        for (let i = 0; i < my_form.length; i++) {
+        for (let i = 1; i < my_form.length; i++) {
           formData += my_form[i].name + "=" + my_form[i].value + "&";
           if (my_form[i].name == "race_order"){
             race_order = my_form[i].value
@@ -96,7 +100,7 @@
             const race_results_status = jsonDoc.race_results_status;
 
             // refresh data - first delete
-            for (let i = 0; i < 12; i++) {
+            for (let i = 1; i < 12; i++) {
               try { 
                 document.getElementById(race_order + "_name_" + i).innerHTML = ""
                 document.getElementById(race_order + "_videre_til_" + i).innerHTML = ""
@@ -193,7 +197,7 @@
     */
       function validation_colors(race_order) {
         // 1. reset all colors
-        for (let i = 0; i < 12; i++) {
+        for (let i = 1; i < 12; i++) {
           try { 
             document.getElementById(race_order + "_form_rank_" + i).style.backgroundColor = "";
           }
@@ -207,7 +211,7 @@
         // 2. collect entered data, reset on start-entries and find dupliactes
         const bib_array = []
         const duplicate_array = []
-        for (let i = 0; i < 12; i++) {
+        for (let i = 1; i < 12; i++) {
           try { 
             const new_bib = document.getElementById(race_order + "_form_rank_" + i).value;
             if (new_bib != "") {
@@ -223,7 +227,7 @@
         // 3. set red on duplicate bibs (values)
         duplicate_array.forEach(myDuplicateFunction);
         function myDuplicateFunction(value, index, array) {
-          for (let i = 0; i < 12; i++) {
+          for (let i = 1; i < 12; i++) {
             try { 
               if (value == document.getElementById(race_order + "_form_rank_" + i).value) {
                 document.getElementById(race_order + "_form_rank_" + i).style.backgroundColor = "red";
@@ -234,12 +238,12 @@
         // 4. set green on start-entries and red on bibs (values) not in start list
         bib_array.forEach(myStartColorFunction);
         function myStartColorFunction(value, index, array) {
-          for (let i = 0; i < 12; i++) {
+          for (let i = 1; i < 12; i++) {
             try { 
                 document.getElementById(race_order + value).style.backgroundColor = "green";
             }
             catch(err) {
-              for (let i = 0; i < 12; i++) {
+              for (let i = 1; i < 12; i++) {
                 try { 
                   if (value == document.getElementById(race_order + "_form_rank_" + i).value) {
                     document.getElementById(race_order + "_form_rank_" + i).style.backgroundColor = "red";
@@ -251,7 +255,7 @@
         }
 
         // 5. set delt checkbox
-        for (let i = 0; i < 12; i++) {
+        for (let i = 1; i < 12; i++) {
           try { 
             if (document.getElementById(race_order + "_pos_" + i).value == document.getElementById(race_order + "_pos_" + (i-1)).value) {
               if (document.getElementById(race_order + "_pos_" + i).value != "") {
@@ -420,7 +424,7 @@
                       */
                     function populate_rank_{{ race.order }}() {
                       biblist = {{ race.photo_bib_rank }};
-                      for (let i = 0; i < biblist.length; i++) {
+                      for (let i = 1; i < biblist.length; i++) {
                           position = i + 1;
                           the_element = "{{ race.order }}_form_rank_" + position;
                           document.getElementById(the_element).value = biblist[i];
@@ -429,80 +433,85 @@
                     }
                   </script>
                   <td rowspan="{{ loop.length + 1 }}">
-                    <div class="lb_row">
-                      {% for bilde in race.photo_finish %}
-                        {% if loop.first %}
-                          <!--td colspan=5><button type="button" name="button" onclick="populate_rank_{{ race.order }}()">Hent resultat fra bilder</button></td></tr><tr-->
-                        {% endif %}
-                        <!-- Trigger the Lightbox -->
-                          <div class="lb_column">
-                            <img src="{{ bilde.g_base_url }}" style="width:100%" onclick="openModal();currentSlide({{loop.index}})" class="lb_hover-shadow cursor">
-                          </div>
-                      {% endfor %}
-                    </div>
-                    <div id="lb_myModal_{{ race.order }}" class="lb_modal">
-                      <span class="lb_close cursor" onclick="closeModal()">&times;</span>
-                      <div class="lb_modal-content">
+                    <! -- Start photo stuff -->
+                    {% if race.photo_finish != [] %}
+                      <div class="lb_row">
                         {% for bilde in race.photo_finish %}
-                          <div class="lb_mySlides_{{ race.order }}">
-                            <div class="lb_numbertext">{{loop.index}} / {{loop.length}}</div>
-                            <img src="{{ bilde.g_base_url }}" style="width:100%">
-                          </div>
-                        {% endfor %}
-                        <a class="lb_prev" onclick="plusSlides(-1)">&#10094;</a>
-                        <a class="lb_next" onclick="plusSlides(1)">&#10095;</a>
-                    
-                        <div class="lb_caption-container">
-                          <p id="lb_caption_{{ race.order }}"></p>
-                        </div>
-                    
-                        {% for bilde in race.photo_finish %}
-                          <div class="lb_column">
-                            <img class="lb_demo_{{ race.order }} cursor" src="{{ bilde.g_base_url }}" style="width:100%" onclick="currentSlide({{loop.index}})" alt="Photo time: {{ bilde.creation_time[-8:] }} Bibs: {{ bilde.biblist }}">
-                          </div>
+                          {% if loop.first %}
+                            <!--td colspan=5><button type="button" name="button" onclick="populate_rank_{{ race.order }}()">Hent resultat fra bilder</button></td></tr><tr-->
+                          {% endif %}
+                          <!-- Trigger the Lightbox -->
+                            <div class="lb_column">
+                              <img src="{{ bilde.g_base_url }}" style="width:100%" onclick="openModal();currentSlide({{loop.index}})" class="lb_hover-shadow cursor">
+                            </div>
                         {% endfor %}
                       </div>
-                    </div>
-                                                
-                    <script>
-                      // Get the Lightbox
-                      function openModal() {
-                        document.getElementById("lb_myModal_{{ race.order }}").style.display = "block";
-                      }
-
-                      function closeModal() {
-                        document.getElementById("lb_myModal_{{ race.order }}").style.display = "none";
-                      }
-
-                      var slideIndex = 1;
-                      showSlides(slideIndex);
-
-                      function plusSlides(n) {
-                        showSlides(slideIndex += n);
-                      }
-
-                      function currentSlide(n) {
-                        showSlides(slideIndex = n);
-                      }
-
-                      function showSlides(n) {
-                        var i;
-                        var slides = document.getElementsByClassName("lb_mySlides_{{ race.order }}");
-                        var dots = document.getElementsByClassName("lb_demo_{{ race.order }}");
-                        var captionText = document.getElementById("lb_caption_{{ race.order }}");
-                        if (n > slides.length) {slideIndex = 1}
-                        if (n < 1) {slideIndex = slides.length}
-                        for (i = 0; i < slides.length; i++) {
-                            slides[i].style.display = "none";
+                      <div id="lb_myModal_{{ race.order }}" class="lb_modal">
+                        <span class="lb_close cursor" onclick="closeModal()">&times;</span>
+                        <div class="lb_modal-content">
+                          {% for bilde in race.photo_finish %}
+                            <div class="lb_mySlides_{{ race.order }}">
+                              <div class="lb_numbertext">{{loop.index}} / {{loop.length}}</div>
+                              <img src="{{ bilde.g_base_url }}" style="width:100%">
+                            </div>
+                          {% endfor %}
+                          <a class="lb_prev" onclick="plusSlides(-1)">&#10094;</a>
+                          <a class="lb_next" onclick="plusSlides(1)">&#10095;</a>
+                      
+                          <div class="lb_caption-container">
+                            <p id="lb_caption_{{ race.order }}"></p>
+                          </div>
+                      
+                          {% for bilde in race.photo_finish %}
+                            <div class="lb_column">
+                              <img class="lb_demo_{{ race.order }} cursor" src="{{ bilde.g_base_url }}" style="width:100%" onclick="currentSlide({{loop.index}})" alt="Photo time: {{ bilde.creation_time[-8:] }} Bibs: {{ bilde.biblist }}">
+                            </div>
+                          {% endfor %}
+                        </div>
+                      </div>
+                                                  
+                      <script>
+                        // Get the Lightbox
+                        function openModal() {
+                          document.getElementById("lb_myModal_{{ race.order }}").style.display = "block";
                         }
-                        for (i = 0; i < dots.length; i++) {
-                            dots[i].className = dots[i].className.replace(" active", "");
+
+                        function closeModal() {
+                          document.getElementById("lb_myModal_{{ race.order }}").style.display = "none";
                         }
-                        slides[slideIndex-1].style.display = "block";
-                        dots[slideIndex-1].className += " active";
-                        captionText.innerHTML = dots[slideIndex-1].alt;
-                      }
-                    </script>
+
+                        var slideIndex = 1;
+                        showSlides(slideIndex);
+
+                        function plusSlides(n) {
+                          showSlides(slideIndex += n);
+                        }
+
+                        function currentSlide(n) {
+                          showSlides(slideIndex = n);
+                        }
+
+                        function showSlides(n) {
+                          var i;
+                          var slides = document.getElementsByClassName("lb_mySlides_{{ race.order }}");
+                          var dots = document.getElementsByClassName("lb_demo_{{ race.order }}");
+                          var captionText = document.getElementById("lb_caption_{{ race.order }}");
+                          if (n > slides.length) {slideIndex = 1}
+                          if (n < 1) {slideIndex = slides.length}
+                          for (i = 0; i < slides.length; i++) {
+                              slides[i].style.display = "none";
+                          }
+                          for (i = 0; i < dots.length; i++) {
+                              dots[i].className = dots[i].className.replace(" active", "");
+                          }
+                          slides[slideIndex-1].style.display = "block";
+                          dots[slideIndex-1].className += " active";
+                          captionText.innerHTML = dots[slideIndex-1].alt;
+                        }
+                      </script>
+                    {% endif %}
+                    <! -- End photo stuff -->
+
                   </td>
                 {% endif %}
             </tr>

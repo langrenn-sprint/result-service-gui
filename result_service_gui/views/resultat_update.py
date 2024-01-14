@@ -27,9 +27,10 @@ class ResultatUpdate(web.View):
                 result = await create_event(user, form, action)  # type: ignore
             elif action == "generate_resultlist":
                 event_id = str(form['event_id'])
+                event = await get_event(user, event_id)
                 raceclass = str(form['raceclass'])
                 res = await RaceclassResultsService().create_raceclass_results(
-                    user["token"], event_id, raceclass
+                    user["token"], event, raceclass
                 )  # type: ignore
                 logging.debug(f"Resultat for {raceclass} er publisert. {res}")
                 result = f"Resultat for {raceclass} er publisert. "

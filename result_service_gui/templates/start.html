@@ -46,27 +46,29 @@
 
   {% if event.competition_format == "Interval Start" %}
     <table>
-       <tr id=headerblue>
-        <td>Startnummer</td>
+      <tr id=headerblue>
+        <td>Startnr</td>
         <td>Tid</td>
         <td>Navn</td>
-        <td>Klubb</td>
+        <td>Klubb</td>
         <td>Team</td>
         <td>Klasse</td>
       </tr>
-      {% for start in races.startliste %}
+      {% for race in races %}
+        {% for loper in race.startliste %}
           <tr>
-            <td>{{ start.bib }}</td>
-            <td>{{ start.scheduled_start_time[-8:] }}</td>
-            <td>{{ start.name }}</td>
-            <td>{{ start.club }}</td>
-            <td>{{ start.team }}</td>
-            <td>{{ start.ageclass }}</td>
+            <td>{{ loper.bib }}</td>
+            <td>{{ loper.scheduled_start_time[-8:] }}</td>
+            <td>{{ loper.name }}</td>
+            <td>
+              {% if loper.club_logo %}<img width=15 src={{ loper.club_logo }}>{% endif %}
+              {{ loper.club }}
+            </td>
+            <td>{{ loper.team }}</td>
+            <td>{{ loper.ageclass }}</td>
           </tr>
-      {% endfor %}
-      <tr>
-        <td id=spacer colspan=4> </td>
-      </tr>
+          {% endfor %}
+        {% endfor %}
     </table>
     <div id=spacer></div>
   {% else %}

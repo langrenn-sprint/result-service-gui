@@ -23,16 +23,20 @@
       <table>
         {% for raceclass in raceclasses %}
           <tr>
-            <td id="black">{{ raceclass.name }}</td>
-            <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&action={{ action }}>Alle</a></nobr></td>
-            {% if raceclass.ranking %}
-              <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&action={{ action }}&runde=Q>Kvart</a></nobr></td>
-              <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&action={{ action }}&runde=S>Semi</a></nobr></td>
-              <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&action={{ action }}&runde=F>Finale</a></nobr></td>
+            {% if event.competition_format != "Interval Start" %}
+              <td id="black">{{ raceclass.name }}</td>
+              <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&action={{ action }}>Alle</a></nobr></td>
+              {% if raceclass.ranking %}
+                <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&action={{ action }}&runde=Q>Kvart</a></nobr></td>
+                <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&action={{ action }}&runde=S>Semi</a></nobr></td>
+                <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&action={{ action }}&runde=F>Finale</a></nobr></td>
+              {% else %}
+                <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=R1>Runde 1</a></nobr></td>
+                <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=R2>Runde 2</a></nobr></td>
+                <td></td>
+              {% endif %}
             {% else %}
-              <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=R1>Runde 1</a></nobr></td>
-              <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=R2>Runde 2</a></nobr></td>
-              <td></td>
+              <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&action={{ action }}>{{ raceclass.name }}</a></nobr></td>
             {% endif %}
           </tr>
         {% endfor %}
@@ -52,7 +56,11 @@
           <td colspan=3><b>{{ race.start_time[-8:] }}</b> (heat {{ race.order }})</td>
         </tr>
           <tr id=headerblue>
-            <td>Pos</td>
+            {% if event.competition_format == "Interval Start" %}
+              <td>Tid</td>
+            {% else %}
+              <td>Pos</td>
+            {% endif %}
             <td>Startnr</td>
             <td colspan=2>Status</td>
             <td>Navn</td>
@@ -60,7 +68,11 @@
           </tr>
           {% for start in race.startliste %}
             <tr>
-              <td align=center>{{ start.starting_position }}</td>
+              {% if event.competition_format == "Interval Start" %}
+                <td>{{ start.scheduled_start_time }}</td>
+              {% else %}
+                <td align=center>{{ start.starting_position }}</td>
+              {% endif %}
               <td align=center width=50>{{ start.bib }}</td>
               <td>{{ start.start_status }}</td>
               <td>
