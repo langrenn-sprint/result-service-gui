@@ -18,6 +18,7 @@ nox.options.sessions = (
     "contract_tests",
 )
 
+
 @session
 def clean(session: Session) -> None:
     """Clean the project."""
@@ -62,6 +63,7 @@ def clean(session: Session) -> None:
         ".coverage",
         external=True,
     )
+
 
 @session
 def integration_tests(session: Session) -> None:
