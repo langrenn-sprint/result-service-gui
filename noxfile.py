@@ -20,6 +20,52 @@ nox.options.sessions = (
 
 
 @session
+def clean(session: Session) -> None:
+    """Clean the project."""
+    session.run(
+        "py3clean",
+        ".",
+        external=True,
+    )
+    session.run(
+        "rm",
+        "-rf",
+        ".cache",
+        external=True,
+    )
+    session.run(
+        "rm",
+        "-rf",
+        ".pytest_cache",
+        external=True,
+    )
+    session.run(
+        "rm",
+        "-rf",
+        ".pytype",
+        external=True,
+    )
+    session.run(
+        "rm",
+        "-rf",
+        "dist",
+        external=True,
+    )
+    session.run(
+        "rm",
+        "-rf",
+        ".mypy_cache",
+        external=True,
+    )
+    session.run(
+        "rm",
+        "-f",
+        ".coverage",
+        external=True,
+    )
+
+
+@session
 def integration_tests(session: Session) -> None:
     """Run the integration test suite."""
     args = session.posargs or ["--cov"]
