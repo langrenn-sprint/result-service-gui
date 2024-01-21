@@ -171,10 +171,16 @@ class ResultatEdit(web.View):
         except Exception as e:
             logging.error(f"Error: {e}")
             error_reason = str(e)
-            if error_reason.startswith("401"):
+            if error_reason.count("401") > 0:
                 informasjon = f"Error 401 - Ingen tilgang, vennligst logg inn på nytt. {e}"
                 # check for update without reload
                 if "ajax" in form.keys():
+                    response = {
+                        "race_results": [],
+                        "race_results_status": 0,
+                        "informasjon": informasjon
+                    }
+                    json_response = json.dumps(response)
                     return web.Response(text=informasjon)
                 return web.HTTPSeeOther(
                     location=f"/login?informasjon={informasjon}"

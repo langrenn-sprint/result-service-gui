@@ -399,6 +399,8 @@
                   <td id="{{ race.order }}_videre_til_{{ loop.index }}">
                     {% if valgt_runde.runde != "F" %}
                       {{ race.finish_timings[loop.index0].next_race }}-{{ race.finish_timings[loop.index0].next_race_position }}
+                    {% else %}
+                    {{ race.finish_timings[loop.index0].registration_time[-8:] }}
                     {% endif %}
                   </td>
                 {% else %}

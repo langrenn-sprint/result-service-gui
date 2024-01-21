@@ -63,7 +63,6 @@ class RaceclassResultsService:
         finish_bibs = []
         results = race["results"]
         if len(results) > 0:
-            logging.debug(f"Resultst: {results}")
             if "Finish" in results.keys():
                 finish_results = results["Finish"]
                 if len(finish_results) > 0:
@@ -84,12 +83,14 @@ class RaceclassResultsService:
                     dnf_entry = {
                         "next_race_id": "",
                         "bib": start['bib'],
+                        "rank": None,
                         "round": f"{race['round']}{race['index']}",
                         "name": start["name"],
                         "club": start["club"],
                         "club_logo": EventsAdapter().get_club_logo_url(start["club"]),
                         "ageclass": "",
                         "time_event": {},
+                        "timing_point": "DNF",
                         "status": "DNF"
                     }
                     finish_rank.append(dnf_entry)
@@ -205,23 +206,22 @@ async def get_results_from_interval_start(
     race = races[0]
 
     race_details = await RaceplansAdapter().get_race_by_id(token, race["id"])
-    finish_results = RaceclassResultsService().get_finish_rank_for_race(
-        race_details, True
-    )
+    finish_results = RaceclassResultsService().get_finish_rank_for_race(race_details, True)
     for _tmp_result in finish_results:
-        new_result: dict = {
-            "bib": _tmp_result["bib"],
-            "rank": f"{_tmp_result['rank']}",
-            "round": f"{race['round']}",
-            "name": _tmp_result["name"],
-            "club": _tmp_result["club"],
-            "club_logo": _tmp_result["club_logo"],
-            "ageclass": "",
-            "minidrett_id": "",
-            "time_event": _tmp_result,
-        }
-        results["ranking_sequence"].append(new_result)  # type: ignore
-        racers_count += 1
+        if _tmp_result["timing_point"] == "Finish":
+            new_result: dict = {
+                "bib": _tmp_result["bib"],
+                "rank": f"{_tmp_result['rank']}",
+                "round": f"{race['round']}",
+                "name": _tmp_result["name"],
+                "club": _tmp_result["club"],
+                "club_logo": _tmp_result["club_logo"],
+                "ageclass": "",
+                "minidrett_id": "",
+                "time_event": _tmp_result,
+            }
+            results["ranking_sequence"].append(new_result)  # type: ignore
+            racers_count += 1
 
     results["no_of_contestants"] = racers_count
 

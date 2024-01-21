@@ -153,6 +153,7 @@ class RaceplansAdapter:
                 break
             else:
                 race["round"] = "F"
+                race["index"] = ""
         return races
 
     async def get_race_by_id(self, token: str, race_id: str) -> dict:
@@ -184,6 +185,7 @@ class RaceplansAdapter:
             pass
         else:
             race["round"] = "F"
+            race["index"] = ""
         return race
 
     async def get_race_by_order(
@@ -201,6 +203,7 @@ class RaceplansAdapter:
             pass
         else:
             race["round"] = "F"
+            race["index"] = ""
         return race
 
     async def get_races_by_racesclass(
@@ -238,6 +241,7 @@ class RaceplansAdapter:
                 break
             else:
                 race["round"] = "F"
+                race["index"] = ""
         return races
 
     async def update_order(self, token: str, race_id: str, new_order: int) -> str:

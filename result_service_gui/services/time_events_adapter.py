@@ -39,15 +39,15 @@ class TimeEventsAdapter:
                     logging.debug(f"time-event - got response {resp}, {new_time_event}")
                 elif resp.status == 400:
                     functional_error = await resp.json()
-                    raise web.HTTPBadRequest(reason=f"400 - {functional_error['detail']}")
+                    raise Exception(f"400 - {functional_error['detail']}")
                 elif resp.status == 401:
-                    raise web.HTTPBadRequest(reason=f"401 Unathorized - {servicename}")
+                    raise Exception(f"401 Unathorized - {servicename}")
                 else:
                     logging.error(
                         f"create_time_event failed - {resp.status}, {resp} input data: {time_event}"
                     )
-                    raise web.HTTPBadRequest(
-                        reason=f"Create time_event failed Error: {resp}. Input data: {time_event}"
+                    raise Exception(
+                        f"500 - Create time_event failed Error: {resp}. Input data: {time_event}"
                     )
         return new_time_event
 

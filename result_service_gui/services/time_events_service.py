@@ -203,8 +203,8 @@ class TimeEventsService:
                     if time_event["next_race"] != "Ute" and result_ok:
                         id = await StartAdapter().create_start_entry(token, next_start_entry)
                 except Exception as e:
-                    logging.error(f"Error: {e}")
-                    informasjon += f" Error: {e} <br>"
+                    logging.error(f"Error in create_finish_time_events: {e}")
+                    raise Exception(e) from e
 
         return informasjon
 
