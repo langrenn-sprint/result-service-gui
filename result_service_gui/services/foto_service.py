@@ -144,7 +144,7 @@ class FotoService:
                         if message["photo_info"]["passeringspunkt"] == "Start":
                             request_body["is_start_registration"] = True
                         if message["ai_information"]:
-                            for nummer in message["ai_information"]["ai_numbers"]:
+                            for nummer in message["ai_information"]["ai_crop_numbers"]:
                                 result = await find_race_info_from_bib(user["token"], nummer, request_body, event, raceclasses)
                                 logging.debug(f"Link to race info, result {result}")
                         photo_id = await PhotosAdapter().create_photo(

@@ -154,7 +154,7 @@
         <tr>
           <th width=40>Pos</th>
           <th width=40>Nr</th>
-          <th width=40>DNF</th>
+          <th width=40></th>
           <th width="250">&nbsp;Navn</th>
           <th width="200">Klubb</th>
           <th width=50 id=resultborder>Plass</th>
@@ -169,7 +169,7 @@
               <td align="center">{{ start.starting_position }}</td>
               <td id="{{ race.order }}{{ start.bib }}" align="center">{{ start.bib }}</td>
                 <td align="center">
-                  {{ start.status }}
+                  {% if start.status %}{{ start.status }}{% endif %}
                   {% for bilde in race.photo_start %}
                     {% if start.bib in bilde.biblist %}
                     <a class="tooltip_photo_left">
@@ -211,12 +211,12 @@
                       {% for bilde in race.photo_finish %}
                         <!-- Trigger the Lightbox -->
                           <div class="lb_column">
-                            <img src="{{ bilde.g_base_url }}" style="width:100%" onclick="openModal();currentSlide({{ loop.index }})" class="lb_hover-shadow cursor">
+                            <img src="{{ bilde.g_base_url }}" style="width:100%" onclick="openModal{{ race.order }}();currentSlide{{ race.order }}({{ loop.index }})" class="lb_hover-shadow cursor">
                           </div>
                       {% endfor %}
                     </div>
                     <div id="lb_myModal_{{ race.order }}" class="lb_modal">
-                      <span class="lb_close cursor" onclick="closeModal()">&times;</span>
+                      <span class="lb_close cursor" onclick="closeModal{{ race.order }}()">&times;</span>
                       <div class="lb_modal-content">
                         {% for bilde in race.photo_finish %}
                           <div class="lb_mySlides_{{ race.order }}">
@@ -224,8 +224,8 @@
                             <img src="{{ bilde.g_base_url }}" style="width:100%">
                           </div>
                         {% endfor %}
-                        <a class="lb_prev" onclick="plusSlides(-1)">&#10094;</a>
-                        <a class="lb_next" onclick="plusSlides(1)">&#10095;</a>
+                        <a class="lb_prev" onclick="plusSlides{{ race.order }}(-1)">&#10094;</a>
+                        <a class="lb_next" onclick="plusSlides{{ race.order }}(1)">&#10095;</a>
                     
                         <div class="lb_caption-container">
                           <p id="lb_caption_{{ race.order }}"></p>
@@ -233,7 +233,7 @@
                     
                         {% for bilde in race.photo_finish %}
                           <div class="lb_column">
-                            <img class="lb_demo_{{ race.order }} cursor" src="{{ bilde.g_base_url }}" style="width:100%" onclick="currentSlide({{loop.index}})" alt="Photo time: {{ bilde.creation_time[-8:] }} Bibs: {{ bilde.biblist }}">
+                            <img class="lb_demo_{{ race.order }} cursor" src="{{ bilde.g_base_url }}" style="width:100%" onclick="currentSlide{{ race.order }}({{loop.index}})" alt="Photo time: {{ bilde.creation_time[-8:] }} Bibs: {{ bilde.biblist }}">
                           </div>
                         {% endfor %}
                       </div>
@@ -241,26 +241,26 @@
                                                 
                     <script>
                       // Get the Lightbox
-                      function openModal() {
+                      function openModal{{ race.order }}() {
                         document.getElementById("lb_myModal_{{ race.order }}").style.display = "block";
                       }
 
-                      function closeModal() {
+                      function closeModal{{ race.order }}() {
                         document.getElementById("lb_myModal_{{ race.order }}").style.display = "none";
                       }
 
                       var slideIndex = 1;
-                      showSlides(slideIndex);
+                      showSlides{{ race.order }}(slideIndex);
 
-                      function plusSlides(n) {
-                        showSlides(slideIndex += n);
+                      function plusSlides{{ race.order }}(n) {
+                        showSlides{{ race.order }}(slideIndex += n);
                       }
 
-                      function currentSlide(n) {
-                        showSlides(slideIndex = n);
+                      function currentSlide{{ race.order }}(n) {
+                        showSlides{{ race.order }}(slideIndex = n);
                       }
 
-                      function showSlides(n) {
+                      function showSlides{{ race.order }}(n) {
                         var i;
                         var slides = document.getElementsByClassName("lb_mySlides_{{ race.order }}");
                         var dots = document.getElementsByClassName("lb_demo_{{ race.order }}");
