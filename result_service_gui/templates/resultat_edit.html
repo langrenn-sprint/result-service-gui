@@ -420,97 +420,98 @@
                   <td id="{{ race.order }}_name_{{ loop.index }}"></td>
                   <td id="{{ race.order }}_videre_til_{{ loop.index }}"></td>
                 {% endif %}
+
                 {% if loop.first %}
-                  <script>
-                    /* populate_rank: populate race rank based upon analysis of photos
-                      */
-                    function populate_rank_{{ race.order }}() {
-                      biblist = {{ race.photo_bib_rank }};
-                      for (let i = 1; i < biblist.length; i++) {
-                          position = i + 1;
-                          the_element = "{{ race.order }}_form_rank_" + position;
-                          document.getElementById(the_element).value = biblist[i];
-                      }
-                      validation_colors({{ race.order }});
+                <script>
+                  /* populate_rank: populate race rank based upon analysis of photos
+                    */
+                  function populate_rank_{{ race.order }}() {
+                    biblist = {{ race.photo_bib_rank }};
+                    for (let i = 1; i < biblist.length; i++) {
+                        position = i + 1;
+                        the_element = "{{ race.order }}_form_rank_" + position;
+                        document.getElementById(the_element).value = biblist[i];
                     }
-                  </script>
+                    validation_colors({{ race.order }});
+                  }
+                </script>
                   <td rowspan="{{ loop.length + 1 }}">
                     <! -- Start photo stuff -->
                     {% if race.photo_finish != [] %}
-                      <div class="lb_row">
+                    <div class="lb_row">
+                      {% for bilde in race.photo_finish %}
+                        {% if loop.first %}
+                          <!--td colspan=5><button type="button" name="button" onclick="populate_rank_{{ race.order }}()">Hent resultat fra bilder</button></td></tr><tr-->
+                        {% endif %}
+                        <!-- Trigger the Lightbox -->
+                          <div class="lb_column">
+                            <img src="{{ bilde.g_base_url }}" style="width:100%" onclick="openModal{{ race.order }}();currentSlide{{ race.order }}({{ loop.index }})" class="lb_hover-shadow cursor">
+                          </div>
+                      {% endfor %}
+                    </div>
+                    <div id="lb_myModal_{{ race.order }}" class="lb_modal">
+                      <span class="lb_close cursor" onclick="closeModal{{ race.order }}()">&times;</span>
+                      <div class="lb_modal-content">
                         {% for bilde in race.photo_finish %}
-                          {% if loop.first %}
-                            <!--td colspan=5><button type="button" name="button" onclick="populate_rank_{{ race.order }}()">Hent resultat fra bilder</button></td></tr><tr-->
-                          {% endif %}
-                          <!-- Trigger the Lightbox -->
-                            <div class="lb_column">
-                              <img src="{{ bilde.g_base_url }}" style="width:100%" onclick="openModal();currentSlide({{loop.index}})" class="lb_hover-shadow cursor">
-                            </div>
+                          <div class="lb_mySlides_{{ race.order }}">
+                            <div class="lb_numbertext">{{loop.index}} / {{loop.length}}</div>
+                            <img src="{{ bilde.g_base_url }}" style="width:100%">
+                          </div>
+                        {% endfor %}
+                        <a class="lb_prev" onclick="plusSlides{{ race.order }}(-1)">&#10094;</a>
+                        <a class="lb_next" onclick="plusSlides{{ race.order }}(1)">&#10095;</a>
+                    
+                        <div class="lb_caption-container">
+                          <p id="lb_caption_{{ race.order }}"></p>
+                        </div>
+                    
+                        {% for bilde in race.photo_finish %}
+                          <div class="lb_column">
+                            <img class="lb_demo_{{ race.order }} cursor" src="{{ bilde.g_base_url }}" style="width:100%" onclick="currentSlide{{ race.order }}({{loop.index}})" alt="Photo time: {{ bilde.creation_time[-8:] }} Bibs: {{ bilde.biblist }}">
+                          </div>
                         {% endfor %}
                       </div>
-                      <div id="lb_myModal_{{ race.order }}" class="lb_modal">
-                        <span class="lb_close cursor" onclick="closeModal()">&times;</span>
-                        <div class="lb_modal-content">
-                          {% for bilde in race.photo_finish %}
-                            <div class="lb_mySlides_{{ race.order }}">
-                              <div class="lb_numbertext">{{loop.index}} / {{loop.length}}</div>
-                              <img src="{{ bilde.g_base_url }}" style="width:100%">
-                            </div>
-                          {% endfor %}
-                          <a class="lb_prev" onclick="plusSlides(-1)">&#10094;</a>
-                          <a class="lb_next" onclick="plusSlides(1)">&#10095;</a>
-                      
-                          <div class="lb_caption-container">
-                            <p id="lb_caption_{{ race.order }}"></p>
-                          </div>
-                      
-                          {% for bilde in race.photo_finish %}
-                            <div class="lb_column">
-                              <img class="lb_demo_{{ race.order }} cursor" src="{{ bilde.g_base_url }}" style="width:100%" onclick="currentSlide({{loop.index}})" alt="Photo time: {{ bilde.creation_time[-8:] }} Bibs: {{ bilde.biblist }}">
-                            </div>
-                          {% endfor %}
-                        </div>
-                      </div>
-                                                  
-                      <script>
-                        // Get the Lightbox
-                        function openModal() {
-                          document.getElementById("lb_myModal_{{ race.order }}").style.display = "block";
-                        }
+                    </div>
+                                                
+                    <script>
+                      // Get the Lightbox
+                      function openModal{{ race.order }}() {
+                        document.getElementById("lb_myModal_{{ race.order }}").style.display = "block";
+                      }
 
-                        function closeModal() {
-                          document.getElementById("lb_myModal_{{ race.order }}").style.display = "none";
-                        }
+                      function closeModal{{ race.order }}() {
+                        document.getElementById("lb_myModal_{{ race.order }}").style.display = "none";
+                      }
 
-                        var slideIndex = 1;
-                        showSlides(slideIndex);
+                      var slideIndex = 1;
+                      showSlides{{ race.order }}(slideIndex);
 
-                        function plusSlides(n) {
-                          showSlides(slideIndex += n);
-                        }
+                      function plusSlides{{ race.order }}(n) {
+                        showSlides{{ race.order }}(slideIndex += n);
+                      }
 
-                        function currentSlide(n) {
-                          showSlides(slideIndex = n);
-                        }
+                      function currentSlide{{ race.order }}(n) {
+                        showSlides{{ race.order }}(slideIndex = n);
+                      }
 
-                        function showSlides(n) {
-                          var i;
-                          var slides = document.getElementsByClassName("lb_mySlides_{{ race.order }}");
-                          var dots = document.getElementsByClassName("lb_demo_{{ race.order }}");
-                          var captionText = document.getElementById("lb_caption_{{ race.order }}");
-                          if (n > slides.length) {slideIndex = 1}
-                          if (n < 1) {slideIndex = slides.length}
-                          for (i = 0; i < slides.length; i++) {
-                              slides[i].style.display = "none";
-                          }
-                          for (i = 0; i < dots.length; i++) {
-                              dots[i].className = dots[i].className.replace(" active", "");
-                          }
-                          slides[slideIndex-1].style.display = "block";
-                          dots[slideIndex-1].className += " active";
-                          captionText.innerHTML = dots[slideIndex-1].alt;
+                      function showSlides{{ race.order }}(n) {
+                        var i;
+                        var slides = document.getElementsByClassName("lb_mySlides_{{ race.order }}");
+                        var dots = document.getElementsByClassName("lb_demo_{{ race.order }}");
+                        var captionText = document.getElementById("lb_caption_{{ race.order }}");
+                        if (n > slides.length) {slideIndex = 1}
+                        if (n < 1) {slideIndex = slides.length}
+                        for (i = 0; i < slides.length; i++) {
+                            slides[i].style.display = "none";
                         }
-                      </script>
+                        for (i = 0; i < dots.length; i++) {
+                            dots[i].className = dots[i].className.replace(" active", "");
+                        }
+                        slides[slideIndex-1].style.display = "block";
+                        dots[slideIndex-1].className += " active";
+                        captionText.innerHTML = dots[slideIndex-1].alt;
+                      }
+                    </script>
                     {% endif %}
                     <! -- End photo stuff -->
 
