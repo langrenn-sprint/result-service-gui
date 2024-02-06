@@ -143,10 +143,13 @@ class FotoService:
                             request_body["is_photo_finish"] = True
                         if message["photo_info"]["passeringspunkt"] == "Start":
                             request_body["is_start_registration"] = True
+                        result = 204
                         if message["ai_information"]:
                             for nummer in message["ai_information"]["ai_crop_numbers"]:
-                                result = await find_race_info_from_bib(user["token"], nummer, request_body, event, raceclasses)
-                                logging.debug(f"Link to race info, result {result}")
+                                result = await find_race_info_by_bib(user["token"], nummer, request_body, event, raceclasses)
+                        if result == 204:
+                            # use time only if by bib was not successful
+                            result = await find_race_info_by_time(user["token"], request_body, event, raceclasses)
                         photo_id = await PhotosAdapter().create_photo(
                             user["token"], request_body
                         )
@@ -160,21 +163,11 @@ class FotoService:
         return informasjon
 
 
-# internal functions
-async def get_link_to_event_info_from_ai(token: str, photo: dict, event: dict, raceclasses: list) -> int:
-    """Use information from AI to link photo to the event activities."""
-    result = 200
-    ai_information = photo["ai_information"]
-    if ai_information["ai_numbers"]:
-        for nummer in ai_information["ai_numbers"]:
-            result = await find_race_info_from_bib(token, nummer, photo, event, raceclasses)
-    return result
-
-
-async def find_race_info_from_bib(
+async def find_race_info_by_bib(
     token: str, bib: int, photo: dict, event: dict, raceclasses: list
 ) -> int:
     """Analyse photo ai info and add race info to photo."""
+    result = 204  # no content
     foundheat = ""
     raceduration = int(os.getenv("RACE_DURATION_ESTIMATE", "300"))
     starter = await StartAdapter().get_start_entries_by_bib(token, event["id"], bib)
@@ -190,6 +183,8 @@ async def find_race_info_from_bib(
                 )
                 if foundheat != "":
                     photo["race_id"] = foundheat
+                    result = 200  # OK, found a heat
+
                     # Get klubb and klasse
                     if bib not in photo["biblist"]:
                         try:
@@ -205,8 +200,35 @@ async def find_race_info_from_bib(
                                 photo["raceclass"] = find_raceclass(contestant["ageclass"], raceclasses)
                         except Exception as e:
                             logging.debug(f"Missing attribute - {e}")
+                            result = 206  # Partial content
+    return result
 
-    return 200
+
+async def find_race_info_by_time(
+    token: str, photo: dict, event: dict, raceclasses: list
+) -> int:
+    """Analyse photo ai info and add race info to photo."""
+    result = 204  # no content
+    foundheat = ""
+    raceduration = int(os.getenv("RACE_DURATION_ESTIMATE", "300"))
+    all_races = await RaceplansAdapter().get_all_races(
+        token, event["id"]
+    )
+    for race in all_races:
+        # check heat (if not already found)
+        if foundheat == "":
+            foundheat = verify_heat_time_sync(
+                photo["creation_time"],
+                raceduration,
+                race,
+            )
+            if foundheat != "":
+                photo["race_id"] = foundheat
+                photo["raceclass"] = race["raceclass"]
+
+                result = 200  # OK, found a heat
+                break
+    return result
 
 
 def find_raceclass(ageclass: str, raceclasses: list) -> str:
@@ -283,13 +305,31 @@ async def verify_heat_time(
 ) -> str:
     """Analyse photo tags and identify heat."""
     foundheat = ""
-    max_time_dev = int(os.getenv("RACE_TIME_DEVIATION_ALLOWED", "600"))
+    max_time_dev = int(os.getenv("RACE_TIME_DEVIATION_ALLOWED"))  # type: ignore
 
     if datetime_foto is not None:
         race = await RaceplansAdapter().get_race_by_id(token, race_id)
         if race is not None:
             seconds = get_seconds_diff(datetime_foto, race["start_time"])
-            if -max_time_dev < seconds < (max_time_dev + raceduration):
+            if 0 < seconds < (max_time_dev + raceduration):
+                foundheat = race["id"]
+
+    return foundheat
+
+
+def verify_heat_time_sync(
+    datetime_foto: str,
+    raceduration: int,
+    race: dict,
+) -> str:
+    """Analyse photo tags and identify heat."""
+    foundheat = ""
+    max_time_dev = int(os.getenv("RACE_TIME_DEVIATION_ALLOWED"))  # type: ignore
+
+    if datetime_foto is not None:
+        if race is not None:
+            seconds = get_seconds_diff(datetime_foto, race["start_time"])
+            if 0 < seconds < (max_time_dev + raceduration):
                 foundheat = race["id"]
 
     return foundheat
