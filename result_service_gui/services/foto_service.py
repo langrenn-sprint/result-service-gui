@@ -67,7 +67,23 @@ class FotoService:
                 except Exception as e:
                     logging.error(f"Error reading biblist - {form[key]}: {e}")
                     informasjon += "En Feil oppstod. "
-        informasjon = f"Oppdatert {icount} bilder."
+            elif key.startswith("race_id_"):
+                new_race_id = form[key]
+                photo_id = key[8:]
+                old_race_id = form[f"old_race_id_{photo_id}"]
+                if new_race_id != old_race_id:
+                    photo = await PhotosAdapter().get_photo(token, photo_id)
+                    photo["race_id"] = new_race_id
+                    if new_race_id:
+                        photo["raceclass"] = form[f"raceclass_{new_race_id}"]
+                    else:
+                        photo["raceclass"] = ""
+                    result = await PhotosAdapter().update_photo(
+                        token, photo["id"], photo
+                    )
+                    icount += 1
+                    logging.debug(f"Updated photo with id {photo_id} for event {event_id} - {result}")
+        informasjon = f"Utført {icount} oppdateringer."
         return informasjon
 
     async def sync_photos_from_pubsub(
@@ -149,7 +165,7 @@ class FotoService:
                                 result = await find_race_info_by_bib(user["token"], nummer, request_body, event, raceclasses)
                         if result == 204:
                             # use time only if by bib was not successful
-                            result = await find_race_info_by_time(user["token"], request_body, event, raceclasses)
+                            result = await find_race_info_by_time(user["token"], request_body, event)
                         photo_id = await PhotosAdapter().create_photo(
                             user["token"], request_body
                         )
@@ -205,29 +221,32 @@ async def find_race_info_by_bib(
 
 
 async def find_race_info_by_time(
-    token: str, photo: dict, event: dict, raceclasses: list
+    token: str, photo: dict, event: dict
 ) -> int:
-    """Analyse photo ai info and add race info to photo."""
+    """Analyse photo time and identify race with best time-match."""
     result = 204  # no content
-    foundheat = ""
     raceduration = int(os.getenv("RACE_DURATION_ESTIMATE", "300"))
     all_races = await RaceplansAdapter().get_all_races(
         token, event["id"]
     )
-    for race in all_races:
-        # check heat (if not already found)
-        if foundheat == "":
-            foundheat = verify_heat_time_sync(
-                photo["creation_time"],
-                raceduration,
-                race,
-            )
-            if foundheat != "":
-                photo["race_id"] = foundheat
-                photo["raceclass"] = race["raceclass"]
+    best_fit_race = {
+        "race_id": "",
+        "seconds_diff": 10000,
+        "raceclass": "",
+    }
 
-                result = 200  # OK, found a heat
-                break
+    for race in all_races:
+        seconds_diff = abs(get_seconds_diff(photo["creation_time"], race["start_time"]) - raceduration)
+
+        if seconds_diff < best_fit_race["seconds_diff"]:  # type: ignore
+            best_fit_race["seconds_diff"] = seconds_diff
+            best_fit_race["race_id"] = race["id"]
+            best_fit_race["raceclass"] = race["raceclass"]
+
+    if best_fit_race["seconds_diff"] < 10000:  # type: ignore
+        photo["race_id"] = best_fit_race["race_id"]
+        photo["raceclass"] = best_fit_race["raceclass"]
+        result = 200  # OK, found a heat
     return result
 
 
@@ -309,24 +328,6 @@ async def verify_heat_time(
 
     if datetime_foto is not None:
         race = await RaceplansAdapter().get_race_by_id(token, race_id)
-        if race is not None:
-            seconds = get_seconds_diff(datetime_foto, race["start_time"])
-            if 0 < seconds < (max_time_dev + raceduration):
-                foundheat = race["id"]
-
-    return foundheat
-
-
-def verify_heat_time_sync(
-    datetime_foto: str,
-    raceduration: int,
-    race: dict,
-) -> str:
-    """Analyse photo tags and identify heat."""
-    foundheat = ""
-    max_time_dev = int(os.getenv("RACE_TIME_DEVIATION_ALLOWED"))  # type: ignore
-
-    if datetime_foto is not None:
         if race is not None:
             seconds = get_seconds_diff(datetime_foto, race["start_time"])
             if 0 < seconds < (max_time_dev + raceduration):

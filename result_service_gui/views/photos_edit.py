@@ -4,7 +4,13 @@ import logging
 from aiohttp import web
 import aiohttp_jinja2
 
-from result_service_gui.services import EventsAdapter, FotoService, PhotosAdapter
+from result_service_gui.services import (
+    EventsAdapter,
+    FotoService,
+    PhotosAdapter,
+    RaceclassesAdapter,
+    RaceplansAdapter
+)
 from .utils import (
     check_login,
     get_event,
@@ -21,6 +27,14 @@ class PhotosEdit(web.View):
         except Exception:
             action = ""
         try:
+            filter = self.request.rel_url.query["filter"]
+        except Exception:
+            filter = ""
+        try:
+            valgt_klasse = self.request.rel_url.query["raceclass"]
+        except Exception:
+            valgt_klasse = ""
+        try:
             event_id = self.request.rel_url.query["event_id"]
         except Exception:
             event_id = ""
@@ -35,7 +49,25 @@ class PhotosEdit(web.View):
 
         try:
             event = await get_event(user, event_id)
-            photos = await PhotosAdapter().get_all_photos(user["token"], event_id, False)
+            if valgt_klasse:
+                photos = await PhotosAdapter().get_photos_by_raceclass(
+                    user["token"], event_id, valgt_klasse, False
+                )
+            else:
+                photos = await PhotosAdapter().get_all_photos(user["token"], event_id, False)
+            if filter == "no_race_id":
+                action = "update_race_info"
+                filtered_photos = []
+                for photo in photos:
+                    if photo["race_id"] == "":
+                        filtered_photos.append(photo)
+                photos = filtered_photos
+            photos.reverse()
+
+            races = await RaceplansAdapter().get_all_races(user["token"], event_id)
+            raceclasses = await RaceclassesAdapter().get_raceclasses(
+                user["token"], event_id
+            )
 
             return await aiohttp_jinja2.render_template_async(
                 "photos_edit.html",
@@ -48,6 +80,9 @@ class PhotosEdit(web.View):
                     "informasjon": informasjon,
                     "local_time_now": EventsAdapter().get_local_time(event, "HH:MM"),
                     "photos": photos,
+                    "raceclasses": raceclasses,
+                    "races": races,
+                    "valgt_klasse": valgt_klasse,
                     "username": user["name"],
                 },
             )
