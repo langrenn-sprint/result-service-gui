@@ -534,7 +534,10 @@
                 <input type="hidden" name=event_id value="{{ event_id }}">
                 <input type="hidden" name=update_result value="true">
                 <input type="hidden" name=submit_update value="  Lagre  ">
-                <button type="button" id="{{ race.order }}_button" onclick=update_results_ajax(this); >Lagre</button>
+                {% if race.round == "F" and race.index == "A" %}
+                 <input type="hidden" name=raceclass_results value="true">
+                {% endif %}
+                 <button type="button" id="{{ race.order }}_button" onclick=update_results_ajax(this); >Lagre </button>
                 &nbsp;<input type="checkbox" id={{ race.order }}_publish name=publish value="true" checked onchange="update_checkbox(this, {{ race.order }});"> Publisere
               </td>
             </tr>

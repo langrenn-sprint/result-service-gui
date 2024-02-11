@@ -273,8 +273,8 @@
                         <td id="black">{{ raceclass.name }}</td>
                         <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=start>Alle</a></nobr></td>
                         <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=start&runde=Q>Kvart</a></nobr></td>
-                        <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=start&runde=S>Semi</a></nobr></td>
-                        <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=start&runde=F>Finale</a></nobr></td>
+                        <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=round_start&runde=Q>Semi</a></nobr></td>
+                        <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=round_start&runde=S>Finale</a></nobr></td>
                       {% else %}
                         <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=start>{{ raceclass.name }}</a></nobr></td>
                       {% endif %}
