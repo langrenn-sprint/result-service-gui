@@ -55,11 +55,11 @@ class PhotosEdit(web.View):
                 )
             else:
                 photos = await PhotosAdapter().get_all_photos(user["token"], event_id, False)
-            if filter == "no_race_id":
+            if filter == "low_confidence":
                 action = "update_race_info"
                 filtered_photos = []
                 for photo in photos:
-                    if photo["race_id"] == "":
+                    if (photo["race_id"] == "") or (photo["confidence"] < 60):
                         filtered_photos.append(photo)
                 photos = filtered_photos
             photos.reverse()

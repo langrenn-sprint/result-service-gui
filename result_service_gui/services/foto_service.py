@@ -138,6 +138,7 @@ class FotoService:
                     else:
                         # create new photo
                         request_body = {
+                            "confidence": 0,
                             "name": os.path.basename(message["photo_url"]),
                             "is_photo_finish": False,
                             "is_start_registration": False,
@@ -161,11 +162,30 @@ class FotoService:
                             request_body["is_start_registration"] = True
                         result = 204
                         if message["ai_information"]:
+                            # first check for bib on cropped image
                             for nummer in message["ai_information"]["ai_crop_numbers"]:
-                                result = await find_race_info_by_bib(user["token"], nummer, request_body, event, raceclasses)
-                        if result == 204:
+                                result = await find_race_info_by_bib(
+                                    user["token"],
+                                    nummer,
+                                    request_body,
+                                    event,
+                                    raceclasses,
+                                    100
+                                )
+                            # then check for bib on full image
+                            if result == 204:
+                                for nummer in message["ai_information"]["ai_numbers"]:
+                                    result = await find_race_info_by_bib(
+                                        user["token"],
+                                        nummer,
+                                        request_body,
+                                        event,
+                                        raceclasses,
+                                        90,
+                                    )
                             # use time only if by bib was not successful
-                            result = await find_race_info_by_time(user["token"], request_body, event)
+                            if result == 204:
+                                result = await find_race_info_by_time(user["token"], request_body, event, 50)
                         photo_id = await PhotosAdapter().create_photo(
                             user["token"], request_body
                         )
@@ -180,7 +200,7 @@ class FotoService:
 
 
 async def find_race_info_by_bib(
-    token: str, bib: int, photo: dict, event: dict, raceclasses: list
+    token: str, bib: int, photo: dict, event: dict, raceclasses: list, confidence: int
 ) -> int:
     """Analyse photo ai info and add race info to photo."""
     result = 204  # no content
@@ -214,6 +234,7 @@ async def find_race_info_by_bib(
                                 if contestant["club"] not in photo["clublist"]:
                                     photo["clublist"].append(contestant["club"])
                                 photo["raceclass"] = find_raceclass(contestant["ageclass"], raceclasses)
+                                photo["confidence"] = confidence  # identified by bib - high confidence!
                         except Exception as e:
                             logging.debug(f"Missing attribute - {e}")
                             result = 206  # Partial content
@@ -221,7 +242,7 @@ async def find_race_info_by_bib(
 
 
 async def find_race_info_by_time(
-    token: str, photo: dict, event: dict
+    token: str, photo: dict, event: dict, confidence: int
 ) -> int:
     """Analyse photo time and identify race with best time-match."""
     result = 204  # no content
@@ -247,6 +268,7 @@ async def find_race_info_by_time(
         photo["race_id"] = best_fit_race["race_id"]
         photo["raceclass"] = best_fit_race["raceclass"]
         result = 200  # OK, found a heat
+        photo["confidence"] = confidence  # identified by time - medium confidence!
     return result
 
 

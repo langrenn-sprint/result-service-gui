@@ -17,7 +17,7 @@
     <a href=javascript:void(0) class=dropbtn>Velg funksjon</a>
     <div class=dropdown-content>
       <a  href=photos_edit?event_id={{ event_id }}>Vis alle</a>
-      <a  href=photos_edit?event_id={{ event_id }}&filter=no_race_id>Mangler race info</a>
+      <a  href=photos_edit?event_id={{ event_id }}&filter=low_confidence>Usikker race info (conf < 50)</a>
       <a  href=photo_sync?event_id={{ event_id }}>Synkronisering</a>
     </div>
   </li>
@@ -66,6 +66,7 @@
     - Ved å stjernemerke bilder vil de bli synlige på åpne sider - i resultatlister og på bilde-siden.<br>
     - Det er mulig å slette bilder - både enkeltvis og alle. Merk at det bare er link til bildene som slettes.<br>
     - Ved redigering av løpsinformasjon, pass på formatet - ved flere bibs, bruk f.eks [12, 23].<br>
+    - Usikkerhet (confidence/conf) brukes når systemet kobler bib og race til photo. Skala fra 0 til 100.
   </div>
   <div id=spacer></div>
 <! --- End Information --->
@@ -78,7 +79,7 @@
           <input type="hidden" name=event_id value="{{ event_id }}">
           <input type="hidden" name=action value="update_race_info">
           <input type="hidden" name=raceclass value="{{ valgt_klasse }}">
-          <input type="submit" name=update_race_info value="  Rediger løpsinformasjon  ">
+          <input type="submit" name=update_race_info value="  Rediger  ">
         </form>
       </td>
       <td>
@@ -159,17 +160,24 @@
         </td>
         <td id=table_border_r>
           <table>
-            <tr><td width="150">{% if foto.starred %}
-              <input type=image id="star_{{ foto.id }}" onclick="star_toggle('{{ foto.id }}');" width=20 src="../static/star_on.png" value="star_on">
-              {% else %}
-                <input type=image id="star_{{ foto.id }}" onclick="star_toggle('{{ foto.id }}');" width=20 src="../static/star_off.png" value="star_off">
-              {% endif %}
-              {% if foto.is_photo_finish %} MÅLFOTO{% endif %}
-              {% if foto.is_start_registration %} START{% endif %}
-              </td><td>{{ foto.creation_time }} / <a target=_blank href={{ foto.g_base_url }}>{{ foto.name }}</a></td></tr>
-            <tr><td>Info</td><td>{{ foto.information }}<br>{{ foto.ai_information }}</td></tr>
             <tr>
-              <td>Race</td>
+              <td width="200">
+                {% if foto.starred %}
+                  <input type=image id="star_{{ foto.id }}" onclick="star_toggle('{{ foto.id }}');" width=20 src="../static/star_on.png" value="star_on">
+                {% else %}
+                  <input type=image id="star_{{ foto.id }}" onclick="star_toggle('{{ foto.id }}');" width=20 src="../static/star_off.png" value="star_off">
+                {% endif %}
+                {% if foto.is_photo_finish %} MÅLFOTO{% endif %}
+                {% if foto.is_start_registration %} START{% endif %}
+              </td>
+              <td>{{ foto.creation_time[-8:] }} / <a target=_blank href={{ foto.g_base_url }}>{{ foto.name }}</a></td>
+            </tr>
+            <tr>
+              <td>Info</td>
+              <td>{{ foto.information }}<br>{{ foto.ai_information }}</td>
+            </tr>
+            <tr>
+              <td>Race (conf={{ foto.confidence }})</td>
               <td>
                 {% if action == "update_race_info" %}
                   <select name="race_id_{{ foto.id }}">

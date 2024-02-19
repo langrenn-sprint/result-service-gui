@@ -479,3 +479,13 @@ async def delete_start(user: dict, form: dict) -> str:
     logging.debug(f"delete_start {id} - {form}")
     informasjon = "Slettet start."
     return informasjon
+
+
+def get_foto_finish_for_race(user: dict, race: dict, photos: list) -> list:
+    """Loop throgh photos and return relevant finish photo(s)."""
+    fotos = []
+    for photo in photos:
+        if photo["race_id"] == race["id"]:
+            if photo["is_photo_finish"] and (photo["confidence"] > 80):
+                fotos.append(photo)
+    return fotos

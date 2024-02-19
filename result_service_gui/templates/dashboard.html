@@ -438,7 +438,8 @@
 <! --- End Information --->
 
 <script>
-    // run script when page is loading
-    pull_events();
+    // run scripy to pull events from pub_sub
+    setInterval(pull_events(), 15000);
+
 </script>
 {% endblock content %}

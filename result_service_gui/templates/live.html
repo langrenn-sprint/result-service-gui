@@ -28,6 +28,11 @@
       {% endfor %}
     </div>
   </li>
+  {% if valgt_klasse and races[10] %}
+    <li class=dropdown id=topborder>
+      <a class=dropbtn href="live?klasse={{ valgt_klasse }}&event_id={{ event_id }}&action=all">Vis alle heat i {{ valgt_klasse }}</a>
+    </li>
+  {% endif %}
   <li class=dropdown id=topborder style="float:right">
     <a class=dropbtn>Kl: {{ local_time_now }}</a>
   </li>

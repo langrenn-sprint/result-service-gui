@@ -14,6 +14,7 @@ from .utils import (
     get_enrichced_startlist,
     get_event,
     get_finish_timings,
+    get_foto_finish_for_race,
     get_qualification_text,
     get_raceplan_summary,
     get_races_for_live_view,
@@ -143,13 +144,3 @@ async def find_round(token: str, event: dict, raceclasses: list, heat_order: int
                     if not raceclass['ranking']:
                         valgt_runde["informasjon"] = "OBS: Denne løpsklassen er urangert, resultater vil ikke vises."
     return valgt_runde
-
-
-def get_foto_finish_for_race(user: dict, race: dict, photos: list) -> list:
-    """Loop throgh photos and return relevant finish photo(s)."""
-    fotos = []
-    for photo in photos:
-        if photo["race_id"] == race["id"]:
-            if photo["is_photo_finish"]:
-                fotos.append(photo)
-    return fotos
