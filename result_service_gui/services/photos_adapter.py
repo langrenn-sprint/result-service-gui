@@ -219,7 +219,7 @@ class PhotosAdapter:
                 raise web.HTTPBadRequest(reason=f"Error - {resp.status}: {resp}.")
         return resp.status
 
-    async def update_photo(self, token: str, id: str, request_body: dict) -> str:
+    async def update_photo(self, token: str, id: str, request_body: dict) -> int:
         """Update photo function."""
         servicename = "update_photo"
         headers = MultiDict(
@@ -244,4 +244,4 @@ class PhotosAdapter:
                         reason=f"Error - {resp.status}: {body['detail']}."
                     )
             logging.debug(f"Updated photo: {id} - res {resp.status}")
-        return str(resp.status)
+        return resp.status

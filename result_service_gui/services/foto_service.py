@@ -46,7 +46,7 @@ class FotoService:
             informasjon = "Stjernemerke fjernet."
         return informasjon
 
-    async def update_race_info(self, token: str, event_id: str, form: dict) -> str:
+    async def update_race_info(self, token: str, event: dict, form: dict) -> str:
         """Update race information in phostos, biblist."""
         informasjon = ""
         icount = 0
@@ -57,13 +57,31 @@ class FotoService:
                     photo_id = key[8:]
                     old_biblist = form[f"old_biblist_{photo_id}"]
                     if new_biblist != old_biblist:
+                        raceclasses = await RaceclassesAdapter().get_raceclasses(
+                            token, event["id"]
+                        )
                         photo = await PhotosAdapter().get_photo(token, photo_id)
-                        photo["biblist"] = json.loads(new_biblist)
+                        photo['biblist'] = []
+                        photo['clublist'] = []
+
+                        # try to identify race information
+                        message = {
+                            "ai_crop_numbers": json.loads(new_biblist),
+                            "ai_numbers": []
+                        }
+                        result = await link_ai_info_to_photo(
+                            token,
+                            photo,
+                            message,
+                            event,
+                            raceclasses
+                        )
+
                         result = await PhotosAdapter().update_photo(
                             token, photo["id"], photo
                         )
                         icount += 1
-                        logging.debug(f"Updated photo with id {photo_id} for event {event_id} - {result}")
+                        logging.debug(f"Updated photo with id {photo_id} for event {event['name']} - {result}")
                 except Exception as e:
                     logging.error(f"Error reading biblist - {form[key]}: {e}")
                     informasjon += "En Feil oppstod. "
@@ -82,7 +100,7 @@ class FotoService:
                         token, photo["id"], photo
                     )
                     icount += 1
-                    logging.debug(f"Updated photo with id {photo_id} for event {event_id} - {result}")
+                    logging.debug(f"Updated photo with id {photo_id} for event {event['name']} - {result}")
         informasjon = f"Utført {icount} oppdateringer."
         return informasjon
 
@@ -130,10 +148,10 @@ class FotoService:
                             photo["is_photo_finish"] = True
                         if message["photo_info"]["passeringspunkt"] == "Start":
                             photo["is_start_registration"] = True
-                        photo_id = await PhotosAdapter().update_photo(
+                        result = await PhotosAdapter().update_photo(
                             user["token"], photo["id"], photo
                         )
-                        logging.debug(f"Updated photo with id {photo_id}")
+                        logging.debug(f"Updated photo with id {photo['id']}, result {result}")
                         i_u += 1
                     else:
                         # create new photo
@@ -160,36 +178,19 @@ class FotoService:
                             request_body["is_photo_finish"] = True
                         if message["photo_info"]["passeringspunkt"] == "Start":
                             request_body["is_start_registration"] = True
-                        result = 204
                         if message["ai_information"]:
-                            # first check for bib on cropped image
-                            for nummer in message["ai_information"]["ai_crop_numbers"]:
-                                result = await find_race_info_by_bib(
-                                    user["token"],
-                                    nummer,
-                                    request_body,
-                                    event,
-                                    raceclasses,
-                                    100
-                                )
-                            # then check for bib on full image
-                            if result == 204:
-                                for nummer in message["ai_information"]["ai_numbers"]:
-                                    result = await find_race_info_by_bib(
-                                        user["token"],
-                                        nummer,
-                                        request_body,
-                                        event,
-                                        raceclasses,
-                                        90,
-                                    )
-                            # use time only if by bib was not successful
-                            if result == 204:
-                                result = await find_race_info_by_time(user["token"], request_body, event, 50)
+                            result = await link_ai_info_to_photo(
+                                user["token"],
+                                request_body,
+                                message["ai_information"],
+                                event,
+                                raceclasses
+                            )
+
                         photo_id = await PhotosAdapter().create_photo(
                             user["token"], request_body
                         )
-                        logging.debug(f"Created photo with id {photo_id}")
+                        logging.debug(f"Created photo with id {photo_id} - {result}")
                         i_c += 1
                 else:
                     i_other += 1
@@ -197,6 +198,36 @@ class FotoService:
             if i_other > 0:
                 informasjon += f" Forkastet {i_other} meldinger som ikke tilhører dette arrangementet."
         return informasjon
+
+
+async def link_ai_info_to_photo(token: str, request_body: dict, ai_information: dict, event: dict, raceclasses: list) -> int:
+    """Link ai information to photo."""
+    # first check for bib on cropped image
+    result = 204
+    for nummer in ai_information["ai_crop_numbers"]:
+        result = await find_race_info_by_bib(
+            token,
+            nummer,
+            request_body,
+            event,
+            raceclasses,
+            100
+        )
+    # then check for bib on full image
+    if result == 204:
+        for nummer in ai_information["ai_numbers"]:
+            result = await find_race_info_by_bib(
+                token,
+                nummer,
+                request_body,
+                event,
+                raceclasses,
+                90,
+            )
+    # use time only if by bib was not successful
+    if result == 204:
+        result = await find_race_info_by_time(token, request_body, event, 50)
+    return result
 
 
 async def find_race_info_by_bib(

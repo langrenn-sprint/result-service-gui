@@ -99,8 +99,9 @@ class PhotosEdit(web.View):
 
         try:
             if "update_race_info" in form.keys():
+                event = await get_event(user, event_id)
                 informasjon = await FotoService().update_race_info(
-                    user["token"], event_id, form  # type: ignore
+                    user["token"], event, form  # type: ignore
                 )
             elif "delete_all_local" in form.keys():
                 informasjon = await FotoService().delete_all_local_photos(
