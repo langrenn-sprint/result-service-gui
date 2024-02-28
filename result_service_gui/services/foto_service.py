@@ -23,7 +23,7 @@ class FotoService:
         for album in albums:
             result = await AlbumsAdapter().delete_album(token, album.id)
             logging.debug(f"Deleted album with id {album.id}, result {result}")
-        return "Alle lokale kopier er slettet."
+        return "Alle bilder er slettet."
 
     async def delete_all_local_photos(self, token: str, event_id: str) -> str:
         """Delete all local copies of photo information."""
@@ -31,7 +31,18 @@ class FotoService:
         for photo in photos:
             result = await PhotosAdapter().delete_photo(token, photo["id"])
             logging.debug(f"Deleted photo with id {photo['id']}, result {result}")
-        return "Alle lokale kopier er slettet."
+        return "Alle bilder er slettet."
+
+    async def delete_all_low_confidence_photos(self, token: str, event_id: str, limit: int) -> str:
+        """Delete all local copies of photo where confidence is below photo."""
+        photos = await PhotosAdapter().get_all_photos(token, event_id, False)
+        i = 0
+        for photo in photos:
+            if photo["confidence"] < limit:
+                result = await PhotosAdapter().delete_photo(token, photo["id"])
+                i += 1
+                logging.debug(f"Deleted photo with id {photo['id']}, result {result}")
+        return f"{i} bilder med confidence under {limit} er slettet."
 
     async def star_photo(self, token: str, photo_id: str, starred: bool) -> str:
         """Mark photo as starred, or unstarr."""

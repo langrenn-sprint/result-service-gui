@@ -17,7 +17,7 @@
     <a href=javascript:void(0) class=dropbtn>Velg funksjon</a>
     <div class=dropdown-content>
       <a  href=photos_edit?event_id={{ event_id }}>Vis alle</a>
-      <a  href=photos_edit?event_id={{ event_id }}&filter=low_confidence>Usikker race info (conf < 50)</a>
+      <a  href=photos_edit?event_id={{ event_id }}&filter=low_confidence>Usikker race info (conf < 51)</a>
       <a  href=photo_sync?event_id={{ event_id }}>Synkronisering</a>
     </div>
   </li>
@@ -85,6 +85,15 @@
       <td>
         <form action=/photos_edit method=get>
           <input type="hidden" name=event_id value="{{ event_id }}">
+          <input type="hidden" name=action value="update_race_info">
+          <input type="hidden" name=raceclass value="{{ valgt_klasse }}">
+          <input type="hidden" name=filter value="low_confidence">
+          <input type="submit" name=update_race_info value="  Rediger alle med conf < 51  ">
+        </form>
+      </td>
+      <td>
+        <form action=/photos_edit method=get>
+          <input type="hidden" name=event_id value="{{ event_id }}">
           <input type="hidden" name=action value="delete_select">
           <input type="submit" name=delete_select value="  Slett lokale kopier  ">
         </form>
@@ -93,6 +102,12 @@
         <form action=/photos_edit method=post>
           <input type="hidden" name="event_id" value="{{ event_id }}">
           <input type="submit" name="delete_all_local" value="  Slett alle lokale kopier  ">
+        </form>
+      </td>
+      <td>
+        <form action=/photos_edit method=post>
+          <input type="hidden" name="event_id" value="{{ event_id }}">
+          <input type="submit" name="delete_all_low_confidence" value="  Slett alle med conf < 51  ">
         </form>
       </td>
   </table>
@@ -105,15 +120,24 @@
         <b>Bilder - lokale kopier</b>
       </td>
     </tr>
-    {% if action in ["delete_select", "update_race_info"] %}
-    <tr>
-      <td id=table_border colspan=4>
-      <form action=/photos_edit method=post>
-        <input type="submit" name={{ action }} value="  Lagre  ">
-        <input type="hidden" name="event_id" value="{{ event_id }}">
-        <input type="hidden" name=action value={{ action }}>
-      </td>
-    </tr>
+    {% if action in ["update_race_info"] %}
+      <tr>
+        <td id=table_border colspan=4>
+        <form action=/photos_edit method=post>
+          <input type="submit" name={{ action }} value="  Lagre  ">
+          <input type="hidden" name="event_id" value="{{ event_id }}">
+          <input type="hidden" name=action value={{ action }}>
+        </td>
+      </tr>
+    {% elif action in ["delete_select"] %}
+      <tr>
+        <td id=table_border colspan=4>
+        <form action=/photos_edit method=post>
+          <input type="submit" name={{ action }} value="  Slett  ">
+          <input type="hidden" name="event_id" value="{{ event_id }}">
+          <input type="hidden" name=action value={{ action }}>
+        </td>
+      </tr>
     {% endif %}
 
     {% for foto in photos %}
@@ -207,13 +231,20 @@
         </td>
       </tr>
     {% endfor %}
-    {% if action in ["delete_select", "update_race_info"] %}
+    {% if action in ["update_race_info"] %}
     <tr>
       <td colspan=4>
         {% for race in races %}
           <input type="hidden" name="raceclass_{{ race.id }}" value="{{ race.raceclass }}">
         {% endfor %}
         <input type="submit" name={{ action }} value="  Lagre  ">
+        </form>
+      </td>
+    </tr>
+    {% elif action in ["delete_select"] %}
+    <tr>
+      <td colspan=4>
+        <input type="submit" name={{ action }} value="  Slett  ">
         </form>
       </td>
     </tr>

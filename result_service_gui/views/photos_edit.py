@@ -56,10 +56,9 @@ class PhotosEdit(web.View):
             else:
                 photos = await PhotosAdapter().get_all_photos(user["token"], event_id, False)
             if filter == "low_confidence":
-                action = "update_race_info"
                 filtered_photos = []
                 for photo in photos:
-                    if (photo["race_id"] == "") or (photo["confidence"] < 60):
+                    if (photo["confidence"] < 51):
                         filtered_photos.append(photo)
                 photos = filtered_photos
             photos.reverse()
@@ -106,6 +105,10 @@ class PhotosEdit(web.View):
             elif "delete_all_local" in form.keys():
                 informasjon = await FotoService().delete_all_local_photos(
                     user["token"], event_id
+                )
+            elif "delete_all_low_confidence" in form.keys():
+                informasjon = await FotoService().delete_all_low_confidence_photos(
+                    user["token"], event_id, 51
                 )
             elif "delete_select" in form.keys():
                 informasjon = "Sletting utført: "
