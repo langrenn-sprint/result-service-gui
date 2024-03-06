@@ -5,26 +5,39 @@
 {% endblock %}
 
 {% block titleheader %}
-  Startlister {{ valgt_klubb }}{{ valgt_klasse }}
+  Start {{ valgt_klubb }}{{ valgt_klasse }}
 {% endblock %}
 
-{% block headercontainer %}Startlister {{ valgt_klasse }} <img id=header_icon src="../static/icon_start.png"> {% endblock %}
+{% block headercontainer %}
+  Start {{ valgt_klasse }} <img id=header_icon src="../static/icon_start.png">
+{% endblock %}
 
 {% block refresh %}{% if valgt_klasse == "live" %}60{% endif %}{% endblock %}
 
 {% block titlemain %}
-  <img id=menu_icon src="../static/icon_start.png"> Startlister {{ valgt_klubb }}{{ valgt_klasse }}
+  <img id=menu_icon src="../static/icon_start.png"> Start {{ valgt_klubb }}{{ valgt_klasse }}
 {% endblock %}
 
 {% block menuitems %}
   <li class=dropdown id=topborder>
     <a href=javascript:void(0) class=dropbtn>Velg klasse</a>
     <div class=dropdown-content>
-      {% for klasse in raceclasses %}
-        {% for ac_name in klasse.ageclasses %}
-          <a href=start?klasse={{ klasse.name }}&event_id={{ event_id }}>{{ ac_name }}</a>
+      <table>
+        {% for raceclass in raceclasses %}
+          {% for ac_name in raceclass.ageclasses %}
+            <tr>
+              {% if event.competition_format != "Interval Start" %}
+                <td id="black"><nobr><a href=start?klasse={{ raceclass.name }}&event_id={{ event_id }}>{{ ac_name }}</a></nobr></td>
+                <td><nobr><a href=start?klasse={{ raceclass.name }}&event_id={{ event_id }}&runde=Q>Kvart</a></nobr></td>
+                <td><nobr><a href=start?klasse={{ raceclass.name }}&event_id={{ event_id }}&runde=S>Semi</a></nobr></td>
+                <td><nobr><a href=start?klasse={{ raceclass.name }}&event_id={{ event_id }}&runde=F>Finale</a></nobr></td>
+              {% else %}
+                <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=live>{{ ac_name }}</a></nobr></td>
+              {% endif %}
+            </tr>
+          {% endfor %}
         {% endfor %}
-      {% endfor %}
+      </table>
     </div>
   </li>
   <li class=dropdown id=topborder>
