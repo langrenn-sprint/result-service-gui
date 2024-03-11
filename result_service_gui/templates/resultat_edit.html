@@ -359,8 +359,7 @@
                 <td align="center">
                   <span id="{{ race.order }}{{ start.bib }}_start_status">
                     {% if start.status in ["DNS"] %}
-                      <a href="control?event_id={{ event_id }}&action=c&heat={{ race.raceclass }}-{{ race.round }}{{ race.index }}{{ race.heat }}">{{ start.status }}</a>
-                      <script>document.getElementById({{ race.order }}{{ start.bib }}).style.backgroundColor = "Grey";</script>
+                      <span id="grey">DNS</span>
                     {% else %}
                       <input type=checkbox value="{{ start.status_id }}" id="dnf_{{ start.bib }}" tabindex="-1" onclick="dnf_toggle('{{ start.bib }}', '{{ start.name }}', '{{ start.club }}', '{{ race.raceclass }}-{{ race.round }}{{ race.index }}{{ race.heat }}', '{{ race.order }}', '{{ race.id }}', this.checked, this.value);"{% if start.status == "DNF" %} checked{% endif %}>
                       {% if start.status == "DNF" %}
@@ -384,8 +383,9 @@
                 {% if race.finish_timings[loop.index0] and race.finish_timings[loop.index0].bib %}
                   <td id=resultborder align=center><span id="{{ race.order }}_place_{{ loop.index }}">{{ race.finish_timings[loop.index0].rank }}</span></td>
                   <td>
-                    <input type="text" id="{{ race.order }}_form_rank_{{ loop.index }}" name="{{ race.order }}_form_rank_{{ loop.index }}" value="{% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}" size=3 onfocus="this.oldvalue = this.value;" onchange="validation_colors({{ race.order }})">
+                    <input type="hidden" name="R{{ race.order }}_dummy_{{ loop.index }}" value="0">
                     <input type="hidden" id="{{ race.order }}_old_pos_{{ loop.index }}" name="{{ race.order }}_old_pos_{{ loop.index }}" value="{{ race.finish_timings[loop.index0].rank }}">
+                    <input type="text" id="{{ race.order }}_form_rank_{{ loop.index }}" name="{{ race.order }}_form_rank_{{ loop.index }}" value="{% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}" size=3 onfocus="this.oldvalue = this.value;" onchange="validation_colors({{ race.order }})">
                     <input type="hidden" id="{{ race.order }}_pos_{{ loop.index }}" name="{{ race.order }}_pos_{{ loop.index }}" value="{{ race.finish_timings[loop.index0].rank }}">
                     <input type="hidden" id="{{ race.order }}_old_form_rank_{{ loop.index }}" name="{{ race.order }}_old_form_rank_{{ loop.index }}" value="{% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}">
                     <input type="hidden" id="{{ race.order }}_time_event_id_{{ loop.index }}" name="{{ race.order }}_time_event_id_{{ loop.index }}" value="{{ race.finish_timings[loop.index0].id }}">
@@ -406,8 +406,9 @@
                 {% else %}
                   <td id=resultborder align=center><span id="{{ race.order }}_place_{{ loop.index }}">{{ loop.index }}</span></td>
                   <td>
-                    <input type="text" id="{{ race.order }}_form_rank_{{ loop.index }}" name="{{ race.order }}_form_rank_{{ loop.index }}" value="" size=3 onfocus="this.oldvalue = this.value;" onchange="validation_colors({{ race.order }})">
+                    <input type="hidden" name="R{{ race.order }}_dummy_{{ loop.index }}" value="0">
                     <input type="hidden" id="{{ race.order }}_old_pos_{{ loop.index }}" name="{{ race.order }}_old_pos_{{ loop.index }}" value="{{ loop.index }}">
+                    <input type="text" id="{{ race.order }}_form_rank_{{ loop.index }}" name="{{ race.order }}_form_rank_{{ loop.index }}" value="" size=3 onfocus="this.oldvalue = this.value;" onchange=validation_colors({{ race.order }})>
                     <input type="hidden" id="{{ race.order }}_pos_{{ loop.index }}" name="{{ race.order }}_pos_{{ loop.index }}" value="{{ loop.index }}">
                     <input type="hidden" id="{{ race.order }}_old_form_rank_{{ loop.index }}" name="{{ race.order }}_old_form_rank_{{ loop.index }}" value="">
                     <input type="hidden" id="{{ race.order }}_time_event_id_{{ loop.index }}" name="{{ race.order }}_time_event_id_{{ loop.index }}" value="">

@@ -133,6 +133,10 @@ border-right: 1px solid #ddd;
   color: red;
   font-weight: bold;
 }
+#grey {
+  color: grey;
+  font-weight:lighter
+}
 #black {
   color: black;
   font-weight: bold;
