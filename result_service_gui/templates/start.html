@@ -17,7 +17,6 @@
 {% block titlemain %}
   <img id=menu_icon src="../static/icon_start.png"> Start {{ valgt_klubb }}{{ valgt_klasse }}
 {% endblock %}
-
 {% block menuitems %}
   <li class=dropdown id=topborder>
     <a href=javascript:void(0) class=dropbtn>Velg klasse</a>
@@ -43,6 +42,13 @@
   <li class=dropdown id=topborder>
     <a href="start?klasse=live&event_id={{ event_id }}" class=dropbtn alt="Se hvem som starter nå, viser de neste 8 heat">Starter nå</a>
   </li>
+  <li class=dropdown id=topborder>
+    <a href=javascript:void(0) class=dropbtn>Utskrift</a>
+    <div class=dropdown-content>
+      <a target=_blank href=/print_lists?event_id={{ event_id }}&action=raceplan&klasse={{ valgt_klasse }}>Kjøreplan {{ valgt_klasse }}</a>
+    </div>
+  </li>
+
 {% endblock %}
 
 {% block content %}
@@ -74,7 +80,7 @@
             <td>{{ loper.scheduled_start_time[-8:] }}</td>
             <td>{{ loper.name }}</td>
             <td>
-              {% if loper.club_logo %}<img width=15 src={{ loper.club_logo }}>{% endif %}
+              {% if loper.club_logo %}<img width=15 src={{ loper.club_logo }} title="{{ loper.club }}" style="vertical-align: middle;">{% endif %}
               {{ loper.club }}
             </td>
             <td>{{ loper.team }}</td>
@@ -108,7 +114,7 @@
         {% endfor %}
       </table>
     {% endif %}
-    <div id=spacer></div>
+    <p></p>
     <div class="w3-row-padding">
       <div class="{{ colclass }}">
         <table>
@@ -121,6 +127,8 @@
         {% endif %}
         {% if valgt_klasse == "live" %}
           <tr id={{ race.display_color }}>
+        {% elif valgt_klasse == "" %}
+          <tr id=subheader>
         {% else %}
           <tr id=headerblue>
         {% endif %}
@@ -140,29 +148,31 @@
           <td colspan=2>{% if race.next_race %}Neste heat: {{ race.next_race }}{% endif %}</td>
           <td>(heat {{ race.order }})</td>
         </tr>
-        <tr id=subheader>
-          <td width=50><div id={{ race.heat }} >Pos</div></td>
-          <td width=50>Nr</td>
-          <td>Navn</td>
-          <td>Klubb</td>
-            <td></td>
-            <td></td>
-        </tr>
-        {% for loper in race.startliste %}
-          <tr>
-            <td>{{ loper.starting_position }}</td>
-            <td><div id={{ loper.bib }}></div>{{ loper.bib }}</td>
-            <td>
-              <a href=live?event_id={{ event_id }}&klasse={{ valgt_klasse }}&startnr={{ loper.bib }}>{{ loper.name }}</a>
-            </td>
-            <td>
-              {% if loper.club_logo %}<img width=15 src={{ loper.club_logo }}>{% endif %}
-              {{ loper.club }}
-            </td>
-            <td></td>
-            <td></td>
+        {% if valgt_klasse %}
+          <tr id=subheader>
+            <td width=50><div id={{ race.heat }} >Pos</div></td>
+            <td width=50>Nr</td>
+            <td>Navn</td>
+            <td>Klubb</td>
+              <td></td>
+              <td></td>
           </tr>
-        {% endfor %}
+          {% for loper in race.startliste %}
+            <tr>
+              <td>{{ loper.starting_position }}</td>
+              <td><div id={{ loper.bib }}></div>{{ loper.bib }}</td>
+              <td>
+                <a href=live?event_id={{ event_id }}&klasse={{ valgt_klasse }}&startnr={{ loper.bib }}>{{ loper.name }}</a>
+              </td>
+              <td>
+                {% if loper.club_logo %}<img width=15 src={{ loper.club_logo }} title="{{ loper.club }}" style="vertical-align: middle;">{% endif %}
+                {{ loper.club }}
+              </td>
+              <td></td>
+              <td></td>
+            </tr>
+          {% endfor %}
+        {% endif %}
       <tr><td colspan="6" id="spacer"></td></tr>
       {% endfor %}
   </table>

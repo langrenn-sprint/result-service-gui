@@ -33,8 +33,8 @@
       <a class=dropbtn href="live?klasse={{ valgt_klasse }}&event_id={{ event_id }}&action=all">Vis alle heat i {{ valgt_klasse }}</a>
     </li>
   {% endif %}
-  <li class=dropdown id=topborder style="float:right">
-    <a class=dropbtn>Kl: {{ local_time_now }}</a>
+  <li class=dropdown>
+    <a class=dropbtn><b>Kl: {{ local_time_now }}</b></a>
   </li>
   {% endblock %}
 
@@ -92,7 +92,7 @@
                       {% if race.results.Finish and (race.results.Finish.status != 2) %}&nbsp;<img width=15 src="../static/warning.png" title="Uoffisielt resultat">{% endif %}
                     </td>
                     <td align=center>{{ loper.bib }}</td>
-                    <td align=center>{% if loper.club_logo %}<img width=15 src={{ loper.club_logo }}>{% endif %}</td>
+                    <td align=center>{% if loper.club_logo %}<img width=15 src={{ loper.club_logo }} title="{{ loper.club }}" style="vertical-align: middle;">{% endif %}</td>
                     <td>
                         <a href=live?klasse={{ valgt_klasse }}&startnr={{ loper.bib }}&event_id={{ event_id }}>{{ loper.name }}</a>
                     </td>
@@ -110,12 +110,17 @@
                 </td>
                 <td></td>
               </tr>
+              <tr id=subheader>
+                <td colspan=5 align="center">
+                  {{ race.next_race }}
+                </td>
+              </tr>
                 {% if race.start_entries|length > 0 %}
                    {% for loper in race.start_entries %}
                       <tr{% if loper.bib == valgt_startnr %} id=black{% endif %}>
                          <td align=center id=table_border>{{ loper.starting_position }}</td>
                          <td align=center>{{ loper.bib }}</td>
-                         <td align=center>{% if loper.club_logo %}<img width=15 src={{ loper.club_logo }}>{% endif %}</td>
+                         <td align=center>{% if loper.club_logo %}<img width=15 src={{ loper.club_logo }} title="{{ loper.club }}" style="vertical-align: middle;">{% endif %}</td>
                          <td>
                            <a href=live?klasse={{ valgt_klasse }}&startnr={{ loper.bib }}&event_id={{ event_id }}>{{ loper.name }}</a>
                          </td>

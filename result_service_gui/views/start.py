@@ -44,7 +44,7 @@ class Start(web.View):
                 valgt_klasse = self.request.rel_url.query["klasse"]
             except Exception:
                 valgt_klasse = ""  # noqa: F841
-                informasjon += "Velg klasse for å se startlister."
+                informasjon += "Viser kjøreplan. Velg klasse for å se startlister."
             try:
                 valgt_runde = self.request.rel_url.query["runde"]
             except Exception:
@@ -65,7 +65,7 @@ class Start(web.View):
                 informasjon = f"{informasjon} Ingen løp funnet."
             else:
                 for race in _tmp_races:
-                    if (race["raceclass"] == valgt_klasse) or ("live" == valgt_klasse):
+                    if (race["raceclass"] == valgt_klasse) or (valgt_klasse in ["live", ""]):
                         race = await RaceplansAdapter().get_race_by_id(
                             user["token"], race["id"]
                         )

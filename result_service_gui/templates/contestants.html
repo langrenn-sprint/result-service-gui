@@ -444,7 +444,7 @@
               <td>{{ contestant.bib }}</td>
               <td>{{ contestant.first_name }} {{ contestant.last_name }}</td>
               <td>
-                {% if contestant.club_logo %}<img width=15 src={{ contestant.club_logo }}>{% endif %}
+                {% if contestant.club_logo %}<img width=15 src={{ contestant.club_logo }} title="{{ contestant.club }}" style="vertical-align: middle;">{% endif %}
                 {{ contestant.club }}{% if contestant.team %} / {{ contestant.team }}{% endif %}
               </td>
               <td>{{ contestant.ageclass }}</td>

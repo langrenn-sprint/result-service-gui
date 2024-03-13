@@ -96,9 +96,11 @@
           <div class=dropdown-content>
             {% if username == "Gjest" %}
               <a href=/login class=dropbtn>Logg inn</a>
-            {% else %}
+              <a href="https://langrenn-sprint.github.io/docs/contestant.html" target="_blank">Docs</a>
+              {% else %}
               <a id="myUsers" onclick="event_gui_href('myUsers', 'users')" href="/users">Brukere</a>
               <a id="mySettings" onclick="event_gui_href('mySettings', 'settings')" href="/settings">Globale innstillinger</a>
+              <a href="https://langrenn-sprint.github.io/docs/" target="_blank">Docs</a>
               <a href="/logout">Logg ut</a>
             {% endif %}
           </div>

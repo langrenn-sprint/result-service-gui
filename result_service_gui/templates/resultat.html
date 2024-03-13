@@ -62,17 +62,17 @@
         <td>Klubb</td>
         <td>Aldersklasse</td>
       </tr>
-      {% for deltaker in resultlist.ranking_sequence %}
+      {% for loper in resultlist.ranking_sequence %}
         <tr>
-          <td align=center>{{ deltaker.rank }}</td>
-          <td>{{ deltaker.round }}</td>
-          <td align=center>{{ deltaker.bib }}</td>
-          <td><a alt="Live resultater" href=live?event_id={{ event_id }}&klasse={{ valgt_klasse }}&startnr={{ deltaker.bib }}>{{ deltaker.name }}</a></td>
+          <td align=center>{{ loper.rank }}</td>
+          <td>{{ loper.round }}</td>
+          <td align=center>{{ loper.bib }}</td>
+          <td><a alt="Live resultater" href=live?event_id={{ event_id }}&klasse={{ valgt_klasse }}&startnr={{ loper.bib }}>{{ loper.name }}</a></td>
           <td>
-            {% if deltaker.club_logo %}<img width=15 src={{ deltaker.time_event.club_logo }}>{% endif %}
-            {{ deltaker.club }}
+            {% if loper.club_logo %}<img width=15 src={{ loper.time_event.club_logo }} title="{{ loper.club }}" style="vertical-align: middle;">{% endif %}
+            {{ loper.club }}
           </td>
-          <td>{{ deltaker.ageclass }}</td>
+          <td>{{ loper.ageclass }}</td>
         </tr>
       {% endfor %}
       <tr>

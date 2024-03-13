@@ -29,17 +29,17 @@
         <td>Runde</td>
         <td>Klasse</td>
       </tr>
-      {% for deltaker in resultlist.ranking_sequence %}
+      {% for loper in resultlist.ranking_sequence %}
         <tr>
-          <td align=center>{{ deltaker.rank }}</td>
-          <td align=center>{{ deltaker.bib }}</td>
-          <td>{% if deltaker.name %}{{ deltaker.name[:40] }}{% endif %}</td>
+          <td align=center>{{ loper.rank }}</td>
+          <td align=center>{{ loper.bib }}</td>
+          <td>{% if loper.name %}{{ loper.name[:40] }}{% endif %}</td>
           <td>
-            {% if deltaker.club_logo %}<img width=12 src={{ deltaker.time_event.club_logo }}>{% endif %}
-            {% if deltaker.club %}{{ deltaker.club[:25] }}{% endif %}
+            {% if loper.club_logo %}<img width=12 src={{ loper.time_event.club_logo }} title="{{ loper.club }}" style="vertical-align: middle;">{% endif %}
+            {% if loper.club %}{{ loper.club[:25] }}{% endif %}
           </td>
-          <td align=center>{{ deltaker.round }}</td>
-          <td>{{ deltaker.ageclass }}</td>
+          <td align=center>{{ loper.round }}</td>
+          <td>{{ loper.ageclass }}</td>
         </tr>
       {% endfor %}
         <tr>
