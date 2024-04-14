@@ -1,4 +1,4 @@
-"""Resource module for start resources."""
+"""Resource module for timing info."""
 import json
 import logging
 
@@ -15,7 +15,7 @@ from .utils import (
 
 
 class TimingInfo(web.View):
-    """Class representing the start view."""
+    """Class representing the timing_info view."""
 
     async def get(self) -> web.Response:
         """Get route function that return the passeringer page."""

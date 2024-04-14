@@ -13,7 +13,6 @@ from dotenv import load_dotenv
 import jinja2
 
 from .views import (
-    Contestants,
     Control,
     CsvList,
     Dashboard,
@@ -33,6 +32,7 @@ from .views import (
     Start,
     StartEdit,
     Timing,
+    TimingDash,
     TimingInfo,
     VideoEvents
 )
@@ -82,7 +82,6 @@ async def create_app() -> web.Application:
         [
             web.view("/", Main),
             web.view("/csv", CsvList),
-            web.view("/contestants", Contestants),
             web.view("/control", Control),
             web.view("/dashboard", Dashboard),
             web.view("/live", Live),
@@ -100,6 +99,7 @@ async def create_app() -> web.Application:
             web.view("/start", Start),
             web.view("/start_edit", StartEdit),
             web.view("/timing", Timing),
+            web.view("/timing_dash", TimingDash),
             web.view("/timing_info", TimingInfo),
             web.view("/video_events", VideoEvents),
         ]

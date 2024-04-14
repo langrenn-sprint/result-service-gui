@@ -28,13 +28,15 @@ li:hover, .dropdown:hover, .dropbtn:hover {
 }
 
 #headerblue {
-    color: white;
-    background-color: #75000e;
+  color: white;
+  background-color: #75000e;
+  padding: 4px;
 }
 
 #headerblack {
-    color: white;
-    background-color: #1f3d8e;
+  color: white;
+  background-color: #1f3d8e;
+  padding: 4px;
 }
 
 #headercollapse {

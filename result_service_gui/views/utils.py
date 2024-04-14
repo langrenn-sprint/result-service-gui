@@ -427,12 +427,13 @@ async def create_start(user: dict, form: dict) -> str:
         user["token"], form["event_id"], bib
     )
     if contestant:
+        new_race_info = await get_new_race_info(user, form)
         new_start = {
-            "startlist_id": form["startlist_id"],
-            "race_id": form["race_id"],
+            "startlist_id": new_race_info["startlist_id"],
+            "race_id": new_race_info["race_id"],
             "bib": bib,
-            "starting_position": int(form["starting_position"]),
-            "scheduled_start_time": form["start_time"],
+            "starting_position": new_race_info["starting_position"],
+            "scheduled_start_time": new_race_info["start_time"],
             "name": f"{contestant['first_name']} {contestant['last_name']}",
             "club": contestant["club"],
         }
@@ -468,6 +469,40 @@ async def create_start(user: dict, form: dict) -> str:
     else:
         informasjon = f"Error. Fant ikke deltaker med startnr {form['bib']}."
     return informasjon
+
+
+async def get_new_race_info(user: dict, form: dict) -> dict:
+    """Extract start pos from form or get best available."""
+    try:
+        starting_position = int(form["starting_position"])
+        startlist_id = form["startlist_id"]
+        start_time = form["start_time"]
+        race_id = form["race_id"]
+    except Exception:
+        starting_position = 1
+        race_id = form["new_heat"]
+        new_race = await RaceplansAdapter().get_race_by_id(
+            user["token"], race_id
+        )
+        start_entries = new_race["start_entries"]
+        start_time = new_race["start_time"]
+        if len(start_entries) > 0:
+            startlist_id = start_entries[0]["startlist_id"]
+            start_positions_taken = []
+            for start_entry in start_entries:
+                start_positions_taken.append(start_entry["starting_position"])
+            starting_position = max(start_positions_taken) + 1
+            for i in range(1, len(start_entries) + 1):
+                if i not in start_positions_taken:
+                    starting_position = i
+                    break
+    new_race_info = {
+        "race_id": race_id,
+        "starting_position": starting_position,
+        "startlist_id": startlist_id,
+        "start_time": start_time,
+    }
+    return new_race_info
 
 
 async def delete_start(user: dict, form: dict) -> str:

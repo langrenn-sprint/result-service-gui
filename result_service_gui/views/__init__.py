@@ -1,5 +1,4 @@
 """Package for all views."""
-from .contestants import Contestants
 from .control import Control
 from .csv_list import CsvList
 from .dashboard import Dashboard
@@ -19,5 +18,6 @@ from .resultat_update import ResultatUpdate
 from .start import Start
 from .start_edit import StartEdit
 from .timing import Timing
+from .timing_dash import TimingDash
 from .timing_info import TimingInfo
 from .video_events import VideoEvents

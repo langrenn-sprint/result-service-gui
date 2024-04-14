@@ -24,19 +24,16 @@
         {% for raceclass in raceclasses %}
           <tr>
             {% if event.competition_format != "Interval Start" %}
-              <td id="black">{{ raceclass.name }}</td>
-              <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&action={{ action }}>Alle</a></nobr></td>
+              <td id="black"><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&action={{ action }}>{{ raceclass.name }}</a></nobr></td>
               {% if raceclass.ranking %}
                 <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&action={{ action }}&runde=Q>Kvart</a></nobr></td>
                 <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&action={{ action }}&runde=S>Semi</a></nobr></td>
                 <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&action={{ action }}&runde=F>Finale</a></nobr></td>
               {% else %}
-                <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=R1>Runde 1</a></nobr></td>
-                <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&runde=R2>Runde 2</a></nobr></td>
-                <td></td>
+                <td colspan=3></td>
               {% endif %}
             {% else %}
-              <td><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&action={{ action }}>{{ raceclass.name }}</a></nobr></td>
+              <td id="black"><nobr><a href=start_edit?event_id={{ event_id }}&klasse={{ raceclass.name }}&action={{ action }}>{{ raceclass.name }}</a></nobr></td>
             {% endif %}
           </tr>
         {% endfor %}
@@ -62,7 +59,7 @@
               <td>Pos</td>
             {% endif %}
             <td>Startnr</td>
-            <td colspan=2>Status</td>
+            <td colspan=2></td>
             <td>Navn</td>
             <td>Klubb</td>
           </tr>
@@ -75,16 +72,27 @@
               {% endif %}
               <td align=center width=50>{{ start.bib }}</td>
               <td>{{ start.start_status }}</td>
-              <td>
+              <td><nobr>
                 <form action=/start_edit method=post>
-                  <input type="submit" name=delete_start value=" Slett ">
                   <input type="hidden" name="race_id" value="{{ race.id }}">
                   <input type="hidden" name=start_id value="{{ start.id }}">
                   <input type="hidden" name=klasse value="{{ valgt_klasse }}">
                   <input type="hidden" name="runde" value="{{ valgt_runde }}">
                   <input type="hidden" name=event_id value="{{ event_id }}">
+                  <input type="submit" name=delete_start value=" Slett ">
+                  Nytt heat: 
+                  <select name=new_heat>
+                    <option value="">Velg heat</option>
+                    {% for next_race in next_races %}
+                      {% if race.id != next_race.id %}
+                        <option value="{{ next_race.id }}">{{ next_race.round }}{{ next_race.index }} {{ next_race.heat }}</option>
+                      {% endif %}
+                    {% endfor %}
+                  </select>
+                  <input type="hidden" name=bib value="{{ start.bib }}">
+                  <input type="submit" name=move_start value=" Flytt ">
                 </form>
-              </td>
+              </nobr></td>
               <td>{{ start.name }}</td>
               <td>{% if start.club_logo %}<img width=15 src={{ start.club_logo }}> {% endif %}{{ start.club }}</td>
             </tr>

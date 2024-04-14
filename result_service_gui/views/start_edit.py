@@ -111,6 +111,11 @@ class StartEdit(web.View):
                 informasjon = await create_start(user, form)  # type: ignore
             elif "delete_start" in form.keys():
                 informasjon = await delete_start(user, form)  # type: ignore
+            elif "move_start" in form.keys():
+                informasjon = "Flytting utført: "
+                informasjon += await delete_start(user, form)  # type: ignore
+                informasjon += await create_start(user, form)  # type: ignore
+
         except Exception as e:
             logging.error(f"Error: {e}")
             informasjon = f"Det har oppstått en feil - {e.args}."
