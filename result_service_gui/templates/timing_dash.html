@@ -10,6 +10,19 @@
 {% block menuitems %}{% endblock menuitems %}
 
 {% block content %}
+<! --- Information --->
+<div id=info-header><a id=info-header data-toggle="collapse" href="#info-zone">TIPS</a></div>
+<div id=info-zone class="collapse">
+  - Her ser du grafisk visning over fremdrift i rennet.<br>
+  - Feilsituasjoner markeres i rødt. Dette skyldes dobbeltregistreringer og bør korrigeres umiddelbart. Klikk på den røde boksen for å gå til korringerings-siden.<br>
+  - Ikke komplette resultater (gul-grønt) markeres også følges opp - dette skyldes normalt manglende registrering av DNS eller DNF men kan også være at en løper har passert mål uten at det ble registrert.<br>
+  - Dokumentasjon her: <a href=https://langrenn-sprint.github.io/docs/during_race.html>https://langrenn-sprint.github.io/docs/during_race.html</a><br>
+  - Instruksjonsvideo: <a href=https://youtu.be/HdpBOXwqcjw?si=6zlEmkp_655uONh4>https://youtu.be/HdpBOXwqcjw?si=6zlEmkp_655uONh4</a><br>
+  - Gammel dashboard side: <a href=dashboard?event_id={{ event_id }}>Admin: Renndagen (gammel)</a>
+
+</div>
+<div id=spacer></div>
+<! --- End Information --->
 
 <script>
       function generate_resultlist(raceclass) {
@@ -95,8 +108,8 @@
             <td>
                 {% for race in raceclass.races_q %}
                 <span class=tooltip_race id=kpi{{ race.progress }}>
-                    {% if race.progress == "6" %}
-                    <a href="control?event_id={{ event_id }}&action=c&heat={{ raceclass.name }}-{{ race.name }}&informasjon=Korrigering">{{ race.name }}</a>
+                    {% if race.progress == 6 %}
+                    <a href="control?event_id={{ event_id }}&valgt_klasse={{ raceclass.name }}&action=c&heat={{ raceclass.name }}-{{ race.name }}&informasjon=Korrigering">{{ race.name }}</a>
                     {% else %}
                     <a href="resultat_edit?event_id={{ event_id }}&heat={{ race.order }}">{{ race.name }}</a>
                     {% endif %}
@@ -113,8 +126,8 @@
             <td>
                 {% for race in raceclass.races_s %}
                 <span class=tooltip_race id=kpi{{ race.progress }}>
-                    {% if race.progress == "6" %}
-                    <a href="control?event_id={{ event_id }}&action=c&heat={{ raceclass.name }}-{{ race.name }}&informasjon=Korrigering">{{ race.name }}</a>
+                    {% if race.progress == 6 %}
+                    <a href="control?event_id={{ event_id }}&valgt_klasse={{ raceclass.name }}&action=c&heat={{ raceclass.name }}-{{ race.name }}&informasjon=Korrigering">{{ race.name }}</a>
                     {% else %}
                     <a href="resultat_edit?event_id={{ event_id }}&heat={{ race.order }}">{{ race.name }}</a>
                     {% endif %}
@@ -131,8 +144,8 @@
             <td>
                 {% for race in raceclass.races_f %}
                 <span class=tooltip_race id=kpi{{ race.progress }}>
-                    {% if race.progress == "6" %}
-                    <a href="control?event_id={{ event_id }}&action=c&heat={{ raceclass.name }}-{{ race.name }}&informasjon=Korrigering">{{ race.name }}</a>
+                    {% if race.progress == 6 %}
+                    <a href="control?event_id={{ event_id }}&valgt_klasse={{ raceclass.name }}&action=c&heat={{ raceclass.name }}-{{ race.name }}&informasjon=Korrigering">{{ race.name }}</a>
                     {% else %}
                     <a href="resultat_edit?event_id={{ event_id }}&heat={{ race.order }}">{{ race.name }}</a>
                     {% endif %}
@@ -352,20 +365,8 @@
     </table>
   </div>
 </div>
-
-<! --- Information --->
-<div id=spacer></div>
-<div id=info-header><a id=info-header data-toggle="collapse" href="#info-zone">TIPS</a></div>
-<div id=info-zone class="collapse">
-  - Dokumentasjon her: <a href=https://langrenn-sprint.github.io/docs/during_race.html>https://langrenn-sprint.github.io/docs/during_race.html</a><br>
-  - Instruksjonsvideo: <a href=https://youtu.be/HdpBOXwqcjw?si=6zlEmkp_655uONh4>https://youtu.be/HdpBOXwqcjw?si=6zlEmkp_655uONh4</a><br>
-</div>
-<div id=spacer></div>
-<! --- End Information --->
-
 <script>
     // run scripy to pull events from pub_sub
     setInterval(pull_events(), 15000);
-
 </script>
 {% endblock content %}

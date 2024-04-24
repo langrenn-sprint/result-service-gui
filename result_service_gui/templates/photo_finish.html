@@ -48,7 +48,15 @@
 {% endblock %}
 
 {% block content %}
+  <! --- Information --->
   <div id=spacer></div>
+  <div id=info-header><a id=info-header data-toggle="collapse" href="#info-zone">TIPS</a></div>
+  <div id=info-zone class="collapse">
+    - Denne siden viser heat resultater og målfoto i read-only modus.<br>
+    - Klikk på et bilde for å vise det i stort format.
+  </div>
+  <div id=spacer></div>
+  <! --- End Information --->
   <script>
     /* this function will indicate with red or green colors if entered values are correct or not
       if bib exist in heat, the bib will be green,
@@ -332,13 +340,4 @@
       </tr>
     </table>
 </div>
-<! --- Information --->
-<div id=spacer></div>
-<div id=info-header><a id=info-header data-toggle="collapse" href="#info-zone">TIPS</a></div>
-<div id=info-zone class="collapse">
-  - Denne siden viser heat resultater i read-only modus.<br>
-  - Klikk på et bilde for å vise det i stort format.
-</div>
-<div id=spacer></div>
-<! --- End Information --->
 {% endblock %}

@@ -187,6 +187,7 @@ height: 400px;
 
 #spacer {
 height: 4px;
+background-color: white;
 }
 
 #minispacer {
@@ -665,7 +666,7 @@ width:auto;
 }
 
 img {
-  margin-bottom: -4px;
+  margin-bottom: 1px;
 }
 
 .lb_caption-container {

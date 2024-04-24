@@ -43,10 +43,22 @@
 {% endblock %}
 
 {% block content %}
+  <! --- Information --->
+  <div id=spacer></div>
+  <div id=info-header><a id=info-header data-toggle="collapse" href="#info-zone">TIPS</a></div>
+  <div id=info-zone class="collapse">
+    - Rediger start brukes til å gjøre endringer i startlistene.<br>
+    - Legg til: Brukes for å legge til en løper i startlisten. Oppgi startnummer og posisjon i heatet.<br>
+    - Slett: Brukes for å slette en løper fra startlisten.<br>
+    - Flytt: Dette er Slett og legg til som en operasjon. Lavest tilgjengelige posisjon velges automatisk.<br>
+    - OBS: Det er ikke lov å ha flere løpere i samme posisjon. Derfor viktig å ta hensyn til pre-definert oppsett når du tildeler posisjon manuelt.<br>
+  </div>
+  <div id=spacer></div>
+  <! --- End Information --->
     <table>
       {% for race in next_races %}
         <tr>
-          <td colspan=6>&nbsp;</td>
+          <td colspan=6 id="spacer"></td>
         </tr>
         <tr>
           <td colspan=3><b>{{ race.raceclass }} {{ race.round }}{{ race.index }} {{ race.heat }}</b> - max antall: {{ race.max_no_of_contestants }}</td>

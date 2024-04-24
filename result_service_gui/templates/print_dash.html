@@ -1,0 +1,122 @@
+{% extends "open_base.html" %}
+{% block titlecontainer %}
+  <div class="w3-container">
+{% endblock titlecontainer %}
+
+{% block titleheader %}{{ lopsinfo }}{% endblock titleheader %}
+{% block headercontainer %}{{ lopsinfo }} <img id=header_icon src="../static/icon_event.png"> {% endblock %}
+{% block refresh %}{% endblock refresh %}
+{% block titlemain %} <img id=menu_icon src="../static/icon_event.png"> {{ lopsinfo }}{% endblock titlemain %}
+{% block menuitems %}{% endblock menuitems %}
+
+{% block content %}
+<! --- Information --->
+<div id=info-header><a id=info-header data-toggle="collapse" href="#info-zone">TIPS</a></div>
+<div id=info-zone class="collapse">
+  - Utskrift kommer i eget vindu. Bruk Ctrl+P for å skrive ut.<br>
+  - Innstillinger som marker, papirtype og topptekst kan justeres i printer-menyen<br>
+  - Det er også mulighet til å lage PDF. Dette velges i printer-menyen<br>
+</div>
+<div id=spacer></div>
+<! --- End Information --->
+
+<div class="w3-row-padding">
+    <table cellpadding=4>
+        <tr>
+        <td colspan=5 id=spacer>&nbsp;</td>
+        </tr>
+        <tr id=headerblue>
+        <td id=table_border colspan=5>Utskrifter</td>
+        </tr>
+        <tr>
+        <td width=200>
+            <ul>
+            <li class=dropdown>
+                <a href=javascript:void(0) class=dropbtn>Kjøreplan</a>
+                <div class=dropdown-content>
+                <a target=_new href=print_lists?event_id={{ event_id }}&action=raceplan>Alle</a>
+                {% for klasse in raceclasses %}
+                    <a target=_new href=print_lists?klasse={{ klasse.name }}&event_id={{ event_id }}&action=raceplan>{{ klasse.name }}</a>
+                {% endfor %}
+                </div>
+            </li>
+            </ul>
+        </td>
+        <td width=200>
+            <ul>
+            <li class=dropdown>
+                <a href=javascript:void(0) class=dropbtn>Startlister</a>
+                <div class=dropdown-content>
+                <table>
+                    <tr><td colspan="5">
+                    <a target=_new href=print_lists?event_id={{ event_id }}&action=start>Alle</a>
+                    </td></tr>
+                    {% for raceclass in raceclasses %}
+                    <tr>
+                        {% if event.competition_format != "Interval Start" %}
+                        <td id="black">{{ raceclass.name }}</td>
+                        <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=start>Alle</a></nobr></td>
+                        <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=start&runde=Q>Kvart</a></nobr></td>
+                        <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=round_start&runde=Q>Semi</a></nobr></td>
+                        <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=round_start&runde=S>Finale</a></nobr></td>
+                        {% else %}
+                        <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=start>{{ raceclass.name }}</a></nobr></td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </table>
+                </div>
+            </li>
+            </ul>
+        </td>
+        <td width=200>
+            <ul>
+            <li class=dropdown>
+                <a href=javascript:void(0) class=dropbtn>Live resultater (heat)</a>
+                <div class=dropdown-content>
+                <table>
+                    <tr>
+                    <td><a target=_new href=print_lists?event_id={{ event_id }}&action=live>Alle</a></td>
+                    </tr>
+                    {% for raceclass in raceclasses %}
+                    <tr>
+                        {% if event.competition_format != "Interval Start" %}
+                        <td id="black">{{ raceclass.name }}</td>
+                        <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=live>Alle</a></nobr></td>
+                        <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=live&runde=Q>Kvart</a></nobr></td>
+                        <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=live&runde=S>Semi</a></nobr></td>
+                        <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=live&runde=F>Finale</a></nobr></td>
+                        {% else %}
+                        <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=live>{{ raceclass.name }}</a></nobr></td>
+                        {% endif %}
+                    </tr>
+                    {% endfor %}
+                </table>
+                </div>
+            </li>
+            </ul>
+        </td>
+        <td width=200>
+            <ul>
+            <li class=dropdown>
+                <a href=javascript:void(0) class=dropbtn>Resultater (for klassen)</a>
+                <div class=dropdown-content>
+                <a target=_new href=print_lists?event_id={{ event_id }}&action=result>Alle</a>
+                {% for klasse in raceclasses %}
+                    <a target=_new href=print_lists?klasse={{ klasse.name }}&event_id={{ event_id }}&action=result>{{ klasse.name }}</a>
+                {% endfor %}
+                </div>
+            </li>
+            </ul>
+        </td>
+        </tr>
+        <tr>
+        <td id=table_border colspan=5>Tips: Utskrift kommer i eget vindu. Bruk Ctrl+P for å skrive ut.</td>
+        </tr>
+        <tr>
+        <td colspan=5 id=spacer>&nbsp;</td>
+        </tr>
+    </table>
+</div>
+
+{% endblock content %}

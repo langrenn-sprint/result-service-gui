@@ -11,6 +11,7 @@ from .photo_finish import PhotoFinish
 from .photo_update import PhotoUpdate
 from .photos import Photos
 from .photos_edit import PhotosEdit
+from .print_dash import PrintDash
 from .print_lists import PrintLists
 from .resultat import Resultat
 from .resultat_edit import ResultatEdit
