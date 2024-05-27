@@ -1,6 +1,7 @@
 """Package for exposing validation endpoint."""
 import base64
 import logging
+from logging.handlers import RotatingFileHandler
 import os
 import time
 
@@ -42,6 +43,7 @@ load_dotenv()
 LOGGING_LEVEL = os.getenv("LOGGING_LEVEL", "INFO")
 PROJECT_ROOT = os.path.join(os.getcwd(), "result_service_gui")
 logging.info(f"PROJECT_ROOT: {PROJECT_ROOT}")
+ERROR_FILE = str(os.getenv("ERROR_FILE"))
 
 
 async def handler(request) -> web.Response:
@@ -68,8 +70,14 @@ async def create_app() -> web.Application:
     setup(app, EncryptedCookieStorage(secret_key))
     app.router.add_get("/secret", handler)
 
-    # Set up logging
+    # Set up logging - errors to separate file
     logging.basicConfig(level=LOGGING_LEVEL)
+    file_handler = RotatingFileHandler(ERROR_FILE, maxBytes=1024 * 1024, backupCount=5)
+    file_handler.setLevel(logging.ERROR)
+    formatter = logging.Formatter("%(asctime)s - %(levelname)s - %(message)s")
+    file_handler.setFormatter(formatter)
+    logging.getLogger().addHandler(file_handler)
+
     # Set up template path
     template_path = os.path.join(PROJECT_ROOT, "templates")
     aiohttp_jinja2.setup(
