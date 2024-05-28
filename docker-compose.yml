@@ -12,6 +12,7 @@ services:
       - HOST_PORT=8080
       - EVENT_GUI_HOST_SERVER=event-service-gui
       - EVENT_GUI_HOST_PORT=8080
+      - ERROR_FILE=error.log
       - COMPETITION_FORMAT_HOST_SERVER=competition-format-service
       - COMPETITION_FORMAT_HOST_PORT=8080
       - EVENTS_HOST_SERVER=event-service
@@ -26,11 +27,13 @@ services:
       - GOOGLE_PUBSUB_NUM_MESSAGES=${GOOGLE_PUBSUB_NUM_MESSAGES}
       - RACE_DURATION_ESTIMATE=${RACE_DURATION_ESTIMATE}
       - RACE_TIME_DEVIATION_ALLOWED=${RACE_TIME_DEVIATION_ALLOWED}
-
     volumes:
       - type: bind
         source: ./${GOOGLE_APPLICATION_CREDENTIALS}
         target: /app/${GOOGLE_APPLICATION_CREDENTIALS}
+      - type: bind
+        source: ./error.log
+        target: /app/error.log
     depends_on:
       - "competition-format-service"
       - "event-service"

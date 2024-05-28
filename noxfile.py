@@ -1,4 +1,5 @@
 """Nox sessions."""
+
 import sys
 
 import nox
@@ -183,7 +184,7 @@ def mypy(session: Session) -> None:
         session.run("mypy", f"--python-executable={sys.executable}", "noxfile.py")
 
 
-@session
+@session(python=["3.11"])
 def pytype(session: Session) -> None:
     """Run the static type checker using pytype."""
     args = session.posargs or ["--disable=import-error", *locations]
