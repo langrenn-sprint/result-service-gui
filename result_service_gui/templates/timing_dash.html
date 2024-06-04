@@ -19,7 +19,6 @@
   - Dokumentasjon her: <a href=https://langrenn-sprint.github.io/docs/during_race.html>https://langrenn-sprint.github.io/docs/during_race.html</a><br>
   - Instruksjonsvideo: <a href=https://youtu.be/HdpBOXwqcjw?si=6zlEmkp_655uONh4>https://youtu.be/HdpBOXwqcjw?si=6zlEmkp_655uONh4</a><br>
   - Gammel dashboard side: <a href=dashboard?event_id={{ event_id }}>Admin: Renndagen (gammel)</a>
-
 </div>
 <div id=spacer></div>
 <! --- End Information --->
@@ -96,88 +95,72 @@
         <td align="center">Finaler</td>
       </tr>
     {% for raceclass in raceplan_kpis %}
-        {% if raceclass.progress in [3, 4, 6] and raceclass.ranking %}
-            <tr>
-            <td align="center">
-                <span class=tooltip_race id=kpi{{ raceclass.progress }}>
-                    <a href="live?event_id={{ event_id }}&klasse={{ raceclass.name }}"><b>{{ raceclass.name }}</b></a>
+        <tr>
+        <td align="center">
+            <span class=tooltip_race id=kpi{{ raceclass.progress }}>
+                <a href="live?event_id={{ event_id }}&klasse={{ raceclass.name }}"><b>{{ raceclass.name }}</b></a>
+            </span>
+        </td>
+        <td align="center">{{ raceclass.timeQ }}</td>
+        <td align="center">{{ raceclass.no_of_contestants }}</td>
+        <td>
+            {% for race in raceclass.races_q %}
+            <span class=tooltip_race id=kpi{{ race.progress }}>
+                {% if race.progress == 6 %}
+                <a href="control?event_id={{ event_id }}&valgt_klasse={{ raceclass.name }}&action=c&heat={{ raceclass.name }}-{{ race.name }}&informasjon=Korrigering">{{ race.name }}</a>
+                {% else %}
+                <a href="resultat_edit?event_id={{ event_id }}&heat={{ race.order }}">{{ race.name }}</a>
+                {% endif %}
+                <span class="tooltiptext_race">
+                Kl: {{ race.start_time }}
+                Starter: {{ race.count_starts}}<br>
+                DNS: {{ race.count_dns}}<br>
+                DNF: {{ race.count_dnf}}<br>
+                Målpassering: {{ race.count_results}}<br>
                 </span>
-            </td>
-            <td align="center">{{ raceclass.timeQ }}</td>
-            <td align="center">{{ raceclass.no_of_contestants }}</td>
-            <td>
-                {% for race in raceclass.races_q %}
-                <span class=tooltip_race id=kpi{{ race.progress }}>
-                    {% if race.progress == 6 %}
-                    <a href="control?event_id={{ event_id }}&valgt_klasse={{ raceclass.name }}&action=c&heat={{ raceclass.name }}-{{ race.name }}&informasjon=Korrigering">{{ race.name }}</a>
-                    {% else %}
-                    <a href="resultat_edit?event_id={{ event_id }}&heat={{ race.order }}">{{ race.name }}</a>
-                    {% endif %}
-                    <span class="tooltiptext_race">
-                    Kl: {{ race.start_time }}
-                    Starter: {{ race.count_starts}}<br>
-                    DNS: {{ race.count_dns}}<br>
-                    DNF: {{ race.count_dnf}}<br>
-                    Målpassering: {{ race.count_results}}<br>
-                    </span>
+            </span>
+            {% endfor %}
+        </td>
+        <td>
+            {% for race in raceclass.races_s %}
+            <span class=tooltip_race id=kpi{{ race.progress }}>
+                {% if race.progress == 6 %}
+                <a href="control?event_id={{ event_id }}&valgt_klasse={{ raceclass.name }}&action=c&heat={{ raceclass.name }}-{{ race.name }}&informasjon=Korrigering">{{ race.name }}</a>
+                {% else %}
+                <a href="resultat_edit?event_id={{ event_id }}&heat={{ race.order }}">{{ race.name }}</a>
+                {% endif %}
+                <span class="tooltiptext_race">
+                Kl: {{ race.start_time }}
+                Starter: {{ race.count_starts}}<br>
+                DNS: {{ race.count_dns}}<br>
+                DNF: {{ race.count_dnf}}<br>
+                Målpassering: {{ race.count_results}}<br>
                 </span>
-                {% endfor %}
-            </td>
-            <td>
-                {% for race in raceclass.races_s %}
-                <span class=tooltip_race id=kpi{{ race.progress }}>
-                    {% if race.progress == 6 %}
-                    <a href="control?event_id={{ event_id }}&valgt_klasse={{ raceclass.name }}&action=c&heat={{ raceclass.name }}-{{ race.name }}&informasjon=Korrigering">{{ race.name }}</a>
-                    {% else %}
-                    <a href="resultat_edit?event_id={{ event_id }}&heat={{ race.order }}">{{ race.name }}</a>
-                    {% endif %}
-                    <span class="tooltiptext_race">
-                    Kl: {{ race.start_time }}
-                    Starter: {{ race.count_starts}}<br>
-                    DNS: {{ race.count_dns}}<br>
-                    DNF: {{ race.count_dnf}}<br>
-                    Målpassering: {{ race.count_results}}<br>
-                    </span>
+            </span>
+            {% endfor %}
+        </td>
+        <td>
+            {% for race in raceclass.races_f %}
+            <span class=tooltip_race id=kpi{{ race.progress }}>
+                {% if race.progress == 6 %}
+                <a href="control?event_id={{ event_id }}&valgt_klasse={{ raceclass.name }}&action=c&heat={{ raceclass.name }}-{{ race.name }}&informasjon=Korrigering">{{ race.name }}</a>
+                {% else %}
+                <a href="resultat_edit?event_id={{ event_id }}&heat={{ race.order }}">{{ race.name }}</a>
+                {% endif %}
+                <span class="tooltiptext_race">
+                Kl: {{ race.start_time }}
+                Starter: {{ race.count_starts}}<br>
+                DNS: {{ race.count_dns}}<br>
+                DNF: {{ race.count_dnf}}<br>
+                Målpassering: {{ race.count_results}}<br>
                 </span>
-                {% endfor %}
-            </td>
-            <td>
-                {% for race in raceclass.races_f %}
-                <span class=tooltip_race id=kpi{{ race.progress }}>
-                    {% if race.progress == 6 %}
-                    <a href="control?event_id={{ event_id }}&valgt_klasse={{ raceclass.name }}&action=c&heat={{ raceclass.name }}-{{ race.name }}&informasjon=Korrigering">{{ race.name }}</a>
-                    {% else %}
-                    <a href="resultat_edit?event_id={{ event_id }}&heat={{ race.order }}">{{ race.name }}</a>
-                    {% endif %}
-                    <span class="tooltiptext_race">
-                    Kl: {{ race.start_time }}
-                    Starter: {{ race.count_starts}}<br>
-                    DNS: {{ race.count_dns}}<br>
-                    DNF: {{ race.count_dnf}}<br>
-                    Målpassering: {{ race.count_results}}<br>
-                    </span>
-                </span>
-                {% endfor %}
-            </td>
-            </tr>
-          {% endif %}
+            </span>
+            {% endfor %}
+        </td>
+        </tr>
       {% endfor %}
       <tr>
         <td colspan=6 id="spacer"></td>
-      </tr>
-      <tr id=subheader>
-        <td colspan=6 align="center"><b>Øvrige klasser</b></td>
-      </tr>
-      <tr>
-        <td colspan=6 align="center">
-            {% for raceclass in raceplan_kpis %}
-                {% if raceclass.progress in [1, 2, 5] or not raceclass.ranking %}
-                    <span class=tooltip_race id=kpi{{ raceclass.progress }}>
-                        <a href="live?event_id={{ event_id }}&klasse={{ raceclass.name }}"><b>{{ raceclass.name }}</b></a>
-                    </span>
-                {% endif %}
-            {% endfor %}
-        </td>
       </tr>
       <tr>
         <td colspan=6 id="spacer"></td>
