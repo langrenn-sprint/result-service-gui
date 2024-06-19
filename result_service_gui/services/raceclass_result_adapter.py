@@ -1,6 +1,7 @@
 """Module for raceclass results adapter."""
 import logging
 import os
+import random
 from typing import List
 import urllib.parse
 
@@ -81,7 +82,7 @@ class RaceclassResultsAdapter:
         return res
 
     async def get_raceclass_result(self, event_id: str, raceclass: str) -> dict:
-        """Get all raceclass function."""
+        """Get all raceclass result function."""
         headers = MultiDict(
             [
                 (hdrs.CONTENT_TYPE, "application/json"),
@@ -104,6 +105,14 @@ class RaceclassResultsAdapter:
                     raise web.HTTPBadRequest(
                         reason=f"Error - {resp.status}: {body['detail']}."
                     )
+        return raceclass_result
+
+    async def get_raceclass_result_shuffeled(self, event_id: str, raceclass: str) -> dict:
+        """Get all raceclass result function. Shuffeled, except the n first."""
+        raceclass_result = await self.get_raceclass_result(event_id, raceclass)
+        if raceclass_result:
+            # Shuffle the ranking_sequence_array
+            random.shuffle(raceclass_result['ranking_sequence'])
         return raceclass_result
 
     async def get_all_raceclass_results(self, event_id: str) -> List:
