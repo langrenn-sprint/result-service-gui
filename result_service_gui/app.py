@@ -16,7 +16,6 @@ import jinja2
 from .views import (
     Control,
     CsvList,
-    Dashboard,
     Live,
     Login,
     Logout,
@@ -92,7 +91,6 @@ async def create_app() -> web.Application:
             web.view("/", Main),
             web.view("/csv", CsvList),
             web.view("/control", Control),
-            web.view("/dashboard", Dashboard),
             web.view("/live", Live),
             web.view("/login", Login),
             web.view("/logout", Logout),
