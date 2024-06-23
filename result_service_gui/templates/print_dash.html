@@ -103,10 +103,18 @@
             <li class=dropdown>
                 <a href=javascript:void(0) class=dropbtn>Resultater (for klassen)</a>
                 <div class=dropdown-content>
-                <a target=_new href=print_lists?event_id={{ event_id }}&action=result>Alle</a>
-                {% for klasse in raceclasses %}
-                    <a target=_new href=print_lists?klasse={{ klasse.name }}&event_id={{ event_id }}&action=result>{{ klasse.name }}</a>
-                {% endfor %}
+                    <table>
+                      <tr>
+                        <td><a target=_new href=print_lists?event_id={{ event_id }}&action=result>Alle</a></td>
+                      </tr>
+                      {% for raceclass in raceclasses %}
+                        <tr>
+                          <td id="black">{{ raceclass.name }}</td>
+                          <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=result>Resultatliste</a></nobr></td>
+                          <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=result_shuffled>(usortert)</a></nobr></td>
+                        </tr>
+                       {% endfor %}
+                    </table>
                 </div>
             </li>
             </ul>

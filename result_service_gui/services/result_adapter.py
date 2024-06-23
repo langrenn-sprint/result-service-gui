@@ -15,14 +15,14 @@ RACE_SERVICE_URL = f"http://{RACE_HOST_SERVER}:{RACE_HOST_PORT}"
 class ResultAdapter:
     """Class representing result."""
 
-    async def get_race_results(self, token: str, race_id: str, idsOnly: bool) -> dict:
+    async def get_race_results(self, token: str, race_id: str, ids_only: bool) -> dict:
         """Get all finish results for one race."""
         headers = MultiDict(
             [
                 (hdrs.AUTHORIZATION, f"Bearer {token}"),
             ]
         )
-        url = f"{RACE_SERVICE_URL}/races/{race_id}/race-results?idsOnly={idsOnly}"
+        url = f"{RACE_SERVICE_URL}/races/{race_id}/race-results?idsOnly={ids_only}"
         results = []
         finish_results = {}
         async with ClientSession() as session:

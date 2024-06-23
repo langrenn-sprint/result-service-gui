@@ -73,13 +73,18 @@ class PrintLists(web.View):
             if action == "raceplan":
                 html_template = "print_raceplan.html"
                 raceplan_summary = get_raceplan_summary(_tmp_races, raceclasses)
-            elif action == "result":
+            elif action in ["result", "result_shuffled"]:
                 html_template = "print_results.html"
                 try:
                     if valgt_klasse:
-                        resultlist = await RaceclassResultsAdapter().get_raceclass_result(
-                            event_id, valgt_klasse
-                        )
+                        if action == "result_shuffled":
+                            resultlist = await RaceclassResultsAdapter().get_raceclass_result_shuffeled(
+                                event_id, valgt_klasse
+                            )
+                        else:
+                            resultlist = await RaceclassResultsAdapter().get_raceclass_result(
+                                event_id, valgt_klasse
+                            )
                         resultlists.append(resultlist)
                     else:
                         resultlists = await RaceclassResultsAdapter().get_all_raceclass_results(event_id)
