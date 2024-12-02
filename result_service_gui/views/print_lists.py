@@ -83,10 +83,8 @@ class PrintLists(web.View):
                                 event_id, valgt_klasse
                             )
                         else:
-                            resultlist = (
-                                await RaceclassResultsAdapter().get_raceclass_result(
-                                    event_id, valgt_klasse
-                                )
+                            resultlist = await RaceclassResultsAdapter().get_raceclass_result(
+                                event_id, valgt_klasse
                             )
                         resultlists.append(resultlist)
                     else:

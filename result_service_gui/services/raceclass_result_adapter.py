@@ -115,7 +115,7 @@ class RaceclassResultsAdapter:
         raceclass_result = await self.get_raceclass_result(event_id, raceclass)
         if raceclass_result:
             # Shuffle the ranking_sequence_array
-            random.shuffle(raceclass_result["ranking_sequence"])
+            random.shuffle(raceclass_result['ranking_sequence'])
         return raceclass_result
 
     async def get_all_raceclass_results(self, event_id: str) -> List:
