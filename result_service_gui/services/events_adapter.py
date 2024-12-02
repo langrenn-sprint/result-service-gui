@@ -1,4 +1,5 @@
 """Module for events adapter."""
+
 import copy
 from datetime import datetime
 import json
@@ -115,6 +116,14 @@ class EventsAdapter:
             raise Exception from e
         return global_setting
 
+    def get_global_setting_bool(self, param_name: str) -> bool:
+        """Get config boolean value."""
+        string_value = self.get_global_setting(param_name)
+        boolean_value = False
+        if string_value in ["True", "true", "1"]:
+            boolean_value = True
+        return boolean_value
+
     def get_local_datetime_now(self, event: dict) -> datetime:
         """Return local datetime object, time zone adjusted from event info."""
         timezone = event["timezone"]
@@ -134,9 +143,7 @@ class EventsAdapter:
             time_now = datetime.now()
 
         if format == "HH:MM":
-            local_time = (
-                f"{time_now.strftime('%H')}:{time_now.strftime('%M')}"
-            )
+            local_time = f"{time_now.strftime('%H')}:{time_now.strftime('%M')}"
         elif format == "log":
             local_time = f"{time_now.strftime('%Y')}-{time_now.strftime('%m')}-{time_now.strftime('%d')}T{time_now.strftime('%X')}"
         else:

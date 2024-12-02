@@ -1,4 +1,5 @@
 """Resource module for start resources."""
+
 import logging
 from operator import itemgetter
 
@@ -65,12 +66,16 @@ class Start(web.View):
                 informasjon = f"{informasjon} Ingen løp funnet."
             else:
                 for race in _tmp_races:
-                    if (race["raceclass"] == valgt_klasse) or (valgt_klasse in ["live", ""]):
+                    if (race["raceclass"] == valgt_klasse) or (
+                        valgt_klasse in ["live", ""]
+                    ):
                         race = await RaceplansAdapter().get_race_by_id(
                             user["token"], race["id"]
                         )
                         race["next_race"] = get_qualification_text(race)
-                        race["display_color"] = get_display_style(race["start_time"], event)
+                        race["display_color"] = get_display_style(
+                            race["start_time"], event
+                        )
                         race["start_time"] = race["start_time"][-8:]
                         # get start list details
                         race["startliste"] = await get_enrichced_startlist(user, race)
@@ -81,7 +86,7 @@ class Start(web.View):
             if valgt_runde:
                 filtered_races = []
                 for race in races:
-                    if race['round'] == valgt_runde:
+                    if race["round"] == valgt_runde:
                         filtered_races.append(race)
                 races = filtered_races
 

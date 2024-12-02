@@ -1,4 +1,5 @@
 """Module for contestants adapter."""
+
 import copy
 import logging
 import os
@@ -230,7 +231,7 @@ class ContestantsAdapter:
             ]
         )
         contestants = []
-        ageclass_name_url = urllib.parse.quote(ageclass_name, safe='')
+        ageclass_name_url = urllib.parse.quote(ageclass_name, safe="")
         query_param = f"ageclass={ageclass_name_url}"
         async with ClientSession() as session:
             async with session.get(
@@ -260,7 +261,7 @@ class ContestantsAdapter:
             ]
         )
         contestants = []
-        raceclass_name_url = urllib.parse.quote(raceclass_name, safe='')
+        raceclass_name_url = urllib.parse.quote(raceclass_name, safe="")
         async with ClientSession() as session:
             async with session.get(
                 f"{EVENT_SERVICE_URL}/events/{event_id}/contestants?raceclass={raceclass_name_url}",
@@ -323,7 +324,7 @@ class ContestantsAdapter:
             ]
         )
         contestants = []
-        raceclass_url = urllib.parse.quote(raceclass, safe='')
+        raceclass_url = urllib.parse.quote(raceclass, safe="")
         async with ClientSession() as session:
             async with session.get(
                 f"{EVENT_SERVICE_URL}/events/{event_id}/contestants?raceclass={raceclass_url}",
@@ -371,7 +372,9 @@ class ContestantsAdapter:
                     )
         return contestant
 
-    async def search_contestants_by_name(self, token: str, event_id: str, search_text: str) -> list:
+    async def search_contestants_by_name(
+        self, token: str, event_id: str, search_text: str
+    ) -> list:
         """Search contestant by name - first or last function."""
         contestants = []
         servicename = "search_contestants_by_name"
@@ -396,7 +399,9 @@ class ContestantsAdapter:
                 else:
                     body = await resp.json()
                     logging.error(f"{servicename} failed - {resp.status} - {body}")
-                    raise web.HTTPBadRequest(reason=f"{resp.status} Error - {body['detail']}")
+                    raise web.HTTPBadRequest(
+                        reason=f"{resp.status} Error - {body['detail']}"
+                    )
         return contestants
 
     async def update_contestant(

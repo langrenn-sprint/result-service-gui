@@ -1,4 +1,5 @@
 """Module for events adapter."""
+
 import json
 import logging
 import os

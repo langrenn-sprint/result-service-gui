@@ -1,4 +1,5 @@
 """Resource module for video_event resources."""
+
 import logging
 
 from aiohttp import web
@@ -23,7 +24,7 @@ class VideoEvents(web.View):
             event_id = str(form["event_id"])
             user = await check_login(self)
             event = await get_event(user, event_id)
-            action = form['action']
+            action = form["action"]
             if action in ["pull_google"]:
                 r = await FotoService().sync_photos_from_pubsub(user, event)
                 result += f"  {r}<br>"

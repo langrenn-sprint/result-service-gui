@@ -1,4 +1,5 @@
 """Module for start adapter."""
+
 import logging
 import os
 from typing import List
@@ -179,7 +180,8 @@ class StartAdapter:
 
         async with ClientSession() as session:
             async with session.get(
-                f"{RACE_SERVICE_URL}/startlists?eventId={event_id}&bib={bib}", headers=headers
+                f"{RACE_SERVICE_URL}/startlists?eventId={event_id}&bib={bib}",
+                headers=headers,
             ) as resp:
                 logging.debug(f"get_start_entries_by_bib - got response {resp.status}")
                 if resp.status == 200:

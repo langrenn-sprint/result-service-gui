@@ -1,4 +1,5 @@
 """Resource module for photo edit view."""
+
 import logging
 
 from aiohttp import web
@@ -9,7 +10,7 @@ from result_service_gui.services import (
     FotoService,
     PhotosAdapter,
     RaceclassesAdapter,
-    RaceplansAdapter
+    RaceplansAdapter,
 )
 from .utils import (
     check_login,
@@ -54,11 +55,13 @@ class PhotosEdit(web.View):
                     user["token"], event_id, valgt_klasse, False
                 )
             else:
-                photos = await PhotosAdapter().get_all_photos(user["token"], event_id, False)
+                photos = await PhotosAdapter().get_all_photos(
+                    user["token"], event_id, False
+                )
             if filter == "low_confidence":
                 filtered_photos = []
                 for photo in photos:
-                    if (photo["confidence"] < 51):
+                    if photo["confidence"] < 51:
                         filtered_photos.append(photo)
                 photos = filtered_photos
             photos.reverse()

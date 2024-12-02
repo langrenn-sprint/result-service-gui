@@ -1,4 +1,5 @@
 """Module for google pub/sub adapter."""
+
 import json
 import logging
 import os
@@ -16,6 +17,7 @@ num_messages = int(os.getenv("GOOGLE_PUBSUB_NUM_MESSAGES", "20"))
 
 class GooglePubSubAdapter:
     """Class representing google pub sub adapter."""
+
     async def publish_message(self, data_str: str) -> str:
         """Get all items for an album."""
         servicename = "GooglePubSubAdapter.publish_message"
@@ -40,7 +42,9 @@ class GooglePubSubAdapter:
         try:
             message_body = []
             subscriber = pubsub_v1.SubscriberClient()
-            subscription_path = subscriber.subscription_path(project_id, subscription_id)
+            subscription_path = subscriber.subscription_path(
+                project_id, subscription_id
+            )
 
             # Wrap the subscriber in a 'with' block to automatically call close() to
             # close the underlying gRPC channel when done.
@@ -48,10 +52,12 @@ class GooglePubSubAdapter:
                 # The subscriber pulls a specific number of messages. The actual
                 # number of messages pulled may be smaller than max_messages.
                 response = subscriber.pull(
-                    request={"subscription": subscription_path, "max_messages": num_messages},
+                    request={
+                        "subscription": subscription_path,
+                        "max_messages": num_messages,
+                    },
                     retry=retry.Retry(deadline=300),
                 )
-
                 if len(response.received_messages) == 0:
                     return []
 

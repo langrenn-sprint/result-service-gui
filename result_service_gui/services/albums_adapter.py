@@ -1,4 +1,5 @@
 """Module for albums adapter."""
+
 import logging
 import os
 from typing import List, Optional

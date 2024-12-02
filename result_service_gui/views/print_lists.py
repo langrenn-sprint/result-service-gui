@@ -1,4 +1,5 @@
 """Resource module for live resources."""
+
 import logging
 
 from aiohttp import web
@@ -87,7 +88,11 @@ class PrintLists(web.View):
                             )
                         resultlists.append(resultlist)
                     else:
-                        resultlists = await RaceclassResultsAdapter().get_all_raceclass_results(event_id)
+                        resultlists = (
+                            await RaceclassResultsAdapter().get_all_raceclass_results(
+                                event_id
+                            )
+                        )
                 except Exception as e:
                     logging.error(f"Functional error: {e}")
                     informasjon = "Ingen resultatlister funnet."
@@ -139,7 +144,7 @@ async def get_races(
         if valgt_runde:
             filtered_races = []
             for race in races:
-                if race['round'] == valgt_runde:
+                if race["round"] == valgt_runde:
                     filtered_races.append(race)
             races = filtered_races
         races = await get_races_for_print(

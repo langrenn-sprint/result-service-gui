@@ -1,4 +1,5 @@
 """Package for all views."""
+
 from .control import Control
 from .csv_list import CsvList
 from .live import Live
@@ -14,6 +15,7 @@ from .print_dash import PrintDash
 from .print_lists import PrintLists
 from .resultat import Resultat
 from .resultat_edit import ResultatEdit
+from .resultat_edit_new import ResultatEditNew
 from .resultat_update import ResultatUpdate
 from .start import Start
 from .start_edit import StartEdit

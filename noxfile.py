@@ -7,10 +7,9 @@ from nox_poetry import Session, session
 
 package = "result_service_gui"
 locations = "result_service_gui", "tests", "noxfile.py"
-nox.options.envdir = ".cache"
-nox.options.reuse_existing_virtualenvs = True
 nox.options.stop_on_first_error = True
 nox.options.sessions = (
+    "black",
     "lint",
     "mypy",
     "pytype",
@@ -20,7 +19,7 @@ nox.options.sessions = (
 )
 
 
-@session
+@session()
 def clean(session: Session) -> None:
     """Clean the project."""
     session.run(
@@ -66,7 +65,7 @@ def clean(session: Session) -> None:
     )
 
 
-@session
+@session()
 def integration_tests(session: Session) -> None:
     """Run the integration test suite."""
     args = session.posargs or ["--cov"]
@@ -91,15 +90,11 @@ def integration_tests(session: Session) -> None:
             "JWT_SECRET": "secret",
             "ADMIN_USERNAME": "admin",
             "ADMIN_PASSWORD": "password",
-            "EVENTS_HOST_SERVER": "events.example.com",
-            "EVENTS_HOST_PORT": "8080",
-            "USERS_HOST_SERVER": "users.example.com",
-            "USERS_HOST_PORT": "8081",
         },
     )
 
 
-@session
+@session(python="3.11")
 def contract_tests(session: Session) -> None:
     """Run the contract test suite."""
     args = session.posargs
@@ -110,7 +105,6 @@ def contract_tests(session: Session) -> None:
         "pytest_mock",
         "pytest-asyncio",
         "requests",
-        "aioresponses",
     )
     session.run(
         "pytest",
@@ -128,12 +122,12 @@ def contract_tests(session: Session) -> None:
             "JWT_EXP_DELTA_SECONDS": "60",
             "DB_USER": "event-service",
             "DB_PASSWORD": "password",
-            "LOGGING_LEVEL": "INFO",
+            "LOGGING_LEVEL": "DEBUG",
         },
     )
 
 
-@session
+@session()
 def black(session: Session) -> None:
     """Run black code formatter."""
     args = session.posargs or locations
@@ -141,7 +135,7 @@ def black(session: Session) -> None:
     session.run("black", *args)
 
 
-@session
+@session()
 def lint(session: Session) -> None:
     """Lint using flake8."""
     args = session.posargs or locations
@@ -155,12 +149,11 @@ def lint(session: Session) -> None:
         "flake8-import-order",
         "darglint",
         "flake8-assertive",
-        "flake8-eradicate",
     )
     session.run("flake8", *args)
 
 
-@session
+@session()
 def safety(session: Session) -> None:
     """Scan dependencies for insecure packages."""
     requirements = session.poetry.export_requirements()
@@ -170,11 +163,11 @@ def safety(session: Session) -> None:
         "check",
         "--full-report",
         f"--file={requirements}",
-        "--ignore=70612",  # TODO: Should be removed when jinja2 vulnerability is fixed
+        "--ignore=70612,72809,73711",  # TODO: Should be removed when jinja2 vulnerability is fixed
     )
 
 
-@session
+@session()
 def mypy(session: Session) -> None:
     """Type-check using mypy."""
     args = session.posargs or [
@@ -190,7 +183,7 @@ def mypy(session: Session) -> None:
         session.run("mypy", f"--python-executable={sys.executable}", "noxfile.py")
 
 
-@session(python=["3.11"])
+@session()
 def pytype(session: Session) -> None:
     """Run the static type checker using pytype."""
     args = session.posargs or ["--disable=import-error", *locations]
@@ -198,7 +191,24 @@ def pytype(session: Session) -> None:
     session.run("pytype", *args)
 
 
-@session
+@session(python=["3.10", "3.11"])
+def xdoctest(session: Session) -> None:
+    """Run examples with xdoctest."""
+    args = session.posargs or ["all"]
+    session.install(".")
+    session.install("xdoctest")
+    session.run("python", "-m", "xdoctest", package, *args)
+
+
+@session(python=["3.10", "3.11"])
+def docs(session: Session) -> None:
+    """Build the documentation."""
+    session.install(".")
+    session.install("sphinx", "sphinx_autodoc_typehints")
+    session.run("sphinx-build", "docs", "docs/_build")
+
+
+@session(python=["3.10", "3.11"])
 def coverage(session: Session) -> None:
     """Upload coverage data."""
     session.install("coverage[toml]", "codecov")

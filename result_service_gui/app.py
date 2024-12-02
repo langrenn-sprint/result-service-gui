@@ -1,4 +1,5 @@
 """Package for exposing validation endpoint."""
+
 import base64
 import logging
 from logging.handlers import RotatingFileHandler
@@ -29,13 +30,14 @@ from .views import (
     PrintLists,
     Resultat,
     ResultatEdit,
+    ResultatEditNew,
     ResultatUpdate,
     Start,
     StartEdit,
     Timing,
     TimingDash,
     TimingInfo,
-    VideoEvents
+    VideoEvents,
 )
 
 load_dotenv()
@@ -103,6 +105,7 @@ async def create_app() -> web.Application:
             web.view("/print_lists", PrintLists),
             web.view("/resultat", Resultat),
             web.view("/resultat_edit", ResultatEdit),
+            web.view("/resultat_edit_new", ResultatEditNew),
             web.view("/resultat_update", ResultatUpdate),
             web.view("/start", Start),
             web.view("/start_edit", StartEdit),

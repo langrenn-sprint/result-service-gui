@@ -1,5 +1,6 @@
 """Resource module for verificatoin of timing registration."""
 
+from dataclasses import dataclass
 import json
 import logging
 
@@ -9,6 +10,7 @@ import aiohttp_jinja2
 from result_service_gui.services import (
     EventsAdapter,
     PhotosAdapter,
+    PhotoTimingService,
     RaceclassesAdapter,
     RaceclassResultsService,
     RaceplansAdapter,
@@ -23,23 +25,31 @@ from .utils import (
     get_finish_timings,
     get_foto_finish_for_race,
     get_qualification_text,
+    get_race_kpis,
     get_raceplan_summary,
     get_races_for_live_view,
 )
 
 
-class ResultatEdit(web.View):
+@dataclass
+class ValgtRunde:
+    """Class representing information for selected round."""
+
+    klasse: str = ""
+    runde: str = ""
+    race_order: int = -1
+    informasjon: str = ""
+
+
+class ResultatEditNew(web.View):
     """Class representing the result edit view."""
 
     async def get(self) -> web.Response:
         """Get route function that return the passeringer page."""
-        current_races = []
+        race = {}
         raceplan_summary = []
-        valgt_runde = {
-            "klasse": "",
-            "runde": "",
-            "informasjon": "",
-        }
+        raceplan_kpis = []
+        valgt_runde = ValgtRunde()
 
         try:
             informasjon = self.request.rel_url.query["informasjon"]
@@ -59,53 +69,58 @@ class ResultatEdit(web.View):
 
             # check if specific round is selected
             try:
-                valgt_runde["klasse"] = self.request.rel_url.query["klasse"]
-                valgt_runde["runde"] = self.request.rel_url.query["runde"]
+                valgt_runde.race_order = int(self.request.rel_url.query["heat"])
+                race = await RaceplansAdapter().get_race_by_order(
+                    user["token"], event_id, valgt_runde.race_order
+                )
+                valgt_runde.klasse = race["raceclass"]
+                valgt_runde.runde = race["round"]
+
             except Exception:
-                # if heat is selected, find round
+                # if race not is selected, use round and find first race
                 try:
-                    heat = int(self.request.rel_url.query["heat"])
+                    valgt_runde.klasse = self.request.rel_url.query["klasse"]
+                    valgt_runde.runde = self.request.rel_url.query["runde"]
                     valgt_runde = await find_round(
-                        user["token"], event, raceclasses, heat
+                        user["token"], event, raceclasses, valgt_runde
+                    )
+                    race = await RaceplansAdapter().get_race_by_order(
+                        user["token"], event_id, valgt_runde.race_order
                     )
                 except Exception:
                     informasjon = f"Velg runde i menyen. {informasjon}"
                     logging.debug("Ingen runde valgt")
-
             all_races = await RaceplansAdapter().get_races_by_racesclass(
-                user["token"], event_id, valgt_runde["klasse"]
+                user["token"], event_id, valgt_runde.klasse
             )
-
             raceplan_summary = get_raceplan_summary(all_races, raceclasses)
 
-            if valgt_runde["klasse"]:
-                foto = await PhotosAdapter().get_photos_by_raceclass(
-                    user["token"], event_id, valgt_runde["klasse"], False
+            if valgt_runde.klasse:
+                foto = await PhotosAdapter().get_photos_by_race_id(
+                    user["token"], race["id"]
                 )
-                # filter for selected races and enrich results
-                for race in all_races:
-                    if valgt_runde["runde"] == race["round"]:
-                        race["next_race"] = get_qualification_text(race)
-                        # get start list detail
-                        race["startliste"] = await get_enrichced_startlist(user, race)
-                        race["finish_timings"] = await get_finish_timings(
-                            user, race["id"]
+                race["next_race"] = get_qualification_text(race)
+                # get start list detail
+                race["startliste"] = await get_enrichced_startlist(user, race)
+                race["finish_timings"] = await get_finish_timings(user, race["id"])
+                race["photo_finish"] = get_foto_finish_for_race(user, race, foto)
+                race["photo_start"] = get_foto_start_for_race(user, race, foto)
+                race["photo_bib_rank"] = get_finish_rank_from_photos(
+                    user, race["photo_finish"], "right"
+                )
+                for raceclass in raceclasses:
+                    if raceclass["name"] == valgt_runde.klasse:
+                        raceplan_kpis = await get_race_kpis(
+                            user["token"], event, [raceclass], valgt_runde.runde
                         )
-                        race["photo_finish"] = get_foto_finish_for_race(
-                            user, race, foto
-                        )
-                        race["photo_start"] = get_foto_start_for_race(user, race, foto)
-                        race["photo_bib_rank"] = get_finish_rank_from_photos(
-                            user, race["photo_finish"], "right"
-                        )
-                        current_races.append(race)
+                        break
 
-            if len(current_races) == 0:
+            if not race:
                 informasjon = f"{informasjon} Ingen heat i denne runden."
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
-                "resultat_edit.html",
+                "resultat_edit_new.html",
                 self.request,
                 {
                     "event": event,
@@ -114,7 +129,8 @@ class ResultatEdit(web.View):
                     "info_list": info_list,
                     "raceclasses": raceclasses,
                     "raceplan_summary": raceplan_summary,
-                    "current_races": current_races,
+                    "race": race,
+                    "raceplan_kpis": raceplan_kpis,
                     "username": user["name"],
                     "valgt_runde": valgt_runde,
                 },
@@ -128,28 +144,37 @@ class ResultatEdit(web.View):
         # check login
         user = await check_login(self)
         informasjon = ""
-        valgt_runde = {}
+        valgt_runde = ValgtRunde()
         form = await self.request.post()
 
         try:
             logging.debug(f"Form {form}")
             event_id = str(form["event_id"])
             event = await get_event(user, event_id)
-            valgt_runde["klasse"] = str(form["klasse"])
-            valgt_runde["runde"] = str(form["runde"])
+            valgt_runde.klasse = str(form["klasse"])
+            valgt_runde.runde = str(form["runde"])
+            race_id = str(form["race_id"])
 
             if "create_start" in form.keys():
                 informasjon += "<br>" + await create_start(user, form)  # type: ignore
             elif "update_result" in form.keys():
-                informasjon += "<br>Passeringer: " + await update_result(user, event, form)  # type: ignore
+                if "photo_finish_button" in form.keys():
+                    informasjon += (
+                        "<br>Fra foto: "
+                        + await PhotoTimingService().create_time_events_from_photos(
+                            user, race_id
+                        )
+                    )
+                else:
+                    informasjon += "<br>Registrert: " + await update_result(user, event, form)  # type: ignore
                 # set results to official
                 if "publish" in form.keys():
                     if form["publish"] != "false":
-                        res = await ResultAdapter().update_result_status(user["token"], form["race_id"], 2)  # type: ignore
+                        res = await ResultAdapter().update_result_status(user["token"], race_id, 2)  # type: ignore
                         informasjon = f"Resultat er publisert ({res}). " + informasjon
                         if "raceclass_results" in form.keys():
                             res = await RaceclassResultsService().create_raceclass_results(
-                                user["token"], event, valgt_runde["klasse"]
+                                user["token"], event, valgt_runde.klasse
                             )  # type: ignore
                             informasjon = (
                                 f" Klassens resultat er publisert ({res}). "
@@ -158,9 +183,7 @@ class ResultatEdit(web.View):
 
             # check for update without reload - return latest race results
             if "ajax" in form.keys():
-                race = await RaceplansAdapter().get_race_by_id(
-                    user["token"], str(form["race_id"])
-                )
+                race = await RaceplansAdapter().get_race_by_id(user["token"], race_id)
                 response = {}
                 if race["results"]:
                     response = {
@@ -198,51 +221,45 @@ class ResultatEdit(web.View):
                 json_response = json.dumps(response)
                 return web.Response(text=json_response)
             return web.HTTPSeeOther(location=f"/login?informasjon={informasjon}")
-        info = (
-            f"{informasjon}&klasse={valgt_runde['klasse']}&runde={valgt_runde['runde']}"
-        )
+        info = f"{informasjon}&klasse={valgt_runde.klasse}&runde={valgt_runde.runde}"
         return web.HTTPSeeOther(
             location=f"/resultat_edit?event_id={event_id}&informasjon={info}"
         )
 
 
 async def find_round(
-    token: str, event: dict, raceclasses: list, heat_order: int
-) -> dict:
+    token: str, event: dict, raceclasses: list, valgt_runde: ValgtRunde
+) -> ValgtRunde:
     """Analyse selected round and determine next round(s)."""
-    valgt_runde = {
-        "klasse": "",
-        "runde": "",
-        "informasjon": "",
-    }
-    if heat_order == 0:
+    if valgt_runde.race_order == 0:
         all_races = await RaceplansAdapter().get_all_races(token, event["id"])
         # find race starting now
         races = get_races_for_live_view(event, all_races, 0, 1)
         if len(races) > 0:
-            valgt_runde = {
-                "klasse": races[0]["raceclass"],
-                "runde": races[0]["round"],
-                "informasjon": "",
-            }
+            valgt_runde.klasse = races[0]["raceclass"]
+            valgt_runde.runde = races[0]["round"]
+    elif valgt_runde.race_order == -1:
+        # find first heat in round
+        races = await RaceplansAdapter().get_races_by_racesclass(
+            token, event["id"], valgt_runde.klasse
+        )
+        for race in races:
+            if race["round"] == valgt_runde.runde:
+                valgt_runde.race_order = race["order"]
+                break
     else:
         # find round for selected heat
         race = await RaceplansAdapter().get_race_by_order(
-            token, event["id"], heat_order
+            token, event["id"], valgt_runde.race_order
         )
         if race:
-            valgt_runde = {
-                "klasse": race["raceclass"],
-                "runde": race["round"],
-                "informasjon": "",
-            }
+            valgt_runde.klasse = race["raceclass"]
+            valgt_runde.runde = race["round"]
             # check if raceclass is without ranking
             for raceclass in raceclasses:
                 if race["raceclass"] == raceclass["name"]:
                     if not raceclass["ranking"]:
-                        valgt_runde["informasjon"] = (
-                            "OBS: Denne løpsklassen er urangert, resultater vil ikke vises."
-                        )
+                        valgt_runde.informasjon = "OBS: Denne løpsklassen er urangert, resultater vil ikke vises."
     return valgt_runde
 
 

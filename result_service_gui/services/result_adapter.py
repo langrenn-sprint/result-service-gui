@@ -1,4 +1,5 @@
 """Module for results adapter."""
+
 import logging
 import os
 
@@ -38,7 +39,7 @@ class ResultAdapter:
                         reason=f"Error - {resp.status}: {body['detail']}."
                     )
         for result_set in results:
-            if result_set['timing_point'] == "Finish":
+            if result_set["timing_point"] == "Finish":
                 finish_results = result_set
         return finish_results
 

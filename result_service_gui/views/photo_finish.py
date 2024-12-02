@@ -1,4 +1,5 @@
 """Resource module for verificatoin of timing registration."""
+
 import logging
 
 from aiohttp import web
@@ -58,7 +59,9 @@ class PhotoFinish(web.View):
                 # if heat is selected, find round
                 try:
                     heat = int(self.request.rel_url.query["heat"])
-                    valgt_runde = await find_round(user["token"], event, raceclasses, heat)
+                    valgt_runde = await find_round(
+                        user["token"], event, raceclasses, heat
+                    )
                 except Exception:
                     informasjon = f"Velg runde i menyen. {informasjon}"
                     logging.debug("Ingen runde valgt")
@@ -81,7 +84,9 @@ class PhotoFinish(web.View):
                         race["finish_timings"] = await get_finish_timings(
                             user, race["id"]
                         )
-                        race["photo_finish"] = get_foto_finish_for_race(user, race, foto)
+                        race["photo_finish"] = get_foto_finish_for_race(
+                            user, race, foto
+                        )
                         current_races.append(race)
 
             if len(current_races) == 0:
@@ -108,7 +113,9 @@ class PhotoFinish(web.View):
             return web.HTTPSeeOther(location=f"/?informasjon={e}")
 
 
-async def find_round(token: str, event: dict, raceclasses: list, heat_order: int) -> dict:
+async def find_round(
+    token: str, event: dict, raceclasses: list, heat_order: int
+) -> dict:
     """Analyse selected round and determine next round(s)."""
     valgt_runde = {
         "klasse": "",
@@ -116,9 +123,7 @@ async def find_round(token: str, event: dict, raceclasses: list, heat_order: int
         "informasjon": "",
     }
     if heat_order == 0:
-        all_races = await RaceplansAdapter().get_all_races(
-            token, event['id']
-        )
+        all_races = await RaceplansAdapter().get_all_races(token, event["id"])
         # find race starting now
         races = get_races_for_live_view(event, all_races, 0, 1)
         if len(races) > 0:
@@ -141,6 +146,8 @@ async def find_round(token: str, event: dict, raceclasses: list, heat_order: int
             # check if raceclass is without ranking
             for raceclass in raceclasses:
                 if race["raceclass"] == raceclass["name"]:
-                    if not raceclass['ranking']:
-                        valgt_runde["informasjon"] = "OBS: Denne løpsklassen er urangert, resultater vil ikke vises."
+                    if not raceclass["ranking"]:
+                        valgt_runde["informasjon"] = (
+                            "OBS: Denne løpsklassen er urangert, resultater vil ikke vises."
+                        )
     return valgt_runde

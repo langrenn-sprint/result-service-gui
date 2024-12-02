@@ -1,4 +1,5 @@
 """Resource module for resultat view."""
+
 import logging
 
 from aiohttp import web
@@ -49,7 +50,9 @@ class Resultat(web.View):
 
             if not valgt_klasse:
                 informasjon = "Velg klasse for å vise resultater"
-                foto = await PhotosAdapter().get_all_photos(user["token"], event_id, True, 5)
+                foto = await PhotosAdapter().get_all_photos(
+                    user["token"], event_id, True, 5
+                )
             else:
                 try:
                     resultlist = await RaceclassResultsAdapter().get_raceclass_result(
