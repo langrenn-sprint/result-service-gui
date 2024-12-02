@@ -84,7 +84,7 @@ class PhotoTimingService:
                     informasjon = await TimeEventsService().update_finish_time_events(
                         user, delete_result_list, add_result_list
                     )
-        except Exception:
-            informasjon = f"create_time_event_from_photo: Kunne ikke opprette passering automatisk - {photo}"
+        except Exception as e:
+            informasjon = f"create_time_event_from_photo: Kunne ikke opprette passering automatisk - {e}"
             logging.error(informasjon)
         return informasjon
