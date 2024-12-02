@@ -1,4 +1,5 @@
 """Resource module for start resources."""
+
 import logging
 
 from aiohttp import web
@@ -162,15 +163,21 @@ async def create_dns_time_events_manual(user: dict, event: dict, form: dict) -> 
                         }
                     ]
                     # find race - always pick the latest start if several results
-                    start_entries = await StartAdapter().get_start_entries_by_bib(user["token"], event["id"], int(bib))
+                    start_entries = await StartAdapter().get_start_entries_by_bib(
+                        user["token"], event["id"], int(bib)
+                    )
                     if start_entries:
                         start_entry = start_entries[len(start_entries) - 1]
                         race_id = start_entry["race_id"]
-                        race = await RaceplansAdapter().get_race_by_id(user["token"], race_id)
+                        race = await RaceplansAdapter().get_race_by_id(
+                            user["token"], race_id
+                        )
                         request_body["name"] = start_entry["name"]
                         request_body["club"] = start_entry["club"]
                         request_body["race_id"] = race_id
-                        request_body["race"] = f"{race['raceclass']}-{race['round']}{race['index']}{race['heat']}"
+                        request_body["race"] = (
+                            f"{race['raceclass']}-{race['round']}{race['index']}{race['heat']}"
+                        )
 
                     id = await TimeEventsService().create_start_time_event(
                         user["token"], request_body

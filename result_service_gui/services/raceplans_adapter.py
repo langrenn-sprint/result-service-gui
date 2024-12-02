@@ -1,4 +1,5 @@
 """Module for raceplans adapter."""
+
 import datetime
 import logging
 import os

@@ -141,6 +141,9 @@ border-right: 1px solid #ddd;
   color: black;
   font-weight: bold;
 }
+.black {
+  color: black;
+}
 #white-text {
   color: white;
 }

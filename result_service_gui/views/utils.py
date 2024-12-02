@@ -1,4 +1,5 @@
 """Utilities module for gui services."""
+
 import datetime
 import logging
 
@@ -12,7 +13,6 @@ from result_service_gui.services import (
     RaceplansAdapter,
     StartAdapter,
     TimeEventsAdapter,
-    TimeEventsService,
     UserAdapter,
 )
 
@@ -47,33 +47,6 @@ async def check_login_open(self) -> dict:
         user = {"name": "Gjest", "loggedin": False, "token": ""}
 
     return user
-
-
-async def delete_result(user: dict, form: dict) -> str:
-    """Set time event to deleted and delete corresponding start event."""
-    informasjon = ""
-
-    # get time event and delete next start if existing
-    time_event = await TimeEventsAdapter().get_time_event_by_id(
-        user["token"], form["time_event_id"]
-    )
-    if len(time_event["next_race_id"]) > 0:
-        start_entries = await StartAdapter().get_start_entries_by_race_id(
-            user["token"], time_event["next_race_id"]
-        )
-        for start_entry in start_entries:
-            if time_event["bib"] == start_entry["bib"]:
-                id = await StartAdapter().delete_start_entry(
-                    user["token"], start_entry["race_id"], start_entry["id"]
-                )
-                informasjon = f"Slettet neste start ({time_event['bib']}). "
-                logging.debug(f"Deleted start - result {id}")
-    id2 = await TimeEventsAdapter().delete_time_event(
-        user["token"], form["time_event_id"]
-    )
-    logging.debug(f"Time event deleted: {id2} - {form['time_event_id']}")
-    informasjon = f"Slettet passering ({time_event['bib']}). {informasjon}"
-    return informasjon
 
 
 def get_display_style(start_time: str, event: dict) -> str:
@@ -139,14 +112,14 @@ async def get_finish_timings(user: dict, race_id: str) -> list:
         user["token"], race_id
     )
     found_events = 0
-    for i in range(1, race['max_no_of_contestants'] + 1):
+    for i in range(1, race["max_no_of_contestants"] + 1):
         for time_event in time_events:
             if time_event["timing_point"] == "Finish" and time_event["status"] == "OK":
                 if i == time_event["rank"]:
                     found_events += 1
                     finish_events.append(time_event)
-        if (found_events == 0):
-            if race['round'] == "F":
+        if found_events == 0:
+            if race["round"] == "F":
                 dummy_event = {"rank": i}
                 finish_events.append(dummy_event)
             else:
@@ -183,7 +156,7 @@ async def get_passeringer(
     # filter based upon raceclass
     tmp_passeringer = []
     for passering in _tmp_passeringer:
-        if passering['race'].startswith(valgt_klasse):
+        if passering["race"].startswith(valgt_klasse):
             tmp_passeringer.append(passering)
 
     if action == "control":
@@ -194,9 +167,7 @@ async def get_passeringer(
                     and passering["timing_point"] != "Template"
                 ):
                     passeringer.append(passering)
-    elif action in [
-        "Template", "DNS"
-    ]:
+    elif action in ["Template", "DNS"]:
         for passering in tmp_passeringer:
             if valgt_klasse in passering["race"]:
                 if passering["timing_point"] == action:
@@ -225,7 +196,8 @@ async def get_passeringer(
 
     # sort by time
     def myfunc(n) -> str:
-        return n['registration_time']
+        return n["registration_time"]
+
     passeringer.sort(key=myfunc)
     passeringer.reverse()
 
@@ -264,7 +236,9 @@ async def get_race_id_by_name(
 ) -> str:
     """Get race_id for a given race."""
     race_id = ""
-    races = await RaceplansAdapter().get_races_by_racesclass(user["token"], event_id, raceclass)
+    races = await RaceplansAdapter().get_races_by_racesclass(
+        user["token"], event_id, raceclass
+    )
     for race in races:
         tmp_next_race = f"{race['round']}{race['index']}{race['heat']}"
         if next_race == tmp_next_race:
@@ -298,13 +272,13 @@ def get_raceplan_summary(races: list, raceclasses: list) -> list:
     return summary
 
 
-def get_races_for_live_view(event: dict, races: list, valgt_heat: int, number_of_races: int) -> list:
+def get_races_for_live_view(
+    event: dict, races: list, valgt_heat: int, number_of_races: int
+) -> list:
     """Return races to display in live view."""
     filtered_racelist = []
     i = 0
-    time_now = EventsAdapter().get_local_time(
-        event, "log"
-    )
+    time_now = EventsAdapter().get_local_time(event, "log")
     # find next race on start
     if valgt_heat == 0:
         for race in races:
@@ -344,20 +318,22 @@ async def get_races_for_print(
                     race["next_race"] = get_qualification_text(race)
                     race["start_time"] = race["start_time"][-8:]
                     # get start list details
-                    if (action == "live"):
+                    if action == "live":
                         race["list_type"] = "start"
-                        if race['results']:
-                            if "Finish" in race['results'].keys():  # type: ignore
+                        if race["results"]:
+                            if "Finish" in race["results"].keys():  # type: ignore
                                 race["list_type"] = "result"
                     else:
                         race["list_type"] = action
 
-                    if (race["list_type"] == "start"):
+                    if race["list_type"] == "start":
                         race["startliste"] = await get_enrichced_startlist(user, race)
                     else:
                         race[
                             "finish_results"
-                        ] = RaceclassResultsService().get_finish_rank_for_race(race, False)
+                        ] = RaceclassResultsService().get_finish_rank_for_race(
+                            race, False
+                        )
                     if first_in_class:
                         first_in_class = False
                     races.append(race)
@@ -387,9 +363,9 @@ async def get_races_for_round_result(
                     first_in_class = False
                     race["next_race"] = get_qualification_text(race)
                     race["list_type"] = "result"
-                    race[
-                        "finish_results"
-                    ] = RaceclassResultsService().get_finish_rank_for_race(race, False)
+                    race["finish_results"] = (
+                        RaceclassResultsService().get_finish_rank_for_race(race, False)
+                    )
                     races.append(race)
             elif race["round"] in next_round:
                 if action.count("start") > 0:
@@ -400,24 +376,6 @@ async def get_races_for_round_result(
                     race["startliste"] = await get_enrichced_startlist(user, race)
                     races.append(race)
     return races
-
-
-async def update_finish_time_events(
-    user: dict, delete_result_list: list, add_result_list: list
-) -> str:
-    """Update time events for finish- return information."""
-    informasjon = ""
-    for del_result in delete_result_list:
-        info = await delete_result(user, del_result)
-        informasjon += info
-        logging.debug(f"Deleted result: {info} - body: {del_result}")
-
-    info = await TimeEventsService().create_finish_time_events(
-        user["token"], add_result_list
-    )
-    informasjon += info
-    logging.debug(f"Registreringer: {info} - body: {add_result_list}")
-    return informasjon
 
 
 async def create_start(user: dict, form: dict) -> str:
@@ -438,32 +396,48 @@ async def create_start(user: dict, form: dict) -> str:
             "club": contestant["club"],
         }
         # validation - check that bib not already is in start entry for round
-        new_race = await RaceplansAdapter().get_race_by_id(user["token"], new_start["race_id"])
-        start_entries = await StartAdapter().get_start_entries_by_bib(user["token"], form['event_id'], bib)
+        new_race = await RaceplansAdapter().get_race_by_id(
+            user["token"], new_start["race_id"]
+        )
+        start_entries = await StartAdapter().get_start_entries_by_bib(
+            user["token"], form["event_id"], bib
+        )
         for start_entry in start_entries:
-            race = await RaceplansAdapter().get_race_by_id(user["token"], start_entry["race_id"])
-            if (new_race['round'] == race['round']):
-                raise web.HTTPBadRequest(reason=f"405 Bib already exists in round - {race['round']}")
+            race = await RaceplansAdapter().get_race_by_id(
+                user["token"], start_entry["race_id"]
+            )
+            if new_race["round"] == race["round"]:
+                raise web.HTTPBadRequest(
+                    reason=f"405 Bib already exists in round - {race['round']}"
+                )
 
         id = await StartAdapter().create_start_entry(user["token"], new_start)
         logging.debug(f"create_start {id} - {new_start}")
         informasjon = f"Lagt til nr {bib}"
 
         # update previous result with correct "videre til"
-        time_events = await TimeEventsAdapter().get_time_events_by_event_id_and_bib(user["token"], form['event_id'], bib)
+        time_events = await TimeEventsAdapter().get_time_events_by_event_id_and_bib(
+            user["token"], form["event_id"], bib
+        )
         latest_result: dict = {}
         for time_event in time_events:
-            if (time_event['timing_point'] == "Finish") and (time_event['bib'] == bib):
-                if (not latest_result) or (time_event['registration_time'] > latest_result['registration_time']):
+            if (time_event["timing_point"] == "Finish") and (time_event["bib"] == bib):
+                if (not latest_result) or (
+                    time_event["registration_time"] > latest_result["registration_time"]
+                ):
                     latest_result = time_event
-        if (latest_result):
-            latest_result['next_race_id'] = new_race['id']
-            if new_race['round'] == "F":
-                latest_result['next_race'] = f"{new_race['round']}{new_race['index']}"
+        if latest_result:
+            latest_result["next_race_id"] = new_race["id"]
+            if new_race["round"] == "F":
+                latest_result["next_race"] = f"{new_race['round']}{new_race['index']}"
             else:
-                latest_result['next_race'] = f"{new_race['round']}{new_race['index']}{new_race['heat']}"
-            latest_result['next_race_position'] = new_start['starting_position']
-            id = await TimeEventsAdapter().update_time_event(user["token"], latest_result['id'], latest_result)
+                latest_result["next_race"] = (
+                    f"{new_race['round']}{new_race['index']}{new_race['heat']}"
+                )
+            latest_result["next_race_position"] = new_start["starting_position"]
+            id = await TimeEventsAdapter().update_time_event(
+                user["token"], latest_result["id"], latest_result
+            )
             logging.debug(f"updated time event {id} - {latest_result}")
             informasjon += " Oppdatert videre til fra forrige runde."
     else:
@@ -481,9 +455,7 @@ async def get_new_race_info(user: dict, form: dict) -> dict:
     except Exception:
         starting_position = 1
         race_id = form["new_heat"]
-        new_race = await RaceplansAdapter().get_race_by_id(
-            user["token"], race_id
-        )
+        new_race = await RaceplansAdapter().get_race_by_id(user["token"], race_id)
         start_entries = new_race["start_entries"]
         start_time = new_race["start_time"]
         if len(start_entries) > 0:
@@ -524,3 +496,149 @@ def get_foto_finish_for_race(user: dict, race: dict, photos: list) -> list:
             if photo["is_photo_finish"] and (photo["confidence"] > 80):
                 fotos.append(photo)
     return fotos
+
+
+async def get_race_kpis(
+    token: str, event: dict, raceclasses: list, valgt_runde: str
+) -> list:
+    """Generate a summary with key performance indicators for race execution."""
+    summary_kpis = []
+    all_races = await RaceplansAdapter().get_all_races(token, event["id"])
+    raceplan_summary = get_raceplan_summary(all_races, raceclasses)
+
+    # enrich with race details
+    for raceclass in raceplan_summary:
+        races = await RaceplansAdapter().get_races_by_racesclass(
+            token, event["id"], raceclass["name"]
+        )
+        races_q = []
+        races_s = []
+        races_f = []
+        for race in races:
+            # calculate key kpis pr race
+            race_summary = get_race_summary(event, race)
+
+            if (race["round"] in ["Q", "R1"]) and (valgt_runde in ["Q", "A"]):
+                races_q.append(race_summary)
+            elif (race["round"] in ["S", "R2"]) and (valgt_runde in ["S", "A"]):
+                races_s.append(race_summary)
+            elif (race["round"] == "F") and (valgt_runde in ["F", "A"]):
+                races_f.append(race_summary)
+        raceclass["races_q"] = races_q
+        raceclass["races_s"] = races_s
+        raceclass["races_f"] = races_f
+        raceclass["progress"] = get_raceclass_progress(races_q, races_s, races_f)
+
+        summary_kpis.append(raceclass)
+    return summary_kpis
+
+
+def get_raceclass_progress(races_q: list, races_s: list, races_f: list) -> int:
+    """Calculate overal progress of race execution."""
+    raceclass_progress = 1
+    # 1 not started
+    # 2 not started - with DNS */
+    # 3 started - no results */
+    # 4 partial results - with DNF */
+    # 5 all results ok */
+    # 6 error in race results */
+    for race in races_f:
+        if race["progress"] > raceclass_progress:
+            raceclass_progress = race["progress"]
+        if race["progress"] in [4, 6]:
+            return race["progress"]  # partial or error results
+    for race in races_s:
+        if race["progress"] > raceclass_progress:
+            raceclass_progress = race["progress"]
+        if race["progress"] in [4, 6]:
+            return race["progress"]  # partial or error results
+    for race in races_q:
+        if race["progress"] > raceclass_progress:
+            raceclass_progress = race["progress"]
+        if race["progress"] in [4, 6]:
+            return race["progress"]  # partial or error results
+    return raceclass_progress
+
+
+def get_race_summary(event: dict, race: dict) -> dict:
+    """Calculate key kpis for a single race."""
+    try:
+        count_starts = len(race["start_entries"])
+    except Exception:
+        count_starts = 0
+    try:
+        count_results = len(race["results"]["Finish"]["ranking_sequence"])
+    except Exception:
+        count_results = 0
+    try:
+        count_dns = len(race["results"]["DNS"]["ranking_sequence"])
+    except Exception:
+        count_dns = 0
+    try:
+        count_dnf = len(race["results"]["DNF"]["ranking_sequence"])
+    except Exception:
+        count_dnf = 0
+
+    race_progress = get_race_progress(
+        event, race, count_starts, count_dns, count_dnf, count_results
+    )
+
+    if event["competition_format"] != "Individual Sprint":
+        race_name = event["competition_format"]
+    elif race["round"] == "F":
+        race_name = f"{race['round']}{race['index']}"
+    else:
+        race_name = f"{race['round']}{race['index']}{race['heat']}"
+
+    race_summary = {
+        "name": race_name,
+        "order": race["order"],
+        "count_starts": count_starts,
+        "count_results": count_results,
+        "count_dns": count_dns,
+        "count_dnf": count_dnf,
+        "progress": race_progress,
+        "start_time": race["start_time"][-8:],
+    }
+    return race_summary
+
+
+def get_race_progress(
+    event: dict,
+    race: dict,
+    count_starts: int,
+    count_dns: int,
+    count_dnf: int,
+    count_results: int,
+) -> int:
+    """Evaluate race progress and return a code to indicate coloring in dashboard."""
+    progress = 6
+    # 1 not started
+    # 2 not started - with DNS */
+    # 3 started - no results */
+    # 4 partial results - with DNF */
+    # 5 all results ok */
+    # 6 error in race results */
+    time_now = EventsAdapter().get_local_time(event, "log")
+    start_time = race["start_time"]
+    if start_time > time_now:
+        if count_results > 0:
+            progress = 6
+        elif count_dnf > 0:
+            progress = 6
+        elif count_dns == 0:
+            progress = 1
+        else:
+            progress = 2
+    elif count_results == 0:
+        if count_starts == 0:
+            progress = 5
+        else:
+            progress = 3
+    elif (count_results + count_dns + count_dnf) < count_starts:
+        progress = 4
+    elif (count_results + count_dns + count_dnf) > count_starts:
+        progress = 6
+    else:
+        progress = 5
+    return progress

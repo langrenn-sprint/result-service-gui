@@ -1,4 +1,5 @@
 """Resource module for live resources."""
+
 import logging
 from operator import itemgetter
 
@@ -61,7 +62,9 @@ class Live(web.View):
             )
 
             if valgt_klasse:
-                races = await get_races(user["token"], event_id, valgt_klasse, valgt_startnr, action)
+                races = await get_races(
+                    user["token"], event_id, valgt_klasse, valgt_startnr, action
+                )
                 if len(races) == 0:
                     informasjon = f"{informasjon} Ingen kjøreplaner funnet."
 
@@ -183,7 +186,11 @@ async def get_races_for_live(
             if races_count_q > 4:
                 if semi_results_registered and race["round"] == "Q" and action != "all":
                     pass
-                elif not semi_results_registered and race["round"] == "F" and action != "all":
+                elif (
+                    not semi_results_registered
+                    and race["round"] == "F"
+                    and action != "all"
+                ):
                     pass
                 else:
                     races.append(race)

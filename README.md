@@ -96,6 +96,10 @@ Denne fila _skal_ ligge i .dockerignore og .gitignore
 % source .env
 % poetry run adev runserver -p 8090 result_service_gui
 % docker-compose up event-service race-service user-service photo-service mongodb competition-format-service event-service-gui
+
+# Optional - virtual env.
+python3 -m venv .venv  # Creates the virtual environment
+source .venv/bin/activate  # Activates the virtual environment (Linux/macOS)
 ```
 
 ### Teste manuelt

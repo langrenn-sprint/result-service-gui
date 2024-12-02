@@ -1,1 +1,866 @@
-2024-05-27 18:40:33,969 - ERROR - Club logo not found - N/A, error: 'N/A '
+2024-11-24 11:08:12,276 - ERROR - Video events update - 'passeringspunkt'
+2024-11-24 11:09:14,800 - ERROR - Video events update - 'passeringspunkt'
+2024-11-24 11:13:20,752 - ERROR - create_start_entry failed: 400 - Cannot add start-entry: Bib 3 is already in the race.
+2024-11-24 11:13:20,755 - ERROR - Error in create_finish_time_event: create_start_entry failed - Cannot add start-entry: Bib 3 is already in the race..
+2024-11-24 11:13:20,756 - ERROR - create_time_event_from_photo: Kunne ikke opprette passering automatisk - {'confidence': 100, 'name': 'Finish_20241121_165722_3.jpg', 'is_photo_finish': True, 'is_start_registration': False, 'starred': False, 'event_id': '08dc7b0d-a39d-4a12-ab9a-1c181071d1b4', 'creation_time': '2024-11-18T10:03:32', 'ai_information': {'persons': 0, 'ai_numbers': [0, 0, 3, 32, 3], 'ai_text': ['Kristin', 'FOSNAES', ',', 'NOR', 'Start', ':', '2024-11-18T10', ':', ':', '-', 'passering', ':', '2024-11-18T10', ':', ':', 'Lokasjon', ':', 'Finish'], 'ai_crop_numbers': [3], 'ai_crop_text': []}, 'information': {'passeringspunkt': 'Finish', 'passeringstid': '2024-11-18T10:03:32'}, 'race_id': '0dd35ccd-4bba-4f20-a8c1-8a798b365139', 'raceclass': 'KS', 'biblist': [3], 'clublist': ['NOR'], 'g_crop_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_3_crop.jpg', 'g_base_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_3.jpg'}
+2024-11-24 11:13:36,685 - ERROR - create_start_entry failed: 400 - Cannot add start-entry: Bib 2 is already in the race.
+2024-11-24 11:13:36,686 - ERROR - Error in create_finish_time_event: create_start_entry failed - Cannot add start-entry: Bib 2 is already in the race..
+2024-11-24 11:13:36,686 - ERROR - create_time_event_from_photo: Kunne ikke opprette passering automatisk - {'confidence': 100, 'name': 'Finish_20241121_165722_2.jpg', 'is_photo_finish': True, 'is_start_registration': False, 'starred': False, 'event_id': '08dc7b0d-a39d-4a12-ab9a-1c181071d1b4', 'creation_time': '2024-11-18T10:03:37', 'ai_information': {'persons': 0, 'ai_numbers': [0, 0, 3, 37, 2], 'ai_text': ['Kristine', 'SKISTAD', ',', 'NOR', 'Start', ':', '2024-11-18T10', ':', ':', '-', 'passering', ':', '2024-11-18T10', ':', ':', 'Lokasjon', ':', 'Finish'], 'ai_crop_numbers': [2], 'ai_crop_text': []}, 'information': {'passeringspunkt': 'Finish', 'passeringstid': '2024-11-18T10:03:37'}, 'race_id': '0dd35ccd-4bba-4f20-a8c1-8a798b365139', 'raceclass': 'KS', 'biblist': [2], 'clublist': ['NOR'], 'g_crop_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_2_crop.jpg', 'g_base_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_2.jpg'}
+2024-11-24 11:18:04,331 - ERROR - update_time_event failed - 404 input data: {'bib': 3, 'event_id': '08dc7b0d-a39d-4a12-ab9a-1c181071d1b4', 'timing_point': 'Finish', 'registration_time': '2024-11-18T10:03:32', 'name': 'Kristin FOSNAES', 'club': 'NOR', 'race': 'KS-QA1', 'race_id': '0dd35ccd-4bba-4f20-a8c1-8a798b365139', 'rank': 2, 'next_race': 'SA1', 'next_race_id': 'e528dca6-ceb0-40fa-9bb3-75935e366a27', 'next_race_position': 3, 'status': 'OK', 'changelog': [{'timestamp': '2024-11-18T10:03:32', 'user_id': 'admin', 'comment': 'Resultat fra foto passering'}], 'id': '9bcee708-4216-4735-b333-5ae5387ec6f8'}
+2024-11-24 11:18:04,334 - ERROR - Error in create_finish_time_event: Update time_event failed - 404 input data: {'bib': 3, 'event_id': '08dc7b0d-a39d-4a12-ab9a-1c181071d1b4', 'timing_point': 'Finish', 'registration_time': '2024-11-18T10:03:32', 'name': 'Kristin FOSNAES', 'club': 'NOR', 'race': 'KS-QA1', 'race_id': '0dd35ccd-4bba-4f20-a8c1-8a798b365139', 'rank': 2, 'next_race': 'SA1', 'next_race_id': 'e528dca6-ceb0-40fa-9bb3-75935e366a27', 'next_race_position': 3, 'status': 'OK', 'changelog': [{'timestamp': '2024-11-18T10:03:32', 'user_id': 'admin', 'comment': 'Resultat fra foto passering'}], 'id': '9bcee708-4216-4735-b333-5ae5387ec6f8'}.
+2024-11-24 11:18:04,335 - ERROR - create_time_event_from_photo: Kunne ikke opprette passering automatisk - {'confidence': 100, 'name': 'Finish_20241121_165722_7.jpg', 'is_photo_finish': True, 'is_start_registration': False, 'starred': False, 'event_id': '08dc7b0d-a39d-4a12-ab9a-1c181071d1b4', 'creation_time': '2024-11-18T10:03:25', 'ai_information': {'persons': 0, 'ai_numbers': [0, 0, 3, 25, 7], 'ai_text': ['Pia', 'FINK', ',', 'GER', 'Start', ':', '2024-11-18T10', ':', ':', '-', 'passering', ':', '2024-11-18T10', ':', ':', 'Lokasjon', ':', 'Finish'], 'ai_crop_numbers': [7], 'ai_crop_text': []}, 'information': {'passeringspunkt': 'Finish', 'passeringstid': '2024-11-18T10:03:25'}, 'race_id': '0dd35ccd-4bba-4f20-a8c1-8a798b365139', 'raceclass': 'KS', 'biblist': [7], 'clublist': ['GER'], 'g_crop_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_7_crop.jpg', 'g_base_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_7.jpg'}
+2024-11-24 15:16:09,855 - ERROR - update_time_event failed - 404 input data: {'bib': 8, 'event_id': '08dc7b0d-a39d-4a12-ab9a-1c181071d1b4', 'timing_point': 'Finish', 'registration_time': '2024-11-18T10:05:05', 'name': 'Frida KARLSSON', 'club': 'SWE', 'race': 'KS-QA2', 'race_id': '1276fd3e-7ba4-44b5-88c4-f543b720725d', 'rank': 2, 'next_race': 'SA2', 'next_race_id': 'c9243bbe-e5b2-4222-add9-98938a354d99', 'next_race_position': 3, 'status': 'OK', 'changelog': [{'timestamp': '2024-11-18T10:05:05', 'user_id': 'admin', 'comment': 'Resultat fra foto passering'}], 'id': '2aa555ee-aba2-4792-9ebf-cb3fe66a25eb'}
+2024-11-24 15:16:09,888 - ERROR - Error in create_finish_time_event: Update time_event failed - 404 input data: {'bib': 8, 'event_id': '08dc7b0d-a39d-4a12-ab9a-1c181071d1b4', 'timing_point': 'Finish', 'registration_time': '2024-11-18T10:05:05', 'name': 'Frida KARLSSON', 'club': 'SWE', 'race': 'KS-QA2', 'race_id': '1276fd3e-7ba4-44b5-88c4-f543b720725d', 'rank': 2, 'next_race': 'SA2', 'next_race_id': 'c9243bbe-e5b2-4222-add9-98938a354d99', 'next_race_position': 3, 'status': 'OK', 'changelog': [{'timestamp': '2024-11-18T10:05:05', 'user_id': 'admin', 'comment': 'Resultat fra foto passering'}], 'id': '2aa555ee-aba2-4792-9ebf-cb3fe66a25eb'}.
+2024-11-24 15:16:09,889 - ERROR - create_time_event_from_photo: Kunne ikke opprette passering automatisk - {'confidence': 100, 'name': 'Finish_20241121_165722_6.jpg', 'is_photo_finish': True, 'is_start_registration': False, 'starred': False, 'event_id': '08dc7b0d-a39d-4a12-ab9a-1c181071d1b4', 'creation_time': '2024-11-18T10:03:42', 'ai_information': {'persons': 0, 'ai_numbers': [0, 0, 3, 42, 6], 'ai_text': ['Linn', 'SVAHN', ',', 'SWE', 'Start', ':', '2024-11-18T10', ':', ':', '-', 'passering', ':', '2024-11-18T10', ':', ':', 'Lokasjon', ':', 'Finish'], 'ai_crop_numbers': [9], 'ai_crop_text': []}, 'information': {'passeringspunkt': 'Finish', 'passeringstid': '2024-11-18T10:03:42'}, 'race_id': '1276fd3e-7ba4-44b5-88c4-f543b720725d', 'raceclass': 'KS', 'biblist': [9], 'clublist': ['CZE'], 'g_crop_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_6_crop.jpg', 'g_base_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_6.jpg'}
+2024-11-24 15:20:08,358 - ERROR - update_time_event failed - 404 input data: {'bib': 10, 'event_id': '08dc7b0d-a39d-4a12-ab9a-1c181071d1b4', 'timing_point': 'Finish', 'registration_time': '2024-11-18T10:05:01', 'name': 'Julia KERN', 'club': 'USA', 'race': 'KS-QA2', 'race_id': '1276fd3e-7ba4-44b5-88c4-f543b720725d', 'rank': 2, 'next_race': 'SA2', 'next_race_id': 'c9243bbe-e5b2-4222-add9-98938a354d99', 'next_race_position': 3, 'status': 'OK', 'changelog': [{'timestamp': '2024-11-18T10:05:01', 'user_id': 'admin', 'comment': 'Resultat fra foto passering'}], 'id': 'e7974d7b-b3c9-4a7e-b008-3cdcfd00220d'}
+2024-11-24 15:20:08,359 - ERROR - Error in create_finish_time_event: Update time_event failed - 404 input data: {'bib': 10, 'event_id': '08dc7b0d-a39d-4a12-ab9a-1c181071d1b4', 'timing_point': 'Finish', 'registration_time': '2024-11-18T10:05:01', 'name': 'Julia KERN', 'club': 'USA', 'race': 'KS-QA2', 'race_id': '1276fd3e-7ba4-44b5-88c4-f543b720725d', 'rank': 2, 'next_race': 'SA2', 'next_race_id': 'c9243bbe-e5b2-4222-add9-98938a354d99', 'next_race_position': 3, 'status': 'OK', 'changelog': [{'timestamp': '2024-11-18T10:05:01', 'user_id': 'admin', 'comment': 'Resultat fra foto passering'}], 'id': 'e7974d7b-b3c9-4a7e-b008-3cdcfd00220d'}.
+2024-11-24 15:20:08,359 - ERROR - create_time_event_from_photo: Kunne ikke opprette passering automatisk - {'confidence': 100, 'name': 'Finish_20241121_165722_11.jpg', 'is_photo_finish': True, 'is_start_registration': False, 'starred': False, 'event_id': '08dc7b0d-a39d-4a12-ab9a-1c181071d1b4', 'creation_time': '2024-11-18T10:04:54', 'ai_information': {'persons': 0, 'ai_numbers': [1, 30, 4, 54, 11], 'ai_text': ['Coletta', 'RYDZEK', ',', 'GER', 'Start', ':', '2024-11-18T10', ':', ':', '-', 'passering', ':', '2024-11-18T10', ':', ':', 'Lokasjon', ':', 'Finish'], 'ai_crop_numbers': [11], 'ai_crop_text': []}, 'information': {'passeringspunkt': 'Finish', 'passeringstid': '2024-11-18T10:04:54'}, 'race_id': '1276fd3e-7ba4-44b5-88c4-f543b720725d', 'raceclass': 'KS', 'biblist': [11], 'clublist': ['GER'], 'g_crop_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_11_crop.jpg', 'g_base_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_11.jpg'}
+2024-11-24 15:28:46,599 - ERROR - update_time_event failed - 404 input data: {'bib': 14, 'event_id': '08dc7b0d-a39d-4a12-ab9a-1c181071d1b4', 'timing_point': 'Finish', 'registration_time': '2024-11-18T10:06:40', 'name': 'Jessie DIGGINS', 'club': 'USA', 'race': 'KS-QA3', 'race_id': '4b50d422-5ca6-404b-b241-56afb9229290', 'rank': 2, 'next_race': 'SA1', 'next_race_id': 'e528dca6-ceb0-40fa-9bb3-75935e366a27', 'next_race_position': 4, 'status': 'OK', 'changelog': [{'timestamp': '2024-11-18T10:06:40', 'user_id': 'admin', 'comment': 'Resultat fra foto passering'}], 'id': '7711acb0-e7f6-4521-adf9-146fd5637a7e'}
+2024-11-24 15:35:51,816 - ERROR - update_time_event failed - 404 input data: {'bib': 16, 'event_id': '08dc7b0d-a39d-4a12-ab9a-1c181071d1b4', 'timing_point': 'Finish', 'registration_time': '2024-11-18T10:06:28', 'name': 'Katri LYLYNPERA', 'club': 'FIN', 'race': 'KS-QA3', 'race_id': '4b50d422-5ca6-404b-b241-56afb9229290', 'rank': 2, 'next_race': 'SA1', 'next_race_id': 'e528dca6-ceb0-40fa-9bb3-75935e366a27', 'next_race_position': 4, 'status': 'OK', 'changelog': [{'timestamp': '2024-11-18T10:06:28', 'user_id': 'admin', 'comment': 'Resultat fra foto passering'}], 'id': 'e39638b2-967f-44a1-bbc1-9dfb50b86bef'}
+2024-11-24 15:35:51,818 - ERROR - Error in create_finish_time_event: Update time_event failed - 404-{'detail': 'TimeEvent with id e39638b2-967f-44a1-bbc1-9dfb50b86bef not found.'} input data: {'bib': 16, 'event_id': '08dc7b0d-a39d-4a12-ab9a-1c181071d1b4', 'timing_point': 'Finish', 'registration_time': '2024-11-18T10:06:28', 'name': 'Katri LYLYNPERA', 'club': 'FIN', 'race': 'KS-QA3', 'race_id': '4b50d422-5ca6-404b-b241-56afb9229290', 'rank': 2, 'next_race': 'SA1', 'next_race_id': 'e528dca6-ceb0-40fa-9bb3-75935e366a27', 'next_race_position': 4, 'status': 'OK', 'changelog': [{'timestamp': '2024-11-18T10:06:28', 'user_id': 'admin', 'comment': 'Resultat fra foto passering'}], 'id': 'e39638b2-967f-44a1-bbc1-9dfb50b86bef'}.
+2024-11-24 15:35:51,818 - ERROR - create_time_event_from_photo: Kunne ikke opprette passering automatisk - {'confidence': 100, 'name': 'Finish_20241121_165722_18.jpg', 'is_photo_finish': True, 'is_start_registration': False, 'starred': False, 'event_id': '08dc7b0d-a39d-4a12-ab9a-1c181071d1b4', 'creation_time': '2024-11-18T10:06:22', 'ai_information': {'persons': 0, 'ai_numbers': [3, 0, 6, 22, 18], 'ai_text': ['Tiia', 'OLKKONEN', ',', 'FIN', 'Start', ':', '2024-11-18T10', ':', ':', '-', 'passering', ':', '2024-11-18T10', ':', ':', 'Lokasjon', ':', 'Finish'], 'ai_crop_numbers': [18], 'ai_crop_text': []}, 'information': {'passeringspunkt': 'Finish', 'passeringstid': '2024-11-18T10:06:22'}, 'race_id': '4b50d422-5ca6-404b-b241-56afb9229290', 'raceclass': 'KS', 'biblist': [18], 'clublist': ['FIN'], 'g_crop_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_18_crop.jpg', 'g_base_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_18.jpg'}
+2024-11-24 15:52:09,436 - ERROR - get_event failed - 404 - {'detail': 'Event with id 08dc7b0d-a39d-4a12-ab9a-1c181071d1b4 not found'}
+2024-11-24 15:52:09,437 - ERROR - Error: Error - 404: Event with id 08dc7b0d-a39d-4a12-ab9a-1c181071d1b4 not found.. Redirect to main page.
+2024-11-24 15:54:15,743 - ERROR - get_race_by_id failed - 404 - {'detail': 'Not Found'}
+2024-11-24 15:54:15,744 - ERROR - create_time_event_from_photo: Kunne ikke opprette passering automatisk - {'confidence': 0, 'name': 'Finish_20241121_165722_3.jpg', 'is_photo_finish': True, 'is_start_registration': False, 'starred': False, 'event_id': '8cd577cb-01fc-474c-864c-850afac5e8ac', 'creation_time': '2024-11-18T10:03:32', 'ai_information': {'persons': 0, 'ai_numbers': [0, 0, 3, 32, 3], 'ai_text': ['Kristin', 'FOSNAES', ',', 'NOR', 'Start', ':', '2024-11-18T10', ':', ':', '-', 'passering', ':', '2024-11-18T10', ':', ':', 'Lokasjon', ':', 'Finish'], 'ai_crop_numbers': [3], 'ai_crop_text': []}, 'information': {'passeringspunkt': 'Finish', 'passeringstid': '2024-11-18T10:03:32'}, 'race_id': '', 'raceclass': '', 'biblist': [], 'clublist': [], 'g_crop_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_3_crop.jpg', 'g_base_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_3.jpg'}
+2024-11-24 15:54:16,103 - ERROR - get_race_by_id failed - 404 - {'detail': 'Not Found'}
+2024-11-24 15:54:16,104 - ERROR - create_time_event_from_photo: Kunne ikke opprette passering automatisk - {'confidence': 0, 'name': 'Finish_20241121_165722_2.jpg', 'is_photo_finish': True, 'is_start_registration': False, 'starred': False, 'event_id': '8cd577cb-01fc-474c-864c-850afac5e8ac', 'creation_time': '2024-11-18T10:03:37', 'ai_information': {'persons': 0, 'ai_numbers': [0, 0, 3, 37, 2], 'ai_text': ['Kristine', 'SKISTAD', ',', 'NOR', 'Start', ':', '2024-11-18T10', ':', ':', '-', 'passering', ':', '2024-11-18T10', ':', ':', 'Lokasjon', ':', 'Finish'], 'ai_crop_numbers': [2], 'ai_crop_text': []}, 'information': {'passeringspunkt': 'Finish', 'passeringstid': '2024-11-18T10:03:37'}, 'race_id': '', 'raceclass': '', 'biblist': [], 'clublist': [], 'g_crop_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_2_crop.jpg', 'g_base_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_2.jpg'}
+2024-11-24 15:54:16,448 - ERROR - get_race_by_id failed - 404 - {'detail': 'Not Found'}
+2024-11-24 15:54:16,449 - ERROR - create_time_event_from_photo: Kunne ikke opprette passering automatisk - {'confidence': 0, 'name': 'Finish_20241121_165722_4.jpg', 'is_photo_finish': True, 'is_start_registration': False, 'starred': False, 'event_id': '8cd577cb-01fc-474c-864c-850afac5e8ac', 'creation_time': '2024-11-18T10:03:21', 'ai_information': {'persons': 0, 'ai_numbers': [0, 0, 3, 21, 4], 'ai_text': ['Emma', 'RIBOM', ',', 'SWE', 'Start', ':', '2024-11-18T10', ':', ':', 'passering', ':', '2024-11-18T10', ':', ':', 'Lokasjon', ':', 'Finish'], 'ai_crop_numbers': [4], 'ai_crop_text': []}, 'information': {'passeringspunkt': 'Finish', 'passeringstid': '2024-11-18T10:03:21'}, 'race_id': '', 'raceclass': '', 'biblist': [], 'clublist': [], 'g_crop_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_4_crop.jpg', 'g_base_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_4.jpg'}
+2024-11-24 15:56:35,808 - ERROR - Video events update - 'passeringspunkt'
+2024-11-24 15:57:36,774 - ERROR - get_race_by_id failed - 404 - {'detail': 'Not Found'}
+2024-11-24 15:57:36,775 - ERROR - create_time_event_from_photo: Kunne ikke opprette passering automatisk - {'confidence': 0, 'name': 'Finish_20241121_165722_7.jpg', 'is_photo_finish': True, 'is_start_registration': False, 'starred': False, 'event_id': '8cd577cb-01fc-474c-864c-850afac5e8ac', 'creation_time': '2024-11-18T10:03:25', 'ai_information': {'persons': 0, 'ai_numbers': [0, 0, 3, 25, 7], 'ai_text': ['Pia', 'FINK', ',', 'GER', 'Start', ':', '2024-11-18T10', ':', ':', '-', 'passering', ':', '2024-11-18T10', ':', ':', 'Lokasjon', ':', 'Finish'], 'ai_crop_numbers': [7], 'ai_crop_text': []}, 'information': {'passeringspunkt': 'Finish', 'passeringstid': '2024-11-18T10:03:25'}, 'race_id': '', 'raceclass': '', 'biblist': [], 'clublist': [], 'g_crop_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_7_crop.jpg', 'g_base_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_7.jpg'}
+2024-11-24 15:57:37,089 - ERROR - get_race_by_id failed - 404 - {'detail': 'Not Found'}
+2024-11-24 15:57:37,090 - ERROR - create_time_event_from_photo: Kunne ikke opprette passering automatisk - {'confidence': 0, 'name': 'Finish_20241121_165722_6.jpg', 'is_photo_finish': True, 'is_start_registration': False, 'starred': False, 'event_id': '8cd577cb-01fc-474c-864c-850afac5e8ac', 'creation_time': '2024-11-18T10:03:42', 'ai_information': {'persons': 0, 'ai_numbers': [0, 0, 3, 42, 6], 'ai_text': ['Linn', 'SVAHN', ',', 'SWE', 'Start', ':', '2024-11-18T10', ':', ':', '-', 'passering', ':', '2024-11-18T10', ':', ':', 'Lokasjon', ':', 'Finish'], 'ai_crop_numbers': [9], 'ai_crop_text': []}, 'information': {'passeringspunkt': 'Finish', 'passeringstid': '2024-11-18T10:03:42'}, 'race_id': '', 'raceclass': '', 'biblist': [], 'clublist': [], 'g_crop_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_6_crop.jpg', 'g_base_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_6.jpg'}
+2024-11-24 15:57:37,414 - ERROR - get_race_by_id failed - 404 - {'detail': 'Not Found'}
+2024-11-24 15:57:37,415 - ERROR - create_time_event_from_photo: Kunne ikke opprette passering automatisk - {'confidence': 0, 'name': 'Finish_20241121_165722_5.jpg', 'is_photo_finish': True, 'is_start_registration': False, 'starred': False, 'event_id': '8cd577cb-01fc-474c-864c-850afac5e8ac', 'creation_time': '2024-11-18T10:03:39', 'ai_information': {'persons': 0, 'ai_numbers': [0, 0, 3, 39, 5], 'ai_text': ['Lena', 'QUINTIN', ',', 'FRA', 'Start', ':', '2024-11-18T10', ':', ':', '-', 'passering', ':', '2024-11-18T10', ':', ':', 'Lokasjon', ':', 'Finish'], 'ai_crop_numbers': [5], 'ai_crop_text': []}, 'information': {'passeringspunkt': 'Finish', 'passeringstid': '2024-11-18T10:03:39'}, 'race_id': '', 'raceclass': '', 'biblist': [], 'clublist': [], 'g_crop_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_5_crop.jpg', 'g_base_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_5.jpg'}
+2024-11-24 15:59:50,299 - ERROR - Task exception was never retrieved
+future: <Task finished name='Task-38' coro=<RequestHandler.start() done, defined at /home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_protocol.py:511> exception=KeyboardInterrupt()>
+Traceback (most recent call last):
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_devtools/runserver/serve.py", line 179, in serve_main_app
+    runner.run(app_runner.cleanup())
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 674, in run_until_complete
+    self.run_forever()
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 641, in run_forever
+    self._run_once()
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 1987, in _run_once
+    handle._run()
+  File "/usr/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_protocol.py", line 561, in start
+    resp, reset = await task
+                  ^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_protocol.py", line 478, in _handle_request
+    resp = await request_handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_app.py", line 567, in _handle
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_middlewares.py", line 117, in impl
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_middlewares/cors.py", line 255, in middleware
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_middlewares/error.py", line 211, in middleware
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_session/__init__.py", line 191, in factory
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_devtools/runserver/serve.py", line 96, in no_cache_middleware
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_urldispatcher.py", line 975, in _iter
+    ret = await method()
+          ^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/result_service_gui/views/video_events.py", line 28, in post
+    r = await FotoService().sync_photos_from_pubsub(user, event)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/result_service_gui/services/foto_service.py", line 131, in sync_photos_from_pubsub
+    pull_messages = await GooglePubSubAdapter().pull_messages()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/result_service_gui/services/google_pub_sub_adapter.py", line 50, in pull_messages
+    response = subscriber.pull(
+               ^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/pubsub_v1/services/subscriber/client.py", line 1738, in pull
+    response = rpc(
+               ^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/gapic_v1/method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 293, in retry_wrapped_func
+    return retry_target(
+           ^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 144, in retry_target
+    result = target()
+             ^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/timeout.py", line 120, in func_with_timeout
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/grpc_helpers.py", line 76, in error_remapped_callable
+    return callable_(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/grpc/_channel.py", line 1178, in __call__
+    ) = self._blocking(
+        ^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/grpc/_channel.py", line 1162, in _blocking
+    event = call.next_event()
+            ^^^^^^^^^^^^^^^^^
+  File "src/python/grpcio/grpc/_cython/_cygrpc/channel.pyx.pxi", line 388, in grpc._cython.cygrpc.SegregatedCall.next_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/channel.pyx.pxi", line 211, in grpc._cython.cygrpc._next_call_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/channel.pyx.pxi", line 205, in grpc._cython.cygrpc._next_call_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/completion_queue.pyx.pxi", line 78, in grpc._cython.cygrpc._latent_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/completion_queue.pyx.pxi", line 61, in grpc._cython.cygrpc._internal_latent_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/completion_queue.pyx.pxi", line 42, in grpc._cython.cygrpc._next
+KeyboardInterrupt
+2024-11-24 16:05:18,040 - ERROR - get_race_by_id failed - 404 - {'detail': 'Not Found'}
+2024-11-24 16:05:18,045 - ERROR - create_time_event_from_photo: Kunne ikke opprette passering automatisk - {'confidence': 0, 'name': 'Finish_20241121_165722_8.jpg', 'is_photo_finish': True, 'is_start_registration': False, 'starred': False, 'event_id': '8cd577cb-01fc-474c-864c-850afac5e8ac', 'creation_time': '2024-11-18T10:05:05', 'ai_information': {'persons': 0, 'ai_numbers': [1, 30, 5, 5], 'ai_text': ['Frida', 'KARLSSON', ',', 'SWE', 'Start', ':', '2024-11-18T10', ':', ':', '-', 'passering', ':', '2024-11-18T10', ':', ':', 'Lokasjon', ':', 'Finish'], 'ai_crop_numbers': [8], 'ai_crop_text': []}, 'information': {'passeringspunkt': 'Finish', 'passeringstid': '2024-11-18T10:05:05'}, 'race_id': '', 'raceclass': '', 'biblist': [], 'clublist': [], 'g_crop_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_8_crop.jpg', 'g_base_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_8.jpg'}
+2024-11-24 16:06:39,924 - ERROR - Task exception was never retrieved
+future: <Task finished name='Task-42' coro=<RequestHandler.start() done, defined at /home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_protocol.py:511> exception=KeyboardInterrupt()>
+Traceback (most recent call last):
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_devtools/runserver/serve.py", line 179, in serve_main_app
+    runner.run(app_runner.cleanup())
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 674, in run_until_complete
+    self.run_forever()
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 641, in run_forever
+    self._run_once()
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 1987, in _run_once
+    handle._run()
+  File "/usr/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_protocol.py", line 561, in start
+    resp, reset = await task
+                  ^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_protocol.py", line 478, in _handle_request
+    resp = await request_handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_app.py", line 567, in _handle
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_middlewares.py", line 117, in impl
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_middlewares/cors.py", line 255, in middleware
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_middlewares/error.py", line 211, in middleware
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_session/__init__.py", line 191, in factory
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_devtools/runserver/serve.py", line 96, in no_cache_middleware
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_urldispatcher.py", line 975, in _iter
+    ret = await method()
+          ^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/result_service_gui/views/video_events.py", line 28, in post
+    r = await FotoService().sync_photos_from_pubsub(user, event)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/result_service_gui/services/foto_service.py", line 131, in sync_photos_from_pubsub
+    pull_messages = await GooglePubSubAdapter().pull_messages()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/result_service_gui/services/google_pub_sub_adapter.py", line 50, in pull_messages
+    response = subscriber.pull(
+               ^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/pubsub_v1/services/subscriber/client.py", line 1738, in pull
+    response = rpc(
+               ^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/gapic_v1/method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 293, in retry_wrapped_func
+    return retry_target(
+           ^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 144, in retry_target
+    result = target()
+             ^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/timeout.py", line 120, in func_with_timeout
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/grpc_helpers.py", line 76, in error_remapped_callable
+    return callable_(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/grpc/_channel.py", line 1178, in __call__
+    ) = self._blocking(
+        ^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/grpc/_channel.py", line 1162, in _blocking
+    event = call.next_event()
+            ^^^^^^^^^^^^^^^^^
+  File "src/python/grpcio/grpc/_cython/_cygrpc/channel.pyx.pxi", line 388, in grpc._cython.cygrpc.SegregatedCall.next_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/channel.pyx.pxi", line 211, in grpc._cython.cygrpc._next_call_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/channel.pyx.pxi", line 205, in grpc._cython.cygrpc._next_call_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/completion_queue.pyx.pxi", line 78, in grpc._cython.cygrpc._latent_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/completion_queue.pyx.pxi", line 61, in grpc._cython.cygrpc._internal_latent_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/completion_queue.pyx.pxi", line 42, in grpc._cython.cygrpc._next
+KeyboardInterrupt
+2024-11-24 23:27:02,389 - ERROR - Task exception was never retrieved
+future: <Task finished name='Task-10' coro=<RequestHandler.start() done, defined at /home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_protocol.py:511> exception=KeyboardInterrupt()>
+Traceback (most recent call last):
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_devtools/runserver/serve.py", line 179, in serve_main_app
+    runner.run(app_runner.cleanup())
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 674, in run_until_complete
+    self.run_forever()
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 641, in run_forever
+    self._run_once()
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 1987, in _run_once
+    handle._run()
+  File "/usr/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_protocol.py", line 561, in start
+    resp, reset = await task
+                  ^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_protocol.py", line 478, in _handle_request
+    resp = await request_handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_app.py", line 567, in _handle
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_middlewares.py", line 117, in impl
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_middlewares/cors.py", line 255, in middleware
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_middlewares/error.py", line 211, in middleware
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_session/__init__.py", line 191, in factory
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_devtools/runserver/serve.py", line 96, in no_cache_middleware
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_urldispatcher.py", line 975, in _iter
+    ret = await method()
+          ^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/result_service_gui/views/video_events.py", line 28, in post
+    r = await FotoService().sync_photos_from_pubsub(user, event)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/result_service_gui/services/foto_service.py", line 131, in sync_photos_from_pubsub
+    pull_messages = await GooglePubSubAdapter().pull_messages()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/result_service_gui/services/google_pub_sub_adapter.py", line 50, in pull_messages
+    response = subscriber.pull(
+               ^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/pubsub_v1/services/subscriber/client.py", line 1738, in pull
+    response = rpc(
+               ^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/gapic_v1/method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 293, in retry_wrapped_func
+    return retry_target(
+           ^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 144, in retry_target
+    result = target()
+             ^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/timeout.py", line 120, in func_with_timeout
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/grpc_helpers.py", line 76, in error_remapped_callable
+    return callable_(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/grpc/_channel.py", line 1178, in __call__
+    ) = self._blocking(
+        ^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/grpc/_channel.py", line 1162, in _blocking
+    event = call.next_event()
+            ^^^^^^^^^^^^^^^^^
+  File "src/python/grpcio/grpc/_cython/_cygrpc/channel.pyx.pxi", line 388, in grpc._cython.cygrpc.SegregatedCall.next_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/channel.pyx.pxi", line 211, in grpc._cython.cygrpc._next_call_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/channel.pyx.pxi", line 205, in grpc._cython.cygrpc._next_call_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/completion_queue.pyx.pxi", line 78, in grpc._cython.cygrpc._latent_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/completion_queue.pyx.pxi", line 61, in grpc._cython.cygrpc._internal_latent_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/completion_queue.pyx.pxi", line 42, in grpc._cython.cygrpc._next
+KeyboardInterrupt
+2024-11-24 23:32:30,640 - ERROR - Task exception was never retrieved
+future: <Task finished name='Task-10' coro=<RequestHandler.start() done, defined at /home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_protocol.py:511> exception=KeyboardInterrupt()>
+Traceback (most recent call last):
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_devtools/runserver/serve.py", line 179, in serve_main_app
+    runner.run(app_runner.cleanup())
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 674, in run_until_complete
+    self.run_forever()
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 641, in run_forever
+    self._run_once()
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 1987, in _run_once
+    handle._run()
+  File "/usr/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_protocol.py", line 561, in start
+    resp, reset = await task
+                  ^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_protocol.py", line 478, in _handle_request
+    resp = await request_handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_app.py", line 567, in _handle
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_middlewares.py", line 117, in impl
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_middlewares/cors.py", line 255, in middleware
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_middlewares/error.py", line 211, in middleware
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_session/__init__.py", line 191, in factory
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_devtools/runserver/serve.py", line 96, in no_cache_middleware
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_urldispatcher.py", line 975, in _iter
+    ret = await method()
+          ^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/result_service_gui/views/video_events.py", line 28, in post
+    r = await FotoService().sync_photos_from_pubsub(user, event)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/result_service_gui/services/foto_service.py", line 131, in sync_photos_from_pubsub
+    pull_messages = await GooglePubSubAdapter().pull_messages()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/result_service_gui/services/google_pub_sub_adapter.py", line 50, in pull_messages
+    response = subscriber.pull(
+               ^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/pubsub_v1/services/subscriber/client.py", line 1738, in pull
+    response = rpc(
+               ^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/gapic_v1/method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 293, in retry_wrapped_func
+    return retry_target(
+           ^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 144, in retry_target
+    result = target()
+             ^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/timeout.py", line 120, in func_with_timeout
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/grpc_helpers.py", line 76, in error_remapped_callable
+    return callable_(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/grpc/_channel.py", line 1178, in __call__
+    ) = self._blocking(
+        ^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/grpc/_channel.py", line 1162, in _blocking
+    event = call.next_event()
+            ^^^^^^^^^^^^^^^^^
+  File "src/python/grpcio/grpc/_cython/_cygrpc/channel.pyx.pxi", line 388, in grpc._cython.cygrpc.SegregatedCall.next_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/channel.pyx.pxi", line 211, in grpc._cython.cygrpc._next_call_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/channel.pyx.pxi", line 205, in grpc._cython.cygrpc._next_call_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/completion_queue.pyx.pxi", line 78, in grpc._cython.cygrpc._latent_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/completion_queue.pyx.pxi", line 61, in grpc._cython.cygrpc._internal_latent_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/completion_queue.pyx.pxi", line 42, in grpc._cython.cygrpc._next
+KeyboardInterrupt
+2024-11-24 23:38:35,305 - ERROR - Task exception was never retrieved
+future: <Task finished name='Task-28' coro=<RequestHandler.start() done, defined at /home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_protocol.py:511> exception=KeyboardInterrupt()>
+Traceback (most recent call last):
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_devtools/runserver/serve.py", line 179, in serve_main_app
+    runner.run(app_runner.cleanup())
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 674, in run_until_complete
+    self.run_forever()
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 641, in run_forever
+    self._run_once()
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 1987, in _run_once
+    handle._run()
+  File "/usr/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_protocol.py", line 561, in start
+    resp, reset = await task
+                  ^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_protocol.py", line 478, in _handle_request
+    resp = await request_handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_app.py", line 567, in _handle
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_middlewares.py", line 117, in impl
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_middlewares/cors.py", line 255, in middleware
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_middlewares/error.py", line 211, in middleware
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_session/__init__.py", line 191, in factory
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_devtools/runserver/serve.py", line 96, in no_cache_middleware
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_urldispatcher.py", line 975, in _iter
+    ret = await method()
+          ^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/result_service_gui/views/video_events.py", line 28, in post
+    r = await FotoService().sync_photos_from_pubsub(user, event)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/result_service_gui/services/foto_service.py", line 131, in sync_photos_from_pubsub
+    pull_messages = await GooglePubSubAdapter().pull_messages()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/result_service_gui/services/google_pub_sub_adapter.py", line 50, in pull_messages
+    response = subscriber.pull(
+               ^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/pubsub_v1/services/subscriber/client.py", line 1738, in pull
+    response = rpc(
+               ^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/gapic_v1/method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 293, in retry_wrapped_func
+    return retry_target(
+           ^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 144, in retry_target
+    result = target()
+             ^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/timeout.py", line 120, in func_with_timeout
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/grpc_helpers.py", line 76, in error_remapped_callable
+    return callable_(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/grpc/_channel.py", line 1178, in __call__
+    ) = self._blocking(
+        ^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/grpc/_channel.py", line 1162, in _blocking
+    event = call.next_event()
+            ^^^^^^^^^^^^^^^^^
+  File "src/python/grpcio/grpc/_cython/_cygrpc/channel.pyx.pxi", line 388, in grpc._cython.cygrpc.SegregatedCall.next_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/channel.pyx.pxi", line 211, in grpc._cython.cygrpc._next_call_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/channel.pyx.pxi", line 205, in grpc._cython.cygrpc._next_call_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/completion_queue.pyx.pxi", line 78, in grpc._cython.cygrpc._latent_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/completion_queue.pyx.pxi", line 61, in grpc._cython.cygrpc._internal_latent_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/completion_queue.pyx.pxi", line 42, in grpc._cython.cygrpc._next
+KeyboardInterrupt
+2024-11-24 23:40:10,736 - ERROR - Task exception was never retrieved
+future: <Task finished name='Task-27' coro=<RequestHandler.start() done, defined at /home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_protocol.py:511> exception=KeyboardInterrupt()>
+Traceback (most recent call last):
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_devtools/runserver/serve.py", line 179, in serve_main_app
+    runner.run(app_runner.cleanup())
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 674, in run_until_complete
+    self.run_forever()
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 641, in run_forever
+    self._run_once()
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 1987, in _run_once
+    handle._run()
+  File "/usr/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_protocol.py", line 561, in start
+    resp, reset = await task
+                  ^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_protocol.py", line 478, in _handle_request
+    resp = await request_handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_app.py", line 567, in _handle
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_middlewares.py", line 117, in impl
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_middlewares/cors.py", line 255, in middleware
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_middlewares/error.py", line 211, in middleware
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_session/__init__.py", line 191, in factory
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_devtools/runserver/serve.py", line 96, in no_cache_middleware
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_urldispatcher.py", line 975, in _iter
+    ret = await method()
+          ^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/result_service_gui/views/video_events.py", line 28, in post
+    r = await FotoService().sync_photos_from_pubsub(user, event)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/result_service_gui/services/foto_service.py", line 131, in sync_photos_from_pubsub
+    pull_messages = await GooglePubSubAdapter().pull_messages()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/result_service_gui/services/google_pub_sub_adapter.py", line 50, in pull_messages
+    response = subscriber.pull(
+               ^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/pubsub_v1/services/subscriber/client.py", line 1738, in pull
+    response = rpc(
+               ^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/gapic_v1/method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 293, in retry_wrapped_func
+    return retry_target(
+           ^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 144, in retry_target
+    result = target()
+             ^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/timeout.py", line 120, in func_with_timeout
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/grpc_helpers.py", line 76, in error_remapped_callable
+    return callable_(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/grpc/_channel.py", line 1178, in __call__
+    ) = self._blocking(
+        ^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/grpc/_channel.py", line 1162, in _blocking
+    event = call.next_event()
+            ^^^^^^^^^^^^^^^^^
+  File "src/python/grpcio/grpc/_cython/_cygrpc/channel.pyx.pxi", line 388, in grpc._cython.cygrpc.SegregatedCall.next_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/channel.pyx.pxi", line 211, in grpc._cython.cygrpc._next_call_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/channel.pyx.pxi", line 205, in grpc._cython.cygrpc._next_call_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/completion_queue.pyx.pxi", line 78, in grpc._cython.cygrpc._latent_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/completion_queue.pyx.pxi", line 61, in grpc._cython.cygrpc._internal_latent_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/completion_queue.pyx.pxi", line 42, in grpc._cython.cygrpc._next
+KeyboardInterrupt
+2024-11-24 23:41:03,287 - ERROR - delete_photo failed - 401 - <ClientResponse(http://localhost:8092/photos/ac36c2fc-6d8b-48b8-8809-59d6d3b8af4c) [401 Unauthorized]>
+<CIMultiDictProxy('Content-Type': 'application/json; charset=utf-8', 'Content-Length': '26', 'Date': 'Sun, 24 Nov 2024 22:41:03 GMT', 'Server': 'Python/3.11 aiohttp/3.9.5')>
+
+2024-11-24 23:41:03,288 - ERROR - Error: Reason cannot contain \n
+2024-11-24 23:50:45,002 - ERROR - get_time_event_by_id failed - 404 - {'detail': 'Not Found'}
+2024-11-24 23:50:45,003 - ERROR - create_time_event_from_photo: Kunne ikke opprette passering automatisk - {'confidence': 100, 'name': 'Finish_20241121_165722_4.jpg', 'is_photo_finish': True, 'is_start_registration': False, 'starred': False, 'event_id': '8cd577cb-01fc-474c-864c-850afac5e8ac', 'creation_time': '2024-11-18T10:03:21', 'ai_information': {'persons': 0, 'ai_numbers': [0, 0, 3, 21, 4], 'ai_text': ['Emma', 'RIBOM', ',', 'SWE', 'Start', ':', '2024-11-18T10', ':', ':', 'passering', ':', '2024-11-18T10', ':', ':', 'Lokasjon', ':', 'Finish'], 'ai_crop_numbers': [4], 'ai_crop_text': []}, 'information': {'passeringspunkt': 'Finish', 'passeringstid': '2024-11-18T10:03:21'}, 'race_id': 'bb64df10-99af-4ebc-be5a-897f945d4df6', 'raceclass': 'KS', 'biblist': [4], 'clublist': ['SWE'], 'g_crop_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_4_crop.jpg', 'g_base_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_4.jpg'}
+2024-11-24 23:50:45,263 - ERROR - get_time_event_by_id failed - 404 - {'detail': 'Not Found'}
+2024-11-24 23:50:45,264 - ERROR - create_time_event_from_photo: Kunne ikke opprette passering automatisk - {'confidence': 100, 'name': 'Finish_20241121_165722_3.jpg', 'is_photo_finish': True, 'is_start_registration': False, 'starred': False, 'event_id': '8cd577cb-01fc-474c-864c-850afac5e8ac', 'creation_time': '2024-11-18T10:03:32', 'ai_information': {'persons': 0, 'ai_numbers': [0, 0, 3, 32, 3], 'ai_text': ['Kristin', 'FOSNAES', ',', 'NOR', 'Start', ':', '2024-11-18T10', ':', ':', '-', 'passering', ':', '2024-11-18T10', ':', ':', 'Lokasjon', ':', 'Finish'], 'ai_crop_numbers': [3], 'ai_crop_text': []}, 'information': {'passeringspunkt': 'Finish', 'passeringstid': '2024-11-18T10:03:32'}, 'race_id': 'bb64df10-99af-4ebc-be5a-897f945d4df6', 'raceclass': 'KS', 'biblist': [3], 'clublist': ['NOR'], 'g_crop_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_3_crop.jpg', 'g_base_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_3.jpg'}
+2024-11-24 23:53:16,556 - ERROR - get_time_event_by_id failed - 404 - {'detail': 'Not Found'}
+2024-11-24 23:53:16,557 - ERROR - create_time_event_from_photo: Kunne ikke opprette passering automatisk - {'confidence': 100, 'name': 'Finish_20241121_165722_7.jpg', 'is_photo_finish': True, 'is_start_registration': False, 'starred': False, 'event_id': '8cd577cb-01fc-474c-864c-850afac5e8ac', 'creation_time': '2024-11-18T10:03:25', 'ai_information': {'persons': 0, 'ai_numbers': [0, 0, 3, 25, 7], 'ai_text': ['Pia', 'FINK', ',', 'GER', 'Start', ':', '2024-11-18T10', ':', ':', '-', 'passering', ':', '2024-11-18T10', ':', ':', 'Lokasjon', ':', 'Finish'], 'ai_crop_numbers': [7], 'ai_crop_text': []}, 'information': {'passeringspunkt': 'Finish', 'passeringstid': '2024-11-18T10:03:25'}, 'race_id': 'bb64df10-99af-4ebc-be5a-897f945d4df6', 'raceclass': 'KS', 'biblist': [7], 'clublist': ['GER'], 'g_crop_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_7_crop.jpg', 'g_base_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_7.jpg'}
+2024-11-24 23:54:21,545 - ERROR - Video events update - 'passeringspunkt'
+2024-11-24 23:58:06,240 - ERROR - Task exception was never retrieved
+future: <Task finished name='Task-37' coro=<RequestHandler.start() done, defined at /home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_protocol.py:511> exception=KeyboardInterrupt()>
+Traceback (most recent call last):
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_devtools/runserver/serve.py", line 179, in serve_main_app
+    runner.run(app_runner.cleanup())
+  File "/usr/lib/python3.12/asyncio/runners.py", line 118, in run
+    return self._loop.run_until_complete(task)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 674, in run_until_complete
+    self.run_forever()
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 641, in run_forever
+    self._run_once()
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 1987, in _run_once
+    handle._run()
+  File "/usr/lib/python3.12/asyncio/events.py", line 88, in _run
+    self._context.run(self._callback, *self._args)
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_protocol.py", line 561, in start
+    resp, reset = await task
+                  ^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_protocol.py", line 478, in _handle_request
+    resp = await request_handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_app.py", line 567, in _handle
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_middlewares.py", line 117, in impl
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_middlewares/cors.py", line 255, in middleware
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_middlewares/error.py", line 211, in middleware
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_session/__init__.py", line 191, in factory
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_devtools/runserver/serve.py", line 96, in no_cache_middleware
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_urldispatcher.py", line 975, in _iter
+    ret = await method()
+          ^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/result_service_gui/views/video_events.py", line 28, in post
+    r = await FotoService().sync_photos_from_pubsub(user, event)
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/result_service_gui/services/foto_service.py", line 131, in sync_photos_from_pubsub
+    pull_messages = await GooglePubSubAdapter().pull_messages()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/result_service_gui/services/google_pub_sub_adapter.py", line 50, in pull_messages
+    response = subscriber.pull(
+               ^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/pubsub_v1/services/subscriber/client.py", line 1738, in pull
+    response = rpc(
+               ^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/gapic_v1/method.py", line 131, in __call__
+    return wrapped_func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 293, in retry_wrapped_func
+    return retry_target(
+           ^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/retry/retry_unary.py", line 144, in retry_target
+    result = target()
+             ^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/timeout.py", line 120, in func_with_timeout
+    return func(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/google/api_core/grpc_helpers.py", line 76, in error_remapped_callable
+    return callable_(*args, **kwargs)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/grpc/_channel.py", line 1178, in __call__
+    ) = self._blocking(
+        ^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/grpc/_channel.py", line 1162, in _blocking
+    event = call.next_event()
+            ^^^^^^^^^^^^^^^^^
+  File "src/python/grpcio/grpc/_cython/_cygrpc/channel.pyx.pxi", line 388, in grpc._cython.cygrpc.SegregatedCall.next_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/channel.pyx.pxi", line 211, in grpc._cython.cygrpc._next_call_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/channel.pyx.pxi", line 205, in grpc._cython.cygrpc._next_call_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/completion_queue.pyx.pxi", line 78, in grpc._cython.cygrpc._latent_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/completion_queue.pyx.pxi", line 61, in grpc._cython.cygrpc._internal_latent_event
+  File "src/python/grpcio/grpc/_cython/_cygrpc/completion_queue.pyx.pxi", line 42, in grpc._cython.cygrpc._next
+KeyboardInterrupt
+2024-11-25 00:04:15,065 - ERROR - Error: See Other. Redirect to main page.
+2024-11-25 22:27:37,602 - ERROR - Not Found
+Traceback (most recent call last):
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_middlewares/error.py", line 211, in middleware
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_session/__init__.py", line 207, in factory
+    raise cast(web.HTTPException, response)
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_session/__init__.py", line 191, in factory
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_devtools/runserver/serve.py", line 96, in no_cache_middleware
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_urldispatcher.py", line 953, in _handle
+    raise self._http_exception
+aiohttp.web_exceptions.HTTPNotFound: Not Found
+2024-11-25 22:49:07,604 - ERROR - Task exception was never retrieved
+future: <Task finished name='Task-123' exception=KeyboardInterrupt()>
+Traceback (most recent call last):
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_middlewares/error.py", line 211, in middleware
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_session/__init__.py", line 191, in factory
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_devtools/runserver/serve.py", line 96, in no_cache_middleware
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_urldispatcher.py", line 677, in _handle
+    return await loop.run_in_executor(
+                 ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 856, in run_in_executor
+    self._check_default_executor()
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 545, in _check_default_executor
+    raise RuntimeError('Executor shutdown has been called')
+RuntimeError: Executor shutdown has been called
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_protocol.py", line 478, in _handle_request
+    resp = await request_handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_app.py", line 567, in _handle
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_middlewares.py", line 117, in impl
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_middlewares/cors.py", line 255, in middleware
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_middlewares/error.py", line 213, in middleware
+    return await get_response(request, err)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_middlewares/error.py", line 284, in get_error_response
+    return await error_handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_middlewares/error.py", line 140, in default_error_handler
+    logger.error(context.message, exc_info=True)  # noqa: LOG014
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/logging/__init__.py", line 1568, in error
+    self._log(ERROR, msg, args, **kwargs)
+  File "/usr/lib/python3.12/logging/__init__.py", line 1684, in _log
+    self.handle(record)
+  File "/usr/lib/python3.12/logging/__init__.py", line 1700, in handle
+    self.callHandlers(record)
+  File "/usr/lib/python3.12/logging/__init__.py", line 1762, in callHandlers
+    hdlr.handle(record)
+  File "/usr/lib/python3.12/logging/__init__.py", line 1028, in handle
+    self.emit(record)
+  File "/usr/lib/python3.12/logging/__init__.py", line 1160, in emit
+    msg = self.format(record)
+          ^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/logging/__init__.py", line 999, in format
+    return fmt.format(record)
+           ^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/logging/__init__.py", line 711, in format
+    record.exc_text = self.formatException(record.exc_info)
+                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/logging/__init__.py", line 661, in formatException
+    traceback.print_exception(ei[0], ei[1], tb, None, sio)
+  File "/usr/lib/python3.12/traceback.py", line 124, in print_exception
+    te = TracebackException(type(value), value, tb, limit=limit, compact=True)
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/traceback.py", line 733, in __init__
+    self.stack = StackSummary._extract_from_extended_frame_gen(
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/traceback.py", line 430, in _extract_from_extended_frame_gen
+    result.append(FrameSummary(
+                  ^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/traceback.py", line 265, in __init__
+    def __init__(self, filename, lineno, name, *, lookup_line=True,
+    
+KeyboardInterrupt
+2024-11-25 22:49:11,271 - ERROR - Executor shutdown has been called
+Traceback (most recent call last):
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_middlewares/error.py", line 211, in middleware
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_session/__init__.py", line 191, in factory
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_devtools/runserver/serve.py", line 96, in no_cache_middleware
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_urldispatcher.py", line 677, in _handle
+    return await loop.run_in_executor(
+                 ^^^^^^^^^^^^^^^^^^^^^
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 856, in run_in_executor
+    self._check_default_executor()
+  File "/usr/lib/python3.12/asyncio/base_events.py", line 545, in _check_default_executor
+    raise RuntimeError('Executor shutdown has been called')
+RuntimeError: Executor shutdown has been called
+2024-11-25 23:06:18,600 - ERROR - Video events update - 'passeringspunkt'
+2024-11-26 23:13:44,712 - ERROR - Not Found
+Traceback (most recent call last):
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_middlewares/error.py", line 211, in middleware
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_session/__init__.py", line 207, in factory
+    raise cast(web.HTTPException, response)
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_session/__init__.py", line 191, in factory
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_devtools/runserver/serve.py", line 96, in no_cache_middleware
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_urldispatcher.py", line 953, in _handle
+    raise self._http_exception
+aiohttp.web_exceptions.HTTPNotFound: Not Found
+2024-11-26 23:14:56,758 - ERROR - Not Found
+Traceback (most recent call last):
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_middlewares/error.py", line 211, in middleware
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_session/__init__.py", line 207, in factory
+    raise cast(web.HTTPException, response)
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_session/__init__.py", line 191, in factory
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_devtools/runserver/serve.py", line 96, in no_cache_middleware
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_urldispatcher.py", line 953, in _handle
+    raise self._http_exception
+aiohttp.web_exceptions.HTTPNotFound: Not Found
+2024-11-26 23:32:08,785 - ERROR - Error: name 'current_races' is not defined. Redirect to main page.
+2024-11-26 23:41:36,817 - ERROR - Error: 'race' is undefined. Redirect to main page.
+2024-11-26 23:42:20,596 - ERROR - Error: 'race' is undefined. Redirect to main page.
+2024-11-26 23:42:45,884 - ERROR - Error: 'dict object' has no attribute 'start_time'. Redirect to main page.
+2024-11-26 23:46:23,012 - ERROR - Error: 'id'. Redirect to main page.
+2024-11-26 23:57:10,076 - ERROR - Error: 'id'. Redirect to main page.
+2024-11-27 22:03:23,540 - ERROR - Error: 'id'. Redirect to main page.
+2024-11-27 22:05:20,297 - ERROR - Error: 'id'. Redirect to main page.
+2024-11-27 22:19:22,053 - ERROR - Error: PhotosAdapter.get_photos_by_race_id() missing 1 required positional argument: 'race_id'. Redirect to main page.
+2024-11-27 22:19:53,249 - ERROR - Error: PhotosAdapter.get_photos_by_race_id() missing 1 required positional argument: 'race_id'. Redirect to main page.
+2024-11-27 23:00:40,713 - ERROR - Error: cannot use extend from a non top-level scope. Redirect to main page.
+2024-11-27 23:01:25,356 - ERROR - Error: extended multiple times. Redirect to main page.
+2024-12-01 22:38:22,303 - ERROR - Error: name 'get_race_kpis' is not defined. Redirect to main page.
+2024-12-01 22:44:29,208 - ERROR - Not Found
+Traceback (most recent call last):
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_middlewares/error.py", line 211, in middleware
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_session/__init__.py", line 207, in factory
+    raise cast(web.HTTPException, response)
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_session/__init__.py", line 191, in factory
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_devtools/runserver/serve.py", line 96, in no_cache_middleware
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_urldispatcher.py", line 953, in _handle
+    raise self._http_exception
+aiohttp.web_exceptions.HTTPNotFound: Not Found
+2024-12-01 22:44:36,148 - ERROR - Not Found
+Traceback (most recent call last):
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_middlewares/error.py", line 211, in middleware
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_session/__init__.py", line 207, in factory
+    raise cast(web.HTTPException, response)
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_session/__init__.py", line 191, in factory
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_devtools/runserver/serve.py", line 96, in no_cache_middleware
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_urldispatcher.py", line 953, in _handle
+    raise self._http_exception
+aiohttp.web_exceptions.HTTPNotFound: Not Found
+2024-12-01 22:44:48,648 - ERROR - Not Found
+Traceback (most recent call last):
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_middlewares/error.py", line 211, in middleware
+    return await handler(request)
+           ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_session/__init__.py", line 207, in factory
+    raise cast(web.HTTPException, response)
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_session/__init__.py", line 191, in factory
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp_devtools/runserver/serve.py", line 96, in no_cache_middleware
+    response = await handler(request)
+               ^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/heming/github/result-service-gui/.venv/lib/python3.12/site-packages/aiohttp/web_urldispatcher.py", line 953, in _handle
+    raise self._http_exception
+aiohttp.web_exceptions.HTTPNotFound: Not Found
+2024-12-01 22:45:39,581 - ERROR - Error: 'dict object' has no attribute 'start_time'. Redirect to main page.
+2024-12-01 22:49:40,032 - ERROR - Error: 'dict object' has no attribute 'start_time'. Redirect to main page.
+2024-12-01 22:56:07,100 - ERROR - Error: . Redirect to main page.
+2024-12-01 22:58:05,599 - ERROR - Error: string indices must be integers, not 'str'. Redirect to main page.
+2024-12-01 23:05:23,325 - ERROR - Error: get_race_kpis() missing 1 required positional argument: 'raceclasses'. Redirect to main page.
+2024-12-01 23:09:14,297 - ERROR - Error: 'klasse'. Redirect to main page.
+2024-12-01 23:10:35,300 - ERROR - Error: 'navn'. Redirect to main page.
+2024-12-01 23:31:21,682 - ERROR - Error: 'dict object' has no attribute 'start_time'. Redirect to main page.
+2024-12-01 23:31:28,462 - ERROR - Error: 'dict object' has no attribute 'start_time'. Redirect to main page.
+2024-12-01 23:37:20,427 - ERROR - Error: Encountered unknown tag 'endif'. Jinja was looking for the following tags: 'endfor'. The innermost block that needs to be closed is 'for'.. Redirect to main page.
+2024-12-01 23:37:55,573 - ERROR - Error: Expected an expression, got 'end of statement block'. Redirect to main page.
+2024-12-01 23:38:31,585 - ERROR - Error: Expected an expression, got 'end of statement block'. Redirect to main page.
+2024-12-02 22:12:31,121 - ERROR - Error: 'id'
+2024-12-02 22:12:50,695 - ERROR - Error: 'id'
+2024-12-02 22:30:27,029 - ERROR - Error: 
+2024-12-02 22:31:54,402 - ERROR - Error in create_finish_time_event: 400 - Time-event for bib 16 and timing-point Finish already exists in race b64324f6-93c7-4795-8d98-441f7696b5da.
+2024-12-02 22:31:54,402 - ERROR - Error: 400 - Time-event for bib 16 and timing-point Finish already exists in race b64324f6-93c7-4795-8d98-441f7696b5da.
+2024-12-02 22:33:37,890 - ERROR - Error: 
+2024-12-02 22:51:02,634 - ERROR - create_start_entry failed: 400 - Cannot add start-entry: Starting_position1 is taken.
+2024-12-02 22:51:02,635 - ERROR - Error in create_finish_time_event: create_start_entry failed - Cannot add start-entry: Starting_position1 is taken..
+2024-12-02 22:51:02,635 - ERROR - create_time_event_from_photo: Kunne ikke opprette passering automatisk - {'name': 'Finish_20241121_165722_7.jpg', 'is_photo_finish': True, 'is_start_registration': False, 'starred': False, 'confidence': 100, 'event_id': '8cd577cb-01fc-474c-864c-850afac5e8ac', 'creation_time': '2024-11-18T10:03:25', 'information': "{'passeringspunkt': 'Finish', 'passeringstid': '2024-11-18T10:03:25'}", 'id': 'cc49bf07-41a8-488e-aec4-39c5da797ae1', 'race_id': 'bb64df10-99af-4ebc-be5a-897f945d4df6', 'raceclass': 'KS', 'biblist': [7], 'clublist': ['GER'], 'g_id': None, 'g_product_url': None, 'g_base_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_7.jpg', 'ai_information': {'persons': 0, 'ai_numbers': [0, 0, 3, 25, 7], 'ai_text': ['Pia', 'FINK', ',', 'GER', 'Start', ':', '2024-11-18T10', ':', ':', '-', 'passering', ':', '2024-11-18T10', ':', ':', 'Lokasjon', ':', 'Finish'], 'ai_crop_numbers': [7], 'ai_crop_text': []}}
+2024-12-02 22:51:33,229 - ERROR - Error in create_finish_time_event: 401 Unathorized - create_time_event
+2024-12-02 22:51:33,230 - ERROR - create_time_event_from_photo: Kunne ikke opprette passering automatisk - {'name': 'Finish_20241121_165722_11.jpg', 'is_photo_finish': True, 'is_start_registration': False, 'starred': False, 'confidence': 100, 'event_id': '8cd577cb-01fc-474c-864c-850afac5e8ac', 'creation_time': '2024-11-18T10:04:54', 'information': "{'passeringspunkt': 'Finish', 'passeringstid': '2024-11-18T10:04:54'}", 'id': '5985e92d-87ff-4f53-920f-44fd57b37ebd', 'race_id': '3a130dc4-bb79-4fb5-80d1-bccdd549b080', 'raceclass': 'KS', 'biblist': [11], 'clublist': ['GER'], 'g_id': None, 'g_product_url': None, 'g_base_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_11.jpg', 'ai_information': {'persons': 0, 'ai_numbers': [1, 30, 4, 54, 11], 'ai_text': ['Coletta', 'RYDZEK', ',', 'GER', 'Start', ':', '2024-11-18T10', ':', ':', '-', 'passering', ':', '2024-11-18T10', ':', ':', 'Lokasjon', ':', 'Finish'], 'ai_crop_numbers': [11], 'ai_crop_text': []}}
+2024-12-02 22:51:33,264 - ERROR - Error: 401 Unathorized - update_race_results
+2024-12-02 22:52:56,081 - ERROR - create_start_entry failed: 400 - Cannot add start-entry: Starting_position2 is taken.
+2024-12-02 22:52:56,082 - ERROR - Error in create_finish_time_event: create_start_entry failed - Cannot add start-entry: Starting_position2 is taken..
+2024-12-02 22:52:56,083 - ERROR - create_time_event_from_photo: Kunne ikke opprette passering automatisk - {'name': 'Finish_20241121_165722_19.jpg', 'is_photo_finish': True, 'is_start_registration': False, 'starred': False, 'confidence': 100, 'event_id': '8cd577cb-01fc-474c-864c-850afac5e8ac', 'creation_time': '2024-11-18T10:06:34', 'information': "{'passeringspunkt': 'Finish', 'passeringstid': '2024-11-18T10:06:34'}", 'id': '322e6ea4-15b7-4466-a256-e5b81c39a0f3', 'race_id': 'b64324f6-93c7-4795-8d98-441f7696b5da', 'raceclass': 'KS', 'biblist': [19], 'clublist': ['FIN'], 'g_id': None, 'g_product_url': None, 'g_base_url': 'https://storage.googleapis.com/langrenn-sprint/Finish_20241121_165722_19.jpg', 'ai_information': {'persons': 0, 'ai_numbers': [3, 0, 6, 34, 19], 'ai_text': ['Jasmin', 'KAHARA', ',', 'FIN', 'Start', ':', '2024-11-18T10', ':', ':', '-', 'passering', ':', '2024-11-18T10', ':', ':', 'Lokasjon', ':', 'Finish'], 'ai_crop_numbers': [19], 'ai_crop_text': []}}

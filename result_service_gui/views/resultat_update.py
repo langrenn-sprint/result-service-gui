@@ -1,4 +1,5 @@
 """Resource module for single result update via ajax."""
+
 import logging
 
 from aiohttp import web
@@ -8,9 +9,7 @@ from result_service_gui.services import (
     RaceclassResultsService,
     TimeEventsAdapter,
 )
-from .utils import (
-    check_login, get_event
-)
+from .utils import check_login, get_event
 
 
 class ResultatUpdate(web.View):
@@ -21,14 +20,14 @@ class ResultatUpdate(web.View):
         result = ""
         try:
             form = await self.request.post()
-            action = form['action']
+            action = form["action"]
             user = await check_login(self)
             if action in ["DNF", "DNS", "Start"]:
                 result = await create_event(user, form, action)  # type: ignore
             elif action == "generate_resultlist":
-                event_id = str(form['event_id'])
+                event_id = str(form["event_id"])
                 event = await get_event(user, event_id)
-                raceclass = str(form['raceclass'])
+                raceclass = str(form["raceclass"])
                 res = await RaceclassResultsService().create_raceclass_results(
                     user["token"], event, raceclass
                 )  # type: ignore
@@ -46,7 +45,7 @@ async def create_event(user: dict, form: dict, action: str) -> str:
     event_id = form["event_id"]
     event = await get_event(user, event_id)
     time_stamp_now = EventsAdapter().get_local_time(event, "log")
-    if form['checked'] == "true":
+    if form["checked"] == "true":
         request_body = {
             "id": "",
             "bib": int(form["bib"]),
@@ -70,14 +69,18 @@ async def create_event(user: dict, form: dict, action: str) -> str:
                 }
             ],
         }
-        new_t_e = await TimeEventsAdapter().create_time_event(user["token"], request_body)
+        new_t_e = await TimeEventsAdapter().create_time_event(
+            user["token"], request_body
+        )
         informasjon = f" Nr {new_t_e['bib']} - {action} registrert. "
 
         # if Start event delete DNS event if it exists
         if action == "Start":
             # get dns event for bib
-            dns_time_events = await TimeEventsAdapter().get_time_events_by_event_id_and_bib(
-                user["token"], event_id, int(form["bib"])
+            dns_time_events = (
+                await TimeEventsAdapter().get_time_events_by_event_id_and_bib(
+                    user["token"], event_id, int(form["bib"])
+                )
             )
             for dns_time_event in dns_time_events:
                 if dns_time_event["timing_point"] == "DNS":
@@ -89,13 +92,15 @@ async def create_event(user: dict, form: dict, action: str) -> str:
                     informasjon += " Slettet DNS registrering. "
 
     else:
-        await TimeEventsAdapter().delete_time_event(user["token"], form['time_event_id'])
+        await TimeEventsAdapter().delete_time_event(
+            user["token"], form["time_event_id"]
+        )
         informasjon = f" Nr {form['bib']} - {action} slettet. "
 
     # delete old entry if existing
     try:
-        if form['old_id']:
-            await TimeEventsAdapter().delete_time_event(user["token"], form['old_id'])
+        if form["old_id"]:
+            await TimeEventsAdapter().delete_time_event(user["token"], form["old_id"])
             informasjon += " Slettet gammel registrering."
     except Exception as e:
         logging.debug(f"Delete failed - ignoring {e}")

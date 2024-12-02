@@ -1,4 +1,5 @@
 """Module for raceclass results adapter."""
+
 import logging
 
 from .contestants_adapter import ContestantsAdapter
@@ -78,11 +79,11 @@ class RaceclassResultsService:
                                 finish_rank.append(rank_event)
                                 finish_bibs.append(rank_event["bib"])
         if indlude_dnf:
-            for start in race['start_entries']:
-                if not start['bib'] in finish_bibs:
+            for start in race["start_entries"]:
+                if not start["bib"] in finish_bibs:
                     dnf_entry = {
                         "next_race_id": "",
-                        "bib": start['bib'],
+                        "bib": start["bib"],
                         "rank": None,
                         "round": f"{race['round']}{race['index']}",
                         "name": start["name"],
@@ -91,7 +92,7 @@ class RaceclassResultsService:
                         "ageclass": "",
                         "time_event": {},
                         "timing_point": "DNF",
-                        "status": "DNF"
+                        "status": "DNF",
                     }
                     finish_rank.append(dnf_entry)
         return finish_rank
@@ -169,10 +170,10 @@ async def get_results_from_all_heats(
             if one_res["bib"] not in biblist:  # avoid duplicates, keep only best result
                 if one_res["round"] != "DNF":
                     if one_res["round"].startswith("F"):
-                        one_res["rank"] = already_ranked + one_res['time_event']['rank']
+                        one_res["rank"] = already_ranked + one_res["time_event"]["rank"]
                     else:
                         one_res["rank"] = already_ranked + 1
-                biblist.append(one_res['bib'])
+                biblist.append(one_res["bib"])
                 results["ranking_sequence"].append(one_res)  # type: ignore
                 racers_count += 1
         else:
@@ -206,7 +207,9 @@ async def get_results_from_interval_start(
     race = races[0]
 
     race_details = await RaceplansAdapter().get_race_by_id(token, race["id"])
-    finish_results = RaceclassResultsService().get_finish_rank_for_race(race_details, True)
+    finish_results = RaceclassResultsService().get_finish_rank_for_race(
+        race_details, True
+    )
     for _tmp_result in finish_results:
         if _tmp_result["timing_point"] == "Finish":
             new_result: dict = {

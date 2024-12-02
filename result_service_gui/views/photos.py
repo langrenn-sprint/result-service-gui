@@ -1,4 +1,5 @@
 """Resource module for photo resources."""
+
 import logging
 
 from aiohttp import web
@@ -45,7 +46,9 @@ class Photos(web.View):
             )
             photos = []
             if not valgt_klasse:
-                photos = await PhotosAdapter().get_all_photos(user["token"], event_id, True, 50)
+                photos = await PhotosAdapter().get_all_photos(
+                    user["token"], event_id, True, 50
+                )
             else:
                 photos = await PhotosAdapter().get_photos_by_raceclass(
                     user["token"], event_id, valgt_klasse, True

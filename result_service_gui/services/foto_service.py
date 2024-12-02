@@ -1,4 +1,5 @@
 """Module for foto service."""
+
 import datetime
 import json
 import logging
@@ -33,7 +34,9 @@ class FotoService:
             logging.debug(f"Deleted photo with id {photo['id']}, result {result}")
         return "Alle bilder er slettet."
 
-    async def delete_all_low_confidence_photos(self, token: str, event_id: str, limit: int) -> str:
+    async def delete_all_low_confidence_photos(
+        self, token: str, event_id: str, limit: int
+    ) -> str:
         """Delete all local copies of photo where confidence is below photo."""
         photos = await PhotosAdapter().get_all_photos(token, event_id, False)
         i = 0
@@ -72,27 +75,25 @@ class FotoService:
                             token, event["id"]
                         )
                         photo = await PhotosAdapter().get_photo(token, photo_id)
-                        photo['biblist'] = []
-                        photo['clublist'] = []
+                        photo["biblist"] = []
+                        photo["clublist"] = []
 
                         # try to identify race information
                         message = {
                             "ai_crop_numbers": json.loads(new_biblist),
-                            "ai_numbers": []
+                            "ai_numbers": [],
                         }
                         result = await link_ai_info_to_photo(
-                            token,
-                            photo,
-                            message,
-                            event,
-                            raceclasses
+                            token, photo, message, event, raceclasses
                         )
 
                         result = await PhotosAdapter().update_photo(
                             token, photo["id"], photo
                         )
                         icount += 1
-                        logging.debug(f"Updated photo with id {photo_id} for event {event['name']} - {result}")
+                        logging.debug(
+                            f"Updated photo with id {photo_id} for event {event['name']} - {result}"
+                        )
                 except Exception as e:
                     logging.error(f"Error reading biblist - {form[key]}: {e}")
                     informasjon += "En Feil oppstod. "
@@ -111,7 +112,9 @@ class FotoService:
                         token, photo["id"], photo
                     )
                     icount += 1
-                    logging.debug(f"Updated photo with id {photo_id} for event {event['name']} - {result}")
+                    logging.debug(
+                        f"Updated photo with id {photo_id} for event {event['name']} - {result}"
+                    )
         informasjon = f"Utført {icount} oppdateringer."
         return informasjon
 
@@ -153,20 +156,25 @@ class FotoService:
                     if photo:
                         # update existing photo
                         photo["name"] = os.path.basename(message["photo_url"])
-                        photo["g_product_url"] = ""
+                        photo["g_crop_url"] = ""
                         photo["g_base_url"] = message["photo_url"]
-                        if message["photo_info"]["passeringspunkt"] in ["Finish", "Mål"]:
+                        if message["photo_info"]["passeringspunkt"] in [
+                            "Finish",
+                            "Mål",
+                        ]:
                             photo["is_photo_finish"] = True
                         if message["photo_info"]["passeringspunkt"] == "Start":
                             photo["is_start_registration"] = True
                         result = await PhotosAdapter().update_photo(
                             user["token"], photo["id"], photo
                         )
-                        logging.debug(f"Updated photo with id {photo['id']}, result {result}")
+                        logging.debug(
+                            f"Updated photo with id {photo['id']}, result {result}"
+                        )
                         i_u += 1
                     else:
                         # create new photo
-                        request_body = {
+                        photo_info = {
                             "confidence": 0,
                             "name": os.path.basename(message["photo_url"]),
                             "is_photo_finish": False,
@@ -175,54 +183,55 @@ class FotoService:
                             "event_id": event["id"],
                             "creation_time": format_time(creation_time, False),
                             "ai_information": message["ai_information"],
-                            "information": message['photo_info'],
+                            "information": message["photo_info"],
                             "race_id": "",
                             "raceclass": "",
                             "biblist": [],
                             "clublist": [],
-                            "g_id": "",
-                            "g_product_url": message["crop_url"],
+                            "g_crop_url": message["crop_url"],
                             "g_base_url": message["photo_url"],
                         }
                         # new photo - try to link with event activities
-                        if message["photo_info"]["passeringspunkt"] in ["Finish", "Mål"]:
-                            request_body["is_photo_finish"] = True
+                        if message["photo_info"]["passeringspunkt"] in [
+                            "Finish",
+                            "Mål",
+                        ]:
+                            photo_info["is_photo_finish"] = True
                         if message["photo_info"]["passeringspunkt"] == "Start":
-                            request_body["is_start_registration"] = True
+                            photo_info["is_start_registration"] = True
                         if message["ai_information"]:
                             result = await link_ai_info_to_photo(
                                 user["token"],
-                                request_body,
+                                photo_info,
                                 message["ai_information"],
                                 event,
-                                raceclasses
+                                raceclasses,
                             )
 
                         photo_id = await PhotosAdapter().create_photo(
-                            user["token"], request_body
+                            user["token"], photo_info
                         )
                         logging.debug(f"Created photo with id {photo_id} - {result}")
                         i_c += 1
                 else:
                     i_other += 1
-            informasjon = f"Synkronisert bilder fra PubSub. {i_u} oppdatert og {i_c} opprettet."
+            informasjon = (
+                f"Synkronisert bilder fra PubSub. {i_u} oppdatert og {i_c} opprettet."
+            )
             if i_other > 0:
                 informasjon += f" Forkastet {i_other} meldinger som ikke tilhører dette arrangementet."
         return informasjon
 
 
-async def link_ai_info_to_photo(token: str, request_body: dict, ai_information: dict, event: dict, raceclasses: list) -> int:
+async def link_ai_info_to_photo(
+    token: str, photo_info: dict, ai_information: dict, event: dict, raceclasses: list
+) -> int:
     """Link ai information to photo."""
     # first check for bib on cropped image
     result = 204
     for nummer in ai_information["ai_crop_numbers"]:
         result = await find_race_info_by_bib(
-            token,
-            nummer,
-            request_body,
-            event,
-            raceclasses,
-            100
+            token, nummer, photo_info, event, raceclasses, 100
         )
     # then check for bib on full image
     if result == 204:
@@ -230,19 +239,24 @@ async def link_ai_info_to_photo(token: str, request_body: dict, ai_information: 
             result = await find_race_info_by_bib(
                 token,
                 nummer,
-                request_body,
+                photo_info,
                 event,
                 raceclasses,
                 90,
             )
     # use time only if by bib was not successful
     if result == 204:
-        result = await find_race_info_by_time(token, request_body, event, 50)
+        result = await find_race_info_by_time(token, photo_info, event, 50)
     return result
 
 
 async def find_race_info_by_bib(
-    token: str, bib: int, photo: dict, event: dict, raceclasses: list, confidence: int
+    token: str,
+    bib: int,
+    photo_info: dict,
+    event: dict,
+    raceclasses: list,
+    confidence: int,
 ) -> int:
     """Analyse photo ai info and add race info to photo."""
     result = 204  # no content
@@ -255,16 +269,16 @@ async def find_race_info_by_bib(
             if foundheat == "":
                 foundheat = await verify_heat_time(
                     token,
-                    photo["creation_time"],
+                    photo_info["creation_time"],
                     raceduration,
                     start["race_id"],
                 )
                 if foundheat != "":
-                    photo["race_id"] = foundheat
+                    photo_info["race_id"] = foundheat
                     result = 200  # OK, found a heat
 
                     # Get klubb and klasse
-                    if bib not in photo["biblist"]:
+                    if bib not in photo_info["biblist"]:
                         try:
                             contestant = (
                                 await ContestantsAdapter().get_contestant_by_bib(
@@ -272,11 +286,15 @@ async def find_race_info_by_bib(
                                 )
                             )
                             if contestant:
-                                photo["biblist"].append(bib)
-                                if contestant["club"] not in photo["clublist"]:
-                                    photo["clublist"].append(contestant["club"])
-                                photo["raceclass"] = find_raceclass(contestant["ageclass"], raceclasses)
-                                photo["confidence"] = confidence  # identified by bib - high confidence!
+                                photo_info["biblist"].append(bib)
+                                if contestant["club"] not in photo_info["clublist"]:
+                                    photo_info["clublist"].append(contestant["club"])
+                                photo_info["raceclass"] = find_raceclass(
+                                    contestant["ageclass"], raceclasses
+                                )
+                                photo_info["confidence"] = (
+                                    confidence  # identified by bib - high confidence!
+                                )
                         except Exception as e:
                             logging.debug(f"Missing attribute - {e}")
                             result = 206  # Partial content
@@ -284,14 +302,12 @@ async def find_race_info_by_bib(
 
 
 async def find_race_info_by_time(
-    token: str, photo: dict, event: dict, confidence: int
+    token: str, photo_info: dict, event: dict, confidence: int
 ) -> int:
     """Analyse photo time and identify race with best time-match."""
     result = 204  # no content
     raceduration = int(os.getenv("RACE_DURATION_ESTIMATE", "300"))
-    all_races = await RaceplansAdapter().get_all_races(
-        token, event["id"]
-    )
+    all_races = await RaceplansAdapter().get_all_races(token, event["id"])
     best_fit_race = {
         "race_id": "",
         "seconds_diff": 10000,
@@ -299,7 +315,10 @@ async def find_race_info_by_time(
     }
 
     for race in all_races:
-        seconds_diff = abs(get_seconds_diff(photo["creation_time"], race["start_time"]) - raceduration)
+        seconds_diff = abs(
+            get_seconds_diff(photo_info["creation_time"], race["start_time"])
+            - raceduration
+        )
 
         if seconds_diff < best_fit_race["seconds_diff"]:  # type: ignore
             best_fit_race["seconds_diff"] = seconds_diff
@@ -307,10 +326,10 @@ async def find_race_info_by_time(
             best_fit_race["raceclass"] = race["raceclass"]
 
     if best_fit_race["seconds_diff"] < 10000:  # type: ignore
-        photo["race_id"] = best_fit_race["race_id"]
-        photo["raceclass"] = best_fit_race["raceclass"]
+        photo_info["race_id"] = best_fit_race["race_id"]
+        photo_info["raceclass"] = best_fit_race["raceclass"]
         result = 200  # OK, found a heat
-        photo["confidence"] = confidence  # identified by time - medium confidence!
+        photo_info["confidence"] = confidence  # identified by time - medium confidence!
     return result
 
 
@@ -331,9 +350,7 @@ def format_time(timez: str, zulu: bool) -> str:
     time_zone_offset_g_photos = EventsAdapter().get_global_setting(
         "TIME_ZONE_OFFSET_G_PHOTOS"
     )
-    date_patterns = EventsAdapter().get_global_setting(
-        "DATE_PATTERNS"
-    )
+    date_patterns = EventsAdapter().get_global_setting("DATE_PATTERNS")
     date_pattern_list = date_patterns.split(";")
     for pattern in date_pattern_list:
         try:
@@ -359,9 +376,7 @@ def get_seconds_diff(time1: str, time2: str) -> int:
     t1 = datetime.datetime.strptime("1", "%S")  # nitialize time to zero
     t2 = datetime.datetime.strptime("1", "%S")
 
-    date_patterns = EventsAdapter().get_global_setting(
-        "DATE_PATTERNS"
-    )
+    date_patterns = EventsAdapter().get_global_setting("DATE_PATTERNS")
     date_pattern_list = date_patterns.split(";")
     for pattern in date_pattern_list:
         try:

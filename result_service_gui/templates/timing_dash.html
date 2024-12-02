@@ -81,99 +81,8 @@
 </table>
 <div class="w3-row-padding">
   <div class="w3-half">
-    <table>
-      <tr id=headerblue>
-        <td colspan=6 align="center"><b>Fremdrift i rennet</b></td>
-      </tr>
-      <tr id="subheader">
-        <td>Klasse</td>
-        <td>Starttid</td>
-        <td>Antall</td>
-        <td align="center">Kvartfinaler</td>
-        <td align="center">Semifinaler</td>
-        <td align="center">Finaler</td>
-      </tr>
-    {% for raceclass in raceplan_kpis %}
-        <tr>
-        <td align="center">
-            <span class=tooltip_race id=kpi{{ raceclass.progress }}>
-                <a href="live?event_id={{ event_id }}&klasse={{ raceclass.name }}"><b>{{ raceclass.name }}</b></a>
-            </span>
-        </td>
-        <td align="center">{{ raceclass.timeQ }}</td>
-        <td align="center">{{ raceclass.no_of_contestants }}</td>
-        <td>
-            {% for race in raceclass.races_q %}
-            <span class=tooltip_race id=kpi{{ race.progress }}>
-                {% if race.progress == 6 %}
-                <a href="control?event_id={{ event_id }}&valgt_klasse={{ raceclass.name }}&action=c&heat={{ raceclass.name }}-{{ race.name }}&informasjon=Korrigering">{{ race.name }}</a>
-                {% else %}
-                <a href="resultat_edit?event_id={{ event_id }}&heat={{ race.order }}">{{ race.name }}</a>
-                {% endif %}
-                <span class="tooltiptext_race">
-                Kl: {{ race.start_time }}
-                Starter: {{ race.count_starts}}<br>
-                DNS: {{ race.count_dns}}<br>
-                DNF: {{ race.count_dnf}}<br>
-                Målpassering: {{ race.count_results}}<br>
-                </span>
-            </span>
-            {% endfor %}
-        </td>
-        <td>
-            {% for race in raceclass.races_s %}
-            <span class=tooltip_race id=kpi{{ race.progress }}>
-                {% if race.progress == 6 %}
-                <a href="control?event_id={{ event_id }}&valgt_klasse={{ raceclass.name }}&action=c&heat={{ raceclass.name }}-{{ race.name }}&informasjon=Korrigering">{{ race.name }}</a>
-                {% else %}
-                <a href="resultat_edit?event_id={{ event_id }}&heat={{ race.order }}">{{ race.name }}</a>
-                {% endif %}
-                <span class="tooltiptext_race">
-                Kl: {{ race.start_time }}
-                Starter: {{ race.count_starts}}<br>
-                DNS: {{ race.count_dns}}<br>
-                DNF: {{ race.count_dnf}}<br>
-                Målpassering: {{ race.count_results}}<br>
-                </span>
-            </span>
-            {% endfor %}
-        </td>
-        <td>
-            {% for race in raceclass.races_f %}
-            <span class=tooltip_race id=kpi{{ race.progress }}>
-                {% if race.progress == 6 %}
-                <a href="control?event_id={{ event_id }}&valgt_klasse={{ raceclass.name }}&action=c&heat={{ raceclass.name }}-{{ race.name }}&informasjon=Korrigering">{{ race.name }}</a>
-                {% else %}
-                <a href="resultat_edit?event_id={{ event_id }}&heat={{ race.order }}">{{ race.name }}</a>
-                {% endif %}
-                <span class="tooltiptext_race">
-                Kl: {{ race.start_time }}
-                Starter: {{ race.count_starts}}<br>
-                DNS: {{ race.count_dns}}<br>
-                DNF: {{ race.count_dnf}}<br>
-                Målpassering: {{ race.count_results}}<br>
-                </span>
-            </span>
-            {% endfor %}
-        </td>
-        </tr>
-      {% endfor %}
-      <tr>
-        <td colspan=6 id="spacer"></td>
-      </tr>
-      <tr>
-        <td colspan=6 id="spacer"></td>
-      </tr>
-      <tr>
-        <td colspan=6>Fargekoder: 
-          <span id=kpi1>Ikke startet</span>
-          <span id=kpi2>Ikke startet - med DNS</span>
-          <span id=kpi3>Startet</span>
-          <span id=kpi4>Resultater - ikke komplett</span>
-          <span id=kpi5>Alle i mål</span>
-          <span id=kpi6>Noe er feil</span>
-        </td>
-      </tr>
+    {% include "_race_progress.html" %}
+    <table cellpadding=4>
       <tr>
         <td colspan=6 id="orange" valign="top">
           &nbsp;&nbsp;&nbsp;<span id="pull_result"></span>
@@ -228,9 +137,6 @@
         <td colspan=3>Redigere i starlister - optimalsere: likt antall løpere i heat, fylle opp C-finaler osv.</td>
       </tr>
       <tr>
-        <td id=table_border colspan=5 id=spacer></td>
-      </tr>
-      <tr>
         <td class=visible_link><a class=visible_link id="mySeeTime" onclick="event_gui_href('mySeeTime', 'raceplans?event_id={{ event_id }}&action=edit_time')" href=>Rediger i tidskjema</a></td>
         <td align="center">
           <a href="" target="_blank">
@@ -238,9 +144,6 @@
           </a>
         </td>
         <td colspan=3>Utsette (eller forsere) kjøreplanen</td>
-      </tr>
-      <tr>
-        <td id=table_border colspan=5 id=spacer></td>
       </tr>
       <tr>
         <td width=200>
@@ -261,6 +164,15 @@
           </a>
         </td>
         <td colspan=3>Til bruk dersom det har vært endringer i resultater etter at finaleheat er registrert.</td>
+      </tr>
+      <tr>
+        <td class=visible_link><a class=visible_link id="myErrReg" onclick="result_gui_href('myErrReg', 'control?event_id={{ event_id }}&action=control')" href=>Feilregistreringer (avansert)</a></td>
+        <td align="center">
+          <a href="https://youtube.com/clip/UgkxWb6CMvN4Ib-lIGDIO8V8EGFtBrrEBlFj?si=nUyVfV7SZ-asyWgN" target="_blank">
+            <img src="../static/video.png" title="Video - feilregistreringer" width="20" height="20">
+          </a>
+        </td>
+        <td colspan=3>Mulighet for manuelt å søke opp og slette registrete passeringer.</td>
       </tr>
       <tr>
         <td colspan=5 id=spacer>&nbsp;</td>

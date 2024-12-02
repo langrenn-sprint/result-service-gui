@@ -1,4 +1,5 @@
 """Resource module for verificatoin of timing registration."""
+
 import logging
 
 from aiohttp import web
@@ -69,7 +70,7 @@ class StartEdit(web.View):
             if valgt_runde:
                 filtered_races = []
                 for race in next_races:
-                    if race['round'] == valgt_runde:
+                    if race["round"] == valgt_runde:
                         filtered_races.append(race)
                 next_races = filtered_races
 
@@ -124,7 +125,9 @@ class StartEdit(web.View):
                 return web.HTTPSeeOther(
                     location=f"/login?informasjon=Ingen tilgang, vennligst logg inn på nytt. {e}"
                 )
-        info = f"{informasjon}&klasse={valgt_klasse}&runde={valgt_runde}&action={action}"
+        info = (
+            f"{informasjon}&klasse={valgt_klasse}&runde={valgt_runde}&action={action}"
+        )
         return web.HTTPSeeOther(
             location=f"/start_edit?event_id={event_id}&informasjon={info}"
         )

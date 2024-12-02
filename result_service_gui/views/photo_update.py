@@ -1,4 +1,5 @@
 """Resource module for photo update through ajax."""
+
 import logging
 
 from aiohttp import web
@@ -17,18 +18,14 @@ class PhotoUpdate(web.View):
         result = "200"
         try:
             form = await self.request.post()
-            action = form['action']
+            action = form["action"]
             user = await check_login(self)
-            photo_id = str(form['photo_id'])
+            photo_id = str(form["photo_id"])
             if action == "star_on":
-                res = await FotoService().star_photo(
-                    user["token"], photo_id, True
-                )
+                res = await FotoService().star_photo(user["token"], photo_id, True)
                 logging.debug(f"Starred photo - {res}")
             elif action == "star_off":
-                res = await FotoService().star_photo(
-                    user["token"], photo_id, False
-                )
+                res = await FotoService().star_photo(user["token"], photo_id, False)
                 logging.debug(f"Un-Starred photo - {res}")
         except Exception as e:
             result = f"Det har oppstått en feil: {e}"

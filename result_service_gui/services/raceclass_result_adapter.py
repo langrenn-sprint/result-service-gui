@@ -1,4 +1,5 @@
 """Module for raceclass results adapter."""
+
 import logging
 import os
 import random
@@ -60,7 +61,7 @@ class RaceclassResultsAdapter:
         headers = {
             hdrs.AUTHORIZATION: f"Bearer {token}",
         }
-        raceclass_url = urllib.parse.quote(raceclass, safe='')
+        raceclass_url = urllib.parse.quote(raceclass, safe="")
 
         async with ClientSession() as session:
             async with session.delete(
@@ -90,7 +91,7 @@ class RaceclassResultsAdapter:
         )
         servicename = "get_raceclass_result"
         raceclass_result = {}
-        raceclass_url = urllib.parse.quote(raceclass, safe='')
+        raceclass_url = urllib.parse.quote(raceclass, safe="")
         async with ClientSession() as session:
             async with session.get(
                 f"{EVENT_SERVICE_URL}/events/{event_id}/results/{raceclass_url}",
@@ -107,12 +108,14 @@ class RaceclassResultsAdapter:
                     )
         return raceclass_result
 
-    async def get_raceclass_result_shuffeled(self, event_id: str, raceclass: str) -> dict:
+    async def get_raceclass_result_shuffeled(
+        self, event_id: str, raceclass: str
+    ) -> dict:
         """Get all raceclass result function. Shuffeled, except the n first."""
         raceclass_result = await self.get_raceclass_result(event_id, raceclass)
         if raceclass_result:
             # Shuffle the ranking_sequence_array
-            random.shuffle(raceclass_result['ranking_sequence'])
+            random.shuffle(raceclass_result["ranking_sequence"])
         return raceclass_result
 
     async def get_all_raceclass_results(self, event_id: str) -> List:

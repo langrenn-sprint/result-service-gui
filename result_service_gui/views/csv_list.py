@@ -1,4 +1,5 @@
 """Resource module for csv export."""
+
 import csv
 import io
 
@@ -45,7 +46,7 @@ class CsvList(web.View):
                 event_id, valgt_klasse
             )
             if results:
-                csvdata = results['ranking_sequence']
+                csvdata = results["ranking_sequence"]
             fields = get_fields_results()
 
         # convert to csv format
