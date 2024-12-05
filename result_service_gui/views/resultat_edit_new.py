@@ -156,30 +156,28 @@ class ResultatEditNew(web.View):
             race_id = str(form["race_id"])
 
             if "create_start" in form.keys():
-                informasjon += "<br>" + await create_start(user, form)  # type: ignore
+                informasjon = await create_start(user, form)  # type: ignore
             elif "update_result" in form.keys():
                 if "photo_finish_button" in form.keys():
-                    informasjon += (
-                        "<br>Fra foto: "
+                    informasjon = (
+                        "Fra foto: "
                         + await PhotoTimingService().create_time_events_from_photos(
                             user, race_id
                         )
                     )
                 else:
-                    informasjon += "<br>Registrert: " + await update_result(user, event, form)  # type: ignore
+                    informasjon = "Registrert: " + await update_result(user, event, form)  # type: ignore
                 # set results to official
                 if "publish" in form.keys():
                     if form["publish"] != "false":
                         res = await ResultAdapter().update_result_status(user["token"], race_id, 2)  # type: ignore
-                        informasjon = f"Resultat er publisert ({res}). " + informasjon
+                        if res == "204":
+                            informasjon += f"Resultat er publisert ({res})."
                         if "raceclass_results" in form.keys():
                             res = await RaceclassResultsService().create_raceclass_results(
                                 user["token"], event, valgt_runde.klasse
                             )  # type: ignore
-                            informasjon = (
-                                f" Klassens resultat er publisert ({res}). "
-                                + informasjon
-                            )
+                            informasjon += f" Klassens resultat er publisert ({res}). "
 
             # check for update without reload - return latest race results
             if "ajax" in form.keys():
@@ -197,7 +195,6 @@ class ResultatEditNew(web.View):
                         "race_results_status": 0,
                         "informasjon": informasjon,
                     }
-                response["informasjon"] = response["informasjon"].replace("<br>", " ")
                 json_response = json.dumps(response)
                 return web.Response(body=json_response)
 
@@ -335,6 +332,8 @@ async def update_result(user: dict, event: dict, form: dict) -> str:
                     ],
                 }
                 add_result_list.append(new_entry)
-
-    informasjon = await TimeEventsService().update_finish_time_events(user, delete_result_list, add_result_list)  # type: ignore
+    if len(delete_result_list) > 0 or len(add_result_list) > 0:
+        informasjon = await TimeEventsService().update_finish_time_events(user, delete_result_list, add_result_list)  # type: ignore
+    else:
+        informasjon = "Ingen oppdateringer"
     return informasjon

@@ -36,7 +36,7 @@ class Timing(web.View):
         try:
             action = self.request.rel_url.query["action"]
         except Exception:
-            action = ""
+            action = "start"
             informasjon = f"Velg funksjon i menyen. {informasjon}"
         try:
             valgt_heat = int(self.request.rel_url.query["heat"])

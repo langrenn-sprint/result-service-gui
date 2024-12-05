@@ -319,5 +319,8 @@ async def update_result(user: dict, event: dict, form: dict) -> str:
                 }
                 add_result_list.append(new_entry)
 
-    informasjon = await TimeEventsService().update_finish_time_events(user, delete_result_list, add_result_list)  # type: ignore
+    if len(delete_result_list) > 0 or len(add_result_list) > 0:
+        informasjon = await TimeEventsService().update_finish_time_events(user, delete_result_list, add_result_list)  # type: ignore
+    else:
+        informasjon = "Ingen oppdateringer"
     return informasjon

@@ -78,8 +78,11 @@ class ResultAdapter:
     ) -> str:
         """Update race result status function."""
         race_results = await ResultAdapter().get_race_results(token, race_id, True)
-        race_results["status"] = new_status
-        res = await ResultAdapter().update_race_results(token, race_id, race_results)
-        logging.debug(f"Raceplan update result status: {res}. {race_results}")
-
+        if race_results:
+            race_results["status"] = new_status
+            res = await ResultAdapter().update_race_results(
+                token, race_id, race_results
+            )
+        else:
+            return "403"  # cannot update status when there are no results
         return res
