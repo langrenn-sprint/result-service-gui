@@ -92,9 +92,16 @@ async def create_event(user: dict, form: dict, action: str) -> str:
                     informasjon += " Slettet DNS registrering. "
 
     else:
-        await TimeEventsAdapter().delete_time_event(
-            user["token"], form["time_event_id"]
-        )
+        time_event_id = form["time_event_id"]
+        if not time_event_id:
+            time_events = await TimeEventsAdapter().get_time_events_by_event_id_and_bib(
+                user["token"], event_id, int(form["bib"])
+            )
+            for time_event in time_events:
+                if time_event["race_id"] == form["race_id"]:
+                    time_event_id = time_event["id"]
+                    break
+        await TimeEventsAdapter().delete_time_event(user["token"], time_event_id)
         informasjon = f" Nr {form['bib']} - {action} slettet. "
 
     # delete old entry if existing
