@@ -109,13 +109,16 @@ class RaceclassResultsAdapter:
         return raceclass_result
 
     async def get_raceclass_result_shuffeled(
-        self, event_id: str, raceclass: str
+        self, event_id: str, raceclass: str, i_keep: int
     ) -> dict:
         """Get all raceclass result function. Shuffeled, except the n first."""
         raceclass_result = await self.get_raceclass_result(event_id, raceclass)
-        if raceclass_result:
-            # Shuffle the ranking_sequence_array
-            random.shuffle(raceclass_result["ranking_sequence"])
+        if raceclass_result and raceclass_result.get(
+            "ranking_sequence"
+        ):  # Check if ranking_sequence exists
+            raceclass_result["ranking_sequence"] = shuffle_list_keep_first(
+                raceclass_result["ranking_sequence"], i_keep
+            )
         return raceclass_result
 
     async def get_all_raceclass_results(self, event_id: str) -> List:
@@ -141,3 +144,14 @@ class RaceclassResultsAdapter:
                         reason=f"Error - {resp.status}: {body['detail']}."
                     )
         return raceclass_results
+
+
+def shuffle_list_keep_first(my_list: list, n: int) -> list:
+    """Shuffles a list, keeping the first n elements fixed."""
+    if len(my_list) <= n:  # Nothing to shuffle if list is shorter than n
+        return my_list
+
+    head = my_list[:n]
+    tail = my_list[n:]
+    random.shuffle(tail)  # Shuffle only the tail portion
+    return head + tail

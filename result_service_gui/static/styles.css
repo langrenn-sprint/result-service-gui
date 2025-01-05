@@ -274,13 +274,13 @@ vertical-align: bottom;
 }
 
 /**** Colors and tooltip for race dashboard - KPIs ****/
-#kpi1 {background-color: rgba(200, 200, 200, 0.7); padding: 4px;}  /* 1 not started */
-#kpi2 {background-image: linear-gradient(to right, rgba(200, 200, 200, 0.7), white, rgba(255, 255, 0, 0.7)); padding: 4px;}  /* 2 not started - with DNS */
-#kpi3 {background-color: rgba(255, 255, 0, 0.7); padding: 4px;}  /* 3 started - no results */
-#kpi4 {background-image: linear-gradient(to right, rgba(255, 255, 0, 0.7), white, rgba(0, 255, 0, 0.7)); padding: 4px;}  /* 4 partial results - with DNF */
-#kpix {background-color: rgba(155, 255, 0, 0.7); padding: 4px;}
-#kpi5 {background-color: rgba(0, 255, 0, 0.7); padding: 4px;}  /* 5 all results ok */
-#kpi6 {background-color: rgba(255, 0, 0, 0.7); padding: 4px;}  /* 6 other error */
+.kpi1 {background-color: rgba(200, 200, 200, 0.7); padding: 4px;}  /* 1 not started */
+.kpi2 {background-image: linear-gradient(to right, rgba(200, 200, 200, 0.7), white, rgba(255, 255, 0, 0.7)); padding: 4px;}  /* 2 not started - with DNS */
+.kpi3 {background-color: rgba(255, 255, 0, 0.7); padding: 4px;}  /* 3 started - no results */
+.kpi4 {background-image: linear-gradient(to right, rgba(255, 255, 0, 0.7), white, rgba(0, 255, 0, 0.7)); padding: 4px;}  /* 4 partial results - with DNF */
+.kpi5 {background-color: rgba(0, 255, 0, 0.7); padding: 4px;}  /* 5 all results ok */
+.kpi6 {background-color: rgba(255, 0, 0, 0.7); padding: 4px;}  /* 6 other error */
+.kpix {background-color: rgba(155, 255, 0, 0.7); padding: 4px;}
 
 .tooltip_race {
   position: relative;

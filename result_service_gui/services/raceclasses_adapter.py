@@ -132,10 +132,18 @@ class RaceclassesAdapter:
                     )
         return raceclass
 
+    async def get_raceclass_by_name(self, token: str, event_id: str, name: str) -> dict:
+        """Get raceclass by name function TODO - should be optimized!"""
+        raceclasses = await self.get_raceclasses(token, event_id)
+        for raceclass in raceclasses:
+            if raceclass["name"] == name:
+                return raceclass
+        return {}
+
     async def get_raceclass_by_ageclass(
         self, token: str, event_id: str, ageclass: str
     ) -> dict:
-        """Get all raceclass function."""
+        """Get raceclass by ageclass function."""
         headers = MultiDict(
             [
                 (hdrs.CONTENT_TYPE, "application/json"),

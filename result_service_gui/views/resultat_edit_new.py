@@ -108,6 +108,7 @@ class ResultatEditNew(web.View):
                 race["photo_bib_rank"] = get_finish_rank_from_photos(
                     user, race["photo_finish"], "right"
                 )
+                # get kpis, the race progress status
                 for raceclass in raceclasses:
                     if raceclass["name"] == valgt_runde.klasse:
                         raceplan_kpis = await get_race_kpis(
@@ -182,19 +183,26 @@ class ResultatEditNew(web.View):
             # check for update without reload - return latest race results
             if "ajax" in form.keys():
                 race = await RaceplansAdapter().get_race_by_id(user["token"], race_id)
-                response = {}
+                # get latest race status
+                raceclass = await RaceclassesAdapter().get_raceclass_by_name(
+                    user["token"], event_id, race["raceclass"]
+                )
+                raceplan_kpis = await get_race_kpis(
+                    user["token"], event, [raceclass], race["round"]
+                )
+                response = {
+                    "race_results": [],
+                    "race_results_status": 0,
+                    "raceplan_kpis": raceplan_kpis,
+                    "informasjon": informasjon,
+                }
                 if race["results"]:
-                    response = {
-                        "race_results": race["results"]["Finish"]["ranking_sequence"],
-                        "race_results_status": race["results"]["Finish"]["status"],
-                        "informasjon": informasjon,
-                    }
-                else:
-                    response = {
-                        "race_results": [],
-                        "race_results_status": 0,
-                        "informasjon": informasjon,
-                    }
+                    response["race_results"] = race["results"]["Finish"][
+                        "ranking_sequence"
+                    ]
+                    response["race_results_status"] = race["results"]["Finish"][
+                        "status"
+                    ]
                 json_response = json.dumps(response)
                 return web.Response(body=json_response)
 
