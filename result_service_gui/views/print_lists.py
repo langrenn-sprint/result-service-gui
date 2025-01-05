@@ -31,6 +31,14 @@ class PrintLists(web.View):
         except Exception:
             action = ""
 
+        show_graphics = True
+        try:
+            _show = self.request.rel_url.query["show_graphics"]
+            if _show in ["False", "false"]:
+                show_graphics = False
+        except Exception as e:
+            logging.debug(f"Missing param ignored: {e}")
+
         try:
             user = await check_login_open(self)
             event_id = self.request.rel_url.query["event_id"]
@@ -76,28 +84,23 @@ class PrintLists(web.View):
                 raceplan_summary = get_raceplan_summary(_tmp_races, raceclasses)
             elif action in ["result", "result_shuffled"]:
                 html_template = "print_results.html"
+                i_keep_first = 0
                 try:
-                    if valgt_klasse:
-                        if action == "result_shuffled":
-                            resultlist = await RaceclassResultsAdapter().get_raceclass_result_shuffeled(
-                                event_id, valgt_klasse
-                            )
-                        else:
-                            resultlist = (
-                                await RaceclassResultsAdapter().get_raceclass_result(
-                                    event_id, valgt_klasse
-                                )
-                            )
-                        resultlists.append(resultlist)
-                    else:
-                        resultlists = (
-                            await RaceclassResultsAdapter().get_all_raceclass_results(
-                                event_id
-                            )
-                        )
+                    i_keep_first = int(self.request.rel_url.query["keep_first"])
+                except Exception as e:
+                    logging.debug(f"Missing param ignored: {e}")
+                try:
+                    resultlists = await get_resultlists(
+                        user,
+                        event_id,
+                        action,
+                        valgt_klasse,
+                        i_keep_first,
+                    )
                 except Exception as e:
                     logging.error(f"Functional error: {e}")
                     informasjon = "Ingen resultatlister funnet."
+
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
                 html_template,
@@ -113,12 +116,39 @@ class PrintLists(web.View):
                     "raceplan_summary": raceplan_summary,
                     "races": races,
                     "resultlists": resultlists,
+                    "show_graphics": show_graphics,
                     "username": user["name"],
                 },
             )
         except Exception as e:
             logging.error(f"Error: {e}. Redirect to main page.")
             return web.HTTPSeeOther(location=f"/?informasjon={e}")
+
+
+async def get_resultlists(
+    user: dict,
+    event_id: str,
+    action: str,
+    valgt_klasse: str,
+    i_keep_first: int,
+) -> list:
+    """Get resultlists to display."""
+    resultlists = []
+    if valgt_klasse:
+        if action == "result_shuffled":
+            resultlist = await RaceclassResultsAdapter().get_raceclass_result_shuffeled(
+                event_id, valgt_klasse, i_keep_first
+            )
+        else:
+            resultlist = await RaceclassResultsAdapter().get_raceclass_result(
+                event_id, valgt_klasse
+            )
+        resultlists.append(resultlist)
+    else:
+        resultlists = await RaceclassResultsAdapter().get_all_raceclass_results(
+            event_id
+        )
+    return resultlists
 
 
 async def get_races(

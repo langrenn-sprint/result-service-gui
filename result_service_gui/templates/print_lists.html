@@ -56,7 +56,6 @@
   {% endif %}
 </div>
 <div align=right>{{ event.name }}, {{ event.date_of_event }}</div>
-<div class="w3-container" id=info>{{ informasjon }}</div>
 <table>
     {% for race in races %}
       {% if race.first_in_class %}
@@ -111,7 +110,7 @@
                 <td align="center"><div id={{ loper.bib }}></div>{{ loper.bib }}</td>
                 <td>{{ loper.name }}</td>
                 <td>
-                  {% if loper.club_logo %}<img width=12 src={{ loper.club_logo }} title="{{ loper.club }}" style="vertical-align: middle;"> {% endif %}
+                  {% if loper.club_logo and (show_graphics) %}<img width=12 src={{ loper.club_logo }} title="{{ loper.club }}" style="vertical-align: middle;"> {% endif %}
                   {% if loper.club %}{{ loper.club[:25] }}{% endif %}
                   {% if loper.team %} / {{ loper.team }}{% endif %}
                 </td>
@@ -140,7 +139,8 @@
             <td align="center">{{ loper.rank }}{% if loper.status != "OK" %} {{ loper.status }}{% endif %}</td>
             <td align="center">{{ loper.bib }}</td>
             <td>{{ loper.name }}</td>
-            <td>{% if loper.club_logo %}<img width=15 src={{ loper.club_logo }} title="{{ loper.club }}" style="vertical-align: middle;"> {% endif %}{{ loper.club }}{% if loper.team %} / {{ loper.team }}{% endif %}</td>
+            <td>
+              {% if loper.club_logo and (show_graphics) %}<img width=15 src={{ loper.club_logo }} title="{{ loper.club }}" style="vertical-align: middle;"> {% endif %}{{ loper.club }}{% if loper.team %} / {{ loper.team }}{% endif %}</td>
             <td>
               {% if race.round != "F" %} {{ loper.next_race }}{% endif %}
             </td>
