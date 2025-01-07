@@ -69,19 +69,19 @@
             <td width=200>
                 <table>
                     <tr id=headerblue>
-                        <td colspan=5>Live resultater (heat)</td>
+                        <td colspan=5>Heat resultater</td>
                     </tr>
                     <tr>
-                    <td colspan="5"><a target=_new href=print_lists?event_id={{ event_id }}&action=live>Alle klasser</a>&nbsp;(<a target=_new href=print_lists?event_id={{ event_id }}&action=live&show_graphics=False>tekst</a>)</td>
+                    <td colspan="5">&nbsp;</td>
                     </tr>
                     {% for raceclass in raceclasses %}
                     <tr>
                         {% if event.competition_format != "Interval Start" %}
                         <td id="black">{{ raceclass.name }}</td>
-                        <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=live>Alle</a>&nbsp;(<a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=live&show_graphics=False>tekst</a>)</nobr></td>
-                        <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=live&runde=Q>Kvart&nbsp;(<a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=live&runde=Q&show_graphics=False>tekst</a>)</a></nobr></td>
-                        <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=live&runde=S>Semi</a>&nbsp;(<a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=live&runde=S&show_graphics=False>tekst</a>)</nobr></td>
-                        <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=live&runde=F>Finale&nbsp;(<a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=live&runde=F&show_graphics=False>tekst</a>)</a></nobr></td>
+                        <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=round_resultstart>Alle</a>&nbsp;(<a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=round_resultstart&show_graphics=False>tekst</a>)</nobr></td>
+                        <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=round_resultstart&runde=Q>Kvart&nbsp;(<a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=round_resultstart&runde=Q&show_graphics=False>tekst</a>)</a></nobr></td>
+                        <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=round_resultstart&runde=S>Semi</a>&nbsp;(<a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=round_resultstart&runde=S&show_graphics=False>tekst</a>)</nobr></td>
+                        <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=round_resultstart&runde=F>Finale&nbsp;(<a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=round_resultstart&runde=F&show_graphics=False>tekst</a>)</a></nobr></td>
                         {% else %}
                         <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=live>{{ raceclass.name }}</a></nobr></td>
                         {% endif %}
