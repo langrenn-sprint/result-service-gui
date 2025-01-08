@@ -1,15 +1,17 @@
 """Resource module for single result update via ajax."""
 
+import json
 import logging
 
 from aiohttp import web
 
 from result_service_gui.services import (
     EventsAdapter,
+    RaceclassesAdapter,
     RaceclassResultsService,
     TimeEventsAdapter,
 )
-from .utils import check_login, get_event
+from .utils import check_login, get_event, get_race_kpis
 
 
 class ResultatUpdate(web.View):
@@ -17,26 +19,50 @@ class ResultatUpdate(web.View):
 
     async def post(self) -> web.Response:
         """Post route function that updates a collection of photos."""
-        result = ""
+        informasjon = ""
         try:
             form = await self.request.post()
             action = form["action"]
             user = await check_login(self)
             if action in ["DNF", "DNS", "Start"]:
-                result = await create_event(user, form, action)  # type: ignore
+                informasjon = await create_event(user, form, action)  # type: ignore
+                if "json" in form.keys():
+                    event_id = str(form["event_id"])
+                    event = await get_event(user, event_id)
+                    runde = str(form["runde"])
+                    raceclass_name = str(form["raceclass"])
+                    raceclass = await RaceclassesAdapter().get_raceclass_by_name(
+                        user["token"], event_id, raceclass_name
+                    )
+                    raceplan_kpis = await get_race_kpis(
+                        user["token"], event, [raceclass], runde
+                    )
+                    response = {
+                        "raceplan_kpis": raceplan_kpis,
+                        "informasjon": informasjon,
+                    }
+                    json_response = json.dumps(response)
+                    return web.Response(text=json_response)
             elif action == "generate_resultlist":
                 event_id = str(form["event_id"])
                 event = await get_event(user, event_id)
-                raceclass = str(form["raceclass"])
+                raceclass_name = str(form["raceclass"])
                 res = await RaceclassResultsService().create_raceclass_results(
-                    user["token"], event, raceclass
+                    user["token"], event, raceclass_name
                 )  # type: ignore
                 logging.debug(f"Resultat for {raceclass} er publisert. {res}")
-                result = f"Resultat for {raceclass} er publisert. "
+                informasjon = f"Resultat for {raceclass} er publisert. "
         except Exception as e:
-            result = f"Det har oppstått en feil: {e}"
+            informasjon = f"Det har oppstått en feil: {e}"
             logging.error(f"Result update - {e}")
-        return web.Response(text=result)
+        if "json" in form.keys():
+            response = {
+                "informasjon": informasjon,
+            }
+            json_response = json.dumps(response)
+            return web.Response(text=json_response)
+        else:
+            return web.Response(text=informasjon)
 
 
 async def create_event(user: dict, form: dict, action: str) -> str:

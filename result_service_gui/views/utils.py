@@ -357,7 +357,7 @@ async def get_races_for_round_result(
         if race["raceclass"] == valgt_klasse:
             race = await RaceplansAdapter().get_race_by_id(user["token"], race["id"])
             race["start_time"] = race["start_time"][-8:]
-            if race["round"] == valgt_runde:
+            if valgt_runde in ["", race["round"]]:
                 if action.count("result") > 0:
                     race["first_in_class"] = first_in_class
                     first_in_class = False

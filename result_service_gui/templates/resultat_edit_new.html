@@ -297,13 +297,16 @@
     }
 
     function dnf_toggle(bib, name, club, race_name, race_order, race_id, checked, time_event_id) {
-      console.log("DNS for bib: " + bib);
       var xhttp = new XMLHttpRequest();
       xhttp.open("POST", "/resultat_update", true);
       xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-      xhttp.send("bib=" + bib + "&name=" + name + "&club=" + club + "&event_id={{ event_id }}&race=" + race_name + "&race_id=" + race_id + "&action=DNF&checked=" + checked + "&time_event_id=" + time_event_id);
+      xhttp.send("json=true&bib=" + bib + "&name=" + name + "&club=" + club + "&event_id={{ event_id }}&raceclass={{ valgt_runde.klasse }}&runde={{ valgt_runde.runde }}" + "&race=" + race_name + "&race_id={{ race.id }}&action=DNF&checked=" + checked + "&time_event_id=" + time_event_id);
       xhttp.onload = function() {
-        document.getElementById(race_order + "_result").innerHTML = this.responseText;
+
+        // load new info
+        const jsonDoc = JSON.parse(this.response);
+
+        document.getElementById(race_order + "_result").innerHTML = jsonDoc.informasjon;
         if (checked) {
           document.getElementById(race_order + bib).style.backgroundColor = "Grey";
         }
@@ -311,6 +314,10 @@
           document.getElementById(race_order + bib).style.backgroundColor = "White";
           validation_colors(race_order)
         }
+
+        // refresh race status - function from include file
+        const raceplan_kpis = jsonDoc.raceplan_kpis;
+        update_race_progress(raceplan_kpis)
       }
     }
 
@@ -355,8 +362,8 @@
           <th width=50>Startnr</th>
           <th width=50>{% if valgt_runde.runde == "F" %}Delt{% endif %}</th>
           <th width=200>Navn</th>
-          <th width=75>Tid</th>
           <th width=75>{% if valgt_runde.runde != "F" %}Videre til{% endif %}</th>
+          <th width=75>Tidspunkt registrert</th>
           <th>Målfoto</th>
         </tr>
         <form action=/resultat_edit_new method=post onsubmit="return checkform(this);">
@@ -404,12 +411,12 @@
                     {% endif %}
                   </td>
                   <td id="{{ race.order }}_name_{{ loop.index }}">{{ race.finish_timings[loop.index0].name }}</td>
-                  <td id='tid_{{ loop.index }}'>{{ race.finish_timings[loop.index0].registration_time[-8:] }}</td>
                   <td id="{{ race.order }}_videre_til_{{ loop.index }}">
                     {% if valgt_runde.runde != "F" %}
                       {{ race.finish_timings[loop.index0].next_race }}-{{ race.finish_timings[loop.index0].next_race_position }}
                     {% endif %}
                   </td>
+                  <td id='tid_{{ loop.index }}'>{{ race.finish_timings[loop.index0].registration_time[-8:] }}</td>
                 {% else %}
                   <td id=resultborder align=center><span id="{{ race.order }}_place_{{ loop.index }}">{{ loop.index }}</span></td>
                   <td>
@@ -426,8 +433,8 @@
                     {% endif %}
                   </td>
                   <td id="{{ race.order }}_name_{{ loop.index }}"></td>
-                  <td id='tid_{{ loop.index }}'></td>
                   <td id="{{ race.order }}_videre_til_{{ loop.index }}"></td>
+                  <td id='tid_{{ loop.index }}'></td>
                 {% endif %}
 
                 {% if loop.first %}

@@ -160,7 +160,7 @@ async def get_races(
     raceclasses: list,
 ) -> list:
     """Get races to display - return sorted list."""
-    races = []
+    races = _tmp_races
     if action == "raceplan":
         for race in _tmp_races:
             if (race["raceclass"] == valgt_klasse) or ("" == valgt_klasse):
@@ -175,12 +175,12 @@ async def get_races(
     else:
         if valgt_runde:
             filtered_races = []
-            for race in races:
-                if race["round"] == valgt_runde:
+            for race in _tmp_races:
+                if valgt_runde in ["", race["round"]]:
                     filtered_races.append(race)
             races = filtered_races
         races = await get_races_for_print(
-            user, _tmp_races, raceclasses, valgt_klasse, action
+            user, races, raceclasses, valgt_klasse, action
         )
     return races
 
