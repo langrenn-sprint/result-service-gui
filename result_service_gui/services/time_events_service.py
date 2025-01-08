@@ -188,8 +188,9 @@ async def create_finish_time_event(
             if time_event["next_race"] != "Ute" and result_ok:
                 await StartAdapter().create_start_entry(token, next_start_entry)
         except Exception as e:
-            logging.error(f"Error in create_finish_time_event: {e}")
-            raise Exception(e) from e
+            # Functional error - return information to user.
+            logging.error(f"ERROR: {e}")
+            informasjon = f"ERROR: {e}. "
     return informasjon
 
 
