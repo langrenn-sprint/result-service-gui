@@ -7,8 +7,27 @@
                     try { 
                         let docid = "kpi_" + kpis[i].name + kpis[i].races_q[y].name
                         let new_class =  "kpi" + kpis[i].races_q[y].progress;
-                        // setting new class with corret bgcolor - in attr 1
-                        document.getElementById(docid).attributes[1].nodeValue = new_class;
+                        // setting new class with corret bgcolor
+                        document.getElementById(docid).className = new_class;
+                    }
+                    catch(err) {
+                    }
+                }
+                for (let y = 0; y < kpis[i].races_s.length; y++) {
+                    try { 
+                        let docid = "kpi_" + kpis[i].name + kpis[i].races_s[y].name
+                        let new_class =  "kpi" + kpis[i].races_s[y].progress;
+                        document.getElementById(docid).className = new_class;
+                    }
+                    catch(err) {
+                        alert(err)
+                    }
+                }
+                for (let y = 0; y < kpis[i].races_f.length; y++) {
+                    try { 
+                        let docid = "kpi_" + kpis[i].name + kpis[i].races_f[y].name
+                        let new_class =  "kpi" + kpis[i].races_f[y].progress;
+                        document.getElementById(docid).className = new_class;
                     }
                     catch(err) {
                     }
@@ -58,7 +77,7 @@
     </td>
     <td>
         {% for race in raceclass.races_s %}
-        <span id=kpi{{ race.name }} class=kpi{{ race.progress }}>
+        <span id=kpi_{{ raceclass.name }}{{ race.name }} class=kpi{{ race.progress }}>
             <span class=tooltip_race>
                 {% if race.progress == 6 %}
                 <a href="control?event_id={{ event_id }}&valgt_klasse={{ raceclass.name }}&action=c&heat={{ raceclass.name }}-{{ race.name }}&informasjon=Korrigering">{{ race.name }}</a>
@@ -78,7 +97,7 @@
     </td>
     <td>
         {% for race in raceclass.races_f %}
-        <span id=kpi{{ race.name }} class=kpi{{ race.progress }}>
+        <span id=kpi_{{ raceclass.name }}{{ race.name }} class=kpi{{ race.progress }}>
             <span class=tooltip_race>
                 {% if race.progress == 6 %}
                 <a href="control?event_id={{ event_id }}&valgt_klasse={{ raceclass.name }}&action=c&heat={{ raceclass.name }}-{{ race.name }}&informasjon=Korrigering">{{ race.name }}</a>
@@ -107,12 +126,12 @@
         </tr>
         <tr>
             <td colspan=6 align="center">Fargekoder: 
-                <span id=kpi1>Ikke startet</span>
-                <span id=kpi2>Ikke startet - med DNS</span>
-                <span id=kpi3>Startet</span>
-                <span id=kpi4>Resultater - ikke komplett</span>
-                <span id=kpi5>Alle i mål</span>
-                <span id=kpi6><a target="_blank" href=control?event_id={{ event_id }}&action=control>Noe er feil</a></span>
+                <span class=kpi1>Ikke startet</span>
+                <span class=kpi2>Ikke startet - med DNS</span>
+                <span class=kpi3>Startet</span>
+                <span class=kpi4>Resultater - ikke komplett</span>
+                <span class=kpi5>Alle i mål</span>
+                <span class=kpi6><a target="_blank" href=control?event_id={{ event_id }}&action=control>Noe er feil</a></span>
             </td>
         </tr>
     {% endif %}

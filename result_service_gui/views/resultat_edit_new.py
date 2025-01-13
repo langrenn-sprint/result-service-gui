@@ -118,6 +118,8 @@ class ResultatEditNew(web.View):
 
             if not race:
                 informasjon = f"{informasjon} Ingen heat i denne runden."
+            else:
+                race_orders = get_race_orders(raceplan_kpis)
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
@@ -131,6 +133,7 @@ class ResultatEditNew(web.View):
                     "raceclasses": raceclasses,
                     "raceplan_summary": raceplan_summary,
                     "race": race,
+                    "race_orders": race_orders,
                     "raceplan_kpis": raceplan_kpis,
                     "username": user["name"],
                     "valgt_runde": valgt_runde,
@@ -266,6 +269,30 @@ async def find_round(
                     if not raceclass["ranking"]:
                         valgt_runde.informasjon = "OBS: Denne løpsklassen er urangert, resultater vil ikke vises."
     return valgt_runde
+
+
+def get_race_orders(raceplan_kpis: list) -> dict:
+    """Get highest and lowest race order."""
+    race_orders = {
+        "highest": 0,
+        "lowest": 10000,
+    }
+    for race in raceplan_kpis[0]["races_q"]:
+        if race["order"] > race_orders["highest"]:
+            race_orders["highest"] = race["order"]
+        if race["order"] < race_orders["lowest"]:
+            race_orders["lowest"] = race["order"]
+    for race in raceplan_kpis[0]["races_s"]:
+        if race["order"] > race_orders["highest"]:
+            race_orders["highest"] = race["order"]
+        if race["order"] < race_orders["lowest"]:
+            race_orders["lowest"] = race["order"]
+    for race in raceplan_kpis[0]["races_f"]:
+        if race["order"] > race_orders["highest"]:
+            race_orders["highest"] = race["order"]
+        if race["order"] < race_orders["lowest"]:
+            race_orders["lowest"] = race["order"]
+    return race_orders
 
 
 def get_foto_start_for_race(user: dict, race: dict, photos: list) -> list:

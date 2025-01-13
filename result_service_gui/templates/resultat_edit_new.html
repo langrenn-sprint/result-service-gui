@@ -620,6 +620,12 @@
           </td>
         {% endif %}
         <td width=200>
+          {% if race_orders %}
+            <nobr>
+              <a href=resultat_edit_new?event_id={{ event_id }}&heat={{ race_orders.lowest - 1 }}>&nbsp;Forrige runde</a>
+              <a href=resultat_edit_new?event_id={{ event_id }}&heat={{ race_orders.highest + 1 }}>&nbsp;Neste runde</a>
+            </nobr>
+          {% endif %}
           </td>
       </tr>
     </table>
