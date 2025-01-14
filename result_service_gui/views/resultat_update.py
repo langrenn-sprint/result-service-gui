@@ -50,8 +50,8 @@ class ResultatUpdate(web.View):
                 res = await RaceclassResultsService().create_raceclass_results(
                     user["token"], event, raceclass_name
                 )  # type: ignore
-                logging.debug(f"Resultat for {raceclass} er publisert. {res}")
-                informasjon = f"Resultat for {raceclass} er publisert. "
+                logging.debug(f"Resultat for {raceclass_name} er publisert. {res}")
+                informasjon = f"Resultat for {raceclass_name} er publisert. "
         except Exception as e:
             informasjon = f"Det har oppstått en feil: {e}"
             logging.error(f"Result update - {e}")

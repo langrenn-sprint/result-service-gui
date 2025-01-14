@@ -49,6 +49,8 @@ class ResultatEditNew(web.View):
         race = {}
         raceplan_summary = []
         raceplan_kpis = []
+        race_orders = {}
+
         valgt_runde = ValgtRunde()
 
         try:
