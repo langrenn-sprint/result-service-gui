@@ -58,7 +58,7 @@
 <div align=right>{{ event.name }}, {{ event.date_of_event }}</div>
 <table>
     {% for race in races %}
-      {% if race.first_in_class %}
+      {% if race.round == "Q" and race.heat == 1 %}
         </table>
           {% if not loop.first %}
             <div id=pagebreak></div>

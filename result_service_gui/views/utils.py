@@ -306,15 +306,13 @@ async def get_races_for_print(
 ) -> list:
     """Get races with lists - formatted for print."""
     races = []
-    for raceclass in raceclasses:
-        first_in_class = True
-        for race in _tmp_races:
+    for race in _tmp_races:
+        for raceclass in raceclasses:
             if race["raceclass"] == raceclass["name"]:
                 if (race["raceclass"] == valgt_klasse) or ("" == valgt_klasse):
                     race = await RaceplansAdapter().get_race_by_id(
                         user["token"], race["id"]
                     )
-                    race["first_in_class"] = first_in_class
                     race["next_race"] = get_qualification_text(race)
                     race["start_time"] = race["start_time"][-8:]
                     # get start list details
@@ -334,8 +332,6 @@ async def get_races_for_print(
                         ] = RaceclassResultsService().get_finish_rank_for_race(
                             race, False
                         )
-                    if first_in_class:
-                        first_in_class = False
                     races.append(race)
     return races
 
@@ -346,8 +342,6 @@ async def get_races_for_round_result(
     """Get races for a given round - formatted for print."""
     races = []
     next_round = []
-    first_in_class = True
-    first_in_next_round = True
     if valgt_runde == "Q":
         next_round = ["S", "F"]
     elif valgt_runde == "S":
@@ -359,8 +353,6 @@ async def get_races_for_round_result(
             race["start_time"] = race["start_time"][-8:]
             if valgt_runde in ["", race["round"]]:
                 if action.count("result") > 0:
-                    race["first_in_class"] = first_in_class
-                    first_in_class = False
                     race["next_race"] = get_qualification_text(race)
                     race["list_type"] = "result"
                     race["finish_results"] = (
@@ -369,8 +361,6 @@ async def get_races_for_round_result(
                     races.append(race)
             elif race["round"] in next_round:
                 if action.count("start") > 0:
-                    race["first_in_class"] = first_in_next_round
-                    first_in_next_round = False
                     race["next_race"] = get_qualification_text(race)
                     race["list_type"] = "start"
                     race["startliste"] = await get_enrichced_startlist(user, race)

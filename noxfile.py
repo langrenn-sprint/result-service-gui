@@ -94,7 +94,7 @@ def integration_tests(session: Session) -> None:
     )
 
 
-@session(python="3.11")
+@session()
 def contract_tests(session: Session) -> None:
     """Run the contract test suite."""
     args = session.posargs
@@ -191,7 +191,7 @@ def pytype(session: Session) -> None:
     session.run("pytype", *args)
 
 
-@session(python=["3.10", "3.11"])
+@session()
 def xdoctest(session: Session) -> None:
     """Run examples with xdoctest."""
     args = session.posargs or ["all"]
@@ -200,7 +200,7 @@ def xdoctest(session: Session) -> None:
     session.run("python", "-m", "xdoctest", package, *args)
 
 
-@session(python=["3.10", "3.11"])
+@session()
 def docs(session: Session) -> None:
     """Build the documentation."""
     session.install(".")
@@ -208,7 +208,7 @@ def docs(session: Session) -> None:
     session.run("sphinx-build", "docs", "docs/_build")
 
 
-@session(python=["3.10", "3.11"])
+@session()
 def coverage(session: Session) -> None:
     """Upload coverage data."""
     session.install("coverage[toml]", "codecov")
