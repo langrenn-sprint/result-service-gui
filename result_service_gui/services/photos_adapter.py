@@ -35,16 +35,20 @@ class PhotosAdapter:
         if limit:
             url += f"&limit={limit}"
 
-        async with ClientSession() as session:
-            async with session.get(url, headers=headers) as resp:
-                logging.debug(f"get_all_photos - got response {resp.status}")
-                if resp.status == 200:
-                    photos = await resp.json()
-                    logging.debug(f"photos - got response {photos}")
-                elif resp.status == 401:
-                    raise Exception(f"Login expired: {resp}")
-                else:
-                    logging.error(f"Error {resp.status} getting photos: {resp} ")
+        try:
+            async with ClientSession() as session:
+                async with session.get(url, headers=headers) as resp:
+                    logging.debug(f"get_all_photos - got response {resp.status}")
+                    if resp.status == 200:
+                        photos = await resp.json()
+                        logging.debug(f"photos - got response {photos}")
+                    elif resp.status == 401:
+                        raise Exception(f"Login expired: {resp}")
+                    else:
+                        logging.error(f"Error {resp.status} getting photos: {resp} ")
+        except Exception as e:
+            logging.error(f"Connectivity Error: {e}. No photos found.")
+
         return photos
 
     async def get_photo(self, token: str, id: str) -> dict:
@@ -57,23 +61,26 @@ class PhotosAdapter:
             ]
         )
 
-        async with ClientSession() as session:
-            async with session.get(
-                f"{PHOTO_SERVICE_URL}/photos/{id}", headers=headers
-            ) as resp:
-                logging.debug(f"get_photo {id} - got response {resp.status}")
-                if resp.status == 200:
-                    photo = await resp.json()
-                    logging.debug(f"photo - got response {photo}")
-                elif resp.status == 401:
-                    raise Exception(f"Login expired: {resp}")
-                else:
-                    servicename = "get_photo"
-                    body = await resp.json()
-                    logging.debug(f"{servicename} failed - {resp.status} - {body}")
-                    raise web.HTTPBadRequest(
-                        reason=f"Error - {resp.status}: {body['detail']}."
-                    )
+        try:
+            async with ClientSession() as session:
+                async with session.get(
+                    f"{PHOTO_SERVICE_URL}/photos/{id}", headers=headers
+                ) as resp:
+                    logging.debug(f"get_photo {id} - got response {resp.status}")
+                    if resp.status == 200:
+                        photo = await resp.json()
+                        logging.debug(f"photo - got response {photo}")
+                    elif resp.status == 401:
+                        raise Exception(f"Login expired: {resp}")
+                    else:
+                        servicename = "get_photo"
+                        body = await resp.json()
+                        logging.debug(f"{servicename} failed - {resp.status} - {body}")
+                        raise web.HTTPBadRequest(
+                            reason=f"Error - {resp.status}: {body['detail']}."
+                        )
+        except Exception as e:
+            logging.error(f"Connectivity Error: {e}. No photos found.")
         return photo
 
     async def get_photos_by_race_id(
@@ -94,16 +101,18 @@ class PhotosAdapter:
         if limit:
             url += f"&limit={limit}"
 
-        async with ClientSession() as session:
-            async with session.get(url, headers=headers) as resp:
-                logging.debug(f"get_photos_by_race_id - got response {resp.status}")
-                if resp.status == 200:
-                    photos = await resp.json()
-                    logging.debug(f"photos - got response {photos}")
-                elif resp.status == 401:
-                    raise Exception(f"Login expired: {resp}")
-                else:
-                    logging.error(f"Error {resp.status} getting photos: {resp} ")
+        try:
+            async with ClientSession() as session:
+                async with session.get(url, headers=headers) as resp:
+                    if resp.status == 200:
+                        photos = await resp.json()
+                        logging.debug(f"photos - got response {photos}")
+                    elif resp.status == 401:
+                        raise Exception(f"Login expired: {resp}")
+                    else:
+                        logging.error(f"Error {resp.status} getting photos: {resp} ")
+        except Exception as e:
+            logging.error(f"Connectivity Error: {e}. No photos found.")
         return photos
 
     async def get_photos_by_raceclass(
@@ -128,16 +137,21 @@ class PhotosAdapter:
         if limit:
             url += f"&limit={limit}"
 
-        async with ClientSession() as session:
-            async with session.get(url, headers=headers) as resp:
-                logging.debug(f"get_photos_by_raceclass - got response {resp.status}")
-                if resp.status == 200:
-                    photos = await resp.json()
-                    logging.debug(f"photos - got response {photos}")
-                elif resp.status == 401:
-                    raise Exception(f"Login expired: {resp}")
-                else:
-                    logging.error(f"Error {resp.status} getting photos: {resp} ")
+        try:
+            async with ClientSession() as session:
+                async with session.get(url, headers=headers) as resp:
+                    logging.debug(
+                        f"get_photos_by_raceclass - got response {resp.status}"
+                    )
+                    if resp.status == 200:
+                        photos = await resp.json()
+                        logging.debug(f"photos - got response {photos}")
+                    elif resp.status == 401:
+                        raise Exception(f"Login expired: {resp}")
+                    else:
+                        logging.error(f"Error {resp.status} getting photos: {resp} ")
+        except Exception as e:
+            logging.error(f"Connectivity Error: {e}. No photos found.")
         return photos
 
     async def get_photo_by_g_base_url(self, token: str, g_base_url: str) -> dict:
@@ -150,24 +164,27 @@ class PhotosAdapter:
             ]
         )
 
-        async with ClientSession() as session:
-            async with session.get(
-                f"{PHOTO_SERVICE_URL}/photos?gBaseUrl={g_base_url}", headers=headers
-            ) as resp:
-                logging.debug(
-                    f"get_photo_by_g_base_url {g_base_url} - got response {resp.status}"
-                )
-                if resp.status == 200:
-                    photo = await resp.json()
-                elif resp.status == 401:
-                    raise Exception(f"Login expired: {resp}")
-                else:
-                    servicename = "get_photo_by_g_base_url"
-                    body = await resp.json()
-                    logging.debug(f"{servicename} failed - {resp.status} - {body}")
-                    raise web.HTTPBadRequest(
-                        reason=f"Error - {resp.status}: {body['detail']}."
+        try:
+            async with ClientSession() as session:
+                async with session.get(
+                    f"{PHOTO_SERVICE_URL}/photos?gBaseUrl={g_base_url}", headers=headers
+                ) as resp:
+                    logging.debug(
+                        f"get_photo_by_g_base_url {g_base_url} - got response {resp.status}"
                     )
+                    if resp.status == 200:
+                        photo = await resp.json()
+                    elif resp.status == 401:
+                        raise Exception(f"Login expired: {resp}")
+                    else:
+                        servicename = "get_photo_by_g_base_url"
+                        body = await resp.json()
+                        logging.debug(f"{servicename} failed - {resp.status} - {body}")
+                        raise web.HTTPBadRequest(
+                            reason=f"Error - {resp.status}: {body['detail']}."
+                        )
+        except Exception as e:
+            logging.error(f"Connectivity Error: {e}. No photos found.")
         return photo
 
     async def create_photo(self, token: str, photo: dict) -> str:

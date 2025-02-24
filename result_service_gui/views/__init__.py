@@ -1,5 +1,6 @@
 """Package for all views."""
 
+from .config import Config
 from .control import Control
 from .csv_list import CsvList
 from .live import Live

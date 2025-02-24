@@ -15,6 +15,7 @@ from dotenv import load_dotenv
 import jinja2
 
 from .views import (
+    Config,
     Control,
     CsvList,
     Live,
@@ -91,8 +92,9 @@ async def create_app() -> web.Application:
     app.add_routes(
         [
             web.view("/", Main),
-            web.view("/csv", CsvList),
+            web.view("/config", Config),
             web.view("/control", Control),
+            web.view("/csv", CsvList),
             web.view("/live", Live),
             web.view("/login", Login),
             web.view("/logout", Logout),

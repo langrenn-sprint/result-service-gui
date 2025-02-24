@@ -39,6 +39,7 @@ Her finner du en enkel webserver som generer html basert på csv-filer i test-da
 ```Shell
 Du må sette opp ei .env fil med miljøvariable. Eksempel:
 JWT_SECRET=secret
+ERROR_FILE=error.log
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=password
 GOOGLE_APPLICATION_CREDENTIALS=/home/heming/github/secrets/application_default_credentials.json
@@ -52,17 +53,19 @@ PHOTOS_HOST_SERVER=localhost
 PHOTOS_HOST_PORT=8092
 FERNET_KEY=23EHUWpP_MyKey_MyKeyhxndWqyc0vO-MyKeySMyKey=
 GOOGLE_OAUTH_CLIENT_ID=12345My-ClientId12345.apps.googleusercontent.com
-SERVICEBUS_NAMESPACE_CONNECTION_STR=<connection string>
+SERVICEBUS_NAMESPACE_CONNECTION_STR=conn_str
 JWT_EXP_DELTA_SECONDS=3600
 LOGGING_LEVEL=INFO
 RACE_HOST_SERVER=localhost
 RACE_HOST_PORT=8088
 USERS_HOST_SERVER=localhost
 USERS_HOST_PORT=8086
-GOOGLE_PUBSUB_NUM_MESSAGES=20
-RACE_DURATION_ESTIMATE=300
-RACE_TIME_DEVIATION_ALLOWED=600
 ```
+
+### Virtual env - if required
+Install: curl https://pyenv.run | bash 
+python -m venv .vienv 
+source .vienv/bin/activate
 
 ### Config gcloud
 
