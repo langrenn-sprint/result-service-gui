@@ -144,7 +144,7 @@ class ConfigAdapter:
 
     async def init_config(self, token: str, event: dict) -> None:
         """Load default config function - read from file."""
-        PROJECT_ROOT = os.path.join(os.getcwd(), "photo_service_gui")
+        PROJECT_ROOT = os.path.join(os.getcwd(), "result_service_gui")
         config_file = f"{PROJECT_ROOT}/config/global_settings.json"
 
         try:

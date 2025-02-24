@@ -38,7 +38,7 @@ class Config(web.View):
             except Exception as e:
                 event_config = []
                 informasjon += f" Feil ved innlasting av config. {e}"
-                logging.error()
+                logging.error(informasjon)
 
             return await aiohttp_jinja2.render_template_async(
                 "config.html",
