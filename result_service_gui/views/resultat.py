@@ -58,8 +58,8 @@ class Resultat(web.View):
                     resultlist = await RaceclassResultsAdapter().get_raceclass_result(
                         event_id, valgt_klasse
                     )
-                except Exception:
-                    informasjon = "Resultater er ikke klare. Velg 'Live' i menyen for heat resultater"
+                except Exception as e:
+                    informasjon = f"{e} Velg 'Live' i menyen for heat resultater"
 
                 foto = await PhotosAdapter().get_photos_by_raceclass(
                     user["token"], event_id, valgt_klasse, True, 5

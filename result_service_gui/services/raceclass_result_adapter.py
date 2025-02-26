@@ -100,6 +100,11 @@ class RaceclassResultsAdapter:
                 logging.debug(f"{servicename} - got response {resp.status}")
                 if resp.status == 200:
                     raceclass_result = await resp.json()
+                elif resp.status == 404:
+                    # No results yet for this raceclass
+                    raise web.HTTPBadRequest(
+                        reason=f"Resultater er ikke klare for {raceclass_url}."
+                    )
                 else:
                     body = await resp.json()
                     logging.error(f"{servicename} failed - {resp.status} - {body}")
