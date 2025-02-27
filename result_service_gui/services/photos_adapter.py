@@ -184,7 +184,7 @@ class PhotosAdapter:
                             reason=f"Error - {resp.status}: {body['detail']}."
                         )
         except Exception as e:
-            logging.error(f"Connectivity Error: {e}. No photos found.")
+            logging.info(f"No photo found: {e}.")
         return photo
 
     async def create_photo(self, token: str, photo: dict) -> str:

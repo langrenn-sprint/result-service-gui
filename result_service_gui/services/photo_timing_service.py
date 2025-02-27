@@ -27,7 +27,7 @@ class PhotoTimingService:
             add_result_list = []
             for photo in sorted_photos:
                 try:
-                    bibs = photo["ai_information"]["ai_crop_numbers"]
+                    bibs = photo["biblist"]
                     if len(bibs) == 1:
                         bib = bibs[0]
                         crossing_time = photo["creation_time"]

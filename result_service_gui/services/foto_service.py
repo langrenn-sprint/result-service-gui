@@ -233,17 +233,6 @@ async def link_ai_info_to_photo(
         result = await find_race_info_by_bib(
             token, nummer, photo_info, event, raceclasses, 100
         )
-    # then check for bib on full image
-    if result == 204:
-        for nummer in ai_information["ai_numbers"]:
-            result = await find_race_info_by_bib(
-                token,
-                nummer,
-                photo_info,
-                event,
-                raceclasses,
-                90,
-            )
     # use time only if by bib was not successful
     if result == 204:
         result = await find_race_info_by_time(token, photo_info, event, 50)
@@ -261,7 +250,7 @@ async def find_race_info_by_bib(
     """Analyse photo ai info and add race info to photo."""
     result = 204  # no content
     foundheat = ""
-    raceduration = int(os.getenv("RACE_DURATION_ESTIMATE", "300"))
+    raceduration = EventsAdapter().get_global_setting_int("RACE_DURATION_ESTIMATE")
     starter = await StartAdapter().get_start_entries_by_bib(token, event["id"], bib)
     if len(starter) > 0:
         for start in starter:
@@ -306,14 +295,13 @@ async def find_race_info_by_time(
 ) -> int:
     """Analyse photo time and identify race with best time-match."""
     result = 204  # no content
-    raceduration = int(os.getenv("RACE_DURATION_ESTIMATE", "300"))
+    raceduration = EventsAdapter().get_global_setting_int("RACE_DURATION_ESTIMATE")
     all_races = await RaceplansAdapter().get_all_races(token, event["id"])
     best_fit_race = {
         "race_id": "",
         "seconds_diff": 10000,
         "raceclass": "",
     }
-
     for race in all_races:
         seconds_diff = abs(
             get_seconds_diff(photo_info["creation_time"], race["start_time"])
@@ -324,12 +312,14 @@ async def find_race_info_by_time(
             best_fit_race["seconds_diff"] = seconds_diff
             best_fit_race["race_id"] = race["id"]
             best_fit_race["raceclass"] = race["raceclass"]
+            best_fit_race["name"] = f"{race['round']}{race['index']}{race['heat']}"
 
     if best_fit_race["seconds_diff"] < 10000:  # type: ignore
         photo_info["race_id"] = best_fit_race["race_id"]
         photo_info["raceclass"] = best_fit_race["raceclass"]
         result = 200  # OK, found a heat
         photo_info["confidence"] = confidence  # identified by time - medium confidence!
+        logging.info(f"Diff - best match race {best_fit_race}")
     return result
 
 
@@ -403,7 +393,7 @@ async def verify_heat_time(
 ) -> str:
     """Analyse photo tags and identify heat."""
     foundheat = ""
-    max_time_dev = int(os.getenv("RACE_TIME_DEVIATION_ALLOWED"))  # type: ignore
+    max_time_dev = EventsAdapter().get_global_setting_int("RACE_TIME_DEVIATION_ALLOWED")
 
     if datetime_foto is not None:
         race = await RaceplansAdapter().get_race_by_id(token, race_id)
@@ -411,5 +401,11 @@ async def verify_heat_time(
             seconds = get_seconds_diff(datetime_foto, race["start_time"])
             if 0 < seconds < (max_time_dev + raceduration):
                 foundheat = race["id"]
+                race_name = (
+                    f"{race['raceclass']}-{race['round']}{race['index']}{race['heat']}"
+                )
+                logging.info(
+                    f"Diff - confirmed bib {seconds} seconds, for race {race_name}"
+                )
 
     return foundheat
