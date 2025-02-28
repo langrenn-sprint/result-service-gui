@@ -96,11 +96,11 @@
       <table>
         <tr id=spacer></tr>
         <tr id=headerblue>
-          <td>Løpsklasse</td>
+          <td>Klasse</td>
           <td>Kvartfinale start</td>
-          <td>Semifinaler</td>
-          <td>Finaler</td>
-          <td>Antall deltakere</td>
+          <td>Semi</td>
+          <td>Finale</td>
+          <td>Deltakere</td>
         </tr>
         {% for raceclass in raceplan_summary %}
           {% if (valgt_klasse == "") or valgt_klasse == raceclass.name %}
@@ -109,7 +109,7 @@
               <td>{{ raceclass.timeQ }}</td>
               <td>{{ raceclass.timeS }}</td>
               <td>{{ raceclass.timeF }}</td>
-              <td>{{ raceclass.no_of_contestants }}</td>
+              <td align="center">{{ raceclass.no_of_contestants }}</td>
             </tr>
           {% endif %}
         {% endfor %}

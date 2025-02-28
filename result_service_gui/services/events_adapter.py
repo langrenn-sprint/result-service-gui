@@ -118,18 +118,15 @@ class EventsAdapter:
 
     def get_global_setting_int(self, param_name: str) -> int:
         """Get global settings from .env file."""
-        config_files_directory = f"{os.getcwd()}/result_service_gui/config"
+        string_value = self.get_global_setting(param_name)
         try:
-            with open(f"{config_files_directory}/global_settings.json") as json_file:
-                settings = json.load(json_file)
-                global_setting = settings[param_name]
-                return int(global_setting)
+            global_setting_int = int(string_value)
         except Exception as e:
             logging.error(
-                f"Global setting {param_name} not found. File path {config_files_directory} - {e}"
+                f"Error getting global_setting_int {param_name}. Value {string_value} - {e}"
             )
             raise Exception from e
-        return global_setting
+        return global_setting_int
 
     def get_global_setting_bool(self, param_name: str) -> bool:
         """Get config boolean value."""

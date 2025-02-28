@@ -86,7 +86,7 @@ tr:nth-child(even) {
 background-color: #f2f2f2;
 }
 
-td {
+td, th {
 border-bottom: 1px solid #ddd;
 padding: 2px 2px 2px 2px;
 }

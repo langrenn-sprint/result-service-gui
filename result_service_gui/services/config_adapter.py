@@ -83,6 +83,17 @@ class ConfigAdapter:
 
         return boolean_value
 
+    async def get_config_int(self, token: str, event: dict, key: str) -> int:
+        """Get config int value."""
+        string_value = await self.get_config(token, event, key)
+        return int(string_value)
+
+    async def get_config_list(self, token: str, event: dict, key: str) -> list:
+        """Get config list value."""
+        string_value = await self.get_config(token, event, key)
+        # convert from json string to list
+        return json.loads(string_value)
+
     async def create_config(self, token: str, event: dict, key: str, value: str) -> str:
         """Create new config function."""
         servicename = "create_config"
@@ -119,43 +130,37 @@ class ConfigAdapter:
 
         return id
 
-    async def delete_config(self, token: str, id: str) -> int:
-        """Delete config function."""
-        servicename = "delete_config"
-        headers = MultiDict(
-            [
-                (hdrs.CONTENT_TYPE, "application/json"),
-                (hdrs.AUTHORIZATION, f"Bearer {token}"),
-            ]
-        )
-        url = f"{PHOTO_SERVICE_URL}/config/{id}"
-        async with ClientSession() as session:
-            async with session.delete(url, headers=headers) as resp:
-                pass
-            logging.debug(f"Delete config: {id} - res {resp.status}")
-            if resp.status == 204:
-                logging.debug(f"result - got response {resp}")
-            else:
-                logging.error(
-                    f"{servicename} failed for id {id} - {resp.status} - {resp}"
-                )
-                raise web.HTTPBadRequest(reason=f"Error - {resp.status}: {resp}.")
-        return resp.status
-
     async def init_config(self, token: str, event: dict) -> None:
         """Load default config function - read from file."""
         PROJECT_ROOT = os.path.join(os.getcwd(), "result_service_gui")
         config_file = f"{PROJECT_ROOT}/config/global_settings.json"
 
+        current_configs = await ConfigAdapter().get_all_configs(token, event)
+
         try:
             with open(config_file, "r") as json_file:
                 settings = json.load(json_file)
                 for key, value in settings.items():
-                    await self.create_config(token, event, key, value)
+                    updated = False
+                    for config in current_configs:
+                        if config["key"] == key:
+                            await self.update_config(token, event, key, value)
+                            updated = True
+                            break
+                    if not updated:
+                        await self.create_config(token, event, key, value)
         except Exception as e:
             err_info = f"Error linitializing config from {config_file} - {e}"
             logging.error(err_info)
             raise Exception(err_info) from e
+
+    async def update_config_list(
+        self, token: str, event: dict, key: str, new_value: list
+    ) -> str:
+        """Update config list value."""
+        new_value_str = json.dumps(new_value)
+        result = await self.update_config(token, event, key, new_value_str)
+        return result
 
     async def update_config(
         self, token: str, event: dict, key: str, new_value: str

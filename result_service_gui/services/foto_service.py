@@ -6,6 +6,7 @@ import logging
 import os
 
 from .albums_adapter import AlbumsAdapter
+from .config_adapter import ConfigAdapter
 from .contestants_adapter import ContestantsAdapter
 from .events_adapter import EventsAdapter
 from .google_pub_sub_adapter import GooglePubSubAdapter
@@ -250,7 +251,9 @@ async def find_race_info_by_bib(
     """Analyse photo ai info and add race info to photo."""
     result = 204  # no content
     foundheat = ""
-    raceduration = EventsAdapter().get_global_setting_int("RACE_DURATION_ESTIMATE")
+    raceduration = await ConfigAdapter().get_config_int(
+        token, event, "RACE_DURATION_ESTIMATE"
+    )
     starter = await StartAdapter().get_start_entries_by_bib(token, event["id"], bib)
     if len(starter) > 0:
         for start in starter:
@@ -258,6 +261,7 @@ async def find_race_info_by_bib(
             if foundheat == "":
                 foundheat = await verify_heat_time(
                     token,
+                    event,
                     photo_info["creation_time"],
                     raceduration,
                     start["race_id"],
@@ -295,7 +299,9 @@ async def find_race_info_by_time(
 ) -> int:
     """Analyse photo time and identify race with best time-match."""
     result = 204  # no content
-    raceduration = EventsAdapter().get_global_setting_int("RACE_DURATION_ESTIMATE")
+    raceduration = await ConfigAdapter().get_config_int(
+        token, event, "RACE_DURATION_ESTIMATE"
+    )
     all_races = await RaceplansAdapter().get_all_races(token, event["id"])
     best_fit_race = {
         "race_id": "",
@@ -387,17 +393,19 @@ def get_seconds_diff(time1: str, time2: str) -> int:
 
 async def verify_heat_time(
     token: str,
+    event: dict,
     datetime_foto: str,
     raceduration: int,
     race_id: str,
 ) -> str:
     """Analyse photo tags and identify heat."""
     foundheat = ""
-    max_time_dev = EventsAdapter().get_global_setting_int("RACE_TIME_DEVIATION_ALLOWED")
-
     if datetime_foto is not None:
         race = await RaceplansAdapter().get_race_by_id(token, race_id)
         if race is not None:
+            max_time_dev = await ConfigAdapter().get_config_int(
+                token, event, "RACE_TIME_DEVIATION_ALLOWED"
+            )
             seconds = get_seconds_diff(datetime_foto, race["start_time"])
             if 0 < seconds < (max_time_dev + raceduration):
                 foundheat = race["id"]

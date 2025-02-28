@@ -17,12 +17,10 @@
 {% block menuitems %}
   {% if action %}
   <li class=dropdown id=topborder>
-    <a href=javascript:void(0) class=dropbtn>Velg heat</a>
+    <a href=javascript:void(0) class=dropbtn>Funksjon</a>
     <div class=dropdown-content>
-      <a href=timing?&event_id={{ event_id }}&action=start&heat={{ valgt_heat - 1 }} class=dropbtn>Forrige heat</a>
       <a href=timing?&event_id={{ event_id }}&action=start&heat=0 class=dropbtn>Starter nå</a>
-      <a href=timing?&event_id={{ event_id }}&action=start&heat={{ valgt_heat + 1 }} class=dropbtn>Neste heat</a>
-      <a href=timing?&event_id={{ event_id }}&action=dns_manual&heat={{ valgt_heat + 1 }} class=dropbtn>Søk løper</a>
+      <a href=timing?&event_id={{ event_id }}&action=dns_manual&heat={{ valgt_heat + 1 }} class=dropbtn>Søk på navn / startnr</a>
     </div>
   </li>
   {% endif %}

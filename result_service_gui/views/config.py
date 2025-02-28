@@ -67,9 +67,6 @@ class Config(web.View):
             event = await get_event(user, event_id)
 
             if "reset_config" in form.keys():
-                configs = await ConfigAdapter().get_all_configs(user["token"], event)
-                for config in configs:
-                    await ConfigAdapter().delete_config(user["token"], config["id"])
                 await ConfigAdapter().init_config(user["token"], event)
                 informasjon = "Config er nullstilt."
             elif "update_one" in form.keys():
