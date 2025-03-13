@@ -4,12 +4,8 @@ import logging
 
 from aiohttp import web
 
-from result_service_gui.services import (
-    FotoService,
-)
 from .utils import (
     check_login,
-    get_event,
 )
 
 
@@ -22,12 +18,10 @@ class VideoEvents(web.View):
             result = ""
             form = await self.request.post()
             event_id = str(form["event_id"])
-            user = await check_login(self)
-            event = await get_event(user, event_id)
+            await check_login(self)
             action = form["action"]
             if action in ["pull_google"]:
-                r = await FotoService().sync_photos_from_pubsub(user, event)
-                result += f"  {r}<br>"
+                result += f"  {event_id}<br>Ny pull funksjon må implementeres."
         except Exception as e:
             if "401" in str(e):
                 result = "401 unathorized: Logg inn for å hente events."
