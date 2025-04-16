@@ -2,17 +2,16 @@
 
 import base64
 import logging
-from logging.handlers import RotatingFileHandler
 import os
-import time
+from logging.handlers import RotatingFileHandler
+from pathlib import Path
 
-from aiohttp import web
 import aiohttp_jinja2
-from aiohttp_middlewares import cors_middleware, error_middleware
+import jinja2
+from aiohttp import web
 from aiohttp_session import get_session, setup
 from aiohttp_session.cookie_storage import EncryptedCookieStorage
 from dotenv import load_dotenv
-import jinja2
 
 from .views import (
     Config,
@@ -30,7 +29,6 @@ from .views import (
     PrintDash,
     PrintLists,
     Resultat,
-    ResultatEdit,
     ResultatEditNew,
     ResultatUpdate,
     Start,
@@ -43,7 +41,7 @@ from .views import (
 
 load_dotenv()
 LOGGING_LEVEL = os.getenv("LOGGING_LEVEL", "INFO")
-PROJECT_ROOT = os.path.join(os.getcwd(), "result_service_gui")
+PROJECT_ROOT = f"{Path.cwd()}/result_service_gui"
 logging.info(f"PROJECT_ROOT: {PROJECT_ROOT}")
 ERROR_FILE = str(os.getenv("ERROR_FILE"))
 
@@ -51,20 +49,13 @@ ERROR_FILE = str(os.getenv("ERROR_FILE"))
 async def handler(request) -> web.Response:
     """Create a session handler."""
     session = await get_session(request)
-    last_visit = session["last_visit"] if "last_visit" in session else None
-    session["last_visit"] = time.time()
-    text = "Last visited: {}".format(last_visit)
+    text = f"Last visited: {session.get('last_visit', None)}"
     return web.Response(text=text)
 
 
 async def create_app() -> web.Application:
     """Create an web application."""
-    app = web.Application(
-        middlewares=[
-            cors_middleware(allow_all=True),
-            error_middleware(),  # default error handler for whole application
-        ]
-    )
+    app = web.Application()
 
     # sesson handling - secret_key must be 32 url-safe base64-encoded bytes
     fernet_key = os.getenv("FERNET_KEY", "23EHUWpP_tpleR_RjuX5hxndWqyc0vO-cjNUMSzbjN4=")
@@ -81,7 +72,7 @@ async def create_app() -> web.Application:
     logging.getLogger().addHandler(file_handler)
 
     # Set up template path
-    template_path = os.path.join(PROJECT_ROOT, "templates")
+    template_path = Path(PROJECT_ROOT) / "templates"
     aiohttp_jinja2.setup(
         app,
         enable_async=True,
@@ -106,7 +97,6 @@ async def create_app() -> web.Application:
             web.view("/print_dash", PrintDash),
             web.view("/print_lists", PrintLists),
             web.view("/resultat", Resultat),
-            web.view("/resultat_edit", ResultatEdit),
             web.view("/resultat_edit_new", ResultatEditNew),
             web.view("/resultat_update", ResultatUpdate),
             web.view("/start", Start),
@@ -117,12 +107,13 @@ async def create_app() -> web.Application:
             web.view("/video_events", VideoEvents),
         ]
     )
-    static_dir = os.path.join(PROJECT_ROOT, "static")
-    files_dir = os.path.join(PROJECT_ROOT, "files")
-    logging.info(f"static_dir: {static_dir}")
-    logging.info(f"files_dir: {files_dir}")
 
-    app.router.add_static("/static/", path=static_dir, name="static")
+    static_dir = Path(PROJECT_ROOT) / "static"
+    logging.info(f"static_dir: {static_dir}")
+    app.router.add_static("/static/", path=str(static_dir), name="static")
+
+    files_dir = Path(PROJECT_ROOT) / "files"
+    logging.info(f"files_dir: {files_dir}")
     app.router.add_static("/files/", path=files_dir, name="files")
 
     return app

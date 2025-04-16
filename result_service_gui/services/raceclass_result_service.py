@@ -52,11 +52,9 @@ class RaceclassResultsService:
                     break
 
         # and store to db
-        res = await RaceclassResultsAdapter().create_raceclass_results(
+        return await RaceclassResultsAdapter().create_raceclass_results(
             token, event["id"], raceclass_result
         )
-
-        return res
 
     def get_finish_rank_for_race(self, race: dict, indlude_dnf: bool) -> list:
         """Extract timing events from finish and append club logo."""
@@ -64,10 +62,10 @@ class RaceclassResultsService:
         finish_bibs = []
         results = race["results"]
         if len(results) > 0:
-            if "Finish" in results.keys():
+            if "Finish" in results:
                 finish_results = results["Finish"]
                 if len(finish_results) > 0:
-                    if "ranking_sequence" in finish_results.keys():
+                    if "ranking_sequence" in finish_results:
                         finish_ranks = finish_results["ranking_sequence"]
                         for rank_event in finish_ranks:
                             if rank_event["status"] == "OK":
@@ -80,7 +78,7 @@ class RaceclassResultsService:
                                 finish_bibs.append(rank_event["bib"])
         if indlude_dnf:
             for start in race["start_entries"]:
-                if not start["bib"] in finish_bibs:
+                if start["bib"] not in finish_bibs:
                     dnf_entry = {
                         "next_race_id": "",
                         "bib": start["bib"],
@@ -110,7 +108,7 @@ async def get_results_from_all_heats(
         "ranking_sequence": [],
         "status": 1,
     }
-    grouped_results = {  # type: ignore
+    grouped_results = {
         "FA": [],
         "FB": [],
         "FB1": [],
@@ -174,10 +172,9 @@ async def get_results_from_all_heats(
                     else:
                         one_res["rank"] = already_ranked + 1
                 biblist.append(one_res["bib"])
-                results["ranking_sequence"].append(one_res)  # type: ignore
+                results["ranking_sequence"].append(one_res)
                 racers_count += 1
-        else:
-            already_ranked = racers_count
+        already_ranked = racers_count
 
     results["no_of_contestants"] = racers_count
 
@@ -203,7 +200,8 @@ async def get_results_from_interval_start(
 
     # interval start - only one race
     if len(races) != 1:
-        raise Exception("Error: Wrong number of races.")
+        informasjon = "Error: Wrong number of races."
+        raise Exception(informasjon)
     race = races[0]
 
     race_details = await RaceplansAdapter().get_race_by_id(token, race["id"])
@@ -223,7 +221,7 @@ async def get_results_from_interval_start(
                 "minidrett_id": "",
                 "time_event": _tmp_result,
             }
-            results["ranking_sequence"].append(new_result)  # type: ignore
+            results["ranking_sequence"].append(new_result)
             racers_count += 1
 
     results["no_of_contestants"] = racers_count

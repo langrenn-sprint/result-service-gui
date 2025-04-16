@@ -3,14 +3,15 @@
 import logging
 from operator import itemgetter
 
-from aiohttp import web
 import aiohttp_jinja2
+from aiohttp import web
 
 from result_service_gui.services import (
     EventsAdapter,
     RaceclassesAdapter,
     RaceplansAdapter,
 )
+
 from .utils import (
     check_login_open,
     get_display_style,
@@ -44,12 +45,12 @@ class Start(web.View):
             try:
                 valgt_klasse = self.request.rel_url.query["klasse"]
             except Exception:
-                valgt_klasse = ""  # noqa: F841
+                valgt_klasse = ""
                 informasjon += "Viser kjøreplan. Velg klasse for å se startlister."
             try:
                 valgt_runde = self.request.rel_url.query["runde"]
             except Exception:
-                valgt_runde = ""  # noqa: F841
+                valgt_runde = ""
 
             raceclasses = await RaceclassesAdapter().get_raceclasses(
                 user["token"], event_id
@@ -57,7 +58,7 @@ class Start(web.View):
             # get relevant races
             # get startlister for klasse
             _tmp_races = await RaceplansAdapter().get_all_races(user["token"], event_id)
-            if "live" == valgt_klasse:
+            if valgt_klasse == "live":
                 _tmp_races = get_races_for_live_view(event, _tmp_races, 0, 9)
                 colseparators = [3, 6]
                 colclass = "w3-third"
@@ -117,5 +118,5 @@ class Start(web.View):
                 },
             )
         except Exception as e:
-            logging.error(f"Error: {e}. Redirect to main page.")
+            logging.exception("Error. Redirect to main page.")
             return web.HTTPSeeOther(location=f"/?informasjon={e}")

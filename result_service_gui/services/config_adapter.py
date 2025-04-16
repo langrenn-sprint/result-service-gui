@@ -1,10 +1,10 @@
 """Module for config adapter."""
 
 import copy
-from http import HTTPStatus
 import json
 import logging
 import os
+from http import HTTPStatus
 from pathlib import Path
 
 from aiohttp import ClientSession, hdrs, web
@@ -18,7 +18,7 @@ PHOTO_SERVICE_URL = f"http://{PHOTOS_HOST_SERVER}:{PHOTOS_HOST_PORT}"
 class ConfigAdapter:
     """Class representing config."""
 
-    async def get_config(self, token: str, event: dict, key: str) -> str:
+    async def get_config(self, token: str, event_id: str, key: str) -> str:
         """Get config by key function."""
         config = ""
         headers = MultiDict(
@@ -30,7 +30,7 @@ class ConfigAdapter:
         servicename = "get_config"
 
         async with ClientSession() as session, session.get(
-            f"{PHOTO_SERVICE_URL}/config?key={key}&eventId={event['id']}",
+            f"{PHOTO_SERVICE_URL}/config?key={key}&eventId={event_id}",
             headers=headers,
         ) as resp:
             if resp.status == HTTPStatus.OK:
@@ -43,9 +43,9 @@ class ConfigAdapter:
                 informasjon = f"{servicename} failed - {resp.status} - {body['detail']}"
                 logging.error(informasjon)
                 raise web.HTTPBadRequest(reason=informasjon)
-        return config["value"]  # type: ignore
+        return config["value"]
 
-    async def get_all_configs(self, token: str, event: dict) -> list:
+    async def get_all_configs(self, token: str, event_id: str) -> list:
         """Get config by google id function."""
         config = []
         headers = MultiDict(
@@ -55,8 +55,8 @@ class ConfigAdapter:
             ]
         )
         servicename = "get_all_configs"
-        if event:
-            url = f"{PHOTO_SERVICE_URL}/configs?eventId={event['id']}"
+        if event_id:
+            url = f"{PHOTO_SERVICE_URL}/configs?eventId={event_id}"
         else:
             url = f"{PHOTO_SERVICE_URL}/configs"
 
@@ -76,39 +76,29 @@ class ConfigAdapter:
                 raise web.HTTPBadRequest(reason=informasjon)
         return config
 
-    async def get_config_bool(self, token: str, event: dict, key: str) -> bool:
+    async def get_config_bool(self, token: str, event_id: str, key: str) -> bool:
         """Get config boolean value."""
-        string_value = await self.get_config(token, event, key)
+        string_value = await self.get_config(token, event_id, key)
         boolean_value = False
         if string_value in ["True", "true", "1"]:
             boolean_value = True
 
         return boolean_value
 
-    async def get_config_int(self, token: str, event: dict, key: str) -> int:
+    async def get_config_int(self, token: str, event_id: str, key: str) -> int:
         """Get config int value."""
-        string_value = await self.get_config(token, event, key)
+        string_value = await self.get_config(token, event_id, key)
         return int(string_value)
 
-    async def get_config_list(self, token: str, event: dict, key: str) -> list:
+    async def get_config_list(self, token: str, event_id: str, key: str) -> list:
         """Get config list value."""
-        string_value = await self.get_config(token, event, key)
+        string_value = await self.get_config(token, event_id, key)
         # convert from json string to list
         return json.loads(string_value)
 
-    async def get_config_img_res_tuple(
-        self, token: str, event: dict, key: str
-    ) -> tuple:
-        """Get config tuple value."""
-        string_value = await self.get_config(token, event, key)
-        try:
-            tuple_value = tuple(map(int, string_value.split("x")))
-        except ValueError:
-            informasjon = f"Error - {key} is not a tuple."
-            raise Exception(informasjon) from None
-        return tuple_value
-
-    async def create_config(self, token: str, event: dict, key: str, value: str) -> str:
+    async def create_config(
+        self, token: str, event_id: str, key: str, value: str
+    ) -> str:
         """Create new config function."""
         servicename = "create_config"
         result = ""
@@ -119,7 +109,7 @@ class ConfigAdapter:
             ]
         )
         config = {
-            "event_id": event["id"],
+            "event_id": event_id,
             "key": key,
             "value": value,
         }
@@ -143,13 +133,12 @@ class ConfigAdapter:
 
         return result
 
-    async def init_config(self, token: str, event: dict) -> None:
+    async def init_config(self, token: str, event_id: str) -> None:
         """Load default config function - read from file."""
-        PROJECT_ROOT = os.path.join(Path.cwd(), "result_service_gui")
-        config_file = Path(f"{PROJECT_ROOT}/config/global_settings.json")
+        project_root = f"{Path.cwd()}/result_service_gui"
+        config_file = Path(f"{project_root}/config/global_settings.json")
 
-        current_configs = await ConfigAdapter().get_all_configs(token, event)
-
+        current_configs = await ConfigAdapter().get_all_configs(token, event_id)
         try:
             with config_file.open() as json_file:
                 settings = json.load(json_file)
@@ -157,25 +146,25 @@ class ConfigAdapter:
                     updated = False
                     for config in current_configs:
                         if config["key"] == key:
-                            await self.update_config(token, event, key, value)
+                            await self.update_config(token, event_id, key, value)
                             updated = True
                             break
                     if not updated:
-                        await self.create_config(token, event, key, value)
+                        await self.create_config(token, event_id, key, value)
         except Exception as e:
             err_info = f"Error linitializing config from {config_file} - {e}"
-            logging.error(err_info)
+            logging.exception(err_info)
             raise Exception(err_info) from e
 
     async def update_config_list(
-        self, token: str, event: dict, key: str, new_value: list
+        self, token: str, event_id: str, key: str, new_value: list
     ) -> str:
         """Update config list value."""
         new_value_str = json.dumps(new_value)
-        return await self.update_config(token, event, key, new_value_str)
+        return await self.update_config(token, event_id, key, new_value_str)
 
     async def update_config(
-        self, token: str, event: dict, key: str, new_value: str
+        self, token: str, event_id: str, key: str, new_value: str
     ) -> str:
         """Update config function."""
         servicename = "update_config"
@@ -186,7 +175,7 @@ class ConfigAdapter:
             ]
         )
         request_body = {
-            "event_id": event["id"],
+            "event_id": event_id,
             "key": key,
             "value": new_value,
         }

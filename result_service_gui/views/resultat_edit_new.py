@@ -1,11 +1,11 @@
 """Resource module for verificatoin of timing registration."""
 
-from dataclasses import dataclass
 import json
 import logging
+from dataclasses import dataclass
 
-from aiohttp import web
 import aiohttp_jinja2
+from aiohttp import web
 
 from result_service_gui.services import (
     EventsAdapter,
@@ -17,6 +17,7 @@ from result_service_gui.services import (
     ResultAdapter,
     TimeEventsService,
 )
+
 from .utils import (
     check_login,
     create_start,
@@ -105,10 +106,10 @@ class ResultatEditNew(web.View):
                 # get start list detail
                 race["startliste"] = await get_enrichced_startlist(user, race)
                 race["finish_timings"] = await get_finish_timings(user, race["id"])
-                race["photo_finish"] = get_foto_finish_for_race(user, race, foto)
-                race["photo_start"] = get_foto_start_for_race(user, race, foto)
+                race["photo_finish"] = get_foto_finish_for_race(race, foto)
+                race["photo_start"] = get_foto_start_for_race(race, foto)
                 race["photo_bib_rank"] = get_finish_rank_from_photos(
-                    user, race["photo_finish"], "right"
+                    race["photo_finish"], "right"
                 )
                 # get kpis, the race progress status
                 for raceclass in raceclasses:
@@ -142,7 +143,7 @@ class ResultatEditNew(web.View):
                 },
             )
         except Exception as e:
-            logging.error(f"Error: {e}. Redirect to main page.")
+            logging.exception("Error. Redirect to main page.")
             return web.HTTPSeeOther(location=f"/?informasjon={e}")
 
     async def post(self) -> web.Response:
@@ -151,7 +152,7 @@ class ResultatEditNew(web.View):
         user = await check_login(self)
         informasjon = ""
         valgt_runde = ValgtRunde()
-        form = await self.request.post()
+        form = dict(await self.request.post())
 
         try:
             logging.debug(f"Form {form}")
@@ -161,10 +162,10 @@ class ResultatEditNew(web.View):
             valgt_runde.runde = str(form["runde"])
             race_id = str(form["race_id"])
 
-            if "create_start" in form.keys():
-                informasjon = await create_start(user, form)  # type: ignore
-            elif "update_result" in form.keys():
-                if "photo_finish_button" in form.keys():
+            if "create_start" in form:
+                informasjon = await create_start(user, form)
+            elif "update_result" in form:
+                if "photo_finish_button" in form:
                     informasjon = (
                         "Fra foto: "
                         + await PhotoTimingService().create_time_events_from_photos(
@@ -172,21 +173,21 @@ class ResultatEditNew(web.View):
                         )
                     )
                 else:
-                    informasjon = "Registrert: " + await update_result(user, event, form)  # type: ignore
+                    informasjon = "Registrert: " + await update_result(user, event, form)
                 # set results to official
-                if "publish" in form.keys():
+                if "publish" in form:
                     if form["publish"] != "false":
-                        res = await ResultAdapter().update_result_status(user["token"], race_id, 2)  # type: ignore
+                        res = await ResultAdapter().update_result_status(user["token"], race_id, 2)
                         if res == "204":
                             informasjon += f"Resultat er publisert ({res})."
-                        if "raceclass_results" in form.keys():
+                        if "raceclass_results" in form:
                             res = await RaceclassResultsService().create_raceclass_results(
                                 user["token"], event, valgt_runde.klasse
-                            )  # type: ignore
+                            )
                             informasjon += f" Klassens resultat er publisert ({res}). "
 
             # check for update without reload - return latest race results
-            if "ajax" in form.keys():
+            if "ajax" in form:
                 race = await RaceplansAdapter().get_race_by_id(user["token"], race_id)
                 # get latest race status
                 raceclass = await RaceclassesAdapter().get_raceclass_by_name(
@@ -212,7 +213,7 @@ class ResultatEditNew(web.View):
                 return web.Response(body=json_response)
 
         except Exception as e:
-            logging.error(f"Error: {e}")
+            logging.exception("Error")
             error_reason = str(e)
             if error_reason.count("401") > 0:
                 informasjon = (
@@ -222,7 +223,7 @@ class ResultatEditNew(web.View):
                 informasjon += f"{error_reason}. " + informasjon
 
             # check for update without reload
-            if "ajax" in form.keys():
+            if "ajax" in form:
                 response = {
                     "race_results": [],
                     "race_results_status": 0,
@@ -233,7 +234,7 @@ class ResultatEditNew(web.View):
             return web.HTTPSeeOther(location=f"/login?informasjon={informasjon}")
         info = f"{informasjon}&klasse={valgt_runde.klasse}&runde={valgt_runde.runde}"
         return web.HTTPSeeOther(
-            location=f"/resultat_edit?event_id={event_id}&informasjon={info}"
+            location=f"/resultat_edit_new?event_id={event_id}&informasjon={info}"
         )
 
 
@@ -280,24 +281,18 @@ def get_race_orders(raceplan_kpis: list) -> dict:
         "lowest": 10000,
     }
     for race in raceplan_kpis[0]["races_q"]:
-        if race["order"] > race_orders["highest"]:
-            race_orders["highest"] = race["order"]
-        if race["order"] < race_orders["lowest"]:
-            race_orders["lowest"] = race["order"]
+        race_orders["highest"] = max(race_orders["highest"], race["order"])
+        race_orders["lowest"] = min(race_orders["lowest"], race["order"])
     for race in raceplan_kpis[0]["races_s"]:
-        if race["order"] > race_orders["highest"]:
-            race_orders["highest"] = race["order"]
-        if race["order"] < race_orders["lowest"]:
-            race_orders["lowest"] = race["order"]
+        race_orders["highest"] = max(race_orders["highest"], race["order"])
+        race_orders["lowest"] = min(race_orders["lowest"], race["order"])
     for race in raceplan_kpis[0]["races_f"]:
-        if race["order"] > race_orders["highest"]:
-            race_orders["highest"] = race["order"]
-        if race["order"] < race_orders["lowest"]:
-            race_orders["lowest"] = race["order"]
+        race_orders["highest"] = max(race_orders["highest"], race["order"])
+        race_orders["lowest"] = min(race_orders["lowest"], race["order"])
     return race_orders
 
 
-def get_foto_start_for_race(user: dict, race: dict, photos: list) -> list:
+def get_foto_start_for_race(race: dict, photos: list) -> list:
     """Loop throgh photos and return relevant finish photo(s)."""
     fotos = []
     for photo in photos:
@@ -307,7 +302,7 @@ def get_foto_start_for_race(user: dict, race: dict, photos: list) -> list:
     return fotos
 
 
-def get_finish_rank_from_photos(user: dict, photos: list, camera_side: str) -> list:
+def get_finish_rank_from_photos(photos: list, camera_side: str) -> list:
     """Loop throgh photos and return bib(s) in sorted order."""
     biblist = []
     for photo in photos:
@@ -328,7 +323,7 @@ async def update_result(user: dict, event: dict, form: dict) -> str:
     delete_result_list = []
     add_result_list = []
     race_order = form["race_order"]
-    for x in form.keys():
+    for x in form:
         any_change = True
         if x.startswith(f"{race_order}_form_rank_"):
             new_bib = form[x]
@@ -370,7 +365,7 @@ async def update_result(user: dict, event: dict, form: dict) -> str:
                 }
                 add_result_list.append(new_entry)
     if len(delete_result_list) > 0 or len(add_result_list) > 0:
-        informasjon = await TimeEventsService().update_finish_time_events(user, delete_result_list, add_result_list)  # type: ignore
+        informasjon = await TimeEventsService().update_finish_time_events(user, delete_result_list, add_result_list)
     else:
         informasjon = "Ingen oppdateringer"
     return informasjon

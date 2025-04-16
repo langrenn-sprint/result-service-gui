@@ -19,6 +19,8 @@ class CsvList(web.View):
     async def get(self) -> web.Response:
         """Ready route function."""
         informasjon = ""
+        fields = []
+        csvdata = []
         try:
             event_id = self.request.rel_url.query["event_id"]
             action = self.request.rel_url.query["action"]
@@ -63,7 +65,7 @@ class CsvList(web.View):
 
 def get_fields_raceplan() -> list:
     """Return field for display."""
-    fields = [
+    return [
         "raceclass",
         "order",
         "start_time",
@@ -73,24 +75,22 @@ def get_fields_raceplan() -> list:
         "heat",
         "rule",
     ]
-    return fields
 
 
 def get_fields_startlist() -> list:
     """Return field for display."""
-    fields = [
+    return [
         "bib",
         "starting_position",
         "scheduled_start_time",
         "name",
         "club",
     ]
-    return fields
 
 
 def get_fields_contestants() -> list:
     """Return field for display."""
-    fields = [
+    return [
         "bib",
         "first_name",
         "last_name",
@@ -105,12 +105,11 @@ def get_fields_contestants() -> list:
         "id",
         "seeding_points",
     ]
-    return fields
 
 
 def get_fields_results() -> list:
     """Return field for result display."""
-    fields = [
+    return [
         "rank",
         "bib",
         "name",
@@ -119,4 +118,3 @@ def get_fields_results() -> list:
         "round",
         "minidrett_id",
     ]
-    return fields

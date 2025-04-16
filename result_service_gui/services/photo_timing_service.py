@@ -58,14 +58,14 @@ class PhotoTimingService:
 
                 except Exception as e:
                     informasjon = f"create_time_event_from_photo: Kunne ikke opprette passering automatisk {photo} - {e}"
-                    logging.error(informasjon)
+                    logging.exception(informasjon)
 
             # delete old results - if new results exists
             delete_result_list = []
             if len(add_result_list) > 0:
                 results = race["results"]
                 if len(results) > 0:
-                    if "Finish" in results.keys():
+                    if "Finish" in results:
                         finish_ranks = results["Finish"]["ranking_sequence"]
                         # check if racer already is in result list
                         for rank_event in finish_ranks:
@@ -76,5 +76,5 @@ class PhotoTimingService:
             )
         except Exception as e:
             informasjon = f"create_time_event_from_photo: {e}"
-            logging.error(informasjon)
+            logging.exception(informasjon)
         return informasjon

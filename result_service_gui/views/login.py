@@ -1,13 +1,13 @@
 """Resource module for login view."""
 
 import logging
-import os
 
-from aiohttp import web
 import aiohttp_jinja2
+from aiohttp import web
 from aiohttp_session import new_session
 
 from result_service_gui.services import UserAdapter
+
 from .utils import check_login_open
 
 
@@ -32,14 +32,12 @@ class Login(web.View):
         user = await check_login_open(self)
 
         event = {"name": "Administrasjon", "organiser": "Ikke valgt"}
-        GOOGLE_OAUTH_CLIENT_ID = str(os.getenv("GOOGLE_OAUTH_CLIENT_ID"))
 
         return await aiohttp_jinja2.render_template_async(
             "login.html",
             self.request,
             {
                 "action": action,
-                "GOOGLE_OAUTH_CLIENT_ID": GOOGLE_OAUTH_CLIENT_ID,
                 "lopsinfo": "Login",
                 "event": event,
                 "event_id": event_id,
@@ -89,7 +87,7 @@ class Login(web.View):
                     },
                 )
         except Exception as e:
-            logging.error(f"Error: {e}")
+            logging.exception("Error")
             informasjon = f"Det har oppstått en feil - {e.args}."
             result = 400
         return web.HTTPSeeOther(location=f"/?informasjon={informasjon}")

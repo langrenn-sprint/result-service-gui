@@ -1,6 +1,6 @@
 """Album data class module."""
 
-from marshmallow import fields, post_load, Schema
+from marshmallow import Schema, fields, post_load
 
 from .changelog import Changelog
 
@@ -16,7 +16,7 @@ class Album:
         camera_position,
         changelog,
         cover_photo_url,
-        id,
+        a_id,
         last_sync_time,
         place,
         title,
@@ -28,7 +28,7 @@ class Album:
         self.camera_position = camera_position
         self.changelog = changelog
         self.cover_photo_url = cover_photo_url
-        self.id = id
+        self.id = a_id
         self.last_sync_time = last_sync_time
         self.place = place
         self.title = title
@@ -45,12 +45,12 @@ class AlbumSchema(Schema):
     event_id = fields.String()
     changelog = fields.Nested(Changelog(many=True), allow_none=True)
     cover_photo_url = fields.String(allow_none=True)
-    id = fields.String()
+    a_id = fields.String()
     last_sync_time = fields.DateTime(allow_none=True)
     place = fields.String(allow_none=True)
     title = fields.String(allow_none=True)
 
     @post_load
-    def make_user(self, data, **kwargs: str) -> Album:
+    def make_user(self, data) -> Album:
         """Post load to return model class."""
         return Album(**data)

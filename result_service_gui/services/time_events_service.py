@@ -40,8 +40,7 @@ class TimeEventsService:
             )
         )
         for template in current_templates:
-            id = await TimeEventsAdapter().delete_time_event(token, template["id"])
-            logging.debug(f"Deleted template time_event id {id}")
+            await TimeEventsAdapter().delete_time_event(token, template["id"])
 
         # 2. get list of all races and loop, except finals.
         races = await RaceplansAdapter().get_all_races(token, event["id"])
@@ -59,7 +58,7 @@ class TimeEventsService:
                     for x in range(1, race["max_no_of_contestants"] + 1):
                         time_event["rank"] = x
                         next_start_entry = get_next_start_entry(
-                            token, time_event, races
+                            time_event, races
                         )
                         logging.debug(f"Time_event: {time_event}")
                         logging.debug(f"Start_entry: {next_start_entry}")
@@ -74,8 +73,7 @@ class TimeEventsService:
                             )
                             logging.debug(f"Created template: {new_t_e['status']}")
                             i += 1
-        informasjon = f"Suksess! Opprettet {i} templates. "
-        return informasjon
+        return f"Suksess! Opprettet {i} templates. "
 
     async def create_start_time_event(self, token: str, time_event: dict) -> str:
         """Validate, enrich and create new start time_event."""
@@ -97,10 +95,9 @@ class TimeEventsService:
             for dns_time_event in dns_time_events:
                 if dns_time_event["timing_point"] == "DNS":
                     # delete
-                    id = await TimeEventsAdapter().delete_time_event(
+                    await TimeEventsAdapter().delete_time_event(
                         token, dns_time_event["id"]
                     )
-                    logging.debug(f"Deleted DNS time_event id {id}")
                     informasjon += " Slettet DNS registrering. "
 
         return informasjon
@@ -123,7 +120,6 @@ class TimeEventsService:
             )
             for time_event in add_result_list:
                 informasjon += await create_finish_time_event(
-                    self,
                     user["token"],
                     time_event,
                     next_start_entries,
@@ -133,7 +129,7 @@ class TimeEventsService:
 
 
 async def create_finish_time_event(
-    self, token: str, time_event: dict, next_start_entries: list, startlist_id: str
+    token: str, time_event: dict, next_start_entries: list, startlist_id: str
 ) -> str:
     """Validate, enrich and create or update finish time_event."""
     contestant = await ContestantsAdapter().get_contestant_by_bib(
@@ -181,15 +177,14 @@ async def create_finish_time_event(
             if new_t_e["status"] == "OK":
                 informasjon += f"{new_t_e['bib']}: {new_t_e['rank']} pl. "
                 result_ok = True
-            else:
-                # error, return info to user
-                if new_t_e["changelog"]:
-                    informasjon += f"{new_t_e['changelog'][-1]['comment']} <br>"
+            # error, return info to user
+            elif new_t_e["changelog"]:
+                informasjon += f"{new_t_e['changelog'][-1]['comment']} <br>"
             if time_event["next_race"] != "Ute" and result_ok:
                 await StartAdapter().create_start_entry(token, next_start_entry)
         except Exception as e:
             # Functional error - return information to user.
-            logging.error(f"ERROR: {e}")
+            logging.exception("Error")
             informasjon = f"ERROR: {e}. "
     return informasjon
 
@@ -209,22 +204,21 @@ async def delete_result(user: dict, time_event_id: str) -> str:
             )
             for start_entry in start_entries:
                 if time_event["bib"] == start_entry["bib"]:
-                    id = await StartAdapter().delete_start_entry(
+                    await StartAdapter().delete_start_entry(
                         user["token"], start_entry["race_id"], start_entry["id"]
                     )
                     informasjon = f"Slettet neste start ({time_event['bib']}). "
                     logging.debug(f"Deleted start - result {id}")
-        id2 = await TimeEventsAdapter().delete_time_event(user["token"], time_event_id)
-        logging.debug(f"Time event deleted: {id2} - {time_event_id}")
+        await TimeEventsAdapter().delete_time_event(user["token"], time_event_id)
         informasjon = f"Slettet passering ({time_event['bib']}). {informasjon}"
-    except Exception as e:
+    except Exception:
         informasjon = "Time event allerede slettet."
-        logging.error(f"Error in delete_result: {e}")
+        logging.exception("Error in delete_result")
 
     return informasjon
 
 
-def get_next_start_entry(token: str, time_event: dict, races: list) -> dict:
+def get_next_start_entry(time_event: dict, races: list) -> dict:
     """Generate start_entry - empty result if not qualified."""
     start_entry = {}
 
@@ -246,16 +240,15 @@ def get_next_start_entry(token: str, time_event: dict, races: list) -> dict:
             # now we have next round - get race id
             time_event["rank_qualified"] = time_event["rank"] - ilimitplace
             start_entry = calculate_next_start_entry(
-                token, race_item, time_event, races
+                race_item, time_event, races
             )
             break
-        else:
-            ilimitplace = limit_rank
+        ilimitplace = limit_rank
     return start_entry
 
 
 def calculate_next_start_entry(
-    token: str, race_item: dict, time_event: dict, races: list
+    race_item: dict, time_event: dict, races: list
 ) -> dict:
     """Identify next race_id and generate start entry data."""
     start_entry = {

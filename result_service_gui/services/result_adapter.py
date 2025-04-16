@@ -3,9 +3,7 @@
 import logging
 import os
 
-from aiohttp import ClientSession
-from aiohttp import hdrs
-from aiohttp import web
+from aiohttp import ClientSession, hdrs, web
 from multidict import MultiDict
 
 RACE_HOST_SERVER = os.getenv("RACE_HOST_SERVER", "localhost")

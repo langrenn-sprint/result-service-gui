@@ -2,10 +2,11 @@
 
 import logging
 
-from aiohttp import web
 import aiohttp_jinja2
+from aiohttp import web
 
 from result_service_gui.services import EventsAdapter
+
 from .utils import check_login_open, get_event
 
 
@@ -45,5 +46,5 @@ class Main(web.View):
                 },
             )
         except Exception as e:
-            logging.error(f"Error: {e}. Redirect to login page.")
+            logging.exception("Error. Redirect to login page.")
             return web.HTTPSeeOther(location=f"/login?informasjon={e}")

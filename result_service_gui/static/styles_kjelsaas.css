@@ -35,12 +35,14 @@ li:hover, .dropdown:hover, .dropbtn:hover {
   color: white;
   background-color: #00247d;
   padding: 4px;
+  font-weight: bold;
 }
 
 #headerblack {
   color: black;
   background-color: #ffb549;
   padding: 4px;
+  font-weight: bold;
 }
 
 #headercollapse {

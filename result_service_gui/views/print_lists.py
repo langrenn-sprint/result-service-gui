@@ -2,14 +2,15 @@
 
 import logging
 
-from aiohttp import web
 import aiohttp_jinja2
+from aiohttp import web
 
 from result_service_gui.services import (
     RaceclassesAdapter,
     RaceclassResultsAdapter,
     RaceplansAdapter,
 )
+
 from .utils import (
     check_login_open,
     get_event,
@@ -36,8 +37,8 @@ class PrintLists(web.View):
             _show = self.request.rel_url.query["show_graphics"]
             if _show in ["False", "false"]:
                 show_graphics = False
-        except Exception as e:
-            logging.debug(f"Missing param ignored: {e}")
+        except Exception:
+            logging.debug("Missing param ignored")
 
         try:
             user = await check_login_open(self)
@@ -51,11 +52,11 @@ class PrintLists(web.View):
             try:
                 valgt_klasse = self.request.rel_url.query["klasse"]
             except Exception:
-                valgt_klasse = ""  # noqa: F841
+                valgt_klasse = ""
             try:
                 valgt_runde = self.request.rel_url.query["runde"]
             except Exception:
-                valgt_runde = ""  # noqa: F841
+                valgt_runde = ""
 
             raceclasses = await RaceclassesAdapter().get_raceclasses(
                 user["token"], event_id
@@ -87,19 +88,18 @@ class PrintLists(web.View):
                 i_keep_first = 0
                 try:
                     i_keep_first = int(self.request.rel_url.query["keep_first"])
-                except Exception as e:
-                    logging.debug(f"Missing param ignored: {e}")
+                except Exception:
+                    logging.debug("Missing param ignored")
                 try:
                     resultlists = await get_resultlists(
-                        user,
                         event_id,
                         action,
                         valgt_klasse,
                         i_keep_first,
                     )
-                except Exception as e:
-                    logging.error(f"Functional error: {e}")
+                except Exception:
                     informasjon = "Ingen resultatlister funnet."
+                    logging.exception(informasjon)
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
@@ -121,12 +121,11 @@ class PrintLists(web.View):
                 },
             )
         except Exception as e:
-            logging.error(f"Error: {e}. Redirect to main page.")
+            logging.exception("Error. Redirect to main page.")
             return web.HTTPSeeOther(location=f"/?informasjon={e}")
 
 
 async def get_resultlists(
-    user: dict,
     event_id: str,
     action: str,
     valgt_klasse: str,
@@ -163,7 +162,7 @@ async def get_races(
     races = []
     if action == "raceplan":
         for race in _tmp_races:
-            if (race["raceclass"] == valgt_klasse) or ("" == valgt_klasse):
+            if (race["raceclass"] == valgt_klasse) or (valgt_klasse == ""):
                 race["next_race"] = get_qualification_text(race)
                 race["start_time"] = race["start_time"][-8:]
                 race["first_in_group"] = check_group_order(race, raceclasses)
@@ -193,10 +192,6 @@ def check_group_order(race: dict, raceclasses: list) -> bool:
         group_index = 0
         for raceclass in raceclasses:
             if race["raceclass"] == raceclass["name"]:
-                if raceclass["group"] > group_index:
-                    return True
-                else:
-                    return False
-            else:
-                group_index = raceclass["group"]
+                return raceclass["group"] > group_index
+            group_index = raceclass["group"]
     return False

@@ -10,6 +10,7 @@ from result_service_gui.services import (
     RaceplansAdapter,
     TimeEventsAdapter,
 )
+
 from .utils import (
     check_login,
 )
@@ -20,6 +21,7 @@ class TimingInfo(web.View):
 
     async def get(self) -> web.Response:
         """Get route function that return the passeringer page."""
+        response = {}
         try:
             action = self.request.rel_url.query["action"]
         except Exception:
@@ -39,9 +41,9 @@ class TimingInfo(web.View):
             json_response = json.dumps(response)
             return web.Response(body=json_response)
 
-        except Exception as e:
+        except Exception:
             error_message = "Det oppstod en feil ved henting av DNS"
-            logging.error(f"Error: {e}. {error_message}")
+            logging.exception(f"Error. {error_message}")
             return web.Response(body=error_message)
 
 

@@ -23,7 +23,7 @@ async def check_login(self) -> dict:
     loggedin = UserAdapter().isloggedin(session)
     if not loggedin:
         informasjon = "Logg inn for å se denne siden"
-        raise web.HTTPSeeOther(location=f"/login?informasjon={informasjon}")  # type: ignore
+        raise web.HTTPSeeOther(location=f"/login?informasjon={informasjon}")
 
     return {
         "name": session["name"],
@@ -309,7 +309,7 @@ async def get_races_for_print(
     for race in _tmp_races:
         for raceclass in raceclasses:
             if race["raceclass"] == raceclass["name"]:
-                if (race["raceclass"] == valgt_klasse) or ("" == valgt_klasse):
+                if (race["raceclass"] == valgt_klasse) or (valgt_klasse == ""):
                     race = await RaceplansAdapter().get_race_by_id(
                         user["token"], race["id"]
                     )
@@ -319,7 +319,7 @@ async def get_races_for_print(
                     if action == "live":
                         race["list_type"] = "start"
                         if race["results"]:
-                            if "Finish" in race["results"].keys():  # type: ignore
+                            if "Finish" in race["results"]:
                                 race["list_type"] = "result"
                     else:
                         race["list_type"] = action
@@ -401,8 +401,7 @@ async def create_start(user: dict, form: dict) -> str:
                     reason=f"405 Bib already exists in round - {race['round']}"
                 )
 
-        id = await StartAdapter().create_start_entry(user["token"], new_start)
-        logging.debug(f"create_start {id} - {new_start}")
+        await StartAdapter().create_start_entry(user["token"], new_start)
         informasjon = f"Lagt til nr {bib}"
 
         # update previous result with correct "videre til"
@@ -425,10 +424,9 @@ async def create_start(user: dict, form: dict) -> str:
                     f"{new_race['round']}{new_race['index']}{new_race['heat']}"
                 )
             latest_result["next_race_position"] = new_start["starting_position"]
-            id = await TimeEventsAdapter().update_time_event(
+            await TimeEventsAdapter().update_time_event(
                 user["token"], latest_result["id"], latest_result
             )
-            logging.debug(f"updated time event {id} - {latest_result}")
             informasjon += " Oppdatert videre til fra forrige runde."
     else:
         informasjon = f"Error. Fant ikke deltaker med startnr {form['bib']}."
@@ -437,6 +435,7 @@ async def create_start(user: dict, form: dict) -> str:
 
 async def get_new_race_info(user: dict, form: dict) -> dict:
     """Extract start pos from form or get best available."""
+    startlist_id = ""
     try:
         starting_position = int(form["starting_position"])
         startlist_id = form["startlist_id"]
@@ -458,27 +457,23 @@ async def get_new_race_info(user: dict, form: dict) -> dict:
                 if i not in start_positions_taken:
                     starting_position = i
                     break
-    new_race_info = {
+    return {
         "race_id": race_id,
         "starting_position": starting_position,
         "startlist_id": startlist_id,
         "start_time": start_time,
     }
-    return new_race_info
 
 
 async def delete_start(user: dict, form: dict) -> str:
     """Extract form data and delete one start event."""
-    informasjon = "delete_start"
-    id = await StartAdapter().delete_start_entry(
+    await StartAdapter().delete_start_entry(
         user["token"], form["race_id"], form["start_id"]
     )
-    logging.debug(f"delete_start {id} - {form}")
-    informasjon = "Slettet start."
-    return informasjon
+    return "Slettet start."
 
 
-def get_foto_finish_for_race(user: dict, race: dict, photos: list) -> list:
+def get_foto_finish_for_race(race: dict, photos: list) -> list:
     """Loop throgh photos and return relevant finish photo(s)."""
     fotos = []
     for photo in photos:
@@ -533,18 +528,15 @@ def get_raceclass_progress(races_q: list, races_s: list, races_f: list) -> int:
     # 5 all results ok */
     # 6 error in race results */
     for race in races_f:
-        if race["progress"] > raceclass_progress:
-            raceclass_progress = race["progress"]
+        raceclass_progress = max(raceclass_progress, race["progress"])
         if race["progress"] in [4, 6]:
             return race["progress"]  # partial or error results
     for race in races_s:
-        if race["progress"] > raceclass_progress:
-            raceclass_progress = race["progress"]
+        raceclass_progress = max(raceclass_progress, race["progress"])
         if race["progress"] in [4, 6]:
             return race["progress"]  # partial or error results
     for race in races_q:
-        if race["progress"] > raceclass_progress:
-            raceclass_progress = race["progress"]
+        raceclass_progress = max(raceclass_progress, race["progress"])
         if race["progress"] in [4, 6]:
             return race["progress"]  # partial or error results
     return raceclass_progress
@@ -580,7 +572,7 @@ def get_race_summary(event: dict, race: dict) -> dict:
     else:
         race_name = f"{race['round']}{race['index']}{race['heat']}"
 
-    race_summary = {
+    return {
         "name": race_name,
         "order": race["order"],
         "count_starts": count_starts,
@@ -590,7 +582,6 @@ def get_race_summary(event: dict, race: dict) -> dict:
         "progress": race_progress,
         "start_time": race["start_time"][-8:],
     }
-    return race_summary
 
 
 def get_race_progress(
@@ -612,9 +603,7 @@ def get_race_progress(
     time_now = EventsAdapter().get_local_time(event, "log")
     start_time = race["start_time"]
     if start_time > time_now:
-        if count_results > 0:
-            progress = 6
-        elif count_dnf > 0:
+        if count_results > 0 or count_dnf > 0:
             progress = 6
         elif count_dns == 0:
             progress = 1

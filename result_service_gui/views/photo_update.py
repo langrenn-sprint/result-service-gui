@@ -5,6 +5,7 @@ import logging
 from aiohttp import web
 
 from result_service_gui.services import FotoService
+
 from .utils import (
     check_login,
 )
@@ -29,5 +30,5 @@ class PhotoUpdate(web.View):
                 logging.debug(f"Un-Starred photo - {res}")
         except Exception as e:
             result = f"Det har oppstått en feil: {e}"
-            logging.error(f"Un-Starred photo - {e}")
+            logging.exception("Un-Starred photo")
         return web.Response(text=result)

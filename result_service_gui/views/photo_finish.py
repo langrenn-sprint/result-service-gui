@@ -2,14 +2,15 @@
 
 import logging
 
-from aiohttp import web
 import aiohttp_jinja2
+from aiohttp import web
 
 from result_service_gui.services import (
     PhotosAdapter,
     RaceclassesAdapter,
     RaceplansAdapter,
 )
+
 from .utils import (
     check_login,
     get_enrichced_startlist,
@@ -85,7 +86,7 @@ class PhotoFinish(web.View):
                             user, race["id"]
                         )
                         race["photo_finish"] = get_foto_finish_for_race(
-                            user, race, foto
+                            race, foto
                         )
                         current_races.append(race)
 
@@ -109,7 +110,7 @@ class PhotoFinish(web.View):
                 },
             )
         except Exception as e:
-            logging.error(f"Error: {e}. Redirect to main page.")
+            logging.exception("Error. Redirect to main page.")
             return web.HTTPSeeOther(location=f"/?informasjon={e}")
 
 

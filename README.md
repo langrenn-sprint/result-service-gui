@@ -1,48 +1,45 @@
 # webserver
 
-Her finner du en enkel webserver som generer html basert på csv-filer i test-data
+Her finner du en enkel webserver som generer html sider basert på innhold fra backend tjenester event-service, user-service, competition-format-service, race-service og photo-service.
 
 ## Slik går du fram for å kjøre dette lokalt
 
-## Utvikle og kjøre lokalt
+## Usage example
 
-### Krav til programvare
-
-- [pyenv](https://github.com/pyenv/pyenv) (recommended)
-- [poetry](https://python-poetry.org/)
-- [nox](https://nox.thea.codes/en/stable/)
-- [nox-poetry](https://pypi.org/project/nox-poetry/)
-
-### Installere programvare og sette miljøvariable
-
-```Shell
-% git clone https://github.com/langrenn-sprint/result-service-gui.git
-% cd evnt-service-gui
-% pyenv install 3.10
-% pyenv local 3.10
-% pipx install poetry
-% pipx install nox
-% pipx inject nox nox-poetry
-% poetry install
+```Zsh
+% curl -H "Content-Type: application/json" \
+  -X POST \
+  --data '{"username":"admin","password":"passw123"}' \
+  http://localhost:8080/login
+% export ACCESS="" #token from response
+% curl -H "Content-Type: application/json" \
+  -H "Authorization: Bearer $ACCESS" \
+  -X POST \
+  --data @tests/files/user.json \
+  http://localhost:8080/users
+% curl -H "Authorization: Bearer $ACCESS"  http://localhost:8080/users
 ```
 
+## Architecture
 
+Layers:
 
-## oppdatere
+- views: routing functions, maps representations to/from model
+- services: enforce validation, calls adapter-layer for storing/retrieving objects
+- models: model-classes
+- adapters: adapters to external services
 
-```Shell
-% poetry update / poetry add <module>
-```
+## Environment variables
 
-## Miljøvariable
+To run the service locally, you need to supply a set of environment variables. A simple way to solve this is to supply a .env file in the root directory.
 
-```Shell
-Du må sette opp ei .env fil med miljøvariable. Eksempel:
+A minimal .env:
+
+```Zsh
 JWT_SECRET=secret
 ERROR_FILE=error.log
 ADMIN_USERNAME=admin
 ADMIN_PASSWORD=password
-GOOGLE_APPLICATION_CREDENTIALS=/home/heming/github/secrets/application_default_credentials.json
 COMPETITION_FORMAT_HOST_PORT=8094
 COMPETITION_FORMAT_HOST_SERVER=localhost
 DB_USER=admin
@@ -52,65 +49,89 @@ EVENTS_HOST_PORT=8082
 PHOTOS_HOST_SERVER=localhost
 PHOTOS_HOST_PORT=8092
 FERNET_KEY=23EHUWpP_MyKey_MyKeyhxndWqyc0vO-MyKeySMyKey=
-GOOGLE_OAUTH_CLIENT_ID=12345My-ClientId12345.apps.googleusercontent.com
-SERVICEBUS_NAMESPACE_CONNECTION_STR=conn_str
 JWT_EXP_DELTA_SECONDS=3600
 LOGGING_LEVEL=INFO
 RACE_HOST_SERVER=localhost
 RACE_HOST_PORT=8088
 USERS_HOST_SERVER=localhost
 USERS_HOST_PORT=8086
-GOOGLE_PUBSUB_NUM_MESSAGES=20
 ```
 
-### Virtual env - if required
-Install: curl https://pyenv.run | bash 
-python -m venv .vienv 
-source .vienv/bin/activate
+## Requirement for development
 
-### Config gcloud
+Install [uv](https://docs.astral.sh/uv/), e.g.:
 
-```Shell
-gcloud -v
-gcloud auth login
-gcloud config set project langrenn-sprint
-gcloud auth configure-docker
+```Zsh
+% curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+## If required - virtual environment
+
+Install: curl <https://pyenv.run> | bash
+Create: python -m venv .venv (replace .venv with your preferred name)
+Install python 3.12: pyenv install 3.12
+Activate:
+source .venv/bin/activate
+
+## Then install the dependencies:
+
+```Zsh
+% uv sync
+```
+
+## Running the API locally
+
+Start the server locally:
+
+```Zsh
+% uv run adev runserver -p 8090 result_service_gui
+```
+
+## Running the API in a wsgi-server (gunicorn)
+
+```Zsh
+% uv run gunicorn result_service_gui:create_app --bind localhost:8080 --worker-class aiohttp.GunicornWebWorker
+```
+
+## Running the wsgi-server in Docker
+
+To build and run the api in a Docker container:
+
+```Zsh
+% docker build -t langrenn-sprint/result-service-gui:latest .
+% docker run --env-file .env -p 8080:8080 -d langrenn-sprint/result-service-gui:latest
+```
+
+The easier way would be with docker-compose:
+
+```Zsh
+docker compose up --build
+```
+
+## Running tests
+
+We use [pytest](https://docs.pytest.org/en/latest/) for contract testing.
+
+To run linters, checkers and tests:
+
+```Zsh
+% uv run poe release
+```
+
+To run tests with logging, do:
+
+```Zsh
+% uv run pytest -m integration -- --log-cli-level=DEBUG
+```
 
 ### Starte services i docker
-sudo docker-compose pull #oppdatere images
-sudo docker-compose up --build #bygge og debug modus
-sudo docker-compose up -d #kjøre-modus
+docker compose pull #oppdatere images
+docker compose up --build #bygge og debug modus
+docker compose up -d #kjøre-modus
 
 ### Oppdatere services i docker
-sudo docker-compose stop #oppdatere images
-sudo docker-compose pull #oppdatere images
-sudo git pull #result-service-gui
-sudo docker-compose up --build #bygge og debug modus
-sudo docker-compose stop #oppdatere images
-sudo docker-compose up -d #kjøre-modus
-
-
-Denne fila _skal_ ligge i .dockerignore og .gitignore
-### Kjøre webserver lokalt
-```
-
-## Start lokal webserver mha aiohttp-devtools(adev)
-
-```Shell
-% source .env
-% poetry run adev runserver -p 8090 result_service_gui
-% docker-compose up event-service race-service user-service photo-service mongodb competition-format-service event-service-gui
-
-# Optional - virtual env.
-python3 -m venv .venv  # Creates the virtual environment
-source .venv/bin/activate  # Activates the virtual environment (Linux/macOS)
-```
-
-### Teste manuelt
-Brukermanualer finnes på https://langrenn-sprint.github.io/docs
-Enten åpne din nettleser på <http://localhost:8090/>
-
-Eller via curl:
-
-```Shell
-% curl -i http://localhost:8090/
+docker compose down #stoppe images
+docker compose pull #oppdatere images
+docker compose up --build #bygge og debug modus
+docker compose stop #oppdatere images
+docker compose up -d #kjøre-modus

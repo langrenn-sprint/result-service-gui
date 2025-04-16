@@ -2,13 +2,14 @@
 
 import logging
 
-from aiohttp import web
 import aiohttp_jinja2
+from aiohttp import web
 
 from result_service_gui.services import (
     PhotosAdapter,
     RaceclassesAdapter,
 )
+
 from .utils import (
     check_login_open,
     get_event,
@@ -35,7 +36,7 @@ class Photos(web.View):
             try:
                 valgt_klasse = self.request.rel_url.query["klasse"]
             except Exception:
-                valgt_klasse = ""  # noqa: F841
+                valgt_klasse = ""
             try:
                 valgt_startnr = int(self.request.rel_url.query["startnr"])
             except Exception:
@@ -70,5 +71,5 @@ class Photos(web.View):
                 },
             )
         except Exception as e:
-            logging.error(f"Error: {e}. Redirect to main page.")
+            logging.exception("Error. Redirect to main page.")
             return web.HTTPSeeOther(location=f"/?informasjon={e}")

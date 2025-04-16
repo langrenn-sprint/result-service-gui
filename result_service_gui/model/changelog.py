@@ -1,6 +1,6 @@
 """Changelog data class module."""
 
-from marshmallow import fields, Schema
+from marshmallow import Schema, fields
 
 
 class Changelog(Schema):

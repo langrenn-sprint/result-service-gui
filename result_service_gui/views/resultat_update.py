@@ -11,6 +11,7 @@ from result_service_gui.services import (
     RaceclassResultsService,
     TimeEventsAdapter,
 )
+
 from .utils import check_login, get_event, get_race_kpis
 
 
@@ -20,13 +21,13 @@ class ResultatUpdate(web.View):
     async def post(self) -> web.Response:
         """Post route function that updates a collection of photos."""
         informasjon = ""
+        form = dict(await self.request.post())
         try:
-            form = await self.request.post()
-            action = form["action"]
+            action = str(form["action"])
             user = await check_login(self)
             if action in ["DNF", "DNS", "Start"]:
-                informasjon = await create_event(user, form, action)  # type: ignore
-                if "json" in form.keys():
+                informasjon = await create_event(user, form, action)
+                if "json" in form:
                     event_id = str(form["event_id"])
                     event = await get_event(user, event_id)
                     runde = str(form["runde"])
@@ -49,20 +50,19 @@ class ResultatUpdate(web.View):
                 raceclass_name = str(form["raceclass"])
                 res = await RaceclassResultsService().create_raceclass_results(
                     user["token"], event, raceclass_name
-                )  # type: ignore
+                )
                 logging.debug(f"Resultat for {raceclass_name} er publisert. {res}")
                 informasjon = f"Resultat for {raceclass_name} er publisert. "
         except Exception as e:
             informasjon = f"Det har oppstått en feil: {e}"
-            logging.error(f"Result update - {e}")
-        if "json" in form.keys():
+            logging.exception("Result update")
+        if "json" in form:
             response = {
                 "informasjon": informasjon,
             }
             json_response = json.dumps(response)
             return web.Response(text=json_response)
-        else:
-            return web.Response(text=informasjon)
+        return web.Response(text=informasjon)
 
 
 async def create_event(user: dict, form: dict, action: str) -> str:
@@ -111,10 +111,9 @@ async def create_event(user: dict, form: dict, action: str) -> str:
             for dns_time_event in dns_time_events:
                 if dns_time_event["timing_point"] == "DNS":
                     # delete
-                    id = await TimeEventsAdapter().delete_time_event(
+                    await TimeEventsAdapter().delete_time_event(
                         user["token"], dns_time_event["id"]
                     )
-                    logging.debug(f"Deleted DNS time_event id {id}")
                     informasjon += " Slettet DNS registrering. "
 
     else:

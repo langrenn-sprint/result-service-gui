@@ -2,8 +2,8 @@
 
 import logging
 
-from aiohttp import web
 import aiohttp_jinja2
+from aiohttp import web
 
 from result_service_gui.services import (
     EventsAdapter,
@@ -12,6 +12,7 @@ from result_service_gui.services import (
     StartAdapter,
     TimeEventsService,
 )
+
 from .utils import (
     check_login,
     get_enrichced_startlist,
@@ -89,32 +90,32 @@ class Timing(web.View):
                 },
             )
         except Exception as e:
-            logging.error(f"Error: {e}. Redirect to main page.")
+            logging.exception("Error. Redirect to main page.")
             return web.HTTPSeeOther(location=f"/?informasjon={e}")
 
     async def post(self) -> web.Response:
         """Post route function that register started or DNS."""
         # check login
         user = await check_login(self)
+        form = dict(await self.request.post())
+        event_id = str(form["event_id"])
+        action = str(form["action"])
+        valgt_heat = str(form["heat"])
         informasjon = ""
         try:
-            form = await self.request.post()
-            event_id = str(form["event_id"])
             event = await get_event(user, event_id)
-            action = str(form["action"])
-            valgt_heat = str(form["heat"])
 
             if "finish" in action:
                 informasjon = "Funksjon ikke støttet, bruk hovedside for tidtaker"
             elif action == "start":
-                informasjon = await create_start_time_events_for_race(user, event, form)  # type: ignore
+                informasjon = await create_start_time_events_for_race(user, event, form)
             elif action == "dns_manual":
-                informasjon = await create_dns_time_events_manual(user, event, form)  # type: ignore
+                informasjon = await create_dns_time_events_manual(user, event, form)
             else:
                 informasjon = "Ugylding action - ingen endringer"
 
         except Exception as e:
-            logging.error(f"Error: {e}")
+            logging.exception("Error")
             informasjon = f"Det har oppstått en feil - {e.args}."
             error_reason = str(e)
             if error_reason.startswith("401"):
@@ -147,7 +148,7 @@ async def create_dns_time_events_manual(user: dict, event: dict, form: dict) -> 
         "changelog": [],
     }
     i = 0
-    if "bib" in form.keys():
+    if "bib" in form:
         biblist = form["bib"].rsplit(" ")
         for bib in biblist:
             try:
@@ -179,22 +180,19 @@ async def create_dns_time_events_manual(user: dict, event: dict, form: dict) -> 
                             f"{race['raceclass']}-{race['round']}{race['index']}{race['heat']}"
                         )
 
-                    id = await TimeEventsService().create_start_time_event(
+                    await TimeEventsService().create_start_time_event(
                         user["token"], request_body
                     )
                     i += 1
                     informasjon += f" {request_body['bib']}-{changelog_comment}. "
-                    logging.debug(f"Registrering: {id} - body: {request_body}")
             except Exception as e:
                 informasjon += f"Error: {e}"
 
-    informasjon = f" {i} registreringer lagret. {informasjon}"
-    return informasjon
+    return f" {i} registreringer lagret. {informasjon}"
 
 
 async def create_start_time_events_for_race(user: dict, event: dict, form: dict) -> str:
     """Extract form data and create time_events for start."""
-    informasjon = ""
     time_stamp_now = EventsAdapter().get_local_time(event, "log")
     request_body = {
         "id": "",
@@ -213,10 +211,10 @@ async def create_start_time_events_for_race(user: dict, event: dict, form: dict)
     }
 
     i = 0
-    for x in form.keys():
-        if x.startswith("form_start_"):
-            request_body["bib"] = int(x[11:])
-            if form[x] == "DNS":
+    for key, value in form.items():
+        if key.startswith("form_start_"):
+            request_body["bib"] = int(key[11:])
+            if value == "DNS":
                 # register DNS
                 request_body["timing_point"] = "DNS"
                 changelog_comment = "DNS registrert. "
@@ -232,9 +230,7 @@ async def create_start_time_events_for_race(user: dict, event: dict, form: dict)
                     "comment": changelog_comment,
                 }
             ]
-            id = await TimeEventsService().create_start_time_event(
+            await TimeEventsService().create_start_time_event(
                 user["token"], request_body
             )
-            logging.debug(f"Registrering: {id} - body: {request_body}")
-    informasjon = f" {i} registreringer lagret. "
-    return informasjon
+    return f" {i} registreringer lagret. "

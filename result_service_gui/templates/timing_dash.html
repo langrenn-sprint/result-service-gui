@@ -48,18 +48,21 @@
       xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
 
       var formData = "";
-      formData += "action=pull_google&event_id={{ event_id }}"
+      formData += "action=status&event_id={{ event_id }}"
 
       xhttp.send(formData);
       xhttp.onload = function() {
         try {
           // load new info
-          const info = this.response;
-          document.getElementById("pull_result").innerHTML = "Foto import: " + current_time + " - " + info;
+          const jsonDoc = JSON.parse(this.response);
+          const photo_queue_latest = jsonDoc.photo_queue_latest;
+          document.getElementById("photo_queue_latest").src = photo_queue_latest;
+          const info = jsonDoc.informasjon;
+          document.getElementById("pull_result").innerHTML = info;
         }
         catch(err) {
           if (err.message.indexOf("401") > 0) {
-            document.getElementById("pull_result").innerHTML = "Foto import: Error 401 - Logg inn på nytt.";
+            document.getElementById("pull_result").innerHTML = "Error 401 (integration) - Logg inn på nytt.";
           }
           else {
             document.getElementById("pull_result").innerHTML = err;
@@ -71,7 +74,48 @@
         alert(err);
       }
     }
-</script>
+
+    // Function to handle checkbox state change
+    function handleCheckboxChange() {
+        try {
+
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("POST", "/video_events", true);
+        xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+
+        formData = "action=toggle&event_id={{ event_id }}"
+        var checkBoxPub = document.getElementById("integration_automatic");
+        if (checkBoxPub.checked) {
+          formData = formData + "&integration_start=true"
+        } else {
+          formData = formData + "&integration_stop=true"
+        }
+
+        xhttp.send(formData);
+        xhttp.onload = function() {
+          try {
+            // load new info
+            const jsonDoc = JSON.parse(this.response);
+            const photo_queue_latest = jsonDoc.photo_queue_latest;
+            document.getElementById("photo_queue_latest").src = photo_queue_latest;
+            const info = jsonDoc.informasjon;
+            document.getElementById("pull_result").innerHTML = info;
+          }
+          catch(err) {
+            if (err.message.indexOf("401") > 0) {
+              document.getElementById("pull_result").innerHTML = "Error 401 (integration) - Logg inn på nytt.";
+            }
+            else {
+              document.getElementById("pull_result").innerHTML = err;
+            }
+          }
+        }
+        }
+        catch(err) {
+          alert(err);
+        }
+}
+  </script>
 
 <div id=spacer></div>
 <table cellpadding=8>
@@ -82,27 +126,45 @@
 <div class="w3-row-padding">
   <div class="w3-half">
     {% include "_race_progress.html" %}
-    <table cellpadding=4>
-      <tr>
-        <td colspan=6 id="orange" valign="top">
-          &nbsp;&nbsp;&nbsp;<span id="pull_result"></span>
-        </td>
-      </tr>
-        <tr>
-        <td colspan=6 id="spacer"></td>
-      </tr>
-    </table>
   </div>
   <div class="w3-half">
-    <table cellpadding=4>
+    <table>
       <tr id=headerblue>
-        <td id=table_border colspan=5>Korrigeringer</td>
+        <td colspan=5>Video events - monitor</td>
       </tr>
       <tr>
-        <td id=table_border colspan=5 id=spacer></td>
+        <td colspan=5 id=spacer></td>
       </tr>
       <tr>
-        <td id=table_border>
+        <td colspan=2 id="orange" valign="top">
+          <img id="photo_queue_latest" src="../static/no_image.png" title="Latest photo from vision AI detection" style="width:400px">
+        </td>
+        <td>&nbsp;</td>
+        <td colspan=2 valign="top">
+          <input type="checkbox" id="integration_automatic" onchange="handleCheckboxChange()" {% if service_status.integration_start %}checked{% endif %}>
+          <b>Run integration</b> (sync to Google cloud)
+          {% if service_status.integration_available == "False" %}
+            <span id=info>Warning! Integration service is not detected. Analytics can not be run.</span>
+            {% else %}
+            <span id=info>Mode: {{ service_status.integration_mode }}</span>
+            {% endif %}<br><br>
+          <span id="pull_result"></span>
+        </td>
+      </tr>
+      <tr>
+        <td colspan=5 id=spacer>&nbsp;</td>
+      </tr>
+      <tr>
+        <td colspan=5 id=spacer>&nbsp;</td>
+      </tr>
+      <tr id=headerblue>
+        <td colspan=5>Korrigeringer</td>
+      </tr>
+      <tr>
+        <td colspan=5 id=spacer></td>
+      </tr>
+      <tr>
+        <td>
           <ul>
             <li class=dropdown>
               <a href=javascript:void(0) class=dropbtn>Rediger startliste</a>
@@ -137,6 +199,9 @@
         <td colspan=3>Redigere i starlister - optimalsere: likt antall løpere i heat, fylle opp C-finaler osv.</td>
       </tr>
       <tr>
+        <td colspan=5 id=spacer></td>
+      </tr>
+      <tr>
         <td class=visible_link><a class=visible_link id="mySeeTime" onclick="event_gui_href('mySeeTime', 'raceplans?event_id={{ event_id }}&action=edit_time')" href=>Rediger i tidskjema</a></td>
         <td align="center">
           <a href="" target="_blank">
@@ -144,6 +209,9 @@
           </a>
         </td>
         <td colspan=3>Utsette (eller forsere) kjøreplanen</td>
+      </tr>
+      <tr>
+        <td colspan=5 id=spacer></td>
       </tr>
       <tr>
         <td width=200>
@@ -166,6 +234,9 @@
         <td colspan=3>Til bruk dersom det har vært endringer i resultater etter at finaleheat er registrert.</td>
       </tr>
       <tr>
+        <td colspan=5 id=spacer></td>
+      </tr>
+      <tr>
         <td class=visible_link><a class=visible_link id="myErrReg" onclick="result_gui_href('myErrReg', 'control?event_id={{ event_id }}&action=control')" href=>Feilregistreringer (avansert)</a></td>
         <td align="center">
           <a href="https://youtube.com/clip/UgkxWb6CMvN4Ib-lIGDIO8V8EGFtBrrEBlFj?si=nUyVfV7SZ-asyWgN" target="_blank">
@@ -186,8 +257,8 @@
           <a href="https://youtu.be/sixRb7-tF7Q?si=eX0NGsI0O-JoOSx8" target="_blank"><img src="../static/video.png" title="Video - Overvåke fremdrift" width="20" height="20"> Overvåke fremdrift</a> - NB! Filmen bør ses i sin helhet av den som er hovedansvarlig for tidtaking.<br>
           <a href="https://youtube.com/clip/Ugkxf4OnPAyYJCZcSLaFZ-dKbTiMNyreCFVe?si=R1cUOItLPlsMzdxP" target="_blank"><img src="../static/video.png" title="Video - Publisere resultater" width="20" height="20"> Publisere resultater</a> - Dette skjer normalt automatisk når finalene er ferdige, filmen viser hvordan.<br>
           <a href="https://youtube.com/clip/UgkxYNIbLZqChaJK11T723CrHvhuWlupL-Bk?si=tMO1Ja39q4eSbxHZ" target="_blank"><img src="../static/video.png" title="Video - Delt plassering" width="20" height="20"> Delt plassering</a> - I finaleheat er det mulig å dømme løpere til lik plassering.<br>
-          <a href="" target="_blank"><img src="../static/video.png" title="Video - Mangler!" width="20" height="20"> Studere målfoto</a> - .<br>
-          <a href="" target="_blank"><img src="../static/video.png" title="Video - Mangler!" width="20" height="20"> Live resultater på egne skjermer</a> - .<br>
+          <a href="" target="_blank"><img src="../static/video.png" title="Video - Mangler!" width="20" height="20"> Studere målfoto</a> - oversikt over alle målfoto, sortert på heat.<br>
+          <a href="" target="_blank"><img src="../static/video.png" title="Video - Mangler!" width="20" height="20"> Live resultater på egne skjermer</a> - instruksjoner på hvordan optimalisere visning på skjermer.<br>
         </td>
       </tr>
     </table>
@@ -195,6 +266,7 @@
 </div>
 <script>
     // run scripy to pull events from pub_sub
-    setInterval(pull_events(), 15000);
+    pull_events()
+    setInterval(pull_events(), 5000);
 </script>
 {% endblock content %}

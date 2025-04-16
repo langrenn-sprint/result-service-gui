@@ -2,13 +2,14 @@
 
 import logging
 
-from aiohttp import web
 import aiohttp_jinja2
+from aiohttp import web
 
 from result_service_gui.services import (
     RaceclassesAdapter,
     RaceplansAdapter,
 )
+
 from .utils import (
     check_login,
     create_start,
@@ -34,7 +35,7 @@ class StartEdit(web.View):
         try:
             valgt_runde = self.request.rel_url.query["runde"]
         except Exception:
-            valgt_runde = ""  # noqa: F841
+            valgt_runde = ""
 
         try:
             user = await check_login(self)
@@ -91,7 +92,7 @@ class StartEdit(web.View):
                 },
             )
         except Exception as e:
-            logging.error(f"Error: {e}. Redirect to main page.")
+            logging.exception("Error. Redirect to main page.")
             return web.HTTPSeeOther(location=f"/?informasjon={e}")
 
     async def post(self) -> web.Response:
@@ -99,26 +100,24 @@ class StartEdit(web.View):
         # check login
         user = await check_login(self)
         informasjon = ""
-        valgt_klasse = ""
+        form = dict(await self.request.post())
+        event_id = str(form["event_id"])
+        valgt_klasse = str(form["klasse"])
+        valgt_runde = str(form["runde"])
         action = ""
         try:
-            form = await self.request.post()
-            logging.debug(f"Form {form}")
-            event_id = str(form["event_id"])
-            valgt_klasse = str(form["klasse"])
-            valgt_runde = str(form["runde"])
 
-            if "create_start" in form.keys():
-                informasjon = await create_start(user, form)  # type: ignore
-            elif "delete_start" in form.keys():
-                informasjon = await delete_start(user, form)  # type: ignore
-            elif "move_start" in form.keys():
+            if "create_start" in form:
+                informasjon = await create_start(user, form)
+            elif "delete_start" in form:
+                informasjon = await delete_start(user, form)
+            elif "move_start" in form:
                 informasjon = "Flytting utført: "
-                informasjon += await delete_start(user, form)  # type: ignore
-                informasjon += await create_start(user, form)  # type: ignore
+                informasjon += await delete_start(user, form)
+                informasjon += await create_start(user, form)
 
         except Exception as e:
-            logging.error(f"Error: {e}")
+            logging.exception("Error")
             informasjon = f"Det har oppstått en feil - {e.args}."
             error_reason = str(e)
             if error_reason.startswith("401"):

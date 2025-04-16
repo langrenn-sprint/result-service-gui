@@ -1,11 +1,11 @@
 """Module for contestants adapter."""
 
 import copy
-from http import HTTPStatus
 import logging
 import os
-from typing import Any
 import urllib.parse
+from http import HTTPStatus
+from typing import Any
 
 from aiohttp import ClientSession, hdrs, web
 from multidict import MultiDict

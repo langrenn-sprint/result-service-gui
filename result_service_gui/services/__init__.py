@@ -6,8 +6,6 @@ from .config_adapter import ConfigAdapter
 from .contestants_adapter import ContestantsAdapter
 from .events_adapter import EventsAdapter
 from .foto_service import FotoService
-from .google_cloud_storage_adapter import GoogleCloudStorageAdapter
-from .google_pub_sub_adapter import GooglePubSubAdapter
 from .photo_timing_service import PhotoTimingService
 from .photos_adapter import PhotosAdapter
 from .raceclass_result_adapter import RaceclassResultsAdapter

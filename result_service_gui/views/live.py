@@ -3,8 +3,8 @@
 import logging
 from operator import itemgetter
 
-from aiohttp import web
 import aiohttp_jinja2
+from aiohttp import web
 
 from result_service_gui.services import (
     EventsAdapter,
@@ -12,6 +12,7 @@ from result_service_gui.services import (
     RaceclassResultsService,
     RaceplansAdapter,
 )
+
 from .utils import (
     check_login_open,
     get_event,
@@ -46,7 +47,7 @@ class Live(web.View):
             try:
                 valgt_klasse = self.request.rel_url.query["klasse"]
             except Exception:
-                valgt_klasse = ""  # noqa: F841
+                valgt_klasse = ""
                 informasjon += "Velg klasse for å se live lister."
             try:
                 valgt_startnr = int(self.request.rel_url.query["startnr"])
@@ -97,7 +98,7 @@ class Live(web.View):
                 },
             )
         except Exception as e:
-            logging.error(f"Error: {e}. Redirect to main page.")
+            logging.exception("Error. Redirect to main page.")
             return web.HTTPSeeOther(location=f"/?informasjon={e}")
 
 
@@ -184,9 +185,7 @@ async def get_races_for_live(
         # avoid quarter finals or finals, depending on semi final status
         if valgt_startnr == 0:
             if races_count_q > 4:
-                if semi_results_registered and race["round"] == "Q" and action != "all":
-                    pass
-                elif (
+                if (semi_results_registered and race["round"] == "Q" and action != "all") or (
                     not semi_results_registered
                     and race["round"] == "F"
                     and action != "all"

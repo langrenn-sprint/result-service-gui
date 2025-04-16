@@ -2,13 +2,14 @@
 
 import logging
 
-from aiohttp import web
 import aiohttp_jinja2
+from aiohttp import web
 
 from result_service_gui.services import (
     EventsAdapter,
     RaceclassesAdapter,
 )
+
 from .utils import (
     check_login,
     get_event,
@@ -51,5 +52,5 @@ class PrintDash(web.View):
                 },
             )
         except Exception as e:
-            logging.error(f"Error: {e}. Redirect to main page.")
+            logging.exception("Error. Redirect to main page.")
             return web.HTTPSeeOther(location=f"/?informasjon={e}")
