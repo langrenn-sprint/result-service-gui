@@ -594,6 +594,7 @@ def get_race_progress(
 ) -> int:
     """Evaluate race progress and return a code to indicate coloring in dashboard."""
     progress = 6
+    # 0 empty / no starts
     # 1 not started
     # 2 not started - with DNS */
     # 3 started - no results */
@@ -602,7 +603,9 @@ def get_race_progress(
     # 6 error in race results */
     time_now = EventsAdapter().get_local_time(event, "log")
     start_time = race["start_time"]
-    if start_time > time_now:
+    if count_starts == 0:
+        progress = 0
+    elif start_time > time_now:
         if count_results > 0 or count_dnf > 0:
             progress = 6
         elif count_dns == 0:

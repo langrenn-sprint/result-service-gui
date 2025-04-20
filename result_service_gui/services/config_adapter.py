@@ -20,7 +20,7 @@ class ConfigAdapter:
 
     async def get_config(self, token: str, event_id: str, key: str) -> str:
         """Get config by key function."""
-        config = ""
+        config = {}
         headers = MultiDict(
             [
                 (hdrs.CONTENT_TYPE, "application/json"),
@@ -38,6 +38,17 @@ class ConfigAdapter:
             elif resp.status == HTTPStatus.UNAUTHORIZED:
                 informasjon = f"Login expired: {resp}"
                 raise Exception(informasjon)
+            elif resp.status == HTTPStatus.NOT_FOUND:
+                # config not found - find default value
+                project_root = f"{Path.cwd()}/result_service_gui"
+                config_file = Path(f"{project_root}/config/global_settings.json")
+                with config_file.open() as json_file:
+                    settings = json.load(json_file)
+                    if key in settings:
+                        value = settings[key]
+                        # create config
+                        await self.create_config(token, event_id, key, value)
+                        config["value"] = value
             else:
                 body = await resp.json()
                 informasjon = f"{servicename} failed - {resp.status} - {body['detail']}"

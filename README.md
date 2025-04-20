@@ -81,10 +81,11 @@ source .venv/bin/activate
 
 ## Running the API locally
 
-Start the server locally:
+Start the server locally - use docker to start required backend-services:
 
 ```Zsh
 % uv run adev runserver -p 8090 result_service_gui
+% docker compose up event-service competition-format-service user-service race-service mongodb photo-service integration-service
 ```
 
 ## Running the API in a wsgi-server (gunicorn)

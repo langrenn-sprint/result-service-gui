@@ -1,4 +1,3 @@
-version: '3'
 services:
   result-service-gui:
     build: .
@@ -112,7 +111,7 @@ services:
       - USERS_HOST_PORT=8080
       - GOOGLE_PHOTO_SERVER=https://photoslibrary.googleapis.com/v1
       - GOOGLE_PHOTO_SCOPE=https://www.googleapis.com/auth/photoslibrary.readonly
-      - GOOGLE_PHOTO_CREDENTIALS_FILE=/home/heming/github/photo_api_credentials.json
+      - GOOGLE_PHOTO_CREDENTIALS_FILE=/home/user/github/photo_api_credentials.json
       - LOGGING_LEVEL=${LOGGING_LEVEL}
       - DB_HOST=mongodb
       - DB_PORT=27017
@@ -155,6 +154,27 @@ services:
       - DB_PASSWORD=${DB_PASSWORD}
     depends_on:
       - "mongodb"
+  integration-service:
+    image: ghcr.io/langrenn-sprint/integration-service:latest
+    environment:
+      - LOGGING_LEVEL=${LOGGING_LEVEL}
+      - ADMIN_USERNAME=${ADMIN_USERNAME}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD}
+      - EVENTS_HOST_SERVER=event-service
+      - EVENTS_HOST_PORT=8080
+      - PHOTOS_HOST_SERVER=photo-service
+      - PHOTOS_HOST_PORT=8080
+      - USERS_HOST_SERVER=user-service
+      - USERS_HOST_PORT=8080
+      - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
+      - GOOGLE_PUBSUB_NUM_MESSAGES=${GOOGLE_PUBSUB_NUM_MESSAGES}
+    volumes:
+      - type: bind
+        source: ./error.log
+        target: /app/error.log
+      - type: bind
+        source: ${GOOGLE_APPLICATION_CREDENTIALS}
+        target: /app/application_default_credentials.json
   mongodb:
     image: mongo:latest
     ports:
