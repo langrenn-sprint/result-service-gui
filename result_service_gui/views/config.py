@@ -64,11 +64,7 @@ class Config(web.View):
         user = await check_login(self)
         event_id = str(form["event_id"])
         try:
-
-            if "reset_config" in form:
-                await ConfigAdapter().init_config(user["token"], event_id)
-                informasjon = "Config er nullstilt."
-            elif "update_one" in form:
+            if "update_one" in form:
                 key = str(form["key"])
                 await ConfigAdapter().update_config(
                     user["token"], event_id, key, str(form["value"])

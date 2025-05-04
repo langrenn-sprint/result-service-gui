@@ -164,6 +164,8 @@ services:
       - EVENTS_HOST_PORT=8080
       - PHOTOS_HOST_SERVER=photo-service
       - PHOTOS_HOST_PORT=8080
+      - RACE_HOST_SERVER=race-service
+      - RACE_HOST_PORT=8080
       - USERS_HOST_SERVER=user-service
       - USERS_HOST_PORT=8080
       - GOOGLE_APPLICATION_CREDENTIALS=${GOOGLE_APPLICATION_CREDENTIALS}
@@ -172,6 +174,9 @@ services:
       - type: bind
         source: ./error.log
         target: /app/error.log
+      - type: bind
+        source: ./result_service_gui/config/global_settings.json
+        target: /app/result_service_gui/config/global_settings.json
       - type: bind
         source: ${GOOGLE_APPLICATION_CREDENTIALS}
         target: /app/application_default_credentials.json

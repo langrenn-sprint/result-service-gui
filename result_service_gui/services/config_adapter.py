@@ -13,6 +13,7 @@ from multidict import MultiDict
 PHOTOS_HOST_SERVER = os.getenv("PHOTOS_HOST_SERVER", "localhost")
 PHOTOS_HOST_PORT = os.getenv("PHOTOS_HOST_PORT", "8092")
 PHOTO_SERVICE_URL = f"http://{PHOTOS_HOST_SERVER}:{PHOTOS_HOST_PORT}"
+PROJECT_ROOT = f"{Path.cwd()}/result_service_gui"
 
 
 class ConfigAdapter:
@@ -40,15 +41,17 @@ class ConfigAdapter:
                 raise Exception(informasjon)
             elif resp.status == HTTPStatus.NOT_FOUND:
                 # config not found - find default value
-                project_root = f"{Path.cwd()}/result_service_gui"
-                config_file = Path(f"{project_root}/config/global_settings.json")
+                config_file = Path(f"{PROJECT_ROOT}/config/global_settings.json")
                 with config_file.open() as json_file:
                     settings = json.load(json_file)
                     if key in settings:
                         value = settings[key]
                         # create config
                         await self.create_config(token, event_id, key, value)
-                        config["value"] = value
+                        return value
+                informasjon = f"Config {key} not found in config file {config_file}."
+                logging.error(informasjon)
+                raise web.HTTPBadRequest(reason=informasjon)
             else:
                 body = await resp.json()
                 informasjon = f"{servicename} failed - {resp.status} - {body['detail']}"
@@ -144,29 +147,6 @@ class ConfigAdapter:
 
         return result
 
-    async def init_config(self, token: str, event_id: str) -> None:
-        """Load default config function - read from file."""
-        project_root = f"{Path.cwd()}/result_service_gui"
-        config_file = Path(f"{project_root}/config/global_settings.json")
-
-        current_configs = await ConfigAdapter().get_all_configs(token, event_id)
-        try:
-            with config_file.open() as json_file:
-                settings = json.load(json_file)
-                for key, value in settings.items():
-                    updated = False
-                    for config in current_configs:
-                        if config["key"] == key:
-                            await self.update_config(token, event_id, key, value)
-                            updated = True
-                            break
-                    if not updated:
-                        await self.create_config(token, event_id, key, value)
-        except Exception as e:
-            err_info = f"Error linitializing config from {config_file} - {e}"
-            logging.exception(err_info)
-            raise Exception(err_info) from e
-
     async def update_config_list(
         self, token: str, event_id: str, key: str, new_value: list
     ) -> str:
@@ -178,6 +158,7 @@ class ConfigAdapter:
         self, token: str, event_id: str, key: str, new_value: str
     ) -> str:
         """Update config function."""
+        response = ""
         servicename = "update_config"
         headers = MultiDict(
             [
@@ -194,8 +175,22 @@ class ConfigAdapter:
         async with ClientSession() as session, session.put(
             f"{PHOTO_SERVICE_URL}/config", headers=headers, json=request_body
         ) as resp:
+            response = str(resp.status)
             if resp.status == HTTPStatus.NO_CONTENT:
                 logging.debug(f"update config - got response {resp}")
+            elif resp.status == HTTPStatus.NOT_FOUND:
+                # config not found - find default value
+                config_file = Path(f"{PROJECT_ROOT}/config/global_settings.json")
+                with config_file.open() as json_file:
+                    settings = json.load(json_file)
+                    if key in settings:
+                        value = settings[key]
+                        # create config
+                        await self.create_config(token, event_id, key, value)
+                        return value
+                informasjon = f"Config {key} not found in config file {config_file}."
+                logging.error(informasjon)
+                raise web.HTTPBadRequest(reason=informasjon)
             elif resp.status == HTTPStatus.UNAUTHORIZED:
                 informasjon = f"Login expired: {resp}"
                 raise Exception(informasjon)
@@ -204,4 +199,4 @@ class ConfigAdapter:
                 informasjon = f"{servicename} failed - {resp.status} - {body['detail']}"
                 logging.error(informasjon)
                 raise web.HTTPBadRequest(reason=informasjon)
-        return str(resp.status)
+        return response
