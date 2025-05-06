@@ -30,6 +30,9 @@ class VideoEvents(web.View):
             if action in ["status", "toggle"]:
                 if "integration_start" in form:
                     await ConfigAdapter().update_config(
+                        user["token"], event_id, "INTEGRATION_SERVICE_MODE", "pull"
+                    )
+                    await ConfigAdapter().update_config(
                         user["token"], event_id, "INTEGRATION_SERVICE_START", "True"
                     )
                 elif "integration_stop" in form:

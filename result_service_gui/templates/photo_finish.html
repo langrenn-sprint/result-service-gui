@@ -148,28 +148,26 @@
     <div id="demo_{{ race.order }}" class="collapse in">
       <table>
         <tr id=headerblack>
-          <td colspan=3>Startliste</td>
-          <td colspan=2></td>
+          <td colspan=4>Startliste</td>
           <td colspan=2 id=resultheaderfirst>Resultater</td>
-          <td colspan=3 id=resultheader align=center>{{ race.next_race }}</td>
+          <td colspan=4 id=resultheader align=center>{{ race.next_race }}</td>
           <td id=resultheader>Målfoto</td>
         </tr>
         <tr>
-          <th width=40>Pos</th>
-          <th width=40>Nr</th>
-          <th width=40></th>
-          <th width="250">&nbsp;Navn</th>
-          <th width="200">Klubb</th>
+          <th width=20>Nr</th>
+          <th></th>
+          <th width=200>&nbsp;Navn</th>
+          <th width=150>Klubb</th>
           <th width=50 id=resultborder>Plass</th>
-          <th width=60>Startnr</th>
-          <th width=50>{% if valgt_runde.runde == "F" %}Delt{% endif %}</th>
-          <th width=250>Navn</th>
+          <th width=40>Nr</th>
+          <th>{% if valgt_runde.runde == "F" %}Delt{% endif %}</th>
+          <th width=200>Navn</th>
           <th>{% if valgt_runde.runde != "F" %}Videre til{% endif %}</th>
+          <th width=75>Tidspunkt registrert</th>
           <th></th>
         </tr>
           {% for start in race.startliste %}
             <tr>
-              <td align="center">{{ start.starting_position }}</td>
               <td id="{{ race.order }}{{ start.bib }}" align="center">{{ start.bib }}</td>
                 <td align="center">
                   {% if start.status %}{{ start.status }}{% endif %}
@@ -188,7 +186,7 @@
                 <td>{{ start.club }}</td>
                 {% if race.finish_timings[loop.index0] and race.finish_timings[loop.index0].bib %}
                   <td id=resultborder align=center><span id="{{ race.order }}_place_{{ loop.index }}">{{ race.finish_timings[loop.index0].rank }}</span></td>
-                  <td>
+                  <td align=center>
                     {% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}
                   </td>
                   <td>
@@ -199,6 +197,7 @@
                       {{ race.finish_timings[loop.index0].next_race }}-{{ race.finish_timings[loop.index0].next_race_position }}
                     {% endif %}
                   </td>
+                  <td id='tid_{{ loop.index }}'>{{ race.finish_timings[loop.index0].registration_time[-8:] }}</td>
                 {% else %}
                   <td id=resultborder align=center><span id="{{ race.order }}_place_{{ loop.index }}">{{ loop.index }}</span></td>
                   <td>
@@ -207,6 +206,8 @@
                   </td>
                   <td id="{{ race.order }}_name_{{ loop.index }}"></td>
                   <td id="{{ race.order }}_videre_til_{{ loop.index }}"></td>
+                  <td>
+                  </td>
                 {% endif %}
                 {% if loop.first %}
                   <td rowspan="{{ loop.length + 1 }}">
