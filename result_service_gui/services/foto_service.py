@@ -3,7 +3,6 @@
 import datetime
 import json
 import logging
-import os
 
 from .albums_adapter import AlbumsAdapter
 from .config_adapter import ConfigAdapter
@@ -98,7 +97,7 @@ class FotoService:
                     logging.exception(f"Error reading biblist - {value}")
                     informasjon += "En Feil oppstod. "
             elif key.startswith("race_id_"):
-                new_race_id = form[key]
+                new_race_id = value
                 photo_id = key[8:]
                 old_race_id = form[f"old_race_id_{photo_id}"]
                 if new_race_id != old_race_id:

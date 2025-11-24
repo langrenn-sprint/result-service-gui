@@ -1,8 +1,8 @@
 """Module for user adapter."""
 
-from http import HTTPStatus
 import logging
 import os
+from http import HTTPStatus
 
 from aiohttp import ClientSession, hdrs, web
 from aiohttp_session import Session
@@ -14,7 +14,6 @@ USER_SERVICE_URL = f"http://{USERS_HOST_SERVER}:{USERS_HOST_PORT}"
 
 
 class UserAdapter:
-
     """Class representing user."""
 
     async def create_user(
