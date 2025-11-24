@@ -45,7 +45,6 @@ class Config(web.View):
                 self.request,
                 {
                     "action": action,
-                    "lopsinfo": "Admin: Målfoto",
                     "event": event,
                     "event_id": event_id,
                     "event_config": event_config,

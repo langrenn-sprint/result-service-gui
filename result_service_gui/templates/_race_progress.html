@@ -39,7 +39,7 @@
 
 <table>
     <tr id="subheader">
-    <td>Klasse</td>
+    <td></td>
     <td>Starttid</td>
     <td>Antall</td>
     <td>Kvartfinaler</td>
@@ -50,7 +50,7 @@
     <tr>
     <td>
         <span class=tooltip_race id=kpi{{ raceclass.progress }}>
-            <a href="live?event_id={{ event_id }}&klasse={{ raceclass.name }}"><b>{{ raceclass.name }}</b></a>
+            <a href="live?event_id={{ event_id }}&klasse={{ raceclass.name }}">&nbsp;<b>{{ raceclass.name }}</b></a>
         </span>
     </td>
     <td>{{ raceclass.timeQ }}</td>
@@ -118,22 +118,30 @@
     </tr>
     {% endfor %}
     <tr>
-    <td colspan=6 id="spacer"></td>
-    </tr>
-    {% if raceplan_kpis|length > 1 %}
+</table>
+{% if raceplan_kpis|length > 1 %}
+    <br>
+    <table>
         <tr>
-            <td colspan=6 id="spacer"></td>
-        </tr>
-        <tr>
-            <td colspan=6 align="center">Fargekoder: 
-                <span class=kpi0>Tomt</span>
-                <span class=kpi1>Ikke startet</span>
-                <span class=kpi2>Med DNS</span>
-                <span class=kpi3>Startet</span>
-                <span class=kpi4>Resultater - ikke komplett</span>
-                <span class=kpi5>Alle i mål</span>
-                <span class=kpi6><a target="_blank" href=control?event_id={{ event_id }}&action=control>Noe er feil</a></span>
+            <td>Fremdrift:</td>
+            <td>
+                <span class=kpi1>&nbsp;Ikke_startet&nbsp;</span>&nbsp;
+            </td>
+            <td>
+                <span class=kpi2>&nbsp;Med_DNS&nbsp;</span>&nbsp;
+            </td>
+            <td>
+                <span class=kpi3>&nbsp;Startet&nbsp;</span>&nbsp;
+            </td>
+            <td>
+                <span class=kpi4>&nbsp;Målpassering&nbsp;</span>&nbsp;
+            </td>
+            <td>
+                <span class=kpi5>&nbsp;Ferdig&nbsp;</span>&nbsp;
+            </td>
+            <td>
+                <span class=kpi6><a target="_blank" href=control?event_id={{ event_id }}&action=control>&nbsp;Feil&nbsp;</a></span>
             </td>
         </tr>
-    {% endif %}
-</table>
+    </table>
+{% endif %}

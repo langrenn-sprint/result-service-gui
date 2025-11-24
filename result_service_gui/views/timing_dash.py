@@ -73,7 +73,7 @@ async def get_service_status(token: str, event_id: str) -> dict:
         token, event_id, "INTEGRATION_SERVICE_START"
     )
     integration_mode = await ConfigAdapter().get_config(
-        token, event_id, "INTEGRATION_SERVICE_MODE"
+        token, event_id, "VIDEO_STORAGE_MODE"
     )
     return {
         "integration_available": integration_available,

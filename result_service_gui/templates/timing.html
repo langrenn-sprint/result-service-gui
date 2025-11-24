@@ -1,8 +1,4 @@
-{% extends "open_base.html" %}
-{% block titlecontainer %}
-  <div class="w3-10"></div>
-  <div class="w3-80">
-{% endblock %}
+{% extends "open_base_new.html" %}
 
 {% block titleheader %}
   Tidtaker funksjoner {{ action }}
@@ -160,7 +156,7 @@
       </tr>
       <tr>
         <td>Startnummer</td>
-        <td><input type=text name="bib" value=""></td>
+        <td><input type="text" class="form-control" name="bib" value=""></td>
         <td>Tips: Ved flere passeringer, bruk space (mellomrom) mellom startnummer.</td>
       </tr>
       <tr>
@@ -169,7 +165,7 @@
             <input type="hidden" name="event_id" value="{{ event_id }}">
             <input type="hidden" name="action" value="{{ action }}">
             <input type="hidden" name="heat" value="">
-            <input type="submit" name="finish" value="  Lagre  ">
+            <input type="submit" class="btn btn-default" name="finish" value="  Lagre  ">
           </td>
       </tr>
       <tr>
@@ -180,7 +176,7 @@
       </tr>
       <tr>
         <td>Navn</td>
-        <td><input type=text name="search_name" value="" onchange="search_contestant(this.value);">&nbsp;<button onclick="return false;">Søk</button></td>
+        <td><input type="text" class="form-control" name="search_name" value="" onchange="search_contestant(this.value);">&nbsp;<button onclick="return false;">Søk</button></td>
         <td>Tips: Det søkes på alle navn (fornavn og etternavn). Velg det du tror gir færrest treff. </td>
       </tr>
       <tr>

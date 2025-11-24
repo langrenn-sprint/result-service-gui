@@ -1,8 +1,4 @@
-{% extends "open_base.html" %}
-{% block titlecontainer %}
-  <div class="w3-10"></div>
-  <div class="w3-80">
-{% endblock %}
+{% extends "open_base_new.html" %}
 
 {% block titleheader %}
   Passeringer {{ valgt_klasse }}
@@ -38,15 +34,15 @@
       </div>
     </li>
 {% endblock %}
-{% block content %}
+
+{% block tips %}
   <! --- Information --->
-  <div id=info-header><a id=info-header data-toggle="collapse" href="#info-zone">TIPS</a></div>
-  <div id=info-zone class="collapse">
     - Her er det mulig å slette feilaktige registreringer.<br>
     - Hvis du velger Alle klasser så vil kun system-error (valideringsfeil eller teknisk feil) vises.<br>
-  </div>
-  <div id=spacer></div>
   <! --- End Information --->
+{% endblock %}
+
+{% block content %}
     <table>
       <form action=/control method=post>
         <tr>
@@ -54,7 +50,7 @@
             <input type="hidden" name="action" value="{{ action }}">
             <input type="hidden" name="event_id" value="{{ event_id }}">
             <input type="hidden" name="valgt_klasse" value="{{ valgt_klasse }}">
-            <input type="submit" name=resolve_error value=" Slett valgte ">
+            <input type="submit" class="btn btn-default" name=resolve_error value=" Slett valgte ">
           </td>
         </tr>
         <tr id=headerblue>
@@ -102,7 +98,7 @@
             <input type="hidden" name="action" value="{{ action }}">
             <input type="hidden" name="event_id" value="{{ event_id }}">
             <input type="hidden" name="valgt_klasse" value="{{ valgt_klasse }}">
-            <input type="submit" name=resolve_error value=" Slett valgte ">
+            <input type="submit" class="btn btn-default" name=resolve_error value=" Slett valgte ">
           </td>
         </tr>
       </form>

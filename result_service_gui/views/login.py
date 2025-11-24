@@ -4,11 +4,9 @@ import logging
 
 import aiohttp_jinja2
 from aiohttp import web
-from aiohttp_session import new_session
+from aiohttp_session import get_session, new_session
 
 from result_service_gui.services import UserAdapter
-
-from .utils import check_login_open
 
 
 class Login(web.View):
@@ -16,6 +14,7 @@ class Login(web.View):
 
     async def get(self) -> web.Response:
         """Get route function that return the index page."""
+        username = ""
         try:
             informasjon = self.request.rel_url.query["informasjon"]
         except Exception:
@@ -24,12 +23,6 @@ class Login(web.View):
             event_id = self.request.rel_url.query["event_id"]
         except Exception:
             event_id = ""
-        try:
-            action = self.request.rel_url.query["action"]
-        except Exception:
-            action = ""
-
-        user = await check_login_open(self)
 
         event = {"name": "Administrasjon", "organiser": "Ikke valgt"}
 
@@ -37,12 +30,11 @@ class Login(web.View):
             "login.html",
             self.request,
             {
-                "action": action,
                 "lopsinfo": "Login",
                 "event": event,
                 "event_id": event_id,
                 "informasjon": informasjon,
-                "username": user["name"],
+                "username": username,
             },
         )
 
@@ -50,44 +42,37 @@ class Login(web.View):
         """Get route function that return the index page."""
         informasjon = ""
         result = 0
-        logging.debug(f"Login: {self}")
-
+        form = await self.request.post()
         try:
-            form = await self.request.post()
-            try:
-                event_id = self.request.rel_url.query["event_id"]
-                logging.debug(f"Event: {event_id}")
-            except Exception:
-                event_id = ""
-            try:
-                action = self.request.rel_url.query["action"]
-            except Exception:
-                action = ""
-            # Perform login
-            if action == "login":
-                session = await new_session(self.request)
-                result = await UserAdapter().login(
-                    str(form["username"]), str(form["password"]), session
-                )
-                if result == 200:
-                    informasjon = "Innlogget!"
-                else:
-                    informasjon = f"Innlogging feilet - {result}"
+            event_id = self.request.rel_url.query["event_id"]
+            logging.debug(f"Event: {event_id}")
+        except Exception:
+            event_id = ""
+        try:
+            session = await new_session(self.request)
+            result = await UserAdapter().login(
+                str(form["username"]), str(form["password"]), session
+            )
+            if result == 200:
+                informasjon = "Innlogget!"
+            else:
+                informasjon = f"Innlogging feilet - {result}"
 
-            event = {"name": "Langrenn", "organiser": "Ikke valgt"}
-            if result != 200:
-                return await aiohttp_jinja2.render_template_async(
-                    "login.html",
-                    self.request,
-                    {
-                        "lopsinfo": "Login resultat",
-                        "event": event,
-                        "event_id": event_id,
-                        "informasjon": informasjon,
-                    },
-                )
         except Exception as e:
             logging.exception("Error")
             informasjon = f"Det har oppstått en feil - {e.args}."
             result = 400
+
+        event = {"name": "Langrenn", "organiser": "Ikke valgt"}
+        if result != 200:
+            return await aiohttp_jinja2.render_template_async(
+                "login.html",
+                self.request,
+                {
+                    "lopsinfo": "Login resultat",
+                    "event": event,
+                    "event_id": event_id,
+                    "informasjon": informasjon,
+                },
+            )
         return web.HTTPSeeOther(location=f"/?informasjon={informasjon}")

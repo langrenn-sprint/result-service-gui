@@ -30,7 +30,7 @@ class VideoEvents(web.View):
             if action in ["status", "toggle"]:
                 if "integration_start" in form:
                     await ConfigAdapter().update_config(
-                        user["token"], event_id, "INTEGRATION_SERVICE_MODE", "pull"
+                        user["token"], event_id, "VIDEO_STORAGE_MODE", "pull_detections"
                     )
                     await ConfigAdapter().update_config(
                         user["token"], event_id, "INTEGRATION_SERVICE_START", "True"
@@ -41,6 +41,12 @@ class VideoEvents(web.View):
                     )
                 response["photo_queue_latest"] = await ConfigAdapter().get_config(
                     user["token"], event_id, "GOOGLE_LATEST_PHOTO"
+                )
+                response["integration_service_available"] = await ConfigAdapter().get_config(
+                    user["token"], event_id, "INTEGRATION_SERVICE_AVAILABLE"
+                )
+                response["integration_service_running"] = await ConfigAdapter().get_config(
+                    user["token"], event_id, "INTEGRATION_SERVICE_RUNNING"
                 )
                 response["informasjon"] = await get_integration_status(
                     user["token"], event_id

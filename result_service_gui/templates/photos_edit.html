@@ -1,14 +1,16 @@
-{% extends "open_base.html" %}
-{% block titlecontainer %}
-  <div class="w3-10"></div>
-  <div class="w3-80">
-{% endblock %}
+{% extends "open_base_new.html" %}
 
 {% block titleheader %}{{ lopsinfo }}{% endblock %}
 
 {% block headercontainer %}{{ lopsinfo }}{{ valgt_klasse }} <img id=header_icon src="../static/icon_photos.png"> {% endblock %}
 
-{% block refresh %}{% endblock %}
+{% block tips %}
+    - Ved å stjernemerke bilder vil de bli synlige på åpne sider - i resultatlister og på bilde-siden.<br>
+    - Det er mulig å slette bilder - både enkeltvis og alle. Merk at det bare er link til bildene som slettes.<br>
+    - Ved redigering av løpsinformasjon, pass på formatet - ved flere bibs, bruk f.eks [12, 23].<br>
+    - Usikkerhet (confidence/conf) brukes når systemet kobler bib og race til photo. Skala fra 0 til 100.
+{% endblock %}
+
 {% block titlemain %}
   <img id=menu_icon src="../static/icon_photos.png"> {{ lopsinfo }}
 {% endblock %}
@@ -58,17 +60,6 @@
     }
   }
 </script>
-<! --- Information --->
-  <div id=spacer></div>
-  <div id=info-header><a id=info-header data-toggle="collapse" href="#info-zone">TIPS</a></div>
-  <div id=info-zone class="collapse">
-    - Ved å stjernemerke bilder vil de bli synlige på åpne sider - i resultatlister og på bilde-siden.<br>
-    - Det er mulig å slette bilder - både enkeltvis og alle. Merk at det bare er link til bildene som slettes.<br>
-    - Ved redigering av løpsinformasjon, pass på formatet - ved flere bibs, bruk f.eks [12, 23].<br>
-    - Usikkerhet (confidence/conf) brukes når systemet kobler bib og race til photo. Skala fra 0 til 100.
-  </div>
-  <div id=spacer></div>
-<! --- End Information --->
 
 <! --- Edit menu --->
   <table>
@@ -123,7 +114,7 @@
       <tr>
         <td id=table_border colspan=4>
         <form action=/photos_edit method=post>
-          <input type="submit" name={{ action }} value="  Lagre  ">
+          <input type="submit" class="btn btn-default" name={{ action }} value="  Lagre  ">
           <input type="hidden" name="event_id" value="{{ event_id }}">
           <input type="hidden" name=action value={{ action }}>
         </td>
@@ -132,7 +123,7 @@
       <tr>
         <td id=table_border colspan=4>
         <form action=/photos_edit method=post>
-          <input type="submit" name={{ action }} value="  Slett  ">
+          <input type="submit" class="btn btn-default" name={{ action }} value="  Slett  ">
           <input type="hidden" name="event_id" value="{{ event_id }}">
           <input type="hidden" name=action value={{ action }}>
         </td>
@@ -236,14 +227,14 @@
         {% for race in races %}
           <input type="hidden" name="raceclass_{{ race.id }}" value="{{ race.raceclass }}">
         {% endfor %}
-        <input type="submit" name={{ action }} value="  Lagre  ">
+        <input type="submit" class="btn btn-default" name={{ action }} value="  Lagre  ">
         </form>
       </td>
     </tr>
     {% elif action in ["delete_select"] %}
     <tr>
       <td colspan=4>
-        <input type="submit" name={{ action }} value="  Slett  ">
+        <input type="submit" class="btn btn-default" name={{ action }} value="  Slett  ">
         </form>
       </td>
     </tr>

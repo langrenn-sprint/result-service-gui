@@ -1,5 +1,4 @@
-{% extends "open_base.html" %}
-{% block titlecontainer %}<div class="w3-container">{% endblock %}
+{% extends "open_base_new.html" %}
 
 {% block titleheader %}
   Registrer resultat {{ valgt_runde.klasse }} {{ valgt_runde.runde }}
@@ -44,17 +43,13 @@
   </li>
 {% endblock %}
 
+{% block tips %}
+  - Dokumentasjon her: <a href=https://langrenn-sprint.github.io/docs/timing.html>langrenn-sprint.github.io</a><br>
+  - Videoinstruksjoner<br>
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/sixRb7-tF7Q?si=NJkRCOgVer0hF9q1&amp;clip=UgkxoWZlKVEpXRIec93LuW2MehGk8GgLaF5h&amp;clipt=ENP4EhiCzhU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+{% endblock %}
+
 {% block content %}
-  <! --- Information --->
-  <div id=spacer></div>
-  <div id=info-header><a id=info-header data-toggle="collapse" href="#info-zone">TIPS</a></div>
-  <div id=info-zone class="collapse">
-    - Dokumentasjon her: <a href=https://langrenn-sprint.github.io/docs/timing.html>langrenn-sprint.github.io</a><br>
-    - Videoinstruksjoner<br>
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/sixRb7-tF7Q?si=NJkRCOgVer0hF9q1&amp;clip=UgkxoWZlKVEpXRIec93LuW2MehGk8GgLaF5h&amp;clipt=ENP4EhiCzhU" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-  </div>
-  <div id=spacer></div>
-  <! --- End Information --->
     <br>
     {% include "_race_progress.html" %}
     <br>
@@ -340,10 +335,8 @@
           - ingen deltakere.          
         {% endif %}
       </span>
-      <a data-toggle="collapse" href="#demo_{{ race.order }}">Vis/skjul.</a>
     </div>
     <div id=spacer></div>
-    <div id="demo_{{ race.order }}" class="collapse in">
       <table>
         <tr id=headerblack>
           <td colspan=3>Startliste</td>
@@ -363,7 +356,7 @@
           <th width=50>{% if valgt_runde.runde == "F" %}Delt{% endif %}</th>
           <th width=200>Navn</th>
           <th width=75>{% if valgt_runde.runde != "F" %}Videre til{% endif %}</th>
-          <th width=75>Tidspunkt registrert</th>
+          <th width=75>Tid</th>
           <th>Målfoto</th>
         </tr>
         <form action=/resultat_edit_new method=post onsubmit="return checkform(this);">
@@ -401,7 +394,7 @@
                   <td>
                     <input type="hidden" name="R{{ race.order }}_dummy_{{ loop.index }}" value="0">
                     <input type="hidden" id="{{ race.order }}_old_pos_{{ loop.index }}" name="{{ race.order }}_old_pos_{{ loop.index }}" value="{{ race.finish_timings[loop.index0].rank }}">
-                    <input type="text" id="{{ race.order }}_form_rank_{{ loop.index }}" name="{{ race.order }}_form_rank_{{ loop.index }}" value="{% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}" size=3 onfocus="this.oldvalue = this.value;" onchange="validation_colors({{ race.order }})">
+                    <input type="text" class="form-control-inline" id="{{ race.order }}_form_rank_{{ loop.index }}" name="{{ race.order }}_form_rank_{{ loop.index }}" value="{% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}" size=3 onfocus="this.oldvalue = this.value;" onchange="validation_colors({{ race.order }})">
                     <input type="hidden" id="{{ race.order }}_pos_{{ loop.index }}" name="{{ race.order }}_pos_{{ loop.index }}" value="{{ race.finish_timings[loop.index0].rank }}">
                     <input type="hidden" id="{{ race.order }}_old_form_rank_{{ loop.index }}" name="{{ race.order }}_old_form_rank_{{ loop.index }}" value="{% if race.finish_timings[loop.index0].bib > 0 %}{{ race.finish_timings[loop.index0].bib }}{% endif %}">
                     <input type="hidden" id="{{ race.order }}_time_event_id_{{ loop.index }}" name="{{ race.order }}_time_event_id_{{ loop.index }}" value="{{ race.finish_timings[loop.index0].id }}">
@@ -423,14 +416,14 @@
                   <td>
                     <input type="hidden" name="R{{ race.order }}_dummy_{{ loop.index }}" value="0">
                     <input type="hidden" id="{{ race.order }}_old_pos_{{ loop.index }}" name="{{ race.order }}_old_pos_{{ loop.index }}" value="{{ loop.index }}">
-                    <input type="text" id="{{ race.order }}_form_rank_{{ loop.index }}" name="{{ race.order }}_form_rank_{{ loop.index }}" value="" size=3 onfocus="this.oldvalue = this.value;" onchange=validation_colors({{ race.order }})>
+                    <input type="text" class="form-control-inline" id="{{ race.order }}_form_rank_{{ loop.index }}" name="{{ race.order }}_form_rank_{{ loop.index }}" value="" size=3 onfocus="this.oldvalue = this.value;" onchange=validation_colors({{ race.order }})>
                     <input type="hidden" id="{{ race.order }}_pos_{{ loop.index }}" name="{{ race.order }}_pos_{{ loop.index }}" value="{{ loop.index }}">
                     <input type="hidden" id="{{ race.order }}_old_form_rank_{{ loop.index }}" name="{{ race.order }}_old_form_rank_{{ loop.index }}" value="">
                     <input type="hidden" id="{{ race.order }}_time_event_id_{{ loop.index }}" name="{{ race.order }}_time_event_id_{{ loop.index }}" value="">
                   </td>
                   <td>
                     {% if (valgt_runde.runde == "F") and (loop.index0 > 0) %}
-                      <input type="checkbox" id='{{ race.order }}_delt_{{ loop.index }}' name='{{ race.order }}_delt_{{ loop.index }}' value="" tabindex="-1" onclick="delt_toggle(this, '{{ race.order }}_place_{{ loop.index - 1}}', {{ loop.index }});">
+                      <input type="checkbox" class="form-control-inline" id='{{ race.order }}_delt_{{ loop.index }}' name='{{ race.order }}_delt_{{ loop.index }}' value="" tabindex="-1" onclick="delt_toggle(this, '{{ race.order }}_place_{{ loop.index - 1}}', {{ loop.index }});">
                     {% endif %}
                   </td>
                   <td id="{{ race.order }}_name_{{ loop.index }}"></td>
@@ -452,7 +445,7 @@
                     validation_colors({{ race.order }});
                   }
                 </script>
-                  <td rowspan="{{ loop.length }}">
+                  <td rowspan="{{ loop.length }}" valign="top">
                     <! -- Start photo stuff -->
                     {% if race.photo_finish != [] %}
                     <div class="lb_row">
@@ -531,7 +524,7 @@
                     </script>
                     {% endif %}
                     <! -- End photo stuff -->
-
+                    <button type="button" class="btn btn-default" id="photo_finish_button" onclick=update_results_ajax(this); >Hent resultater fra målfoto </button>
                   </td>
                 {% endif %}
             </tr>
@@ -556,21 +549,19 @@
                 {% if race.round == "F" and race.index == "A" %}
                     <input type="hidden" name=raceclass_results value="true">
                 {% endif %}
-                <button type="button" id="{{ race.order }}_button" onclick=update_results_ajax(this); >Lagre </button>
-                &nbsp;<input type="checkbox" id={{ race.order }}_publish name=publish value="true" checked onchange="update_checkbox(this, {{ race.order }});"> Publisere
+                <button type="button" class="btn btn-success" id="{{ race.order }}_button" onclick=update_results_ajax(this); >Lagre </button>
+                &nbsp;<input type="checkbox" class="form-control-inline" id={{ race.order }}_publish name=publish value="true" checked onchange="update_checkbox(this, {{ race.order }});"> Publisere
               </td>
-              <td>
-                <button type="button" id="photo_finish_button" onclick=update_results_ajax(this); >Hent resultater fra målfoto </button>
-              </td>
+              <td></td>
             </tr>
           </form>
           {% if race.startliste %}
             <tr>
               <form action=/resultat_edit_new method=post>
                 <td colspan=6>
-                  <input type="text" name="starting_position" value="" size=3>
-                  <input type="text" name="bib" value="" min=1 max=9999 size=3>
-                  <input type="submit" name=create_start value=" Legg til ">
+                  <input type="text" class="form-control-inline" name="starting_position" value="" size=3>
+                  <input type="text" class="form-control-inline" name="bib" value="" min=1 max=9999 size=3>
+                  <input type="submit" class="btn btn-default" name=create_start value=" Legg til ">
                   <input type="hidden" name="race_id" value="{{ race.id }}">
                   <input type="hidden" name="startlist_id" value="{{ race.startliste[0].startlist_id }}">
                   <input type="hidden" name="start_time" value="{{ race.start_time }}">
@@ -589,8 +580,6 @@
   {% endif %}
       <table>
       <tr>
-        <td>
-        </td>
         {% if valgt_runde.runde == "F" %}
           <td width=300>
             <ul>
@@ -620,11 +609,13 @@
             </ul>
           </td>
         {% endif %}
-        <td width=200>
+        <td>
+        </td>
+        <td width=200 style="vertical-align: top;">
           {% if race_orders %}
             <nobr>
-              <a href=resultat_edit_new?event_id={{ event_id }}&heat={{ race_orders.lowest - 1 }}>&nbsp;Forrige runde</a>
-              <a href=resultat_edit_new?event_id={{ event_id }}&heat={{ race_orders.highest + 1 }}>&nbsp;Neste runde</a>
+              <a class="btn btn-default" href=resultat_edit_new?event_id={{ event_id }}&heat={{ race_orders.lowest - 1 }}>&nbsp;Forrige runde</a>
+              <a class="btn btn-default" href=resultat_edit_new?event_id={{ event_id }}&heat={{ race_orders.highest + 1 }}>&nbsp;Neste runde</a>
             </nobr>
           {% endif %}
           </td>
