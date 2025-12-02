@@ -16,6 +16,7 @@ from dotenv import load_dotenv
 from .views import (
     Config,
     Control,
+    Corrections,
     CsvList,
     Live,
     Login,
@@ -83,6 +84,7 @@ async def create_app() -> web.Application:
     app.add_routes(
         [
             web.view("/", Main),
+            web.view("/corrections", Corrections),
             web.view("/config", Config),
             web.view("/control", Control),
             web.view("/csv", CsvList),

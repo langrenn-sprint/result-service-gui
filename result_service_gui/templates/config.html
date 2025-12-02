@@ -24,13 +24,15 @@
   <p>
     <span id="informasjon"></span>
   </p>
+  <section class="row" aria-label="Event">
+    <div class="col-sm-12">
+        <div class="status-card" role="status" aria-live="polite">
+          <h4>Config for event {{ event.name }}, {{ event.date_of_event }}</h4>
+        </div>
   <table cellpadding="4">
-    <tr id="headerblack">
-      <td colspan="3">&nbsp;Config for event {{ event.name }}, {{ event.date_of_event }}</td>
-    </tr>
     {% for oneconfig in event_config %}
       <tr>
-        <td>&nbsp;{{ oneconfig.key }}</td>
+        <td>&nbsp;{{ oneconfig.key }}&nbsp;</td>
         <td>
           {% if action == "edit" %}
             <form action=/config method=post>
@@ -48,4 +50,6 @@
       </tr>
     {% endfor %}
     </table>
+    </div>
+  </section>
 {% endblock %}

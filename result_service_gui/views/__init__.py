@@ -2,6 +2,7 @@
 
 from .config import Config
 from .control import Control
+from .corrections import Corrections
 from .csv_list import CsvList
 from .live import Live
 from .liveness import Ping, Ready
