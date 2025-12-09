@@ -44,12 +44,13 @@
       {% endif %}
       <table>
         {% for race in races %}
-            {% if loop.index0 == 0 %}
+            {% if loop.index0 == 0 and not valgt_startnr %}
               <div id=subheaderbold>{% if race.round == "Q" %}Kvart
               {% elif race.round == "S" %}Semi
                 {% if race.index == "C" %}C{% else %}A{% endif %}
-              {% elif race.round == "F" %}Finaler
+              {% elif race.round == "F" %}Finale
               {% endif %}</div>
+              <div id="spacer"></div>
             {% elif race.order in colseparators %}
                 </table>
               </div>
@@ -57,8 +58,9 @@
                 <div id=subheaderbold>{% if race.round == "Q" %}Kvart
                 {% elif race.round == "S" %}Semi
                   {% if race.index == "C" %}C{% else %}A{% endif %}
-                {% elif race.round == "F" %}Finaler
+                {% elif race.round == "F" %}Finale
                 {% endif %}</div>
+                <div id="spacer"></div>
                 <table>
             {% endif %}
             {% if race.finish_results|length > 0 %}
@@ -93,7 +95,11 @@
                     <td>
                         <a href=live?klasse={{ valgt_klasse }}&startnr={{ loper.bib }}&event_id={{ event_id }}>{{ loper.name }}</a>
                     </td>
-                    <td align=center id=table_border>{% if race.round != "F" %}{{ loper.next_race }}{% endif %}</td>
+                    {% if race.round != "F" %}
+                      <td align=center id=table_border>{{ loper.next_race }}</td>
+                    {% else %}
+                      <td></td>
+                    {% endif %}
                   </tr>
               {% endfor %}
             {% else %}
@@ -121,7 +127,7 @@
                          <td>
                            <a href=live?klasse={{ valgt_klasse }}&startnr={{ loper.bib }}&event_id={{ event_id }}>{{ loper.name }}</a>
                          </td>
-                         <td id=table_border></td>
+                         <td></td>
                        </tr>
                    {% endfor %}
                {% else %}
@@ -131,7 +137,7 @@
                {% endif %}
             {% endif %}
             <tr>
-               <td colspan=5 id=white height=25></td>
+               <td colspan=5 id=white height=10></td>
              </tr>
         {% endfor %}
       </table>

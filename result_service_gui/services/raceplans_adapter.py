@@ -207,6 +207,7 @@ class RaceplansAdapter:
         else:
             race["round"] = "F"
             race["index"] = ""
+            race["id"] = ""
         return race
 
     async def get_races_by_racesclass(

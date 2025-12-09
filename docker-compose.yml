@@ -29,6 +29,7 @@ services:
     depends_on:
       - "competition-format-service"
       - "event-service"
+      - "race-service"
       - "user-service"
       - "mongodb"
   event-service-gui:

@@ -98,7 +98,9 @@ class ResultatEditNew(web.View):
             )
             raceplan_summary = get_raceplan_summary(all_races, raceclasses)
 
-            if valgt_runde.klasse:
+            if not race["id"]:
+                informasjon += " Ingen heat i denne runden."
+            elif valgt_runde.klasse:
                 foto = await PhotosAdapter().get_photos_by_race_id(
                     user["token"], race["id"]
                 )
@@ -111,18 +113,15 @@ class ResultatEditNew(web.View):
                 race["photo_bib_rank"] = get_finish_rank_from_photos(
                     race["photo_finish"], "right"
                 )
-                # get kpis, the race progress status
-                for raceclass in raceclasses:
-                    if raceclass["name"] == valgt_runde.klasse:
-                        raceplan_kpis = await get_race_kpis(
-                            user["token"], event, [raceclass], valgt_runde.runde
-                        )
-                        break
 
-            if not race:
-                informasjon = f"{informasjon} Ingen heat i denne runden."
-            else:
-                race_orders = get_race_orders(raceplan_kpis)
+            # get kpis, the race progress status
+            for raceclass in raceclasses:
+                if raceclass["name"] == valgt_runde.klasse:
+                    raceplan_kpis = await get_race_kpis(
+                        user["token"], event, [raceclass], valgt_runde.runde
+                    )
+                    break
+            race_orders = get_race_orders(raceplan_kpis)
 
             """Get route function."""
             return await aiohttp_jinja2.render_template_async(
@@ -280,15 +279,16 @@ def get_race_orders(raceplan_kpis: list) -> dict:
         "highest": 0,
         "lowest": 10000,
     }
-    for race in raceplan_kpis[0]["races_q"]:
-        race_orders["highest"] = max(race_orders["highest"], race["order"])
-        race_orders["lowest"] = min(race_orders["lowest"], race["order"])
-    for race in raceplan_kpis[0]["races_s"]:
-        race_orders["highest"] = max(race_orders["highest"], race["order"])
-        race_orders["lowest"] = min(race_orders["lowest"], race["order"])
-    for race in raceplan_kpis[0]["races_f"]:
-        race_orders["highest"] = max(race_orders["highest"], race["order"])
-        race_orders["lowest"] = min(race_orders["lowest"], race["order"])
+    if raceplan_kpis:
+        for race in raceplan_kpis[0]["races_q"]:
+            race_orders["highest"] = max(race_orders["highest"], race["order"])
+            race_orders["lowest"] = min(race_orders["lowest"], race["order"])
+        for race in raceplan_kpis[0]["races_s"]:
+            race_orders["highest"] = max(race_orders["highest"], race["order"])
+            race_orders["lowest"] = min(race_orders["lowest"], race["order"])
+        for race in raceplan_kpis[0]["races_f"]:
+            race_orders["highest"] = max(race_orders["highest"], race["order"])
+            race_orders["lowest"] = min(race_orders["lowest"], race["order"])
     return race_orders
 
 

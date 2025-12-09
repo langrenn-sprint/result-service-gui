@@ -14,7 +14,7 @@ WORKDIR /app
 RUN uv sync --frozen
 
 # Expose the application port.
-EXPOSE 8080
+EXPOSE 8090
 
 # Run the application.
 CMD ["/app/.venv/bin/gunicorn", "result_service_gui:create_app",  "--config=result_service_gui/gunicorn_config.py", "--worker-class", "aiohttp.GunicornWebWorker"]
