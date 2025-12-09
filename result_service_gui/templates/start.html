@@ -89,26 +89,28 @@
     <div id=spacer></div>
   {% else %}
     {% if valgt_klasse != "live" %}
-      <table>
-        <tr id=headerblue>
-          <td>Klasse</td>
-          <td>Kvartfinale start</td>
-          <td>Semi</td>
-          <td>Finale</td>
-          <td>Deltakere</td>
-        </tr>
-        {% for raceclass in raceplan_summary %}
-          {% if (valgt_klasse == "") or valgt_klasse == raceclass.name %}
-            <tr>
-              <td><a href=start?klasse={{ raceclass.name }}&event_id={{ event_id }}>{{ raceclass.name }}</a></td>
-              <td>{{ raceclass.timeQ }}</td>
-              <td>{{ raceclass.timeS }}</td>
-              <td>{{ raceclass.timeF }}</td>
-              <td align="center">{{ raceclass.no_of_contestants }}</td>
-            </tr>
-          {% endif %}
-        {% endfor %}
-      </table>
+      <div class="w3-container">
+        <table>
+          <tr id=headerblue>
+            <td>Klasse</td>
+            <td>Kvartfinale start</td>
+            <td>Semi</td>
+            <td>Finale</td>
+            <td>Deltakere</td>
+          </tr>
+          {% for raceclass in raceplan_summary %}
+            {% if (valgt_klasse == "") or valgt_klasse == raceclass.name %}
+              <tr>
+                <td><a href=start?klasse={{ raceclass.name }}&event_id={{ event_id }}>{{ raceclass.name }}</a></td>
+                <td>{{ raceclass.timeQ }}</td>
+                <td>{{ raceclass.timeS }}</td>
+                <td>{{ raceclass.timeF }}</td>
+                <td align="center">{{ raceclass.no_of_contestants }}</td>
+              </tr>
+            {% endif %}
+          {% endfor %}
+        </table>
+      </div>
     {% endif %}
     <p></p>
     <div class="w3-row-padding">

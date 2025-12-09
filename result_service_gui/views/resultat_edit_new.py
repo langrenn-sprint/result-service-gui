@@ -98,7 +98,7 @@ class ResultatEditNew(web.View):
             )
             raceplan_summary = get_raceplan_summary(all_races, raceclasses)
 
-            if not race["id"]:
+            if not race or not race.get("id"):
                 informasjon += " Ingen heat i denne runden."
             elif valgt_runde.klasse:
                 foto = await PhotosAdapter().get_photos_by_race_id(

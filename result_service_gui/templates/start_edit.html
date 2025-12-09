@@ -38,22 +38,21 @@
   </li>
 {% endblock %}
 
+<! --- Information --->
+{% block tips %}
+  - Rediger start brukes til å gjøre endringer i startlistene.<br>
+  - Legg til: Brukes for å legge til en løper i startlisten. Oppgi startnummer og posisjon i heatet.<br>
+  - Slett: Brukes for å slette en løper fra startlisten.<br>
+  - Flytt: Dette er Slett og legg til som en operasjon. Lavest tilgjengelige posisjon velges automatisk.<br>
+  - OBS: Det er ikke lov å ha flere løpere i samme posisjon. Derfor viktig å ta hensyn til pre-definert oppsett når du tildeler posisjon manuelt.<br>
+  - Videoinstruksjoner<br>
+  <iframe width="560" height="315" src="https://www.youtube.com/embed/sixRb7-tF7Q?si=EbuB6EraRbRtPjmh&amp;clip=UgkxFI6U5zm2b3Ub2jqUuzC_LZm-_nGVBjyN&amp;clipt=ENKvDhiEoRE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+{% endblock %}
+<! --- End Information --->
+
 {% block content %}
-  <! --- Information --->
-  <div id=spacer></div>
-  <div id=info-header><a id=info-header data-toggle="collapse" href="#info-zone">TIPS</a></div>
-  <div id=info-zone class="collapse">
-    - Rediger start brukes til å gjøre endringer i startlistene.<br>
-    - Legg til: Brukes for å legge til en løper i startlisten. Oppgi startnummer og posisjon i heatet.<br>
-    - Slett: Brukes for å slette en løper fra startlisten.<br>
-    - Flytt: Dette er Slett og legg til som en operasjon. Lavest tilgjengelige posisjon velges automatisk.<br>
-    - OBS: Det er ikke lov å ha flere løpere i samme posisjon. Derfor viktig å ta hensyn til pre-definert oppsett når du tildeler posisjon manuelt.<br>
-    - Videoinstruksjoner<br>
-    <iframe width="560" height="315" src="https://www.youtube.com/embed/sixRb7-tF7Q?si=EbuB6EraRbRtPjmh&amp;clip=UgkxFI6U5zm2b3Ub2jqUuzC_LZm-_nGVBjyN&amp;clipt=ENKvDhiEoRE" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
-  </div>
-  <div id=spacer></div>
-  <! --- End Information --->
-    <table>
+    <div class="w3-container">
+      <table>
       {% for race in next_races %}
         <tr>
           <td colspan=6 id="spacer"></td>
@@ -89,7 +88,7 @@
                   <input type="hidden" name=klasse value="{{ valgt_klasse }}">
                   <input type="hidden" name="runde" value="{{ valgt_runde }}">
                   <input type="hidden" name=event_id value="{{ event_id }}">
-                  <input type="submit" class="btn btn-default" name=delete_start value=" Slett ">
+                  <input type="submit" class="btn btn-warning" name=delete_start value=" Slett ">
                   Nytt heat: 
                   <select name=new_heat>
                     <option value="">Velg heat</option>
@@ -100,7 +99,7 @@
                     {% endfor %}
                   </select>
                   <input type="hidden" name=bib value="{{ start.bib }}">
-                  <input type="submit" class="btn btn-default" name=move_start value=" Flytt ">
+                  <input type="submit" class="btn btn-success" name=move_start value=" Flytt ">
                 </form>
               </nobr></td>
               <td>{{ start.name }}</td>
@@ -129,4 +128,5 @@
         <tr id=spacer></tr>
       {% endfor %}
     </table>
+    </div>
 {% endblock %}
