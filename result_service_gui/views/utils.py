@@ -59,11 +59,11 @@ def get_display_style(start_time: str, event: dict) -> str:
     delta_seconds = delta_time.total_seconds()
     display_style = ""
     if delta_seconds < 300:
-        display_style = "table_header_red"
+        display_style = "table_header_green"
     elif delta_seconds < 600:
         display_style = "table_header_orange"
     else:
-        display_style = "table_header_green"
+        display_style = "headerblue"
 
     return display_style
 

@@ -9,6 +9,7 @@
 {% endblock %}
 
 {% block refresh %}{% if valgt_klasse == "live" %}60{% endif %}{% endblock %}
+{% block max_width %}{% if valgt_klasse != "live" %}1200{% endif %}{% endblock %}
 
 {% block titlemain %}
   <img id=menu_icon src="../static/icon_start.png"> Start {{ valgt_klubb }}{{ valgt_klasse }}
@@ -53,7 +54,7 @@
   <table>
     <tr>
       <td id="tid" class=timetitle>Klokken er {{ local_time_now }}</td>
-      <td id="table_header_red" align="center"> < 5 min til start </td>
+      <td id="table_header_green" align="center"> < 5 min til start </td>
       <td id="table_header_orange" align="center"> < 10 min til start</td>
     </tr>
   </table>
@@ -112,8 +113,7 @@
         </table>
       </div>
     {% endif %}
-    <p></p>
-    <div class="w3-row-padding">
+    <br>
       <div class="{{ colclass }}">
         <table>
       {% for race in races %}
@@ -126,7 +126,15 @@
         {% if valgt_klasse == "live" %}
           <tr id={{ race.display_color }}>
         {% elif valgt_klasse == "" %}
-          <tr id=subheader>
+            {% if loop.index0 == 0 %}
+              <tr id=headerblue>
+                <td colspan=3>Kjøreplan, alle heat</td>
+                <td></td>
+                <td></td>
+                <td></td>
+              </tr>
+            {% endif %}
+          <tr>
         {% else %}
           <tr id=headerblue>
         {% endif %}
@@ -174,6 +182,5 @@
       {% endfor %}
   </table>
   {% endif %} {# note: end competition_format #}
-    </div>
   </div>
 {% endblock %}

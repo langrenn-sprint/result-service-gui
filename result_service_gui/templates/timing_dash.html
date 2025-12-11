@@ -3,6 +3,7 @@
 {% block titleheader %}{{ lopsinfo }}{% endblock titleheader %}
 {% block headercontainer %}{{ lopsinfo }} <img id=header_icon src="../static/icon_event.png"> {% endblock %}
 {% block refresh %}60{% endblock refresh %}
+{% block max_width %}1800{% endblock %}
 {% block titlemain %} <img id=menu_icon src="../static/icon_event.png"> {{ lopsinfo }}{% endblock titlemain %}
 {% block menuitems %}{% endblock menuitems %}
 
@@ -128,10 +129,10 @@
   </script>
 
   <section class="row" aria-label="Event">
-    <div class="col-sm-6">
+    <div class="col-sm-7">
       {% include "_race_progress.html" %}
     </div>
-    <div class="col-sm-6">
+    <div class="col-sm-5">
         <div class="status-card" role="status" aria-live="polite">
           <h4>Automatisk deteksjon av målpassering</h4>
           <span id="integration_service_status" class="label label-danger">-</span>&nbsp;&nbsp;

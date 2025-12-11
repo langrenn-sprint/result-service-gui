@@ -33,8 +33,8 @@ dependencies = [
 Homepage = "https://github.com/langrenn-sprint/result-service-gui"
 Repository = "https://github.com/langrenn-sprint/result-service-gui"
 
-[tool.uv]
-dev-dependencies = [
+[dependency-groups]
+dev = [
     "Pygments>=2.10.0",
     "aiohttp-devtools>=1.0.post0",
     "aioresponses>=0.7.2",

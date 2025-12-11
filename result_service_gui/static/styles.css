@@ -307,27 +307,28 @@ vertical-align: bottom;
 }
 .tooltip_race .tooltiptext_race {
   visibility: hidden;
-  width: 120px;
+  width: 180px;
   background-color: black;
   color: #fff;
   text-align: center;
-  border-radius: 6px;
+  border-radius: 4px;
   padding: 5px 0;
   position: absolute;
   z-index: 100;
-  bottom: 150%;
+  top: 100%;
   left: 50%;
   margin-left: -60px;
+  margin-top: 5px;
 }
 .tooltip_race .tooltiptext_race::after {
   content: "";
   position: absolute;
-  top: 100%;
+  bottom: 100%;
   left: 50%;
   margin-left: -5px;
   border-width: 5px;
   border-style: solid;
-  border-color: black transparent transparent transparent;
+  border-color: transparent transparent black transparent;
 }
 .tooltip_race:hover .tooltiptext_race {
   visibility: visible;

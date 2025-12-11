@@ -166,7 +166,7 @@ class ResultatEditNew(web.View):
             elif "update_result" in form:
                 if "photo_finish_button" in form:
                     informasjon = (
-                        "Fra foto: "
+                        "Registrering fra målfoto: "
                         + await PhotoTimingService().create_time_events_from_photos(
                             user, race_id
                         )

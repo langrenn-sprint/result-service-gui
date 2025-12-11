@@ -7,6 +7,7 @@
 {% block headercontainer %}Registrer resultat {{ valgt_klasse }} <img id=header_icon src="../static/icon_timing.png"> {% endblock %}
 
 {% block refresh %}{% endblock %}
+{% block max_width %}1800{% endblock %}
 
 {% block titlemain %}
   <img id=menu_icon src="../static/icon_timing.png"> Registrer resultat {{ valgt_runde.klasse }}
@@ -524,7 +525,7 @@
                     </script>
                     {% endif %}
                     <! -- End photo stuff -->
-                    <button type="button" class="btn btn-default" id="photo_finish_button" onclick=update_results_ajax(this); >Hent resultater fra målfoto </button>
+                    <button type="button" class="btn btn-default" id="photo_finish_button" onclick=update_results_ajax(this); tabindex="-1">Hent resultater fra målfoto </button>
                   </td>
                 {% endif %}
             </tr>

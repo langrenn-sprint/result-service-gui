@@ -71,9 +71,12 @@ class PhotoTimingService:
                         for rank_event in finish_ranks:
                             delete_result_list.append(rank_event["id"])
 
-            informasjon = await TimeEventsService().update_finish_time_events(
-                user, delete_result_list, add_result_list
-            )
+            if len(add_result_list) > 0 or len(delete_result_list) > 0:
+                informasjon = await TimeEventsService().update_finish_time_events(
+                    user, delete_result_list, add_result_list
+                )
+            else:
+                informasjon = "Ingen nye resultater funnet i målfoto. "
         except Exception as e:
             informasjon = f"create_time_event_from_photo: {e}"
             logging.exception(informasjon)
