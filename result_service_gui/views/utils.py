@@ -76,9 +76,8 @@ async def get_enrichced_startlist(user: dict, race: dict) -> list:
     next_race_time_events = await TimeEventsAdapter().get_time_events_by_race_id(
         user["token"], race["id"]
     )
-    new_start_entries = race["start_entries"]
-    if len(new_start_entries) > 0:
-        for start_entry in new_start_entries:
+    if race["start_entries"]:
+        for start_entry in race["start_entries"]:
             start_entry["club_logo"] = EventsAdapter().get_club_logo_url(
                 start_entry["club"]
             )
