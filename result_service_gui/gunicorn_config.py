@@ -49,7 +49,7 @@ class StackdriverJsonFormatter(JsonFormatter):
         """Process log record."""
         log_data["severity"] = log_data["levelname"]
         del log_data["levelname"]
-        log_data["serviceContext"] = {"service": "event-service-gui"}
+        log_data["serviceContext"] = {"service": "result-service-gui"}
         return super().process_log_record(log_data)
 
 
