@@ -136,3 +136,8 @@ docker compose pull #oppdatere images
 docker compose up --build #bygge og debug modus
 docker compose stop #oppdatere images
 docker compose up -d #kjøre-modus
+
+## slette images og containere
+```Shell
+docker system prune -a --volumes
+```
