@@ -580,44 +580,14 @@
       </div>
   {% endif %}
   <br>
-  <table>
-    <tr>
-      <td width=200 style="vertical-align: top; text-align: right;">
-        {% if race_orders %}
-          <nobr>
-            <a class="btn btn-default" href=resultat_edit_new?event_id={{ event_id }}&heat={{ race_orders.lowest - 1 }}>&nbsp;Forrige runde</a>
-            <a class="btn btn-default" href=resultat_edit_new?event_id={{ event_id }}&heat={{ race_orders.highest + 1 }}>&nbsp;Neste runde</a>
-          </nobr>
-        {% endif %}
-        </td>
-    </tr>
-  </table>
-  <br>
-  {% if valgt_runde.runde == "F" %}
-    <ul>
-      <li class=dropdown>
-        <a href=javascript:void(0) class=dropbtn>Utskrift</a>
-        <div class=dropdown-content>
-          <a target=_blank href=print_lists?event_id={{ event_id }}&action=round_result&klasse={{ valgt_runde.klasse }}&runde={{ valgt_runde.runde }}>Rundens resultater</a>
-          <a target=_blank href=print_lists?event_id={{ event_id }}&action=round_result&klasse={{ valgt_runde.klasse }}&runde={{ valgt_runde.runde }}&show_graphics=False>&nbsp;&nbsp;(kun tekst)</a>
-          <a target=_blank href=print_lists?event_id={{ event_id }}&action=result&klasse={{ valgt_runde.klasse }}&runde={{ valgt_runde.runde }}>Klassens resultatliste</a>
-        </div>
-      </li>
-    </ul>
-  {% else %}
-    <ul>
-      <li class=dropdown>
-        <a href=javascript:void(0) class=dropbtn>Utskrift</a>
-        <div class=dropdown-content>
-          <a target=_blank href=print_lists?event_id={{ event_id }}&action=round_result&klasse={{ valgt_runde.klasse }}&runde={{ valgt_runde.runde }}>Rundens resultater</a>
-          <a target=_blank href=print_lists?event_id={{ event_id }}&action=round_result&klasse={{ valgt_runde.klasse }}&runde={{ valgt_runde.runde }}&show_graphics=False>&nbsp;&nbsp;(kun tekst)</a>
-          <a target=_blank href=print_lists?event_id={{ event_id }}&action=round_resultstart&klasse={{ valgt_runde.klasse }}&runde={{ valgt_runde.runde }}>Rundens resultater og nye startlister</a>
-          <a target=_blank href=print_lists?event_id={{ event_id }}&action=round_resultstart&klasse={{ valgt_runde.klasse }}&runde={{ valgt_runde.runde }}&show_graphics=False>&nbsp;&nbsp;(kun tekst)</a>
-          <a target=_blank href=print_lists?event_id={{ event_id }}&action=round_start&klasse={{ valgt_runde.klasse }}&runde={{ valgt_runde.runde }}>Nye startlister</a>
-          <a target=_blank href=print_lists?event_id={{ event_id }}&action=round_start&klasse={{ valgt_runde.klasse }}&runde={{ valgt_runde.runde }}&show_graphics=False>&nbsp;&nbsp;(kun tekst)</a>
-        </div>
-      </li>
-    </ul>
+  {% if race_orders %}
+    <div align="center">
+      <nobr>
+        <a class="btn btn-default" href=resultat_edit_new?event_id={{ event_id }}&heat={{ race_orders.lowest - 1 }}>&nbsp;Forrige runde</a>
+        <a class="btn btn-default" href=resultat_edit_new?event_id={{ event_id }}&heat={{ race_orders.highest + 1 }}>&nbsp;Neste runde</a>
+      </nobr>
+    </div>
   {% endif %}
+  <br>
 </div>
 {% endblock %}
