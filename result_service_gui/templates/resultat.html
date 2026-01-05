@@ -38,6 +38,12 @@
 {% endblock %}
 
 {% block content %}
+  <div class="w3-container">
+    <section class="row" aria-label="Resultater">
+        <div class="col-sm-12">
+            <h2>{{ valgt_klasse }} Offisielle resultater</h2>
+        </div>
+    </section>
     <table>
       <tr>
         <td align=center>
@@ -50,9 +56,6 @@
       </tr>
     </table>
     <table>
-      <tr>  
-        <td id=adminpagetitle colspan=6>{{ valgt_klasse }} Offisielle resultater</td>
-      </tr>
       <tr id=headerblack>
         <td align=center>Plass</td>
         <td></td>
@@ -81,5 +84,5 @@
         </td>
       </tr>
     </table>
+  </div>
 {% endblock %}
-</div>

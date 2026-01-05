@@ -183,11 +183,14 @@
             <div class="w3-container" id=info>{{ informasjon }}</div>
             {% block content %}{% endblock %}
             <div id="spacer"></div>
+            {% set tips_content %}{% block tips %}{% endblock %}{% endset %}
+            {% if tips_content.strip() %}
             <details class="info-box">
                 <summary>TIPS (klikk for å utvide)</summary>
                 <br>
-                {% block tips %}{% endblock %}
+                {{ tips_content }}
             </details>
+            {% endif %}
 
         </main>
         <br>

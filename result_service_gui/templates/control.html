@@ -44,16 +44,19 @@
 {% endblock %}
 
 {% block content %}
-    <table>
-      <form action=/control method=post>
-        <tr>
-          <td id=spacer colspan=11>
-            <input type="hidden" name="action" value="{{ action }}">
-            <input type="hidden" name="event_id" value="{{ event_id }}">
-            <input type="hidden" name="valgt_klasse" value="{{ valgt_klasse }}">
-            <input type="submit" class="btn btn-default" name=resolve_error value=" Slett valgte ">
-          </td>
-        </tr>
+  <div class="w3-container">
+    <form action=/control method=post>
+      <input type="hidden" name="action" value="{{ action }}">
+      <input type="hidden" name="event_id" value="{{ event_id }}">
+      <input type="hidden" name="valgt_klasse" value="{{ valgt_klasse }}">
+      <input type="submit" class="btn btn-warning" name=resolve_error value=" Slett valgte ">
+      <div id="spacer"></div>
+      <section class="row" aria-label="Passeringer">
+        <div class="col-sm-12">
+          <h2>Passeringer - manuell sletting</h2>
+        </div>
+      </section>
+      <table>
         <tr id=headerblue>
           <td></td>
           <td>Startnr</td>
@@ -94,17 +97,9 @@
             </tr>
           {% endif %}
         {% endfor %}
-        <tr>
-          <td id=spacer colspan=11>
-            <input type="hidden" name="action" value="{{ action }}">
-            <input type="hidden" name="event_id" value="{{ event_id }}">
-            <input type="hidden" name="valgt_klasse" value="{{ valgt_klasse }}">
-            <input type="submit" class="btn btn-default" name=resolve_error value=" Slett valgte ">
-          </td>
-        </tr>
       </form>
-      <tr>
-        <td id=spacer colspan=11>&nbsp; </td>
-      </tr>
     </table>
+  </div>
+  <hr>
 {% endblock %}
+  
