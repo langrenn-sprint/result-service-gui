@@ -10,7 +10,7 @@
 {% block content %}
   {% if username != "Gjest" %}
     <div align=right>
-      <a id="myNewEvent" onclick="event_gui_href('myNewEvent', 'events')" href=>Nytt arrangement</a>
+      <a id="myNewEvent" onclick="event_gui_href('myNewEvent', 'events?new=True')" href=>Nytt arrangement</a>
     </div>
   {% endif %}
   <div id=spacer></div>
