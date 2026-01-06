@@ -10,9 +10,7 @@
 {% block content %}
   {% if username != "Gjest" %}
     <div align=right>
-      <form action=/events method=get>
-        <input type="submit" class="btn btn-default" name=new value="  Nytt arrangement  " class="btn btn-default">
-      </form>
+      <a id="myNewEvent" onclick="event_gui_href('myNewEvent', 'events')" href=>Nytt arrangement</a>
     </div>
   {% endif %}
   <div id=spacer></div>
