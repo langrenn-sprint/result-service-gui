@@ -71,5 +71,17 @@ async def get_integration_status(token: str, event_id: str) -> str:
     result_list = await StatusAdapter().get_status(token, event_id, 10)
     for res in result_list:
         info_time = f"<a title={res['time']}>{res['time'][-8:]}</a>"
-        response += f"{info_time} - {res['message']}<br>"
+        res_type = ""
+        if res["type"] == "video_status_CAPTURE":
+            res_type = "(video)"
+        elif res["type"] == "video_status_DETECT":
+            res_type = "(detect)"
+        elif res["type"] == "integration_status":
+            res_type = "(upload)"
+        if "Error" in res["message"]:
+            response += f"{info_time} {res_type} - <span id=red>{
+                res['message']
+            }</span><br>"
+        else:
+            response += f"{info_time} {res_type} - {res['message']}<br>"
     return response

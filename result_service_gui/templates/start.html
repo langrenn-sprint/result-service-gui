@@ -24,9 +24,11 @@
             <tr>
               {% if event.competition_format != "Interval Start" %}
                 <td id="black"><nobr><a href=start?klasse={{ raceclass.name }}&event_id={{ event_id }}>{{ ac_name }}</a></nobr></td>
-                <td><nobr><a href=start?klasse={{ raceclass.name }}&event_id={{ event_id }}&runde=Q>Kvart</a></nobr></td>
-                <td><nobr><a href=start?klasse={{ raceclass.name }}&event_id={{ event_id }}&runde=S>Semi</a></nobr></td>
-                <td><nobr><a href=start?klasse={{ raceclass.name }}&event_id={{ event_id }}&runde=F>Finale</a></nobr></td>
+                {% if raceclass.ranking %}
+                  <td><nobr><a href=start?klasse={{ raceclass.name }}&event_id={{ event_id }}&runde=Q>Kvart</a></nobr></td>
+                  <td><nobr><a href=start?klasse={{ raceclass.name }}&event_id={{ event_id }}&runde=S>Semi</a></nobr></td>
+                  <td><nobr><a href=start?klasse={{ raceclass.name }}&event_id={{ event_id }}&runde=F>Finale</a></nobr></td>
+                {% endif %}
               {% else %}
                 <td><nobr><a target=_new href=print_lists?klasse={{ raceclass.name }}&event_id={{ event_id }}&action=live>{{ ac_name }}</a></nobr></td>
               {% endif %}

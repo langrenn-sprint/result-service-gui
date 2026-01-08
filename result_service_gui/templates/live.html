@@ -42,7 +42,7 @@
       {% if valgt_startnr %}
         <div align=center><b>Startnummer {{ valgt_startnr }}</b></div>
       {% endif %}
-      <table>
+        <table>
         {% for race in races %}
             {% if loop.index0 == 0 and not valgt_startnr %}
               <div id=subheaderbold>{% if race.round == "Q" %}Kvart
@@ -53,7 +53,7 @@
               <div id="spacer"></div>
             {% elif race.order in colseparators %}
                 </table>
-              </div>
+                </div>
               <div class="{{ colclass }}">
                 <div id=subheaderbold>{% if race.round == "Q" %}Kvart
                 {% elif race.round == "S" %}Semi
@@ -61,7 +61,7 @@
                 {% elif race.round == "F" %}Finale
                 {% endif %}</div>
                 <div id="spacer"></div>
-                <table>
+                  <table>
             {% endif %}
             {% if race.finish_results|length > 0 %}
               <tr id=headerblack>
@@ -136,9 +136,11 @@
                </tr>
                {% endif %}
             {% endif %}
+            {% if (race.finish_results|length == 0) and (race.start_entries|length == 0) %}
             <tr>
-               <td colspan=5 id=white height=10></td>
+               <td colspan=5 id=white height=100></td>
              </tr>
+            {% endif %}
         {% endfor %}
       </table>
     </div>

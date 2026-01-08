@@ -38,7 +38,7 @@ class ConfigAdapter:
                 config = await resp.json()
             elif resp.status == HTTPStatus.UNAUTHORIZED:
                 informasjon = f"Login expired: {resp}"
-                raise Exception(informasjon)
+                raise web.HTTPBadRequest(reason=informasjon)
             elif resp.status == HTTPStatus.NOT_FOUND:
                 # config not found - find default value
                 config_file = Path(f"{PROJECT_ROOT}/config/global_settings.json")
@@ -82,7 +82,7 @@ class ConfigAdapter:
                 config = await resp.json()
             elif resp.status == HTTPStatus.UNAUTHORIZED:
                 informasjon = f"Login expired: {resp}"
-                raise Exception(informasjon)
+                raise web.HTTPBadRequest(reason=informasjon)
             else:
                 body = await resp.json()
                 informasjon = f"{servicename} failed - {resp.status} - {body['detail']}"
