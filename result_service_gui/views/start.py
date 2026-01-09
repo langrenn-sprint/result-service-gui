@@ -68,7 +68,7 @@ class Start(web.View):
             else:
                 for race in _tmp_races:
                     if (race["raceclass"] == valgt_klasse) or (
-                        valgt_klasse in ["live", ""]
+                        valgt_klasse in ["live"]
                     ):
                         race = await RaceplansAdapter().get_race_by_id(
                             user["token"], race["id"]
