@@ -33,6 +33,10 @@ class PhotosEdit(web.View):
         except Exception:
             my_filter = ""
         try:
+            photo_type = self.request.rel_url.query["photo_type"]
+        except Exception:
+            photo_type = ""
+        try:
             valgt_klasse = self.request.rel_url.query["raceclass"]
         except Exception:
             valgt_klasse = ""
@@ -83,6 +87,7 @@ class PhotosEdit(web.View):
                     "informasjon": informasjon,
                     "local_time_now": EventsAdapter().get_local_time(event, "HH:MM"),
                     "photos": photos,
+                    "photo_type": photo_type,
                     "raceclasses": raceclasses,
                     "races": races,
                     "valgt_klasse": valgt_klasse,

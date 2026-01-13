@@ -363,9 +363,9 @@
         <form action=/resultat_edit_new method=post onsubmit="return checkform(this);">
           {% for start in race.startliste %}
             <tr>
-              <td align="center">{{ start.starting_position }}</td>
-              <td id="{{ race.order }}{{ start.bib }}" align="center">{{ start.bib }}</td>
-                <td align="center">
+              <td align="center" class="no-hover">{{ start.starting_position }}</td>
+              <td id="{{ race.order }}{{ start.bib }}" align="center" class="no-hover">{{ start.bib }}</td>
+                <td align="center" class="no-hover">
                   <span id="{{ race.order }}{{ start.bib }}_start_status">
                     {% if start.status in ["DNS"] %}
                       <span id="grey">DNS</span>
@@ -388,8 +388,8 @@
                     {% endif %}
                     {% endfor %}
                 </td>
-                <td>&nbsp;{{ start.name }}</td>
-                <td>{{ start.club }}</td>
+                <td class="no-hover">&nbsp;{{ start.name }}</td>
+                <td class="no-hover">{{ start.club }}</td>
                 {% if race.finish_timings[loop.index0] and race.finish_timings[loop.index0].bib %}
                   <td id=resultborder align=center><span id="{{ race.order }}_place_{{ loop.index }}">{{ race.finish_timings[loop.index0].rank }}</span></td>
                   <td>
@@ -446,7 +446,7 @@
                     validation_colors({{ race.order }});
                   }
                 </script>
-                  <td rowspan="{{ loop.length }}" valign="top">
+                  <td rowspan="{{ loop.length }}" valign="top" class="no-hover">
                     <! -- Start photo stuff -->
                     {% if race.photo_finish != [] %}
                     <div class="lb_row">

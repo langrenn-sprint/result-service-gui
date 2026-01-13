@@ -47,16 +47,15 @@
   </li>
 {% endblock %}
 
-{% block content %}
-  <! --- Information --->
-  <div id=spacer></div>
-  <div id=info-header><a id=info-header data-toggle="collapse" href="#info-zone">TIPS</a></div>
-  <div id=info-zone class="collapse">
+<! --- Information --->
+{% block tips %}
     - Denne siden viser heat resultater og målfoto i read-only modus.<br>
     - Klikk på et bilde for å vise det i stort format.
-  </div>
-  <div id=spacer></div>
-  <! --- End Information --->
+{% endblock %}
+<! --- End Information --->
+
+
+{% block content %}
   <script>
     /* this function will indicate with red or green colors if entered values are correct or not
       if bib exist in heat, the bib will be green,
@@ -142,10 +141,9 @@
           - ingen deltakere.          
         {% endif %}
       </span>
-      <a data-toggle="collapse" href="#demo_{{ race.order }}">Vis/skjul.</a>
     </div>
     <div id=spacer></div>
-    <div id="demo_{{ race.order }}" class="collapse in">
+    <div id="demo_{{ race.order }}">
       <table>
         <tr id=headerblack>
           <td colspan=4>Startliste</td>
@@ -176,7 +174,7 @@
                     <a class="tooltip_photo_left">
                       &nbsp;<img src={{ bilde.g_base_url }} width="30">
                         <span>
-                            <img src="{{ bilde.g_base_url }}" title="Photo time: {{ bilde.creation_time[-8:] }}">
+                            <img src="{{ bilde.g_base_url }}" title="Photo time: {{ bilde.information.passeringstid[-8:] }}">
                         </span>
                     </a></td>
                     {% endif %}
@@ -237,7 +235,7 @@
                     
                         {% for bilde in race.photo_finish %}
                           <div class="lb_column">
-                            <img class="lb_demo_{{ race.order }} cursor" src="{{ bilde.g_base_url }}" style="width:100%" onclick="currentSlide{{ race.order }}({{loop.index}})" alt="Photo time: {{ bilde.creation_time[-8:] }} Bibs: {{ bilde.biblist }}  Video: {{ bilde.information.source_video }}">
+                            <img class="lb_demo_{{ race.order }} cursor" src="{{ bilde.g_base_url }}" style="width:100%" onclick="currentSlide{{ race.order }}({{loop.index}})" alt="Photo time: {{ bilde.information.passeringstid[-8:] }} Bibs: {{ bilde.biblist }}  <a href={{ bilde.information.source_video }} target=_blank>Video</a>">
                           </div>
                         {% endfor %}
                       </div>
@@ -289,18 +287,10 @@
               validation_colors("{{ race.order }}")
             </script>
           {% endfor %}
-          {% if race.startliste %}
-            <tr>
-            <td colspan=6>
-            </td>
-              <td colspan=6 id="orange">
-                <a data-toggle="collapse" id="{{ race.order }}_result_toggle" href="#demo_{{ race.order }}"></a><span id="{{ race.order }}_result"></span>
-              </td>
-            </tr>
-          {% endif %}
         </table>
       </div>
-    {% endfor %}
+      <br>
+  {% endfor %}
     <table>
       <tr>
         <td>
