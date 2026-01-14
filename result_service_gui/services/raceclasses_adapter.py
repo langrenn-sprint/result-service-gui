@@ -160,7 +160,7 @@ class RaceclassesAdapter:
             logging.debug(f"get_raceclass_by_name - got response {resp.status}")
             if resp.status == HTTPStatus.OK:
                 result = await resp.json()
-                if result and len(result) > 0:
+                if result:
                     raceclass = result[0]
             else:
                 servicename = "get_raceclass_by_name"
