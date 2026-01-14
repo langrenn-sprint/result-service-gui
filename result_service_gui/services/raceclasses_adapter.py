@@ -29,11 +29,14 @@ class RaceclassesAdapter:
             ]
         )
 
-        async with ClientSession() as session, session.post(
-            f"{EVENT_SERVICE_URL}/events/{event_id}/raceclasses",
-            headers=headers,
-            json=request_body,
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.post(
+                f"{EVENT_SERVICE_URL}/events/{event_id}/raceclasses",
+                headers=headers,
+                json=request_body,
+            ) as resp,
+        ):
             if resp.status == HTTPStatus.CREATED:
                 logging.debug(f"create raceclass - got response {resp}")
                 location = resp.headers[hdrs.LOCATION]
@@ -56,10 +59,13 @@ class RaceclassesAdapter:
             hdrs.AUTHORIZATION: f"Bearer {token}",
         }
 
-        async with ClientSession() as session, session.delete(
-            f"{EVENT_SERVICE_URL}/events/{event_id}/raceclasses",
-            headers=headers,
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.delete(
+                f"{EVENT_SERVICE_URL}/events/{event_id}/raceclasses",
+                headers=headers,
+            ) as resp,
+        ):
             res = resp.status
             logging.debug(f"delete all result - got response {resp}")
             if res == HTTPStatus.NO_CONTENT:
@@ -84,10 +90,13 @@ class RaceclassesAdapter:
             hdrs.AUTHORIZATION: f"Bearer {token}",
         }
 
-        async with ClientSession() as session, session.delete(
-            f"{EVENT_SERVICE_URL}/events/{event_id}/raceclasses/{raceclass_id}",
-            headers=headers,
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.delete(
+                f"{EVENT_SERVICE_URL}/events/{event_id}/raceclasses/{raceclass_id}",
+                headers=headers,
+            ) as resp,
+        ):
             res = resp.status
             logging.debug(f"delete result - got response {resp}")
             if res == HTTPStatus.NO_CONTENT:
@@ -112,10 +121,13 @@ class RaceclassesAdapter:
             ]
         )
         raceclass = {}
-        async with ClientSession() as session, session.get(
-            f"{EVENT_SERVICE_URL}/events/{event_id}/raceclasses/{raceclass_id}",
-            headers=headers,
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.get(
+                f"{EVENT_SERVICE_URL}/events/{event_id}/raceclasses/{raceclass_id}",
+                headers=headers,
+            ) as resp,
+        ):
             logging.debug(f"get_raceclass - got response {resp.status}")
             if resp.status == HTTPStatus.OK:
                 raceclass = await resp.json()
@@ -130,11 +142,34 @@ class RaceclassesAdapter:
 
     async def get_raceclass_by_name(self, token: str, event_id: str, name: str) -> dict:
         """Get raceclass by name function."""
-        raceclasses = await self.get_raceclasses(token, event_id)
-        for raceclass in raceclasses:
-            if raceclass["name"] == name:
-                return raceclass
-        return {}
+        headers = MultiDict(
+            [
+                (hdrs.CONTENT_TYPE, "application/json"),
+                (hdrs.AUTHORIZATION, f"Bearer {token}"),
+            ]
+        )
+        raceclass = {}
+        name_url = urllib.parse.quote(name, safe="")
+        async with (
+            ClientSession() as session,
+            session.get(
+                f"{EVENT_SERVICE_URL}/events/{event_id}/raceclasses?name={name_url}",
+                headers=headers,
+            ) as resp,
+        ):
+            logging.debug(f"get_raceclass_by_name - got response {resp.status}")
+            if resp.status == HTTPStatus.OK:
+                result = await resp.json()
+                if result and len(result) > 0:
+                    raceclass = result[0]
+            else:
+                servicename = "get_raceclass_by_name"
+                body = await resp.json()
+                logging.error(f"{servicename} failed - {resp.status} - {body}")
+                raise web.HTTPBadRequest(
+                    reason=f"Error - {resp.status}: {body['detail']}."
+                )
+        return raceclass
 
     async def get_raceclass_by_ageclass(
         self, token: str, event_id: str, ageclass: str
@@ -148,10 +183,13 @@ class RaceclassesAdapter:
         )
         raceclass = {}
         ageclass_url = urllib.parse.quote(ageclass, safe="")
-        async with ClientSession() as session, session.get(
-            f"{EVENT_SERVICE_URL}/events/{event_id}/raceclasses?ageclass-name={ageclass_url}",
-            headers=headers,
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.get(
+                f"{EVENT_SERVICE_URL}/events/{event_id}/raceclasses?ageclass-name={ageclass_url}",
+                headers=headers,
+            ) as resp,
+        ):
             logging.debug(f"get_raceclass_by_ageclass - got response {resp.status}")
             if resp.status == HTTPStatus.OK:
                 raceclass = await resp.json()
@@ -173,9 +211,12 @@ class RaceclassesAdapter:
                 (hdrs.AUTHORIZATION, f"Bearer {token}"),
             ]
         )
-        async with ClientSession() as session, session.get(
-            f"{EVENT_SERVICE_URL}/events/{event_id}/raceclasses", headers=headers
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.get(
+                f"{EVENT_SERVICE_URL}/events/{event_id}/raceclasses", headers=headers
+            ) as resp,
+        ):
             logging.debug(f"get_raceclasses - got response {resp.status}")
             if resp.status == HTTPStatus.OK:
                 all_raceclasses = await resp.json()
@@ -207,11 +248,14 @@ class RaceclassesAdapter:
                 (hdrs.AUTHORIZATION, f"Bearer {token}"),
             ]
         )
-        async with ClientSession() as session, session.put(
-            f"{EVENT_SERVICE_URL}/events/{event_id}/raceclasses/{my_id}",
-            headers=headers,
-            json=new_data,
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.put(
+                f"{EVENT_SERVICE_URL}/events/{event_id}/raceclasses/{my_id}",
+                headers=headers,
+                json=new_data,
+            ) as resp,
+        ):
             logging.debug(f"update_raceclass - got response {resp.status}")
             if resp.status == HTTPStatus.NO_CONTENT:
                 pass
