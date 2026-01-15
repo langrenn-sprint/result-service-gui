@@ -13,7 +13,7 @@ The application follows a strict layered architecture:
 - **models/**: Data model classes
 - **adapters/**: Interface to external backend services (event-service, user-service, competition-format-service, race-service, photo-service)
 
-**Important**: Maintain clear separation between layers. Views should not directly call adapters; they should go through services.
+**Important**: Views can call adapters directly, but adapters should not contain business logic. Business logic belongs in the services layer.
 
 ## Technology Stack
 
