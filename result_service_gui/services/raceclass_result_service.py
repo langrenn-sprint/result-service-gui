@@ -69,10 +69,10 @@ class RaceclassResultsService:
                         finish_ranks = finish_results["ranking_sequence"]
                         for rank_event in finish_ranks:
                             if rank_event["status"] == "OK":
-                                rank_event[
-                                    "club_logo"
-                                ] = EventsAdapter().get_club_logo_url(
-                                    rank_event["club"]
+                                rank_event["club_logo"] = (
+                                    EventsAdapter().get_club_logo_url(
+                                        rank_event["club"]
+                                    )
                                 )
                                 finish_rank.append(rank_event)
                                 finish_bibs.append(rank_event["bib"])

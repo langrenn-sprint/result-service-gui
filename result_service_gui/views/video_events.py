@@ -42,10 +42,14 @@ class VideoEvents(web.View):
                 response["photo_queue_latest"] = await ConfigAdapter().get_config(
                     user["token"], event_id, "GOOGLE_LATEST_PHOTO"
                 )
-                response["integration_service_available"] = await ConfigAdapter().get_config(
+                response[
+                    "integration_service_available"
+                ] = await ConfigAdapter().get_config(
                     user["token"], event_id, "INTEGRATION_SERVICE_AVAILABLE"
                 )
-                response["integration_service_running"] = await ConfigAdapter().get_config(
+                response[
+                    "integration_service_running"
+                ] = await ConfigAdapter().get_config(
                     user["token"], event_id, "INTEGRATION_SERVICE_RUNNING"
                 )
                 response["informasjon"] = await get_integration_status(
@@ -79,9 +83,9 @@ async def get_integration_status(token: str, event_id: str) -> str:
         elif res["type"] == "integration_status":
             res_type = "(upload)"
         if "Error" in res["message"]:
-            response += f"{info_time} {res_type} - <span id=red>{
-                res['message']
-            }</span><br>"
+            response += (
+                f"{info_time} {res_type} - <span id=red>{res['message']}</span><br>"
+            )
         else:
             response += f"{info_time} {res_type} - {res['message']}<br>"
     return response

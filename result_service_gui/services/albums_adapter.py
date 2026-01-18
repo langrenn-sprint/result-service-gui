@@ -28,9 +28,13 @@ class AlbumsAdapter:
             ],
         )
 
-        async with ClientSession() as session, session.get(
-            f"{PHOTO_SERVICE_URL}/albums", headers=headers,
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.get(
+                f"{PHOTO_SERVICE_URL}/albums",
+                headers=headers,
+            ) as resp,
+        ):
             logging.info(f"get_all_albums - got response {resp.status}")
             if resp.status == HTTPStatus.OK:
                 albums = await resp.json()
@@ -55,9 +59,13 @@ class AlbumsAdapter:
             ],
         )
 
-        async with ClientSession() as session, session.get(
-            f"{PHOTO_SERVICE_URL}/albums/{album_id}", headers=headers,
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.get(
+                f"{PHOTO_SERVICE_URL}/albums/{album_id}",
+                headers=headers,
+            ) as resp,
+        ):
             logging.info(f"get_album {album_id} - got response {resp.status}")
             if resp.status == HTTPStatus.OK:
                 album = await resp.json()
@@ -83,9 +91,13 @@ class AlbumsAdapter:
         )
         servicename = "get_album_by_g_id"
 
-        async with ClientSession() as session, session.get(
-            f"{PHOTO_SERVICE_URL}/albums?gId={g_id}", headers=headers,
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.get(
+                f"{PHOTO_SERVICE_URL}/albums?gId={g_id}",
+                headers=headers,
+            ) as resp,
+        ):
             logging.info(f"get_album_by_g_id {g_id} - got response {resp.status}")
             if resp.status == HTTPStatus.OK:
                 album = await resp.json()
@@ -113,9 +125,14 @@ class AlbumsAdapter:
         )
         request_body = AlbumSchema().dump(album)
 
-        async with ClientSession() as session, session.post(
-            f"{PHOTO_SERVICE_URL}/albums", headers=headers, json=request_body,
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.post(
+                f"{PHOTO_SERVICE_URL}/albums",
+                headers=headers,
+                json=request_body,
+            ) as resp,
+        ):
             if resp.status == HTTPStatus.CREATED:
                 logging.info(f"result - got response {resp}")
                 location = resp.headers[hdrs.LOCATION]
@@ -139,9 +156,13 @@ class AlbumsAdapter:
             ],
         )
         url = f"{PHOTO_SERVICE_URL}/albums/{album_id}"
-        async with ClientSession() as session, session.delete(
-            url, headers=headers,
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.delete(
+                url,
+                headers=headers,
+            ) as resp,
+        ):
             pass
         logging.info(f"Delete album: {album_id} - res {resp.status}")
         if resp.status == HTTPStatus.NO_CONTENT:
@@ -166,11 +187,14 @@ class AlbumsAdapter:
         )
         request_body = AlbumSchema().dump(album)
 
-        async with ClientSession() as session, session.put(
-            f"{
-                PHOTO_SERVICE_URL
-            }/albums/{album_id}", headers=headers, json=request_body,
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.put(
+                f"{PHOTO_SERVICE_URL}/albums/{album_id}",
+                headers=headers,
+                json=request_body,
+            ) as resp,
+        ):
             if resp.status == HTTPStatus.NO_CONTENT:
                 logging.info(f"update album - got response {resp}")
             elif resp.status == HTTPStatus.UNAUTHORIZED:

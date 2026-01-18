@@ -172,11 +172,15 @@ class ResultatEditNew(web.View):
                         )
                     )
                 else:
-                    informasjon = "Registrert: " + await update_result(user, event, form)
+                    informasjon = "Registrert: " + await update_result(
+                        user, event, form
+                    )
                 # set results to official
                 if "publish" in form:
                     if form["publish"] != "false":
-                        res = await ResultAdapter().update_result_status(user["token"], race_id, 2)
+                        res = await ResultAdapter().update_result_status(
+                            user["token"], race_id, 2
+                        )
                         if res == "204":
                             informasjon += f"Resultat er publisert ({res})."
                         if "raceclass_results" in form:
@@ -365,7 +369,9 @@ async def update_result(user: dict, event: dict, form: dict) -> str:
                 }
                 add_result_list.append(new_entry)
     if len(delete_result_list) > 0 or len(add_result_list) > 0:
-        informasjon = await TimeEventsService().update_finish_time_events(user, delete_result_list, add_result_list)
+        informasjon = await TimeEventsService().update_finish_time_events(
+            user, delete_result_list, add_result_list
+        )
     else:
         informasjon = "Ingen oppdateringer"
     return informasjon

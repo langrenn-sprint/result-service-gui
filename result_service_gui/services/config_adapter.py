@@ -30,10 +30,13 @@ class ConfigAdapter:
         )
         servicename = "get_config"
 
-        async with ClientSession() as session, session.get(
-            f"{PHOTO_SERVICE_URL}/config?key={key}&eventId={event_id}",
-            headers=headers,
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.get(
+                f"{PHOTO_SERVICE_URL}/config?key={key}&eventId={event_id}",
+                headers=headers,
+            ) as resp,
+        ):
             if resp.status == HTTPStatus.OK:
                 config = await resp.json()
             elif resp.status == HTTPStatus.UNAUTHORIZED:
@@ -74,10 +77,13 @@ class ConfigAdapter:
         else:
             url = f"{PHOTO_SERVICE_URL}/configs"
 
-        async with ClientSession() as session, session.get(
-            url,
-            headers=headers,
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.get(
+                url,
+                headers=headers,
+            ) as resp,
+        ):
             if resp.status == HTTPStatus.OK:
                 config = await resp.json()
             elif resp.status == HTTPStatus.UNAUTHORIZED:
@@ -129,9 +135,12 @@ class ConfigAdapter:
         }
         request_body = copy.deepcopy(config)
 
-        async with ClientSession() as session, session.post(
-            f"{PHOTO_SERVICE_URL}/config", headers=headers, json=request_body
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.post(
+                f"{PHOTO_SERVICE_URL}/config", headers=headers, json=request_body
+            ) as resp,
+        ):
             if resp.status == HTTPStatus.CREATED:
                 logging.debug(f"result - got response {resp}")
                 location = resp.headers[hdrs.LOCATION]
@@ -172,9 +181,12 @@ class ConfigAdapter:
             "value": new_value,
         }
 
-        async with ClientSession() as session, session.put(
-            f"{PHOTO_SERVICE_URL}/config", headers=headers, json=request_body
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.put(
+                f"{PHOTO_SERVICE_URL}/config", headers=headers, json=request_body
+            ) as resp,
+        ):
             response = str(resp.status)
             if resp.status == HTTPStatus.NO_CONTENT:
                 logging.debug(f"update config - got response {resp}")

@@ -31,9 +31,10 @@ class CompetitionFormatAdapter:
             ]
         )
         url = f"{COMPETITION_FORMAT_SERVICE_URL}/competition-formats"
-        async with ClientSession() as session, session.post(
-            url, headers=headers, json=request_body
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.post(url, headers=headers, json=request_body) as resp,
+        ):
             res = resp.status
             logging.debug(f"create_competition_format result - got response {resp}")
             if res == HTTPStatus.CREATED:
@@ -58,9 +59,10 @@ class CompetitionFormatAdapter:
             ]
         )
         url = f"{COMPETITION_FORMAT_SERVICE_URL}/competition-formats/{my_id}"
-        async with ClientSession() as session, session.delete(
-            url, headers=headers
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.delete(url, headers=headers) as resp,
+        ):
             res = resp.status
             logging.debug(f"delete_competition_format result - got response {resp}")
             if res == HTTPStatus.NO_CONTENT:
@@ -86,9 +88,12 @@ class CompetitionFormatAdapter:
             ]
         )
 
-        async with ClientSession() as session, session.get(
-            f"{COMPETITION_FORMAT_SERVICE_URL}/competition-formats", headers=headers
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.get(
+                f"{COMPETITION_FORMAT_SERVICE_URL}/competition-formats", headers=headers
+            ) as resp,
+        ):
             logging.debug(f"get_competition_formats - got response {resp.status}")
             if resp.status == HTTPStatus.OK:
                 competition_formats = await resp.json()
@@ -142,9 +147,10 @@ class CompetitionFormatAdapter:
         url = (
             f"{COMPETITION_FORMAT_SERVICE_URL}/competition-formats/{request_body['id']}"
         )
-        async with ClientSession() as session, session.put(
-            url, headers=headers, json=request_body
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.put(url, headers=headers, json=request_body) as resp,
+        ):
             res = resp.status
             logging.debug(f"update_competition_format result - got response {resp}")
             if res == HTTPStatus.NO_CONTENT:
@@ -170,9 +176,10 @@ class CompetitionFormatAdapter:
             ]
         )
         url = f"{COMPETITION_FORMAT_SERVICE_URL}/race-configs"
-        async with ClientSession() as session, session.post(
-            url, headers=headers, json=request_body
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.post(url, headers=headers, json=request_body) as resp,
+        ):
             res = resp.status
             logging.debug(f"create_race_config result - got response {resp}")
             if res == HTTPStatus.CREATED:
@@ -197,9 +204,10 @@ class CompetitionFormatAdapter:
             ]
         )
         url = f"{COMPETITION_FORMAT_SERVICE_URL}/race-configs/{my_id}"
-        async with ClientSession() as session, session.delete(
-            url, headers=headers
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.delete(url, headers=headers) as resp,
+        ):
             res = resp.status
             logging.debug(f"delete_race_config result - got response {resp}")
             if res == HTTPStatus.NO_CONTENT:
@@ -225,9 +233,12 @@ class CompetitionFormatAdapter:
             ]
         )
 
-        async with ClientSession() as session, session.get(
-            f"{COMPETITION_FORMAT_SERVICE_URL}/race-configs", headers=headers
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.get(
+                f"{COMPETITION_FORMAT_SERVICE_URL}/race-configs", headers=headers
+            ) as resp,
+        ):
             logging.debug(f"get_race_configs - got response {resp.status}")
             if resp.status == HTTPStatus.OK:
                 race_configs = await resp.json()
@@ -254,9 +265,10 @@ class CompetitionFormatAdapter:
             ]
         )
         url = f"{COMPETITION_FORMAT_SERVICE_URL}/race-configs/{request_body['id']}"
-        async with ClientSession() as session, session.put(
-            url, headers=headers, json=request_body
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.put(url, headers=headers, json=request_body) as resp,
+        ):
             res = resp.status
             logging.debug(f"update_race_config result - got response {resp}")
             if res == HTTPStatus.NO_CONTENT:

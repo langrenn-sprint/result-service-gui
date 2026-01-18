@@ -57,9 +57,7 @@ class TimeEventsService:
                     # loop and simulate result for pos 1 to 10
                     for x in range(1, race["max_no_of_contestants"] + 1):
                         time_event["rank"] = x
-                        next_start_entry = get_next_start_entry(
-                            time_event, races
-                        )
+                        next_start_entry = get_next_start_entry(time_event, races)
                         logging.debug(f"Time_event: {time_event}")
                         logging.debug(f"Start_entry: {next_start_entry}")
                         if len(next_start_entry) > 0:
@@ -239,17 +237,13 @@ def get_next_start_entry(time_event: dict, races: list) -> dict:
             race_item["current_contestant_qualified"] = True
             # now we have next round - get race id
             time_event["rank_qualified"] = time_event["rank"] - ilimitplace
-            start_entry = calculate_next_start_entry(
-                race_item, time_event, races
-            )
+            start_entry = calculate_next_start_entry(race_item, time_event, races)
             break
         ilimitplace = limit_rank
     return start_entry
 
 
-def calculate_next_start_entry(
-    race_item: dict, time_event: dict, races: list
-) -> dict:
+def calculate_next_start_entry(race_item: dict, time_event: dict, races: list) -> dict:
     """Identify next race_id and generate start entry data."""
     start_entry = {
         "bib": time_event["bib"],

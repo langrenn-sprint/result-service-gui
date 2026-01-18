@@ -116,6 +116,7 @@ class FotoService:
                     )
         return f"Utført {icount} oppdateringer."
 
+
 async def link_ai_info_to_photo(
     token: str, photo_info: dict, ai_information: dict, event: dict, raceclasses: list
 ) -> int:

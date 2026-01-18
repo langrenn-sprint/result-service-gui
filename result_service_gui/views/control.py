@@ -116,8 +116,6 @@ async def delete_timing_events(user: dict, form: dict) -> str:
     informasjon = "Delete result: "
     for key, value in form.items():
         if key.startswith("resolved_"):
-            response = await TimeEventsAdapter().delete_time_event(
-                user["token"], value
-            )
+            response = await TimeEventsAdapter().delete_time_event(user["token"], value)
             informasjon = f"{informasjon} {response}"
     return informasjon

@@ -192,7 +192,9 @@ async def get_races_for_live(
         # avoid quarter finals or finals, depending on semi final status
         if valgt_startnr == 0:
             if races_count_q > 4:
-                if (semi_results_registered and race["round"] == "Q" and action != "all") or (
+                if (
+                    semi_results_registered and race["round"] == "Q" and action != "all"
+                ) or (
                     not semi_results_registered
                     and race["round"] == "F"
                     and action != "all"

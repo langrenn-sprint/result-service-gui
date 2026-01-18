@@ -85,9 +85,7 @@ class PhotoFinish(web.View):
                         race["finish_timings"] = await get_finish_timings(
                             user, race["id"]
                         )
-                        race["photo_finish"] = get_foto_finish_for_race(
-                            race, foto
-                        )
+                        race["photo_finish"] = get_foto_finish_for_race(race, foto)
                         current_races.append(race)
 
             if len(current_races) == 0:

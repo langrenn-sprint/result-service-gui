@@ -53,7 +53,7 @@ class ResultAdapter:
             ]
         )
         url = (
-            f'{RACE_SERVICE_URL}/races/{race_id}/race-results/{new_race_results["id"]}'
+            f"{RACE_SERVICE_URL}/races/{race_id}/race-results/{new_race_results['id']}"
         )
         async with ClientSession() as session:
             async with session.put(url, headers=headers, json=new_race_results) as resp:

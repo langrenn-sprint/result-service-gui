@@ -106,7 +106,6 @@ class StartEdit(web.View):
         valgt_runde = str(form["runde"])
         action = ""
         try:
-
             if "create_start" in form:
                 informasjon = await create_start(user, form)
             elif "delete_start" in form:

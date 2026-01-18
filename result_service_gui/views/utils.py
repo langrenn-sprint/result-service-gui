@@ -326,10 +326,10 @@ async def get_races_for_print(
                     if race["list_type"] == "start":
                         race["startliste"] = await get_enrichced_startlist(user, race)
                     else:
-                        race[
-                            "finish_results"
-                        ] = RaceclassResultsService().get_finish_rank_for_race(
-                            race, False
+                        race["finish_results"] = (
+                            RaceclassResultsService().get_finish_rank_for_race(
+                                race, False
+                            )
                         )
                     races.append(race)
     return races

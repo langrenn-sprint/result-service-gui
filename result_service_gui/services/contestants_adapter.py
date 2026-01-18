@@ -27,9 +27,10 @@ class ContestantsAdapter:
         headers = MultiDict([(hdrs.AUTHORIZATION, f"Bearer {token}")])
 
         url = f"{EVENT_SERVICE_URL}/events/{event_id}/contestants/assign-bibs"
-        async with ClientSession() as session, session.post(
-            url, headers=headers
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.post(url, headers=headers) as resp,
+        ):
             res = resp.status
             logging.debug(f"assign_bibs result - got response {resp}")
             if res == HTTPStatus.CREATED:
@@ -56,11 +57,14 @@ class ContestantsAdapter:
                 (hdrs.AUTHORIZATION, f"Bearer {token}"),
             ]
         )
-        async with ClientSession() as session, session.post(
-            f"{EVENT_SERVICE_URL}/events/{event_id}/contestants",
-            headers=headers,
-            json=request_body,
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.post(
+                f"{EVENT_SERVICE_URL}/events/{event_id}/contestants",
+                headers=headers,
+                json=request_body,
+            ) as resp,
+        ):
             if resp.status == HTTPStatus.CREATED:
                 logging.debug(f"result - got response {resp}")
             elif resp.status == HTTPStatus.UNAUTHORIZED:
@@ -82,11 +86,14 @@ class ContestantsAdapter:
             hdrs.AUTHORIZATION: f"Bearer {token}",
         }
         logging.debug(f"Create contestants - got file {inputfile}")
-        async with ClientSession() as session, session.post(
-            f"{EVENT_SERVICE_URL}/events/{event_id}/contestants",
-            headers=headers,
-            data=inputfile,
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.post(
+                f"{EVENT_SERVICE_URL}/events/{event_id}/contestants",
+                headers=headers,
+                data=inputfile,
+            ) as resp,
+        ):
             res = resp.status
             logging.info(f"result - got response {res} - {resp}")
             if res == HTTPStatus.OK:
@@ -124,10 +131,13 @@ class ContestantsAdapter:
             hdrs.AUTHORIZATION: f"Bearer {token}",
         }
 
-        async with ClientSession() as session, session.delete(
-            f"{EVENT_SERVICE_URL}/events/{event_id}/contestants",
-            headers=headers,
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.delete(
+                f"{EVENT_SERVICE_URL}/events/{event_id}/contestants",
+                headers=headers,
+            ) as resp,
+        ):
             res = resp.status
             logging.debug(f"delete all result - got response {resp}")
             if res == HTTPStatus.NO_CONTENT:
@@ -164,10 +174,13 @@ class ContestantsAdapter:
         headers = {
             hdrs.AUTHORIZATION: f"Bearer {token}",
         }
-        async with ClientSession() as session, session.delete(
-            f"{EVENT_SERVICE_URL}/events/{event_id}/contestants/{contestant['id']}",
-            headers=headers,
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.delete(
+                f"{EVENT_SERVICE_URL}/events/{event_id}/contestants/{contestant['id']}",
+                headers=headers,
+            ) as resp,
+        ):
             res = resp.status
             logging.debug(f"delete result - got response {resp}")
             if res == HTTPStatus.NO_CONTENT:
@@ -207,9 +220,12 @@ class ContestantsAdapter:
             ]
         )
         contestants = []
-        async with ClientSession() as session, session.get(
-            f"{EVENT_SERVICE_URL}/events/{event_id}/contestants", headers=headers
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.get(
+                f"{EVENT_SERVICE_URL}/events/{event_id}/contestants", headers=headers
+            ) as resp,
+        ):
             logging.debug(f"get_all_contestants - got response {resp.status}")
             if resp.status == HTTPStatus.OK:
                 contestants = await resp.json()
@@ -235,10 +251,13 @@ class ContestantsAdapter:
         contestants = []
         ageclass_name_url = urllib.parse.quote(ageclass_name, safe="")
         query_param = f"ageclass={ageclass_name_url}"
-        async with ClientSession() as session, session.get(
-            f"{EVENT_SERVICE_URL}/events/{event_id}/contestants?{query_param}",
-            headers=headers,
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.get(
+                f"{EVENT_SERVICE_URL}/events/{event_id}/contestants?{query_param}",
+                headers=headers,
+            ) as resp,
+        ):
             logging.debug(f"get_all_contestants - got response {resp.status}")
             if resp.status == HTTPStatus.OK:
                 contestants = await resp.json()
@@ -263,10 +282,13 @@ class ContestantsAdapter:
         )
         contestants = []
         raceclass_name_url = urllib.parse.quote(raceclass_name, safe="")
-        async with ClientSession() as session, session.get(
-            f"{EVENT_SERVICE_URL}/events/{event_id}/contestants?raceclass={raceclass_name_url}",
-            headers=headers,
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.get(
+                f"{EVENT_SERVICE_URL}/events/{event_id}/contestants?raceclass={raceclass_name_url}",
+                headers=headers,
+            ) as resp,
+        ):
             logging.debug(
                 f"get_all_contestants_by_raceclass ({raceclass_name}) - got response {resp.status}"
             )
@@ -292,10 +314,13 @@ class ContestantsAdapter:
             ]
         )
         contestant = []
-        async with ClientSession() as session, session.get(
-            f"{EVENT_SERVICE_URL}/events/{event_id}/contestants?bib={bib}",
-            headers=headers,
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.get(
+                f"{EVENT_SERVICE_URL}/events/{event_id}/contestants?bib={bib}",
+                headers=headers,
+            ) as resp,
+        ):
             logging.debug(f"get_contestants_by_raceclass - got response {resp.status}")
             if resp.status == HTTPStatus.OK:
                 contestant = await resp.json()
@@ -322,10 +347,13 @@ class ContestantsAdapter:
         )
         contestants = []
         raceclass_url = urllib.parse.quote(raceclass, safe="")
-        async with ClientSession() as session, session.get(
-            f"{EVENT_SERVICE_URL}/events/{event_id}/contestants?raceclass={raceclass_url}",
-            headers=headers,
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.get(
+                f"{EVENT_SERVICE_URL}/events/{event_id}/contestants?raceclass={raceclass_url}",
+                headers=headers,
+            ) as resp,
+        ):
             logging.debug(f"get_contestants_by_raceclass - got response {resp.status}")
             if resp.status == HTTPStatus.OK:
                 contestants = await resp.json()
@@ -349,10 +377,13 @@ class ContestantsAdapter:
             ]
         )
         contestant = {}
-        async with ClientSession() as session, session.get(
-            f"{EVENT_SERVICE_URL}/events/{event_id}/contestants/{contestant_id}",
-            headers=headers,
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.get(
+                f"{EVENT_SERVICE_URL}/events/{event_id}/contestants/{contestant_id}",
+                headers=headers,
+            ) as resp,
+        ):
             logging.debug(f"get_contestant - got response {resp.status}")
             if resp.status == HTTPStatus.OK:
                 contestant = await resp.json()
@@ -378,11 +409,14 @@ class ContestantsAdapter:
                 (hdrs.AUTHORIZATION, f"Bearer {token}"),
             ]
         )
-        async with ClientSession() as session, session.post(
-            f"{EVENT_SERVICE_URL}/events/{event_id}/contestants/search",
-            headers=headers,
-            json=request_body,
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.post(
+                f"{EVENT_SERVICE_URL}/events/{event_id}/contestants/search",
+                headers=headers,
+                json=request_body,
+            ) as resp,
+        ):
             if resp.status == HTTPStatus.OK:
                 contestants = await resp.json()
                 logging.debug(f"result - got response {resp}")
@@ -425,9 +459,10 @@ class ContestantsAdapter:
             ]
         )
 
-        async with ClientSession() as session, session.put(
-            url, headers=headers, json=request_body
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.put(url, headers=headers, json=request_body) as resp,
+        ):
             res = resp.status
             if res == HTTPStatus.NO_CONTENT:
                 logging.debug(f"result - got response {resp}")

@@ -198,3 +198,6 @@ dmypy.json
 .res/bin/typer
 .res/bin/virtualenv
 .res/bin/watchfiles
+
+# error log
+error.log

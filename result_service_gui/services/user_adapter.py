@@ -37,9 +37,14 @@ class UserAdapter:
                 (hdrs.AUTHORIZATION, f"Bearer {token}"),
             ],
         )
-        async with ClientSession() as session, session.post(
-            f"{USER_SERVICE_URL}/users", headers=headers, json=request_body,
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.post(
+                f"{USER_SERVICE_URL}/users",
+                headers=headers,
+                json=request_body,
+            ) as resp,
+        ):
             if resp.status == HTTPStatus.CREATED:
                 logging.debug(f"create user - got response {resp}")
                 location = resp.headers[hdrs.LOCATION]
@@ -85,9 +90,13 @@ class UserAdapter:
             ],
         )
 
-        async with ClientSession() as session, session.get(
-            f"{USER_SERVICE_URL}/users", headers=headers,
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.get(
+                f"{USER_SERVICE_URL}/users",
+                headers=headers,
+            ) as resp,
+        ):
             logging.info(f"get_all_users - got response {resp.status}")
             if resp.status == HTTPStatus.OK:
                 users = await resp.json()
@@ -108,9 +117,14 @@ class UserAdapter:
                 (hdrs.CONTENT_TYPE, "application/json"),
             ],
         )
-        async with ClientSession() as session, session.post(
-            f"{USER_SERVICE_URL}/login", headers=headers, json=request_body,
-        ) as resp:
+        async with (
+            ClientSession() as session,
+            session.post(
+                f"{USER_SERVICE_URL}/login",
+                headers=headers,
+                json=request_body,
+            ) as resp,
+        ):
             result = resp.status
             logging.info(f"do login - got response {result}")
             if result == HTTPStatus.OK:
