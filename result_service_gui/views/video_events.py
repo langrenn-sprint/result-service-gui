@@ -72,20 +72,20 @@ class VideoEvents(web.View):
 async def get_integration_status(token: str, event_id: str) -> str:
     """Get video analytics status messages."""
     response = ""
-    result_list = await StatusAdapter().get_status(token, event_id, 10)
+    result_list = await StatusAdapter().get_status(token, event_id, 8)
     for res in result_list:
         info_time = f"<a title={res['time']}>{res['time'][-8:]}</a>"
         res_type = ""
         if res["type"] == "video_status_CAPTURE":
-            res_type = "(video)"
+            res_type = "<img id=menu_icon src=../static/capture.png title=Video>"
         elif res["type"] == "video_status_DETECT":
-            res_type = "(detect)"
+            res_type = "<img id=menu_icon src=../static/detect.png title=Deteksjon>"
         elif res["type"] == "integration_status":
-            res_type = "(upload)"
+            res_type = "<img id=menu_icon src=../static/upload.png title=Opplasting>"
         if "Error" in res["message"]:
-            response += (
-                f"{info_time} {res_type} - <span id=red>{res['message']}</span><br>"
-            )
+            response += f"{info_time} {res_type} - <span id=red>{
+                res['message']
+            }</span><br>"
         else:
             response += f"{info_time} {res_type} - {res['message']}<br>"
     return response

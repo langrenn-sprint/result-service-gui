@@ -62,6 +62,11 @@ class Live(web.View):
                 user["token"], event_id
             )
 
+            if action == "now":
+                valgt_klasse = await get_klasse_for_now_view(
+                    user, event, valgt_klasse
+                )
+
             if valgt_klasse:
                 races = await get_races(
                     user["token"], event_id, valgt_klasse, valgt_startnr, action
@@ -100,6 +105,33 @@ class Live(web.View):
         except Exception as e:
             logging.exception("Error. Redirect to main page.")
             return web.HTTPSeeOther(location=f"/?informasjon={e}")
+
+async def get_klasse_for_now_view(
+    user: dict, event: dict, gender: str
+) -> str:
+    """Return races to display in live view."""
+    races = await RaceplansAdapter().get_all_races(
+        user["token"], event["id"]
+    )
+    time_now = EventsAdapter().get_local_time(event, "log")
+    # find next race on start
+    valgt_klasse = ""
+    for race in races:
+        if time_now < race["start_time"]:
+            valgt_klasse = race["raceclass"]
+            if gender == "j":
+                valgt_klasse = valgt_klasse.replace("M", "K")
+                valgt_klasse = valgt_klasse.replace("G", "J")
+            elif gender == "m":
+                valgt_klasse = valgt_klasse.replace("K", "M")
+                valgt_klasse = valgt_klasse.replace("J", "G")
+            break
+    else:
+        # all races have already started
+        return "Alle har startet"
+
+    return valgt_klasse
+
 
 
 def get_colseparators(races: list) -> list:
