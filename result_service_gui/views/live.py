@@ -119,10 +119,10 @@ async def get_klasse_for_now_view(
     for race in races:
         if time_now < race["start_time"]:
             valgt_klasse = race["raceclass"]
-            if gender == "j":
+            if gender == "K":
                 valgt_klasse = valgt_klasse.replace("M", "K")
                 valgt_klasse = valgt_klasse.replace("G", "J")
-            elif gender == "m":
+            elif gender == "M":
                 valgt_klasse = valgt_klasse.replace("K", "M")
                 valgt_klasse = valgt_klasse.replace("J", "G")
             break
