@@ -12,6 +12,8 @@ from result_service_gui.services import (
     StartAdapter,
 )
 
+from .utils import check_login_open
+
 
 class CsvList(web.View):
     """Class representing csv file export resource."""
@@ -29,18 +31,20 @@ class CsvList(web.View):
             informasjon = "Ingen event eller action valgt. Kan ikke vise informasjon"
             return web.HTTPSeeOther(location=f"/?informasjon={informasjon}")
 
+        user = await check_login_open(self)
+
         if action == "raceplan":
-            csvdata = await RaceplansAdapter().get_all_races("", event_id)
+            csvdata = await RaceplansAdapter().get_all_races(user["token"], event_id)
             fields = get_fields_raceplan()
         elif action == "startlist":
             try:
                 race_round = self.request.rel_url.query["round"]
             except Exception:
                 race_round = ""
-            csvdata = await get_startlist_data(event_id, race_round)
+            csvdata = await get_startlist_data(event_id, user, race_round)
             fields = get_fields_startlist()
         elif action == "contestants":
-            csvdata = await ContestantsAdapter().get_all_contestants("", event_id)
+            csvdata = await ContestantsAdapter().get_all_contestants(user["token"], event_id)
             fields = get_fields_contestants()
         elif action == "results":
             try:
@@ -62,7 +66,7 @@ class CsvList(web.View):
                         for entry in raceclass["ranking_sequence"]:
                             entry["raceclass"] = raceclass["raceclass"]
                             csvdata.append(entry)
-            fields = get_fields_results()
+            fields = get_fields_results(user)
 
         # convert to csv format
         output = io.StringIO()
@@ -76,12 +80,12 @@ class CsvList(web.View):
         return web.Response(text=informasjon)
 
 
-async def get_startlist_data(event_id: str, race_round: str) -> list:
+async def get_startlist_data(event_id: str, user: dict, race_round: str) -> list:
     """Return list of start-entries, filtered on round."""
     filtered_startlist = []
-    startlist = await StartAdapter().get_all_starts_by_event("", event_id)
+    startlist = await StartAdapter().get_all_starts_by_event(user["token"], event_id)
     if race_round:
-        races = await RaceplansAdapter().get_all_races("", event_id)
+        races = await RaceplansAdapter().get_all_races(user["token"], event_id)
         for race in races:
             if race["round"] == race_round:
                 filtered_startlist.extend(
@@ -139,15 +143,19 @@ def get_fields_contestants() -> list:
     ]
 
 
-def get_fields_results() -> list:
+def get_fields_results(user: dict) -> list:
     """Return field for result display."""
-    return [
-        "rank",
-        "bib",
-        "name",
-        "club",
-        "raceclass",
-        "ageclass",
-        "round",
-        "minidrett_id",
-    ]
+    field_list = [
+            "rank",
+            "bib",
+            "name",
+            "club",
+            "raceclass",
+            "ageclass",
+            "round",
+            "time",
+        ]
+    if user["loggedin"]:
+        field_list.append("minidrett_id")
+
+    return field_list
