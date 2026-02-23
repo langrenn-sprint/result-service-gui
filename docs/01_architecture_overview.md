@@ -1,0 +1,349 @@
+# Architecture Overview
+
+## System Design Principles
+
+The Result Service GUI follows a **layered architecture pattern** with clear separation of concerns across four distinct layers:
+
+```mermaid
+graph TB
+    subgraph Presentation["📱 PRESENTATION LAYER"]
+        Templates["HTML, CSS, JavaScript<br/>Jinja2 Template Rendering<br/>User Interface & Forms"]
+    end
+
+    subgraph Views["🔀 VIEWS LAYER"]
+        Routing["Route Matching<br/>Request Handling<br/>Parameter Extraction<br/>aiohttp View Classes"]
+    end
+
+    subgraph Services["⚙️ SERVICES LAYER"]
+        Business["Validation<br/>Business Rules<br/>Service Composition<br/>Adapter Orchestration"]
+    end
+
+    subgraph Adapters["🔗 ADAPTERS LAYER"]
+        Integration["External Service Abstraction<br/>HTTP Clients<br/>Response Transformation<br/>Error Handling"]
+    end
+
+    subgraph External["🌐 EXTERNAL SYSTEMS"]
+        Microservices["Event Service<br/>User Service<br/>Race Service<br/>Format Service<br/>Photo Service"]
+        Database["MongoDB<br/>Shared Data Store"]
+    end
+
+    Templates -->|renders forms| Routing
+    Routing -->|orchestrates| Business
+    Business -->|delegates| Integration
+    Integration -->|communicates| Microservices
+    Microservices -->|persist to| Database
+
+    classDef presentation fill:#FF6B6B,stroke:#C92A2A,stroke-width:2px,color:#fff
+    classDef viewslayer fill:#4ECDC4,stroke:#0A8A84,stroke-width:2px,color:#fff
+    classDef service fill:#95E1D3,stroke:#38A169,stroke-width:2px,color:#000
+    classDef adapter fill:#FFE66D,stroke:#DD6B20,stroke-width:2px,color:#000
+    classDef external fill:#95BDFF,stroke:#1971C2,stroke-width:2px,color:#fff
+
+    class Templates presentation
+    class Routing viewslayer
+    class Business service
+    class Integration adapter
+    class Microservices,Database external
+```
+
+## Architectural Goals
+
+### 1. **Modularity**
+- Each service adapter is independently testable
+- Views are loosely coupled to underlying data structures
+- Services enforce business logic boundaries
+- Clear responsibility separation
+
+### 2. **Asynchronicity**
+- All I/O operations are non-blocking using async/await
+- Efficient handling of concurrent user sessions
+- Improved throughput and responsiveness
+- aiohttp for async HTTP client and server
+
+### 3. **Maintainability**
+- Clear separation of concerns across layers
+- Adapter pattern for external integrations
+- Configuration-driven behavior via environment variables
+- Consistent error handling patterns
+
+### 4. **Scalability**
+- Stateless design enables horizontal scaling
+- JWT-based authentication (no session affinity needed)
+- Load balancer compatible
+- Connection pooling for external services
+
+## Request Processing Flow
+
+```
+1. User Action (Browser)
+        ↓
+2. HTTP Request arrives at Gunicorn/aiohttp server
+        ↓
+3. View Layer
+   ├─ Route matching (URL → View class)
+   ├─ Parameter extraction from URL/form/JSON
+   ├─ Session/Authentication check
+   └─ Call appropriate Service
+        ↓
+4. Service Layer (Business Logic)
+   ├─ Validate input parameters
+   ├─ Apply business rules and validation
+   ├─ Coordinate multiple adapters if needed
+   ├─ Transform data for adapter calls
+   └─ Delegate to Adapters
+        ↓
+5. Adapter Layer (Integration)
+   ├─ Build HTTP request to external service
+   ├─ Include authentication headers (JWT)
+   ├─ Parse response JSON
+   ├─ Handle errors (retry, timeout, validation)
+   └─ Return typed response
+        ↓
+6. External Microservice
+   └─ Process request, access MongoDB, return data
+        ↓
+7. Response bubbles back through layers
+        ↓
+8. Template Rendering
+   ├─ Render Jinja2 template with returned data
+   ├─ Apply CSS styling
+   ├─ Include inline JavaScript
+   └─ Generate HTML
+        ↓
+9. HTTP Response to Browser
+        ↓
+10. Browser renders HTML to user
+```
+
+## Core Components
+
+### Views (`views/`)
+- HTTP request handlers using aiohttp's `View` class
+- One view class per major feature area (Control, Results, Start lists, Photos, Timing, etc.)
+- Responsibilities:
+  - Route matching and HTTP method handling
+  - Session and authentication validation
+  - Parameter extraction and validation
+  - Service layer invocation
+  - Template rendering
+
+### Services (`services/`)
+- Business logic orchestration
+- Data validation before persistence
+- Adapter coordination (calling multiple adapters for complex operations)
+- Transaction-like semantic handling
+- Acts as a facade to simplify view layer
+
+### Adapters (`services/*_adapter.py`)
+- Abstract external microservice HTTP APIs
+- Implement the **Adapter design pattern**
+- One adapter per external service (EventsAdapter, UserAdapter, RaceplansAdapter, etc.)
+- Responsibilities:
+  - Construct HTTP requests
+  - Handle authentication/authorization headers
+  - Timeout and retry logic
+  - Response parsing and validation
+  - Error transformation to exceptions
+
+### Templates (`templates/`)
+- Jinja2 template files for HTML rendering
+- Presentation logic (loops, conditionals, formatting)
+- CSS styling (inline or external)
+- Client-side JavaScript for interactivity
+- Template inheritance for code reuse
+
+## Design Patterns Used
+
+### 1. **Adapter Pattern**
+Isolate external service dependencies in adapter classes. This allows:
+- Views and Services don't know implementation details of external APIs
+- Easy to mock adapters in tests
+- Changes to external APIs contained to adapter layer
+- Clear contract between layers
+
+### 2. **Facade Pattern**
+Services provide simplified interfaces to complex multi-adapter operations:
+- Complex workflows hidden from views
+- Consistent error handling
+- Reusable across multiple views
+- Single responsibility concept
+
+### 3. **MVC Pattern (Conceptual)**
+- Views = Template files (presentation logic)
+- Controller = View classes in views/ (routing + orchestration)
+- Model = Service layer (business logic) + Adapters (data access)
+
+### 4. **Template Method Pattern**
+Jinja2 template inheritance provides:
+- Base templates define overall page structure
+- Specific pages inherit and override blocks
+- Consistent UI across pages
+- DRY principle for common elements
+
+### 5. **Decorator Pattern** (Python)
+Decorators for cross-cutting concerns:
+- `check_login_open()` - Authentication validation
+- Composable and reusable across views
+
+## Key Technologies
+
+| Component | Technology | Purpose |
+|---|---|---|
+| **Framework** | aiohttp | Async HTTP web framework |
+| **Language** | Python 3.13+ | Implementation language |
+| **Templates** | Jinja2 | HTML template rendering |
+| **Authentication** | JWT | Token-based authentication |
+| **Sessions** | Encrypted Cookies | Session state storage |
+| **Database** | MongoDB | Persistent data (via microservices) |
+| **Server** | Gunicorn | WSGI/application server |
+| **Async Runtime** | asyncio | Python async event loop |
+
+## Authentication & Authorization Flow
+
+### Login Process
+```
+1. User POST login form (username, password)
+       ↓
+2. UserAdapter.login_user() → User Service
+       ↓
+3. User Service validates credentials
+       ↓
+4. Returns JWT token (30-60 min expiry)
+       ↓
+5. GUI stores JWT in encrypted session cookie
+       ↓
+6. Token stored in browser (in encrypted cookie)
+```
+
+### Token Validation
+```
+Every Protected Request:
+1. Extract token from session cookie
+2. Include in Authorization header: 'Bearer {token}'
+3. Service calls may re-validate with User Service
+4. Invalid/expired token → redirect to login
+```
+
+## Error Handling Strategy
+
+### Multi-Layer Error Handling
+```
+Try to prevent errors early:
+1. View Layer
+   ├─ Malformed requests rejected
+   ├─ Parameters validated
+   └─ Authentication checked
+
+2. Service Layer
+   ├─ Business rule violations caught
+   ├─ Data validation errors raised
+   └─ Complex operation failures handled
+
+3. Adapter Layer
+   ├─ Network errors (connection refused)
+   ├─ Timeouts handled with retries
+   ├─ Invalid responses detected
+   └─ External service errors transformed
+
+4. Global Error Handler
+   ├─ Uncaught exceptions logged
+   ├─ User-friendly error messages
+   └─ Error logging for debugging
+```
+
+### Error Types
+- **Validation Errors**: User input invalid
+- **Authentication Errors**: Token missing/invalid
+- **Authorization Errors**: User lacks permission
+- **Service Errors**: External service unavailable
+- **Data Errors**: Inconsistent data received
+
+## Concurrency & Async Handling
+
+### Async Everything
+- All I/O operations are async (no blocking calls)
+- External service calls don't block user requests
+- Gunicorn worker can handle many concurrent requests
+- Python asyncio event loop manages execution
+
+### Benefits
+- Single worker handles 100+ concurrent users
+- No thread management complexity
+- Clean async/await syntax
+- Efficient resource usage
+
+## Configuration Management
+
+### Levels (Priority Order)
+```
+1. Environment Variables (highest)
+   ├─ Service endpoints
+   ├─ Credentials and secrets
+   └─ Feature flags
+
+2. JSON Config Files
+   ├─ Static application settings
+   └─ Liveness probe configuration
+
+3. Code Defaults (lowest)
+   └─ Fallback values
+```
+
+### Multi-Environment Support
+Same code, different configurations:
+- **Development**: localhost services, DEBUG logging
+- **Staging**: Real service hostnames, INFO logging
+- **Production**: Production endpoints, WARNING logging, SSL/TLS
+
+## Security Architecture
+
+### At a Glance
+```
+HTTPS/TLS
+    ↓
+Load Balancer (SSL termination)
+    ↓
+Web Server (Gunicorn)
+    ↓
+Encrypted Session Cookies
+    ↓
+JWT Token Validation
+    ↓
+Role-Based Authorization
+```
+
+### Key Security Features
+- HTTPS/TLS for all external communications
+- JWT tokens for stateless authentication
+- Encrypted session cookies (Fernet encryption)
+- Environment variable secrets (not in code)
+- Async operations prevent timing attacks
+- Input validation prevents injection attacks
+
+## Deployment Topology
+
+### Development
+Single machine with all services locally via Docker Compose
+
+### Production
+```
+Users
+  ↓ HTTPS:443
+Load Balancer (NGINX)
+  ↓ HTTP:8080
+[GUI Instance 1]
+[GUI Instance 2]
+[...N instances]
+  ↓
+Microservices
+  ├─ Event Service
+  ├─ User Service
+  ├─ Race Service
+  ├─ etc.
+  ↓
+MongoDB Replica Set
+```
+
+---
+
+**Next**: Review [C4 Context Diagram](02_c4_context.md) to see system scope and external systems.
