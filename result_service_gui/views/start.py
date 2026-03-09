@@ -1,6 +1,8 @@
 """Resource module for start resources."""
 
+import asyncio
 import logging
+import time
 from operator import itemgetter
 
 import aiohttp_jinja2
@@ -10,12 +12,13 @@ from result_service_gui.services import (
     EventsAdapter,
     RaceclassesAdapter,
     RaceplansAdapter,
+    TimeEventsAdapter,
 )
 
 from .utils import (
+    build_enriched_startlist,
     check_login_open,
     get_display_style,
-    get_enrichced_startlist,
     get_event,
     get_qualification_text,
     get_raceplan_summary,
@@ -52,36 +55,69 @@ class Start(web.View):
             except Exception:
                 valgt_runde = ""
 
-            raceclasses = await RaceclassesAdapter().get_raceclasses(
-                user["token"], event_id
+            t0 = time.monotonic()
+            # Parallel: fetch raceclasses and all races simultaneously
+            raceclasses, all_races = await asyncio.gather(
+                RaceclassesAdapter().get_raceclasses(user["token"], event_id),
+                RaceplansAdapter().get_all_races(user["token"], event_id),
             )
-            # get relevant races
-            # get startlister for klasse
-            _tmp_races = await RaceplansAdapter().get_all_races(user["token"], event_id)
+            logging.debug(
+                f"start: initial fetches done in {time.monotonic() - t0:.3f}s "
+                f"({len(all_races)} races, {len(raceclasses)} classes)"
+            )
+
+            # Select relevant races and set layout
             if valgt_klasse == "now":
-                _tmp_races = get_races_for_live_view(event, _tmp_races, 0, 9)
+                selected_races = get_races_for_live_view(event, all_races, 0, 9)
+                summary_races = selected_races
                 colseparators = [3, 6]
                 colclass = "w3-third"
+            else:
+                selected_races = [
+                    r for r in all_races if r["raceclass"] == valgt_klasse
+                ]
+                summary_races = all_races
 
-            if len(_tmp_races) == 0:
+            if len(selected_races) == 0:
                 informasjon = f"{informasjon} Ingen løp funnet."
             else:
-                for race in _tmp_races:
-                    if (race["raceclass"] == valgt_klasse) or (
-                        valgt_klasse == "now"
-                    ):
-                        race = await RaceplansAdapter().get_race_by_id(
-                            user["token"], race["id"]
+                t1 = time.monotonic()
+
+                async def fetch_race_data(race_summary: dict) -> dict:
+                    """Fetch full race details and time events in parallel."""
+                    try:
+                        race, time_events = await asyncio.gather(
+                            RaceplansAdapter().get_race_by_id(
+                                user["token"], race_summary["id"]
+                            ),
+                            TimeEventsAdapter().get_time_events_by_race_id(
+                                user["token"], race_summary["id"]
+                            ),
                         )
-                        race["next_race"] = get_qualification_text(race)
-                        race["display_color"] = get_display_style(
-                            race["start_time"], event
+                    except Exception:
+                        logging.exception(
+                            f"start: failed to fetch data for race {race_summary['id']}"
                         )
-                        race["start_time"] = race["start_time"][-8:]
-                        # get start list details
-                        race["startliste"] = await get_enrichced_startlist(user, race)
-                        races.append(race)
-                raceplan_summary = get_raceplan_summary(_tmp_races, raceclasses)
+                        raise
+                    race["next_race"] = get_qualification_text(race)
+                    race["display_color"] = get_display_style(
+                        race["start_time"], event
+                    )
+                    race["start_time"] = race["start_time"][-8:]
+                    race["startliste"] = build_enriched_startlist(race, time_events)
+                    return race
+
+                # Parallel: fetch all selected races (details + time events) at once
+                races = list(
+                    await asyncio.gather(
+                        *[fetch_race_data(r) for r in selected_races]
+                    )
+                )
+                logging.debug(
+                    f"start: fetched {len(races)} races with startlists "
+                    f"in {time.monotonic() - t1:.3f}s"
+                )
+                raceplan_summary = get_raceplan_summary(summary_races, raceclasses)
 
             # filter on selected round
             if valgt_runde:
