@@ -1,6 +1,8 @@
 """Resource module for live resources."""
 
+import asyncio
 import logging
+import time
 from operator import itemgetter
 
 import aiohttp_jinja2
@@ -58,18 +60,30 @@ class Live(web.View):
             except Exception:
                 refresh = 120
 
-            raceclasses = await RaceclassesAdapter().get_raceclasses(
-                user["token"], event_id
+            t0 = time.monotonic()
+            if action == "now":
+                # Parallel: fetch raceclasses while determining the active class
+                raceclasses, valgt_klasse = await asyncio.gather(
+                    RaceclassesAdapter().get_raceclasses(user["token"], event_id),
+                    get_klasse_for_now_view(user, event, valgt_klasse),
+                )
+            else:
+                raceclasses = await RaceclassesAdapter().get_raceclasses(
+                    user["token"], event_id
+                )
+            logging.debug(
+                f"live: initial fetches done in {time.monotonic() - t0:.3f}s "
+                f"(action={action!r}, class={valgt_klasse!r})"
             )
 
-            if action == "now":
-                valgt_klasse = await get_klasse_for_now_view(
-                    user, event, valgt_klasse
-                )
-
             if valgt_klasse:
+                t1 = time.monotonic()
                 races = await get_races(
                     user["token"], event_id, valgt_klasse, valgt_startnr, action
+                )
+                logging.debug(
+                    f"live: race fetch done in {time.monotonic() - t1:.3f}s "
+                    f"({len(races)} races)"
                 )
                 if len(races) == 0:
                     informasjon = f"{informasjon} Ingen kjøreplaner funnet."
@@ -203,7 +217,7 @@ async def get_races_for_live(
     _tmp_races = await RaceplansAdapter().get_races_by_racesclass(
         token, event_id, valgt_klasse
     )
-    # first - get overview of races
+    # first - get overview of races (uses lightweight list data)
     races_count_q = 0
     semi_results_registered = False
     for _tmp_race in _tmp_races:
@@ -212,8 +226,27 @@ async def get_races_for_live(
         elif _tmp_race["round"] == "S":
             if len(_tmp_race["results"]) > 0:
                 semi_results_registered = True
-    for _tmp_race in _tmp_races:
-        race = await RaceplansAdapter().get_race_by_id(token, _tmp_race["id"])
+
+    # Parallel: fetch all race details at once instead of sequentially
+    if _tmp_races:
+        try:
+            detailed_races = list(
+                await asyncio.gather(
+                    *[
+                        RaceplansAdapter().get_race_by_id(token, r["id"])
+                        for r in _tmp_races
+                    ]
+                )
+            )
+        except Exception:
+            logging.exception(
+                f"live: failed to fetch race details for class {valgt_klasse}"
+            )
+            raise
+    else:
+        detailed_races = []
+
+    for race in detailed_races:
         race["finish_results"] = RaceclassResultsService().get_finish_rank_for_race(
             race, False
         )

@@ -68,21 +68,17 @@ def get_display_style(start_time: str, event: dict) -> str:
     return display_style
 
 
-async def get_enrichced_startlist(user: dict, race: dict) -> list:
-    """Enrich startlist information - including info if race result is registered."""
+def build_enriched_startlist(race: dict, time_events: list) -> list:
+    """Build enriched startlist from race start entries and pre-fetched time events."""
     startlist = []
     i = 0
-    # get time-events registered
-    next_race_time_events = await TimeEventsAdapter().get_time_events_by_race_id(
-        user["token"], race["id"]
-    )
     if race["start_entries"]:
         for start_entry in race["start_entries"]:
             start_entry["club_logo"] = EventsAdapter().get_club_logo_url(
                 start_entry["club"]
             )
             i += 1
-            for time_event in next_race_time_events:
+            for time_event in time_events:
                 # get next race info
                 if time_event["timing_point"] == "Template":
                     logging.debug(f"Time_event with error - {time_event}")
@@ -99,6 +95,15 @@ async def get_enrichced_startlist(user: dict, race: dict) -> list:
                         start_entry["status_id"] = time_event["id"]
             startlist.append(start_entry)
     return startlist
+
+
+async def get_enrichced_startlist(user: dict, race: dict) -> list:
+    """Enrich startlist information - including info if race result is registered."""
+    # get time-events registered
+    next_race_time_events = await TimeEventsAdapter().get_time_events_by_race_id(
+        user["token"], race["id"]
+    )
+    return build_enriched_startlist(race, next_race_time_events)
 
 
 async def get_finish_timings(user: dict, race_id: str) -> list:
