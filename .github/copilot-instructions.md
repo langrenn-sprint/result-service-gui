@@ -179,7 +179,7 @@ async with ClientSession() as session, session.get(url, headers=headers) as resp
 
 ## Environment Variables
 
-Required environment variables (see README.md for complete list):
+Required environment variables:
 
 - `JWT_SECRET`: Secret for JWT token generation
 - `ADMIN_USERNAME` / `ADMIN_PASSWORD`: Admin credentials
@@ -192,6 +192,11 @@ Required environment variables (see README.md for complete list):
 - `ERROR_FILE`: Path to error log file
 - `LOGGING_LEVEL`: Logging level (default: INFO)
 
+Additional variable:
+
+- `STATIC_CACHE_MAX_AGE_SECONDS`: Browser cache max-age for `/static/` assets (default: 3600)
+
+Keep this list in sync with `README.md` when adding new variables.
 Create a `.env` file in the project root for local development.
 
 ## Important Notes
