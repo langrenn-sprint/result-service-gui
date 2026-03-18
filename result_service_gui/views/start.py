@@ -15,11 +15,11 @@ from result_service_gui.services import (
 from .utils import (
     check_login_open,
     get_display_style,
-    get_enrichced_startlist,
     get_event,
     get_qualification_text,
     get_raceplan_summary,
     get_races_for_live_view,
+    get_startlist_with_logos,
 )
 
 
@@ -57,31 +57,33 @@ class Start(web.View):
             )
             # get relevant races
             # get startlister for klasse
-            _tmp_races = await RaceplansAdapter().get_all_races(user["token"], event_id)
-            if valgt_klasse == "now":
-                _tmp_races = get_races_for_live_view(event, _tmp_races, 0, 9)
-                colseparators = [3, 6]
-                colclass = "w3-third"
 
-            if len(_tmp_races) == 0:
-                informasjon = f"{informasjon} Ingen løp funnet."
-            else:
-                for race in _tmp_races:
-                    if (race["raceclass"] == valgt_klasse) or (
-                        valgt_klasse == "now"
-                    ):
+            if valgt_klasse == "now":
+                races = await RaceplansAdapter().get_all_races(user["token"], event_id)
+                races = get_races_for_live_view(event, races, 0, 9)
+                for race in races:
                         race = await RaceplansAdapter().get_race_by_id(
                             user["token"], race["id"]
                         )
+                colseparators = [3, 6]
+                colclass = "w3-third"
+            elif valgt_klasse:
+                races = await RaceplansAdapter().get_races_by_racesclass(user["token"], event_id, valgt_klasse)
+            else:
+                races = await RaceplansAdapter().get_all_races(user["token"], event_id)
+
+            if len(races) == 0:
+                informasjon = f"{informasjon} Ingen løp funnet."
+            else:
+                for race in races:
+                    if valgt_klasse:
                         race["next_race"] = get_qualification_text(race)
                         race["display_color"] = get_display_style(
                             race["start_time"], event
                         )
-                        race["start_time"] = race["start_time"][-8:]
                         # get start list details
-                        race["startliste"] = await get_enrichced_startlist(user, race)
-                        races.append(race)
-                raceplan_summary = get_raceplan_summary(_tmp_races, raceclasses)
+                        race["startliste"] =  get_startlist_with_logos(race)
+                raceplan_summary = get_raceplan_summary(races, raceclasses)
 
             # filter on selected round
             if valgt_runde:
@@ -93,9 +95,10 @@ class Start(web.View):
 
             # sort start list by starting position
             for race in races:
-                if len(race["startliste"]) > 1:
+                startliste = race.get("startliste", [])
+                if len(startliste) > 1:
                     race["startliste"] = sorted(
-                        race["startliste"], key=itemgetter("starting_position")
+                        startliste, key=itemgetter("starting_position")
                     )
 
             """Get route function."""

@@ -44,25 +44,24 @@ class StartEdit(web.View):
             raceclasses = await RaceclassesAdapter().get_raceclasses(
                 user["token"], event_id
             )
-            all_races = await RaceplansAdapter().get_all_races(user["token"], event_id)
 
-            # find raceclass
+            # find raceclass and get races
             try:
                 valgt_klasse = self.request.rel_url.query["klasse"]
             except Exception:
                 informasjon = "Velg klasse i menyen."
+
+            all_races = []
+            if valgt_klasse:
+                all_races = await RaceplansAdapter().get_races_by_racesclass(user["token"], event_id, valgt_klasse)
 
             try:
                 action = self.request.rel_url.query["action"]
             except Exception:
                 action = ""
 
-            # filter for selected races and enrich
+            # enrich data
             for race in all_races:
-                if valgt_klasse == race["raceclass"]:
-                    race = await RaceplansAdapter().get_race_by_id(
-                        user["token"], race["id"]
-                    )
                     race["next_race"] = get_qualification_text(race)
                     # get start list detail
                     race["startliste"] = await get_enrichced_startlist(user, race)

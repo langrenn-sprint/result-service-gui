@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block refresh %}{% if valgt_klasse == "live" %}60{% endif %}{% endblock %}
-{% block max_width %}{% if valgt_klasse != "live" %}1200{% endif %}{% endblock %}
+{% block max_width %}{% if valgt_klasse != "live" %}1000{% endif %}{% endblock %}
 
 {% block titlemain %}
   <img id=menu_icon src="../static/icon_start.png"> Start {{ valgt_klubb }}{{ valgt_klasse }}
@@ -116,6 +116,7 @@
       </div>
     {% endif %}
     <br>
+    {% if valgt_klasse %}
       <div class="{{ colclass }}">
         <table>
       {% for race in races %}
@@ -127,20 +128,10 @@
         {% endif %}
         {% if valgt_klasse == "live" %}
           <tr id={{ race.display_color }}>
-        {% elif valgt_klasse == "" %}
-            {% if loop.index0 == 0 %}
-              <tr id=headerblue>
-                <td colspan=3>Kjøreplan, alle heat</td>
-                <td></td>
-                <td></td>
-                <td></td>
-              </tr>
-            {% endif %}
-          <tr>
         {% else %}
           <tr id=headerblue>
         {% endif %}
-          <td colspan=3><b>Kl. {{ race.start_time }}</b> {{ race.raceclass }}
+          <td colspan=3><b>Kl. {{ race.start_time[-8:] }}</b> {{ race.raceclass }}
             {% if race.round == "Q" %}
               Kvartfinale {{ race.heat }}
             {% elif race.round == "S" %}
@@ -154,7 +145,6 @@
             {% endif %}
           </td>
           <td colspan=2>{% if race.next_race %}Neste heat: {{ race.next_race }}{% endif %}</td>
-          <td>(heat {{ race.order }})</td>
         </tr>
         {% if valgt_klasse %}
           <tr id=subheader>
@@ -162,7 +152,6 @@
             <td width=50>Nr</td>
             <td>Navn</td>
             <td>Klubb</td>
-              <td></td>
               <td></td>
           </tr>
           {% for loper in race.startliste %}
@@ -177,12 +166,13 @@
                 {{ loper.club }}
               </td>
               <td></td>
-              <td></td>
             </tr>
           {% endfor %}
         {% endif %}
       {% endfor %}
   </table>
-  {% endif %} {# note: end competition_format #}
   </div>
+  {% endif %} {# note: display races #}
+  {% endif %} {# note: end competition_format #}
+
 {% endblock %}

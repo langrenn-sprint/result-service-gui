@@ -212,13 +212,11 @@ async def get_races_for_live(
         elif _tmp_race["round"] == "S":
             if len(_tmp_race["results"]) > 0:
                 semi_results_registered = True
-    for _tmp_race in _tmp_races:
-        race = await RaceplansAdapter().get_race_by_id(token, _tmp_race["id"])
+    for race in _tmp_races:
         race["finish_results"] = RaceclassResultsService().get_finish_rank_for_race(
             race, False
         )
         race["next_race"] = get_qualification_text(race)
-        race["start_time"] = race["start_time"][-8:]
         # append race if selected starter is inside or not selected
         # optimize heats to show if more than 4 quarter finals
         # avoid quarter finals or finals, depending on semi final status

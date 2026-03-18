@@ -68,6 +68,18 @@ def get_display_style(start_time: str, event: dict) -> str:
     return display_style
 
 
+def get_startlist_with_logos(race: dict) -> list:
+    """Enrich startlist information - including info if race result is registered."""
+    startlist = []
+    if race["start_entries"]:
+        for start_entry in race["start_entries"]:
+            start_entry["club_logo"] = EventsAdapter().get_club_logo_url(
+                start_entry["club"]
+            )
+            startlist.append(start_entry)
+    return startlist
+
+
 async def get_enrichced_startlist(user: dict, race: dict) -> list:
     """Enrich startlist information - including info if race result is registered."""
     startlist = []

@@ -111,7 +111,7 @@
                   {% if race.round == "Q" %}Kvart {{ race.heat }}
                   {% elif race.round == "S" %}Semi {{ race.index }}{{ race.heat }}
                   {% else %}Finale {{ race.index }}
-                  {% endif %} - Start kl. {{ race.start_time }}</b>
+                  {% endif %} - Start kl. {{ race.start_time[-8:] }}</b>
                 </td>
                 <td></td>
               </tr>
