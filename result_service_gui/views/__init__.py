@@ -20,6 +20,7 @@ from .resultat_edit_new import ResultatEditNew
 from .resultat_update import ResultatUpdate
 from .start import Start
 from .start_edit import StartEdit
+from .td_report import TdReport
 from .timing import Timing
 from .timing_dash import TimingDash
 from .timing_info import TimingInfo
