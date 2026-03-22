@@ -59,14 +59,14 @@ class Start(web.View):
             # get startlister for klasse
 
             if valgt_klasse == "now":
-                races = await RaceplansAdapter().get_all_races(user["token"], event_id)
-                races = get_races_for_live_view(event, races, 0, 9)
-                for race in races:
-                        race = await RaceplansAdapter().get_race_by_id(
-                            user["token"], race["id"]
-                        )
-                colseparators = [3, 6]
-                colclass = "w3-third"
+                tmp_races = await RaceplansAdapter().get_all_races(user["token"], event_id)
+                races = await get_races_for_live_view(user, event, tmp_races, 0, 9)
+                if len(races) > 6:
+                    colseparators = [3, 6]
+                    colclass = "w3-third"
+                elif len(races) > 3:
+                    colseparators = [3]
+                    colclass = "w3-half"
             elif valgt_klasse:
                 races = await RaceplansAdapter().get_races_by_racesclass(user["token"], event_id, valgt_klasse)
             else:
@@ -75,6 +75,7 @@ class Start(web.View):
             if len(races) == 0:
                 informasjon = f"{informasjon} Ingen løp funnet."
             else:
+                filtered_races = []
                 for race in races:
                     if valgt_klasse:
                         race["next_race"] = get_qualification_text(race)
@@ -83,14 +84,14 @@ class Start(web.View):
                         )
                         # get start list details
                         race["startliste"] =  get_startlist_with_logos(race)
-                raceplan_summary = get_raceplan_summary(races, raceclasses)
 
-            # filter on selected round
-            if valgt_runde:
-                filtered_races = []
-                for race in races:
-                    if race["round"] == valgt_runde:
+                    # filter on selected round
+                    if valgt_runde:
+                        if race["round"] == valgt_runde:
+                            filtered_races.append(race)
+                    else:
                         filtered_races.append(race)
+                raceplan_summary = get_raceplan_summary(races, raceclasses)
                 races = filtered_races
 
             # sort start list by starting position

@@ -28,7 +28,6 @@ from .utils import (
     get_qualification_text,
     get_race_kpis,
     get_raceplan_summary,
-    get_races_for_live_view,
 )
 
 
@@ -48,6 +47,7 @@ class ResultatEditNew(web.View):
     async def get(self) -> web.Response:
         """Get route function that return the passeringer page."""
         race = {}
+        all_races = []
         raceplan_summary = []
         raceplan_kpis = []
         race_orders = {}
@@ -72,30 +72,31 @@ class ResultatEditNew(web.View):
 
             # check if specific round is selected
             try:
-                valgt_runde.race_order = int(self.request.rel_url.query["heat"])
-                race = await RaceplansAdapter().get_race_by_order(
-                    user["token"], event_id, valgt_runde.race_order
+                valgt_runde = await get_starting_now(user, event, int(self.request.rel_url.query["heat"]))
+                all_races = await RaceplansAdapter().get_races_by_racesclass(
+                    user["token"], event["id"], valgt_runde.klasse
                 )
-                valgt_runde.klasse = race["raceclass"]
-                valgt_runde.runde = race["round"]
 
             except Exception:
                 # if race not is selected, use round and find first race
                 try:
                     valgt_runde.klasse = self.request.rel_url.query["klasse"]
                     valgt_runde.runde = self.request.rel_url.query["runde"]
-                    valgt_runde = await find_round(
-                        user["token"], event, raceclasses, valgt_runde
+                    all_races = await RaceplansAdapter().get_races_by_racesclass(
+                        user["token"], event["id"], valgt_runde.klasse
                     )
-                    race = await RaceplansAdapter().get_race_by_order(
-                        user["token"], event_id, valgt_runde.race_order
+
+                    valgt_runde = find_order(
+                        valgt_runde, all_races
                     )
                 except Exception:
                     informasjon = f"Velg runde i menyen. {informasjon}"
                     logging.debug("Ingen runde valgt")
-            all_races = await RaceplansAdapter().get_races_by_racesclass(
-                user["token"], event_id, valgt_runde.klasse
-            )
+
+            if valgt_runde.race_order != -1:
+                race = await RaceplansAdapter().get_race_by_order(
+                    user["token"], event_id, valgt_runde.race_order
+                )
             raceplan_summary = get_raceplan_summary(all_races, raceclasses)
 
             if not race or not race.get("id"):
@@ -241,39 +242,37 @@ class ResultatEditNew(web.View):
         )
 
 
-async def find_round(
-    token: str, event: dict, raceclasses: list, valgt_runde: ValgtRunde
-) -> ValgtRunde:
-    """Analyse selected round and determine next round(s)."""
-    if valgt_runde.race_order == 0:
-        all_races = await RaceplansAdapter().get_all_races(token, event["id"])
-        # find race starting now
-        races = get_races_for_live_view(event, all_races, 0, 1)
-        if len(races) > 0:
-            valgt_runde.klasse = races[0]["raceclass"]
-            valgt_runde.runde = races[0]["round"]
-    elif valgt_runde.race_order == -1:
-        # find first heat in round
-        races = await RaceplansAdapter().get_races_by_racesclass(
-            token, event["id"], valgt_runde.klasse
-        )
+async def get_starting_now(user: dict, event: dict, heat: int) -> ValgtRunde:
+    """Analyse selected heat and determine raceclass and round."""
+    valgt_runde = ValgtRunde()
+    valgt_runde.race_order = heat
+    time_now = EventsAdapter().get_local_time(event, "log")
+    races = await RaceplansAdapter().get_all_races(user["token"], event["id"])
+    if heat == 0:
         for race in races:
-            if race["round"] == valgt_runde.runde:
-                valgt_runde.race_order = race["order"]
+            if time_now < race["start_time"]:
+                valgt_runde.klasse = race["raceclass"]
+                valgt_runde.runde = race["round"]
+
                 break
     else:
-        # find round for selected heat
-        race = await RaceplansAdapter().get_race_by_order(
-            token, event["id"], valgt_runde.race_order
-        )
-        if race:
-            valgt_runde.klasse = race["raceclass"]
-            valgt_runde.runde = race["round"]
-            # check if raceclass is without ranking
-            for raceclass in raceclasses:
-                if race["raceclass"] == raceclass["name"]:
-                    if not raceclass["ranking"]:
-                        valgt_runde.informasjon = "OBS: Denne løpsklassen er urangert, resultater vil ikke vises."
+        for race in races:
+            if heat == race["order"]:
+                valgt_runde.klasse = race["raceclass"]
+                valgt_runde.runde = race["round"]
+                break
+    return valgt_runde
+
+
+def find_order(
+    valgt_runde: ValgtRunde, races: list
+) -> ValgtRunde:
+    """Analyse selected round and determine current race order."""
+    # find first heat in round
+    for race in races:
+        if race["round"] == valgt_runde.runde:
+            valgt_runde.race_order = race["order"]
+            break
     return valgt_runde
 
 

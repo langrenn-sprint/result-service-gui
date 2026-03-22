@@ -283,8 +283,8 @@ def get_raceplan_summary(races: list, raceclasses: list) -> list:
     return summary
 
 
-def get_races_for_live_view(
-    event: dict, races: list, valgt_heat: int, number_of_races: int
+async def get_races_for_live_view(
+    user: dict, event: dict, races: list, valgt_heat: int, number_of_races: int
 ) -> list:
     """Return races to display in live view."""
     filtered_racelist = []
@@ -304,9 +304,10 @@ def get_races_for_live_view(
     for race in races:
         # from heat number (order) if selected
         if (race["order"] >= valgt_heat) and (i < number_of_races):
-            race["next_race"] = get_qualification_text(race)
-            race["start_time"] = race["start_time"][-8:]
-            filtered_racelist.append(race)
+            race_detailed = await RaceplansAdapter().get_race_by_id(
+                user["token"], race["id"]
+            )
+            filtered_racelist.append(race_detailed)
             i += 1
 
     return filtered_racelist

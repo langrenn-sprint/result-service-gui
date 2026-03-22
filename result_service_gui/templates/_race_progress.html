@@ -62,7 +62,7 @@
                 {% if race.progress == 6 %}
                 <a href="control?event_id={{ event_id }}&valgt_klasse={{ raceclass.name }}&action=c&heat={{ raceclass.name }}-{{ race.name }}&informasjon=Korrigering">{{ race.name }}</a>
                 {% else %}
-                <a href="resultat_edit_new?event_id={{ event_id }}&heat={{ race.order }}">{{ race.name }}</a>
+                <a href="{{ include_source }}?event_id={{ event_id }}&heat={{ race.order }}">{{ race.name }}</a>
                 {% endif %}
                 <span class="tooltiptext_race">
                     Kl: {{ race.start_time }} <b>{{ raceclass.name }} {{ race.name }}</b><br>
@@ -80,7 +80,7 @@
                 {% if race.progress == 6 %}
                 <a href="control?event_id={{ event_id }}&valgt_klasse={{ raceclass.name }}&action=c&heat={{ raceclass.name }}-{{ race.name }}&informasjon=Korrigering">{{ race.name }}</a>
                 {% else %}
-                <a href="resultat_edit_new?event_id={{ event_id }}&heat={{ race.order }}">{{ race.name }}</a>
+                <a href="{{ include_source }}?event_id={{ event_id }}&heat={{ race.order }}">{{ race.name }}</a>
                 {% endif %}
                 <span class="tooltiptext_race">
                     Kl: {{ race.start_time }} <b>{{ raceclass.name }} {{ race.name }}</b><br>
@@ -98,7 +98,7 @@
                 {% if race.progress == 6 %}
                 <a href="control?event_id={{ event_id }}&valgt_klasse={{ raceclass.name }}&action=c&heat={{ raceclass.name }}-{{ race.name }}&informasjon=Korrigering">{{ race.name }}</a>
                 {% else %}
-                <a href="resultat_edit_new?event_id={{ event_id }}&heat={{ race.order }}">{{ race.name }}</a>
+                <a href="{{ include_source }}?event_id={{ event_id }}&heat={{ race.order }}">{{ race.name }}</a>
                 {% endif %}
                 <span class="tooltiptext_race">
                     Kl: {{ race.start_time }} <b>{{ raceclass.name }} {{ race.name }}</b><br>
