@@ -21,6 +21,7 @@ class RaceclassResultsAdapter:
     ) -> int:
         """Create new raceclass results function."""
         servicename = "create_raceclass_results"
+        w_id = ""
         headers = MultiDict(
             [
                 (hdrs.CONTENT_TYPE, "application/json"),
@@ -35,7 +36,9 @@ class RaceclassResultsAdapter:
             ) as resp:
                 res = resp.status
                 if resp.status == 201:
-                    logging.debug(f"{servicename} - got response {resp}")
+                    location = resp.headers[hdrs.LOCATION]
+                    w_id = location.split(os.path.sep)[-1]
+                    logging.debug(f"{servicename} - got response {resp}, id {w_id}")
                 elif resp.status == 401:
                     raise web.HTTPBadRequest(reason=f"401 Unathorized - {servicename}")
                 else:

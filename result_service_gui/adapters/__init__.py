@@ -1,6 +1,5 @@
 """Package for all services."""
 
-from .albums_adapter import AlbumsAdapter
 from .competition_format_adapter import CompetitionFormatAdapter
 from .config_adapter import ConfigAdapter
 from .contestants_adapter import ContestantsAdapter
@@ -16,7 +15,6 @@ from .time_events_adapter import TimeEventsAdapter
 from .user_adapter import UserAdapter
 
 __all__ = [
-    "AlbumsAdapter",
     "CompetitionFormatAdapter",
     "ConfigAdapter",
     "ContestantsAdapter",

@@ -26,7 +26,7 @@ class ConfigAdapter:
             [
                 (hdrs.CONTENT_TYPE, "application/json"),
                 (hdrs.AUTHORIZATION, f"Bearer {token}"),
-            ]
+            ],
         )
         servicename = "get_config"
 
@@ -41,7 +41,7 @@ class ConfigAdapter:
                 config = await resp.json()
             elif resp.status == HTTPStatus.UNAUTHORIZED:
                 informasjon = f"Login expired: {resp}"
-                raise web.HTTPBadRequest(reason=informasjon)
+                raise Exception(informasjon)
             elif resp.status == HTTPStatus.NOT_FOUND:
                 # config not found - find default value
                 config_file = Path(f"{PROJECT_ROOT}/config/global_settings.json")
@@ -69,7 +69,7 @@ class ConfigAdapter:
             [
                 (hdrs.CONTENT_TYPE, "application/json"),
                 (hdrs.AUTHORIZATION, f"Bearer {token}"),
-            ]
+            ],
         )
         servicename = "get_all_configs"
         if event_id:
@@ -88,7 +88,7 @@ class ConfigAdapter:
                 config = await resp.json()
             elif resp.status == HTTPStatus.UNAUTHORIZED:
                 informasjon = f"Login expired: {resp}"
-                raise web.HTTPBadRequest(reason=informasjon)
+                raise Exception(informasjon)
             else:
                 body = await resp.json()
                 informasjon = f"{servicename} failed - {resp.status} - {body['detail']}"
@@ -116,8 +116,27 @@ class ConfigAdapter:
         # convert from json string to list
         return json.loads(string_value)
 
+    async def get_config_img_res_tuple(
+        self,
+        token: str,
+        event_id: str,
+        key: str,
+    ) -> tuple:
+        """Get config tuple value."""
+        string_value = await self.get_config(token, event_id, key)
+        try:
+            tuple_value = tuple(map(int, string_value.split("x")))
+        except ValueError:
+            informasjon = f"Error - {key} is not a tuple."
+            raise Exception(informasjon) from None
+        return tuple_value
+
     async def create_config(
-        self, token: str, event_id: str, key: str, value: str
+        self,
+        token: str,
+        event_id: str,
+        key: str,
+        value: str,
     ) -> str:
         """Create new config function."""
         servicename = "create_config"
@@ -126,7 +145,7 @@ class ConfigAdapter:
             [
                 (hdrs.CONTENT_TYPE, "application/json"),
                 (hdrs.AUTHORIZATION, f"Bearer {token}"),
-            ]
+            ],
         )
         config = {
             "event_id": event_id,
@@ -138,7 +157,9 @@ class ConfigAdapter:
         async with (
             ClientSession() as session,
             session.post(
-                f"{PHOTO_SERVICE_URL}/config", headers=headers, json=request_body
+                f"{PHOTO_SERVICE_URL}/config",
+                headers=headers,
+                json=request_body,
             ) as resp,
         ):
             if resp.status == HTTPStatus.CREATED:
@@ -157,14 +178,22 @@ class ConfigAdapter:
         return result
 
     async def update_config_list(
-        self, token: str, event_id: str, key: str, new_value: list
+        self,
+        token: str,
+        event_id: str,
+        key: str,
+        new_value: list,
     ) -> str:
         """Update config list value."""
         new_value_str = json.dumps(new_value)
         return await self.update_config(token, event_id, key, new_value_str)
 
     async def update_config(
-        self, token: str, event_id: str, key: str, new_value: str
+        self,
+        token: str,
+        event_id: str,
+        key: str,
+        new_value: str,
     ) -> str:
         """Update config function."""
         response = ""
@@ -173,7 +202,7 @@ class ConfigAdapter:
             [
                 (hdrs.CONTENT_TYPE, "application/json"),
                 (hdrs.AUTHORIZATION, f"Bearer {token}"),
-            ]
+            ],
         )
         request_body = {
             "event_id": event_id,
@@ -184,7 +213,9 @@ class ConfigAdapter:
         async with (
             ClientSession() as session,
             session.put(
-                f"{PHOTO_SERVICE_URL}/config", headers=headers, json=request_body
+                f"{PHOTO_SERVICE_URL}/config",
+                headers=headers,
+                json=request_body,
             ) as resp,
         ):
             response = str(resp.status)

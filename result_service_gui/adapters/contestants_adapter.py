@@ -4,10 +4,11 @@ import copy
 import logging
 import os
 import urllib.parse
+from datetime import datetime
 from http import HTTPStatus
 from typing import Any
 
-from aiohttp import ClientSession, hdrs, web
+from aiohttp import ClientSession, FormData, hdrs, web
 from multidict import MultiDict
 
 from .start_adapter import StartAdapter
@@ -20,12 +21,30 @@ EVENT_SERVICE_URL = f"http://{EVENTS_HOST_SERVER}:{EVENTS_HOST_PORT}"
 class ContestantsAdapter:
     """Class representing contestants."""
 
-    async def assign_bibs(self, token: str, event_id: str) -> str:
+    @staticmethod
+    def _parse_birth_date(value: str) -> str:
+        """Parse and normalise a birth_date string to YYYY-MM-DD.
+
+        Accepted input formats: DD.MM.YYYY, DD-MM-YYYY, YYYY-MM-DD, YYYY.MM.DD, YYYYMMDD, DDMMYYYY.
+        Raises ValueError if the value cannot be parsed.
+        """
+        for fmt in ("%d.%m.%Y", "%d-%m-%Y", "%Y-%m-%d", "%Y.%m.%d", "%Y%m%d", "%d%m%Y"):
+            try:
+                return datetime.strptime(value, fmt).strftime("%Y-%m-%d")
+            except ValueError:
+                continue
+        raise ValueError(f"Ugyldig fødselsdato '{value}'. Forventet format: DD.MM.YYYY.")
+
+    async def assign_bibs(
+        self, token: str, event_id: str, start_bib: int | None = None
+    ) -> str:
         """Generate bibs based upon registrations."""
         servicename = "assign_bibs"
         headers = MultiDict([(hdrs.AUTHORIZATION, f"Bearer {token}")])
 
         url = f"{EVENT_SERVICE_URL}/events/{event_id}/contestants/assign-bibs"
+        if start_bib:
+            url += f"?start-bib={start_bib}"
         async with (
             ClientSession() as session,
             session.post(url, headers=headers) as resp,
@@ -56,6 +75,13 @@ class ContestantsAdapter:
                 (hdrs.AUTHORIZATION, f"Bearer {token}"),
             ]
         )
+
+        # validation - birth_date should be in format YYYY-MM-DD
+        if request_body.get("birth_date"):
+            request_body["birth_date"] = self._parse_birth_date(request_body["birth_date"])
+
+        # Exclude values that are empty or None - this allows for partial updates
+        request_body = {k: v for k, v in request_body.items() if v not in ("", None)}
         async with (
             ClientSession() as session,
             session.post(
@@ -81,16 +107,21 @@ class ContestantsAdapter:
         """Create new contestants function."""
         servicename = "create_contestants"
         headers = {
-            hdrs.CONTENT_TYPE: "text/csv",
             hdrs.AUTHORIZATION: f"Bearer {token}",
         }
         logging.debug(f"Create contestants - got file {inputfile}")
+        data = FormData()
+        data.add_field(
+            "file",
+            inputfile,
+            content_type="text/csv",
+        )
         async with (
             ClientSession() as session,
             session.post(
-                f"{EVENT_SERVICE_URL}/events/{event_id}/contestants",
+                f"{EVENT_SERVICE_URL}/events/{event_id}/contestants/file",
                 headers=headers,
-                data=inputfile,
+                data=data,
             ) as resp,
         ):
             res = resp.status
