@@ -18,17 +18,6 @@
 
 {% block content %}
 <script>
-      function generate_resultlist(raceclass) {
-      console.log("Re-generate results: " + raceclass);
-      var xhttp = new XMLHttpRequest();
-      xhttp.open("POST", "/resultat_update", true);
-      xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-      xhttp.send("event_id={{ event_id }}&raceclass=" + raceclass + "&action=generate_resultlist");
-      xhttp.onload = function() {
-        alert(this.responseText);
-      }
-    }
-
     /* this function will pull events from queue without reloading the page */
     function pull_events() {
     try {

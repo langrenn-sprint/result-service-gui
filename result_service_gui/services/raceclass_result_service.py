@@ -102,7 +102,7 @@ async def get_results_from_all_heats(
     """Get sprint results - return sorted list. With our without DNF."""
     results = {
         "event_id": event_id,
-        "raceclass": valgt_klasse,
+        "raceclass_name": valgt_klasse,
         "timing_point": "Finish",
         "no_of_contestants": 0,
         "ranking_sequence": [],
@@ -188,7 +188,7 @@ async def get_results_from_interval_start(
     racers_count = 0
     results = {
         "event_id": event_id,
-        "raceclass": valgt_klasse,
+        "raceclass_name": valgt_klasse,
         "timing_point": "Finish",
         "no_of_contestants": 0,
         "ranking_sequence": [],
