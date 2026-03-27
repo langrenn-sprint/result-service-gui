@@ -5,7 +5,7 @@ import logging
 
 from aiohttp import web
 
-from result_service_gui.services import (
+from result_service_gui.adapters import (
     ConfigAdapter,
     StatusAdapter,
 )

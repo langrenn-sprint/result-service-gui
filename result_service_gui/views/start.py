@@ -6,7 +6,7 @@ from operator import itemgetter
 import aiohttp_jinja2
 from aiohttp import web
 
-from result_service_gui.services import (
+from result_service_gui.adapters import (
     EventsAdapter,
     RaceclassesAdapter,
     RaceplansAdapter,

@@ -5,11 +5,13 @@ import logging
 
 from aiohttp import web
 
-from result_service_gui.services import (
+from result_service_gui.adapters import (
     EventsAdapter,
     RaceclassesAdapter,
-    RaceclassResultsService,
     TimeEventsAdapter,
+)
+from result_service_gui.services import (
+    RaceclassResultsService,
 )
 
 from .utils import check_login, get_event, get_race_kpis

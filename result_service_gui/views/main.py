@@ -5,7 +5,7 @@ import logging
 import aiohttp_jinja2
 from aiohttp import web
 
-from result_service_gui.services import EventsAdapter
+from result_service_gui.adapters import EventsAdapter
 
 from .utils import check_login_open, get_event
 

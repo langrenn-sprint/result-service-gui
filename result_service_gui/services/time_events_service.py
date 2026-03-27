@@ -4,11 +4,13 @@ import logging
 
 from aiohttp import web
 
-from .contestants_adapter import ContestantsAdapter
-from .events_adapter import EventsAdapter
-from .raceplans_adapter import RaceplansAdapter
-from .start_adapter import StartAdapter
-from .time_events_adapter import TimeEventsAdapter
+from result_service_gui.adapters import (
+    ContestantsAdapter,
+    EventsAdapter,
+    RaceplansAdapter,
+    StartAdapter,
+    TimeEventsAdapter,
+)
 
 
 class TimeEventsService:

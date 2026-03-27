@@ -6,14 +6,16 @@ import logging
 from aiohttp import web
 from aiohttp_session import get_session
 
-from result_service_gui.services import (
+from result_service_gui.adapters import (
     ContestantsAdapter,
     EventsAdapter,
-    RaceclassResultsService,
     RaceplansAdapter,
     StartAdapter,
     TimeEventsAdapter,
     UserAdapter,
+)
+from result_service_gui.services import (
+    RaceclassResultsService,
 )
 
 

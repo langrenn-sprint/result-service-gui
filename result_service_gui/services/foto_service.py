@@ -4,26 +4,19 @@ import datetime
 import json
 import logging
 
-from .albums_adapter import AlbumsAdapter
-from .config_adapter import ConfigAdapter
-from .contestants_adapter import ContestantsAdapter
-from .events_adapter import EventsAdapter
-from .photos_adapter import PhotosAdapter
-from .raceclasses_adapter import RaceclassesAdapter
-from .raceplans_adapter import RaceplansAdapter
-from .start_adapter import StartAdapter
+from result_service_gui.adapters import (
+    ConfigAdapter,
+    ContestantsAdapter,
+    EventsAdapter,
+    PhotosAdapter,
+    RaceclassesAdapter,
+    RaceplansAdapter,
+    StartAdapter,
+)
 
 
 class FotoService:
     """Class representing foto service."""
-
-    async def delete_all_local_albums(self, token: str, event_id: str) -> str:
-        """Delete all local copies of album sync information."""
-        albums = await AlbumsAdapter().get_all_albums(token, event_id)
-        for album in albums:
-            result = await AlbumsAdapter().delete_album(token, album.id)
-            logging.debug(f"Deleted album with id {album.id}, result {result}")
-        return "Alle bilder er slettet."
 
     async def delete_all_local_photos(self, token: str, event_id: str) -> str:
         """Delete all local copies of photo information."""

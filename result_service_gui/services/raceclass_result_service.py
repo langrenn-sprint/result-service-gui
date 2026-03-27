@@ -2,10 +2,12 @@
 
 import logging
 
-from .contestants_adapter import ContestantsAdapter
-from .events_adapter import EventsAdapter
-from .raceclass_result_adapter import RaceclassResultsAdapter
-from .raceplans_adapter import RaceplansAdapter
+from result_service_gui.adapters import (
+    ContestantsAdapter,
+    EventsAdapter,
+    RaceclassResultsAdapter,
+    RaceplansAdapter,
+)
 
 
 class RaceclassResultsService:

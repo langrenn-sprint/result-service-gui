@@ -2,9 +2,12 @@
 
 import logging
 
-from .events_adapter import EventsAdapter
-from .photos_adapter import PhotosAdapter
-from .raceplans_adapter import RaceplansAdapter
+from result_service_gui.adapters import (
+    EventsAdapter,
+    PhotosAdapter,
+    RaceplansAdapter,
+)
+
 from .time_events_service import TimeEventsService
 
 

@@ -5,12 +5,14 @@ import logging
 import aiohttp_jinja2
 from aiohttp import web
 
-from result_service_gui.services import (
+from result_service_gui.adapters import (
     EventsAdapter,
-    FotoService,
     PhotosAdapter,
     RaceclassesAdapter,
     RaceplansAdapter,
+)
+from result_service_gui.services import (
+    FotoService,
 )
 
 from .utils import (
