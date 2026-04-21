@@ -44,7 +44,9 @@ class CsvList(web.View):
             csvdata = await get_startlist_data(event_id, user, race_round)
             fields = get_fields_startlist()
         elif action == "contestants":
-            csvdata = await ContestantsAdapter().get_all_contestants(user["token"], event_id)
+            csvdata = await ContestantsAdapter().get_all_contestants(
+                user["token"], event_id
+            )
             fields = get_fields_contestants()
         elif action == "results":
             try:
@@ -146,15 +148,15 @@ def get_fields_contestants() -> list:
 def get_fields_results(user: dict) -> list:
     """Return field for result display."""
     field_list = [
-            "rank",
-            "bib",
-            "name",
-            "club",
-            "raceclass",
-            "ageclass",
-            "round",
-            "time",
-        ]
+        "rank",
+        "bib",
+        "name",
+        "club",
+        "raceclass",
+        "ageclass",
+        "round",
+        "time",
+    ]
     if user["loggedin"]:
         field_list.append("minidrett_id")
 

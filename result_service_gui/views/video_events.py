@@ -83,9 +83,9 @@ async def get_integration_status(token: str, event_id: str) -> str:
         elif res["type"] == "integration_status":
             res_type = "<img id=menu_icon src=../static/upload.png title=Opplasting>"
         if "Error" in res["message"]:
-            response += f"{info_time} {res_type} - <span id=red>{
-                res['message']
-            }</span><br>"
+            response += (
+                f"{info_time} {res_type} - <span id=red>{res['message']}</span><br>"
+            )
         else:
             response += f"{info_time} {res_type} - {res['message']}<br>"
     return response

@@ -53,7 +53,9 @@ class StartEdit(web.View):
 
             all_races = []
             if valgt_klasse:
-                all_races = await RaceplansAdapter().get_races_by_racesclass(user["token"], event_id, valgt_klasse)
+                all_races = await RaceplansAdapter().get_races_by_racesclass(
+                    user["token"], event_id, valgt_klasse
+                )
 
             try:
                 action = self.request.rel_url.query["action"]
@@ -62,10 +64,10 @@ class StartEdit(web.View):
 
             # enrich data
             for race in all_races:
-                    race["next_race"] = get_qualification_text(race)
-                    # get start list detail
-                    race["startliste"] = await get_enrichced_startlist(user, race)
-                    next_races.append(race)
+                race["next_race"] = get_qualification_text(race)
+                # get start list detail
+                race["startliste"] = await get_enrichced_startlist(user, race)
+                next_races.append(race)
 
             if valgt_runde:
                 filtered_races = []

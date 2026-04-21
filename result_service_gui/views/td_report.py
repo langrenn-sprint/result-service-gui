@@ -66,7 +66,9 @@ class TdReport(web.View):
                     results = race_details.get("results", {})
                     # DNS: registrert som egen timing_point i resultater
                     if results:
-                        dns_count = (dns_count or 0) + results.get("DNS", {}).get("no_of_contestants", 0)
+                        dns_count = (dns_count or 0) + results.get("DNS", {}).get(
+                            "no_of_contestants", 0
+                        )
 
                 # DNF: hentes fra klasse-resultat (samme kilde som resultat.py)
                 try:
@@ -77,15 +79,15 @@ class TdReport(web.View):
                     dnf_count = sum(
                         1
                         for racer in ranking_sequence
-                        if (
-                            racer.get("time_event", {}).get("timing_point") == "DNF"
-                        )
+                        if (racer.get("time_event", {}).get("timing_point") == "DNF")
                     )
                 except Exception:
                     dnf_count = None
 
-                contestants = await ContestantsAdapter().get_all_contestants_by_raceclass(
-                    user["token"], event_id, raceclass["name"]
+                contestants = (
+                    await ContestantsAdapter().get_all_contestants_by_raceclass(
+                        user["token"], event_id, raceclass["name"]
+                    )
                 )
                 club_count = len(
                     {club_key(c["club"]) for c in contestants if c.get("club")}

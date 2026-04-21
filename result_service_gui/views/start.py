@@ -59,7 +59,9 @@ class Start(web.View):
             # get startlister for klasse
 
             if valgt_klasse == "now":
-                tmp_races = await RaceplansAdapter().get_all_races(user["token"], event_id)
+                tmp_races = await RaceplansAdapter().get_all_races(
+                    user["token"], event_id
+                )
                 races = await get_races_for_live_view(user, event, tmp_races, 0, 9)
                 if len(races) > 6:
                     colseparators = [3, 6]
@@ -68,7 +70,9 @@ class Start(web.View):
                     colseparators = [3]
                     colclass = "w3-half"
             elif valgt_klasse:
-                races = await RaceplansAdapter().get_races_by_racesclass(user["token"], event_id, valgt_klasse)
+                races = await RaceplansAdapter().get_races_by_racesclass(
+                    user["token"], event_id, valgt_klasse
+                )
             else:
                 races = await RaceplansAdapter().get_all_races(user["token"], event_id)
 
@@ -83,7 +87,7 @@ class Start(web.View):
                             race["start_time"], event
                         )
                         # get start list details
-                        race["startliste"] =  get_startlist_with_logos(race)
+                        race["startliste"] = get_startlist_with_logos(race)
 
                     # filter on selected round
                     if valgt_runde:

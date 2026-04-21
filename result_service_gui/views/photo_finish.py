@@ -66,7 +66,9 @@ class PhotoFinish(web.View):
 
             # check if specific round is selected
             try:
-                valgt_runde = await get_starting_now(user, event, int(self.request.rel_url.query["heat"]))
+                valgt_runde = await get_starting_now(
+                    user, event, int(self.request.rel_url.query["heat"])
+                )
                 all_races = await RaceplansAdapter().get_races_by_racesclass(
                     user["token"], event["id"], valgt_runde.klasse
                 )
@@ -80,9 +82,7 @@ class PhotoFinish(web.View):
                         user["token"], event["id"], valgt_runde.klasse
                     )
 
-                    valgt_runde = find_order(
-                        valgt_runde, all_races
-                    )
+                    valgt_runde = find_order(valgt_runde, all_races)
                 except Exception:
                     informasjon = f"Velg runde i menyen. {informasjon}"
                     logging.debug("Ingen runde valgt")
@@ -140,6 +140,7 @@ class PhotoFinish(web.View):
             logging.exception("Error. Redirect to main page.")
             return web.HTTPSeeOther(location=f"/?informasjon={e}")
 
+
 async def get_starting_now(user: dict, event: dict, heat: int) -> ValgtRunde:
     """Analyse selected heat and determine raceclass and round."""
     valgt_runde = ValgtRunde()
@@ -162,9 +163,7 @@ async def get_starting_now(user: dict, event: dict, heat: int) -> ValgtRunde:
     return valgt_runde
 
 
-def find_order(
-    valgt_runde: ValgtRunde, races: list
-) -> ValgtRunde:
+def find_order(valgt_runde: ValgtRunde, races: list) -> ValgtRunde:
     """Analyse selected round and determine current race order."""
     # find first heat in round
     for race in races:
@@ -216,4 +215,3 @@ def get_finish_rank_from_photos(photos: list, camera_side: str) -> list:
                 if bib not in biblist:
                     biblist.append(bib)
     return biblist
-

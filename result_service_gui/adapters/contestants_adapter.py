@@ -33,7 +33,9 @@ class ContestantsAdapter:
                 return datetime.strptime(value, fmt).strftime("%Y-%m-%d")
             except ValueError:
                 continue
-        raise ValueError(f"Ugyldig fødselsdato '{value}'. Forventet format: DD.MM.YYYY.")
+        raise ValueError(
+            f"Ugyldig fødselsdato '{value}'. Forventet format: DD.MM.YYYY."
+        )
 
     async def assign_bibs(
         self, token: str, event_id: str, start_bib: int | None = None
@@ -78,7 +80,9 @@ class ContestantsAdapter:
 
         # validation - birth_date should be in format YYYY-MM-DD
         if request_body.get("birth_date"):
-            request_body["birth_date"] = self._parse_birth_date(request_body["birth_date"])
+            request_body["birth_date"] = self._parse_birth_date(
+                request_body["birth_date"]
+            )
 
         # Exclude values that are empty or None - this allows for partial updates
         request_body = {k: v for k, v in request_body.items() if v not in ("", None)}
