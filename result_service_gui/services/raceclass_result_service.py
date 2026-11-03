@@ -17,7 +17,23 @@ class RaceclassResultsService:
         self, token: str, event: dict, valgt_klasse: str
     ) -> int:
         """Create or recreate raceclass results function."""
-        # first delete any old results
+        # generate new resultset first, so old results are kept if it fails
+        if event["competition_format"] == "Interval Start":
+            raceclass_result = await get_results_from_interval_start(
+                token, event["id"], valgt_klasse
+            )
+        else:
+            raceclass_result = await get_results_from_all_heats(
+                token, event["id"], valgt_klasse
+            )
+        if not raceclass_result:
+            informasjon = (
+                f"Klassens resultat kan ikke lages - "
+                f"A-finalen i {valgt_klasse} mangler resultater."
+            )
+            raise Exception(informasjon)
+
+        # then delete any old results
         try:
             resultlist = await RaceclassResultsAdapter().get_raceclass_result(
                 event["id"], valgt_klasse
@@ -31,16 +47,6 @@ class RaceclassResultsService:
                 )
         except Exception:
             logging.debug(f"No results found, no delete required {valgt_klasse}")
-
-        # generate new resultset
-        if event["competition_format"] == "Interval Start":
-            raceclass_result = await get_results_from_interval_start(
-                token, event["id"], valgt_klasse
-            )
-        else:
-            raceclass_result = await get_results_from_all_heats(
-                token, event["id"], valgt_klasse
-            )
 
         # query contestant object to add ageclass
         contestants = await ContestantsAdapter().get_all_contestants_by_raceclass(
@@ -141,8 +147,8 @@ async def get_results_from_all_heats(
                 race_details, True
             )
             for _tmp_result in finish_results:
-                # skip results if racer has more races
-                if _tmp_result["next_race_id"] == "":
+                # skip results if racer has more races (race-service sends null)
+                if not _tmp_result.get("next_race_id"):
                     new_result: dict = {
                         "bib": _tmp_result["bib"],
                         "round": f"{race['round']}{race['index']}",
