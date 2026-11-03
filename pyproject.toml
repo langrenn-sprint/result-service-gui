@@ -177,6 +177,7 @@ env = [
 ]
 
 asyncio_mode = "auto"
+testpaths = ["tests"]
 markers = [
     "integration: marks tests as integration (slower)",
     "contract: marks test as contract (slow)",
