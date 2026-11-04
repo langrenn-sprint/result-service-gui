@@ -3,10 +3,13 @@
 import logging
 import os
 from http import HTTPStatus
+from typing import TYPE_CHECKING
 
 from aiohttp import ClientSession, hdrs, web
-from aiohttp_session import Session
 from multidict import MultiDict
+
+if TYPE_CHECKING:
+    from aiohttp_session import Session
 
 USERS_HOST_SERVER = os.getenv("USERS_HOST_SERVER")
 USERS_HOST_PORT = os.getenv("USERS_HOST_PORT")

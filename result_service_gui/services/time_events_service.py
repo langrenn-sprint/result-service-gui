@@ -1,5 +1,6 @@
 """Module for time event service."""
 
+import html
 import logging
 
 from aiohttp import web
@@ -185,8 +186,55 @@ async def create_finish_time_event(
         except Exception as e:
             # Functional error - return information to user.
             logging.exception("Error")
-            informasjon = f"ERROR: {e}. "
+            informasjon = f"ERROR: {str(e).rstrip('.')}. "
+            if "already exists" in str(e):
+                informasjon = await get_duplicate_time_event_info(token, time_event, e)
     return informasjon
+
+
+async def get_duplicate_time_event_info(
+    token: str, time_event: dict, error: Exception
+) -> str:
+    """Explain why race-service rejects a finish time_event as a duplicate.
+
+    A time_event with status Error (e.g. registered before the contestant was
+    in the start list) is hidden in the result view, but still blocks a new
+    registration for the same bib until it is deleted in Kontroll.
+
+    The message contains stored and submitted values and is shown as HTML,
+    so it is escaped.
+    """
+    return html.escape(await _build_duplicate_time_event_info(token, time_event, error))
+
+
+async def _build_duplicate_time_event_info(
+    token: str, time_event: dict, error: Exception
+) -> str:
+    """Build plain-text message for get_duplicate_time_event_info."""
+    bib = time_event["bib"]
+    try:
+        existing = await TimeEventsAdapter().get_time_events_by_race_id(
+            token, time_event["race_id"]
+        )
+    except Exception:
+        logging.exception("Could not look up existing time-events")
+        return f"ERROR: {str(error).rstrip('.')}. "
+    for t_e in existing:
+        if (
+            t_e.get("bib") == bib
+            and t_e.get("timing_point") == time_event["timing_point"]
+            and t_e.get("status") != "OK"
+        ):
+            reason = ""
+            if t_e.get("changelog"):
+                reason = f" Årsak: {t_e['changelog'][-1]['comment']}"
+            return (
+                f"ERROR: Bib {bib} har allerede en passering i "
+                f"{time_event['race']} med status {t_e.get('status')}, "
+                f"registrert {t_e.get('registration_time')}.{reason} "
+                "Slett den under Kontroll og registrer på nytt. "
+            )
+    return f"ERROR: Bib {bib} er allerede registrert i {time_event['race']}. "
 
 
 async def delete_result(user: dict, time_event_id: str) -> str:
@@ -198,7 +246,8 @@ async def delete_result(user: dict, time_event_id: str) -> str:
         time_event = await TimeEventsAdapter().get_time_event_by_id(
             user["token"], time_event_id
         )
-        if len(time_event["next_race_id"]) > 0:
+        # race-service sends null when there is no next race
+        if time_event.get("next_race_id"):
             start_entries = await StartAdapter().get_start_entries_by_race_id(
                 user["token"], time_event["next_race_id"]
             )

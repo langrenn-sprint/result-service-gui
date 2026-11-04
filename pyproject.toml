@@ -3,7 +3,7 @@ name = "result-service-gui"
 version = "2.1.0"
 description = "An API for admin of sporting events"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.14"
 license = "Apache-2.0"
 classifiers = [
     "Programming Language :: Python :: 3",
@@ -66,6 +66,7 @@ ignore = [
     "ANN401",
     "ASYNC230",
     "BLE001",
+    "CPY001",
     "C901",
     "COM812",
     "E501",
@@ -177,6 +178,7 @@ env = [
 ]
 
 asyncio_mode = "auto"
+testpaths = ["tests"]
 markers = [
     "integration: marks tests as integration (slower)",
     "contract: marks test as contract (slow)",

@@ -149,9 +149,11 @@ class MyView(web.View):
 Services and adapters communicate with external APIs using aiohttp ClientSession:
 
 ```python
-headers = MultiDict([
-    (hdrs.AUTHORIZATION, f"Bearer {token}"),
-])
+headers = MultiDict(
+    [
+        (hdrs.AUTHORIZATION, f"Bearer {token}"),
+    ]
+)
 async with ClientSession() as session, session.get(url, headers=headers) as resp:
     if resp.status == HTTPStatus.OK:
         result = await resp.json()
