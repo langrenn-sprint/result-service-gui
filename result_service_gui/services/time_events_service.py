@@ -235,7 +235,8 @@ async def delete_result(user: dict, time_event_id: str) -> str:
         time_event = await TimeEventsAdapter().get_time_event_by_id(
             user["token"], time_event_id
         )
-        if len(time_event["next_race_id"]) > 0:
+        # race-service sends null when there is no next race
+        if time_event.get("next_race_id"):
             start_entries = await StartAdapter().get_start_entries_by_race_id(
                 user["token"], time_event["next_race_id"]
             )
