@@ -1,7 +1,7 @@
 """Utilities module for gui services."""
 
-import datetime
 import logging
+from datetime import datetime
 
 from aiohttp import web
 from aiohttp_session import get_session
@@ -54,7 +54,7 @@ async def check_login_open(self) -> dict:
 def get_display_style(start_time: str, event: dict) -> str:
     """Calculate time remaining to start and return table header style."""
     time_now = EventsAdapter().get_local_datetime_now(event)
-    start_time_obj = datetime.datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%S")
+    start_time_obj = datetime.strptime(start_time, "%Y-%m-%dT%H:%M:%S")
     # make sure timezone is correct
     start_time_obj = start_time_obj.replace(tzinfo=time_now.tzinfo)
     delta_time = start_time_obj - time_now
@@ -598,7 +598,7 @@ def get_race_summary(event: dict, race: dict) -> dict:
     }
 
 
-def get_race_progress(
+def get_race_progress(  # noqa: PLR0917
     event: dict,
     race: dict,
     count_starts: int,

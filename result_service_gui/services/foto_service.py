@@ -1,8 +1,8 @@
 """Module for foto service."""
 
-import datetime
 import json
 import logging
+from datetime import UTC, datetime, timedelta
 
 from result_service_gui.adapters import (
     ConfigAdapter,
@@ -126,7 +126,7 @@ async def link_ai_info_to_photo(
     return result
 
 
-async def find_race_info_by_bib(
+async def find_race_info_by_bib(  # noqa: PLR0917
     token: str,
     bib: int,
     photo_info: dict,
@@ -236,11 +236,11 @@ def format_time(timez: str, zulu: bool) -> str:
     date_pattern_list = date_patterns.split(";")
     for pattern in date_pattern_list:
         try:
-            t1 = datetime.datetime.strptime(timez, pattern)
+            t1 = datetime.strptime(timez, pattern)
             # calculate new time
             delta_seconds = int(time_zone_offset_g_photos) * 3600
             if zulu:
-                t2 = t1 + datetime.timedelta(seconds=delta_seconds)
+                t2 = t1 + timedelta(seconds=delta_seconds)
             else:
                 t2 = t1
             break
@@ -255,18 +255,18 @@ def format_time(timez: str, zulu: bool) -> str:
 
 def get_seconds_diff(time1: str, time2: str) -> int:
     """Compare time1 and time2, return time diff in min."""
-    t1 = datetime.datetime.strptime("1", "%S")  # nitialize time to zero
-    t2 = datetime.datetime.strptime("1", "%S")
+    t1 = datetime.strptime("1", "%S")  # nitialize time to zero
+    t2 = datetime.strptime("1", "%S")
 
     date_patterns = EventsAdapter().get_global_setting("DATE_PATTERNS")
     date_pattern_list = date_patterns.split(";")
     for pattern in date_pattern_list:
         try:
-            t1 = datetime.datetime.strptime(time1, pattern)
+            t1 = datetime.strptime(time1, pattern)
         except ValueError:
             logging.debug(f"Got error parsing time {ValueError}")
         try:
-            t2 = datetime.datetime.strptime(time2, pattern)
+            t2 = datetime.strptime(time2, pattern)
         except ValueError:
             logging.debug(f"Got error parsing time {ValueError}")
 

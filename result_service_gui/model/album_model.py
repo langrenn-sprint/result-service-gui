@@ -8,7 +8,7 @@ from .changelog import Changelog
 class Album:
     """Basic model class."""
 
-    def __init__(
+    def __init__(  # noqa: PLR0917
         self,
         g_id,
         sync_on,

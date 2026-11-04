@@ -1,10 +1,10 @@
 """Module for events adapter."""
 
 import copy
-import datetime
 import json
 import logging
 import os
+from datetime import UTC, datetime
 from http import HTTPStatus
 from pathlib import Path
 from zoneinfo import ZoneInfo
@@ -143,24 +143,20 @@ class EventsAdapter:
             boolean_value = True
         return boolean_value
 
-    def get_local_datetime_now(self, event: dict) -> datetime.datetime:
+    def get_local_datetime_now(self, event: dict) -> datetime:
         """Return local datetime object, time zone adjusted from event info."""
         time_zone = event["timezone"]
         if time_zone:
-            local_time_obj = datetime.datetime.now(ZoneInfo(time_zone))
+            local_time_obj = datetime.now(ZoneInfo(time_zone))
         else:
-            local_time_obj = datetime.datetime.now(datetime.UTC)
+            local_time_obj = datetime.now(UTC)
         return local_time_obj
 
     def get_local_time(self, event: dict, time_format: str) -> str:
         """Return local time string, time zone adjusted from event info."""
         local_time = ""
         time_zone = event["timezone"]
-        time_now = (
-            datetime.datetime.now(ZoneInfo(time_zone))
-            if time_zone
-            else datetime.datetime.now(datetime.UTC)
-        )
+        time_now = datetime.now(ZoneInfo(time_zone)) if time_zone else datetime.now(UTC)
 
         if time_format == "HH:MM":
             local_time = f"{time_now.strftime('%H')}:{time_now.strftime('%M')}"
