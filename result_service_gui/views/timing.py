@@ -19,6 +19,7 @@ from .utils import (
     check_login,
     get_enrichced_startlist,
     get_event,
+    login_location,
 )
 
 
@@ -46,8 +47,8 @@ class Timing(web.View):
         except Exception:
             valgt_heat = 0
 
+        user = await check_login(self)
         try:
-            user = await check_login(self)
             event = await get_event(user, event_id)
             raceclasses = await RaceclassesAdapter().get_raceclasses(
                 user["token"], event_id
@@ -122,7 +123,10 @@ class Timing(web.View):
             error_reason = str(e)
             if error_reason.startswith("401"):
                 return web.HTTPSeeOther(
-                    location=f"/login?informasjon=Ingen tilgang, vennligst logg inn på nytt. {e}"
+                    location=login_location(
+                        f"Ingen tilgang, vennligst logg inn på nytt. {e}",
+                        self.request.path_qs,
+                    )
                 )
 
         return web.HTTPSeeOther(

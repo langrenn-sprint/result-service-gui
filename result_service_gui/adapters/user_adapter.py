@@ -1,7 +1,11 @@
 """Module for user adapter."""
 
+import base64
+import binascii
+import json
 import logging
 import os
+import time
 from http import HTTPStatus
 from typing import TYPE_CHECKING
 
@@ -14,6 +18,10 @@ if TYPE_CHECKING:
 USERS_HOST_SERVER = os.getenv("USERS_HOST_SERVER")
 USERS_HOST_PORT = os.getenv("USERS_HOST_PORT")
 USER_SERVICE_URL = f"http://{USERS_HOST_SERVER}:{USERS_HOST_PORT}"
+
+# A token that expires within this many seconds counts as expired, so a
+# request does not reach the backend with a token that runs out on the way.
+TOKEN_EXPIRY_MARGIN_SECONDS = 10
 
 
 class UserAdapter:
@@ -141,9 +149,31 @@ class UserAdapter:
         return result
 
     def isloggedin(self, cookiestorage: Session) -> bool:
-        """Check if user is logged in function."""
-        try:
-            result = cookiestorage["loggedin"]
-        except Exception:
-            result = False
-        return result
+        """Check if user is logged in with a token that has not expired.
+
+        A token without a readable `exp` claim counts as expired.
+        """
+        if not cookiestorage.get("loggedin"):
+            return False
+        exp = get_claims_from_token(str(cookiestorage.get("token", ""))).get("exp")
+        if not isinstance(exp, int | float) or isinstance(exp, bool):
+            return False
+        return exp - TOKEN_EXPIRY_MARGIN_SECONDS > time.time()
+
+
+def get_claims_from_token(token: str) -> dict:
+    """Return the claims of a JWT, or an empty dict if they cannot be read.
+
+    The signature is not verified: the token comes directly from user-service
+    in the login response, and the session cookie it is stored in is encrypted.
+    The claims are only used to decide when to ask the user to log in; the
+    backend services still authorize every request with the token.
+    """
+    try:
+        payload = token.split(".")[1]
+        payload += "=" * (-len(payload) % 4)
+        claims = json.loads(base64.urlsafe_b64decode(payload))
+    except (IndexError, ValueError, binascii.Error, AttributeError):
+        logging.warning("Could not read claims from token")
+        return {}
+    return claims if isinstance(claims, dict) else {}

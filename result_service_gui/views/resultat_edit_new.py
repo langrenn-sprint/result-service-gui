@@ -30,6 +30,7 @@ from .utils import (
     get_qualification_text,
     get_race_kpis,
     get_raceplan_summary,
+    login_location,
 )
 
 
@@ -64,8 +65,8 @@ class ResultatEditNew(web.View):
             informasjon = ""
             info_list = []
 
+        user = await check_login(self)
         try:
-            user = await check_login(self)
             event_id = self.request.rel_url.query["event_id"]
             event = await get_event(user, event_id)
             raceclasses = await RaceclassesAdapter().get_raceclasses(
@@ -237,7 +238,9 @@ class ResultatEditNew(web.View):
                 }
                 json_response = json.dumps(response)
                 return web.Response(text=json_response)
-            return web.HTTPSeeOther(location=f"/login?informasjon={informasjon}")
+            return web.HTTPSeeOther(
+                location=login_location(informasjon, self.request.path_qs)
+            )
         info = f"{informasjon}&klasse={valgt_runde.klasse}&runde={valgt_runde.runde}"
         return web.HTTPSeeOther(
             location=f"/resultat_edit_new?event_id={event_id}&informasjon={info}"

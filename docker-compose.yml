@@ -11,6 +11,7 @@ services:
       - EVENT_GUI_HOST_SERVER=event-service-gui
       - EVENT_GUI_HOST_PORT=8080
       - ERROR_FILE=error.log
+      - FERNET_KEY=${FERNET_KEY}
       - COMPETITION_FORMAT_HOST_SERVER=competition-format-service
       - COMPETITION_FORMAT_HOST_PORT=8080
       - EVENTS_HOST_SERVER=event-service

@@ -30,8 +30,8 @@ class Corrections(web.View):
         except Exception:
             informasjon = ""
 
+        user = await check_login(self)
         try:
-            user = await check_login(self)
             event = await get_event(user, event_id)
             raceclasses = await RaceclassesAdapter().get_raceclasses(
                 user["token"], event_id

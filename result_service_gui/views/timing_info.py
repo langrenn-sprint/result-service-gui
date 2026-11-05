@@ -27,8 +27,8 @@ class TimingInfo(web.View):
         except Exception:
             action = ""
         event_id = self.request.rel_url.query["event_id"]
+        user = await check_login(self)
         try:
-            user = await check_login(self)
             if action == "DNS":
                 race_order = int(self.request.rel_url.query["race_order"])
                 response = await get_dns(user, event_id, race_order)
