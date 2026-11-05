@@ -12,6 +12,7 @@ from aiohttp_session import Session
 
 from result_service_gui import create_app
 from result_service_gui.adapters import UserAdapter
+from result_service_gui.adapters.user_adapter import store_token
 from result_service_gui.views.utils import login_location, safe_next_path
 
 def make_token(claims: dict) -> str:
@@ -40,7 +41,7 @@ def user_service(monkeypatch: pytest.MonkeyPatch) -> FakeUserService:
     fake = FakeUserService()
 
     async def fake_login(self, username: str, password: str, cookiestorage) -> int:
-        cookiestorage["token"] = fake.token
+        store_token(cookiestorage, fake.token)
         cookiestorage["name"] = username
         cookiestorage["loggedin"] = True
         return 200

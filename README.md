@@ -75,6 +75,8 @@ Optional session cookie settings:
 
 When the token in the session has expired, pages that need login send the user to `/login?next=<page>`, and back to that page after login. `next` must be a relative path on this site.
 
+An active user stays logged in: when half the token's lifetime has passed, the next request renews it with `POST /token/renew` in user-service. A session without activity still expires with the token (`JWT_EXP_DELTA_SECONDS` in user-service), and renewal is refused after `JWT_MAX_SESSION_SECONDS`, which logs the user out. Static files (`/static/`, `/files/`), `/ping`, `/ready`, `/login` and `/logout` do not renew the token.
+
 ## Requirement for development
 
 Install [uv](https://docs.astral.sh/uv/), e.g.:
