@@ -28,8 +28,8 @@ class Config(web.View):
         except Exception:
             action = ""
 
+        user = await check_login(self)
         try:
-            user = await check_login(self)
             event = await get_event(user, event_id)
 
             try:

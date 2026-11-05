@@ -17,6 +17,7 @@ from .utils import (
     get_enrichced_startlist,
     get_event,
     get_qualification_text,
+    login_location,
 )
 
 
@@ -37,8 +38,8 @@ class StartEdit(web.View):
         except Exception:
             valgt_runde = ""
 
+        user = await check_login(self)
         try:
-            user = await check_login(self)
             event_id = self.request.rel_url.query["event_id"]
             event = await get_event(user, event_id)
             raceclasses = await RaceclassesAdapter().get_raceclasses(
@@ -122,7 +123,10 @@ class StartEdit(web.View):
             error_reason = str(e)
             if error_reason.startswith("401"):
                 return web.HTTPSeeOther(
-                    location=f"/login?informasjon=Ingen tilgang, vennligst logg inn på nytt. {e}"
+                    location=login_location(
+                        f"Ingen tilgang, vennligst logg inn på nytt. {e}",
+                        self.request.path_qs,
+                    )
                 )
         info = (
             f"{informasjon}&klasse={valgt_klasse}&runde={valgt_runde}&action={action}"

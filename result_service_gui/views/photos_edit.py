@@ -18,6 +18,7 @@ from result_service_gui.services import (
 from .utils import (
     check_login,
     get_event,
+    login_location,
 )
 
 
@@ -50,10 +51,7 @@ class PhotosEdit(web.View):
             informasjon = self.request.rel_url.query["informasjon"]
         except Exception:
             informasjon = ""
-        try:
-            user = await check_login(self)
-        except Exception as e:
-            return web.HTTPSeeOther(location=f"{e}")
+        user = await check_login(self)
 
         try:
             event = await get_event(user, event_id)
@@ -137,7 +135,10 @@ class PhotosEdit(web.View):
             error_reason = str(e)
             if error_reason.startswith("401"):
                 return web.HTTPSeeOther(
-                    location=f"/login?informasjon=Ingen tilgang, vennligst logg inn på nytt. {e}"
+                    location=login_location(
+                        f"Ingen tilgang, vennligst logg inn på nytt. {e}",
+                        self.request.path_qs,
+                    )
                 )
 
         return web.HTTPSeeOther(
