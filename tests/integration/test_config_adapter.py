@@ -5,8 +5,8 @@ photo-service, so a write while reading gives other users 403. A setting that
 is not saved for the event gives the default from global_settings.json.
 Saving a setting that is not saved yet creates it with the new value.
 
-aioresponses does not work with the aiohttp version used here, so the
-adapter talks to a fake photo-service.
+The adapter talks to a fake photo-service, see "Testing adapters against
+HTTP" in tests/conftest.py.
 """
 
 import json

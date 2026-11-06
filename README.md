@@ -144,6 +144,8 @@ To run linters, checkers and tests:
 % uv run poe release
 ```
 
+Adapters are tested against small fake backend services, not mocks: see "Testing adapters against HTTP" in `tests/conftest.py`.
+
 To run tests with logging, do:
 
 ```Zsh

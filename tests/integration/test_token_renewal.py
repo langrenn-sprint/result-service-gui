@@ -1,7 +1,7 @@
 """Integration test cases for token renewal of active users (#226).
 
-aioresponses does not work with the aiohttp version used here, so the calls
-to user-service and the backend are replaced with fakes.
+The calls to user-service and the backend are replaced with fakes, see
+"Testing adapters against HTTP" in tests/conftest.py.
 """
 
 import base64

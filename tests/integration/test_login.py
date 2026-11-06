@@ -36,7 +36,7 @@ class FakeUserService:
 def user_service(monkeypatch: pytest.MonkeyPatch) -> FakeUserService:
     """Replace the login call to user-service with one that stores fake.token.
 
-    aioresponses does not work with the aiohttp version used here.
+    See "Testing adapters against HTTP" in tests/conftest.py.
     """
     fake = FakeUserService()
 
