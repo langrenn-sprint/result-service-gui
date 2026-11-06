@@ -6,7 +6,9 @@ user is still logged in. If the main page itself fails, an error page is
 shown. An event without organiser does not break the pages.
 """
 
+import ast
 from http import HTTPStatus
+from pathlib import Path
 
 import pytest
 from aiohttp import web
@@ -200,3 +202,79 @@ async def test_event_without_organiser(
     resp = await client.get(f"/config?event_id={EVENT_ID}", allow_redirects=False)
     assert resp.status == HTTPStatus.OK
     assert "styles_whitelabel.css" in await resp.text()
+
+
+# --- Redirects are raised, not returned ------------------------------------------------------
+
+
+@pytest.mark.integration
+def test_no_returned_http_exceptions_in_views() -> None:
+    """HTTP exceptions must be raised: returning them is deprecated in aiohttp."""
+    returned = [
+        f"{path.name}:{node.lineno}"
+        for path in sorted(Path("result_service_gui/views").glob("*.py"))
+        for node in ast.walk(ast.parse(path.read_text()))
+        if isinstance(node, ast.Return)
+        and isinstance(node.value, ast.Call)
+        and ast.unparse(node.value.func).startswith("web.HTTP")
+    ]
+    assert returned == []
+
+
+# --- Registering results (resultat_edit_new POST) -----------------------------------------
+
+
+@pytest.fixture
+def result_form(monkeypatch: pytest.MonkeyPatch):
+    """Let get_event in resultat_edit_new raise the error set in .error."""
+
+    class State:
+        error: Exception = TypeError("'NoneType' object is not subscriptable")
+
+    state = State()
+
+    async def fake_get_event(*_) -> dict:
+        raise state.error
+
+    monkeypatch.setattr(
+        "result_service_gui.views.resultat_edit_new.get_event", fake_get_event
+    )
+    return state
+
+
+RESULT_FORM = {
+    "event_id": EVENT_ID,
+    "klasse": "G11",
+    "runde": "Q",
+    "race_id": "r1",
+    "update_result": "1",
+}
+
+
+@pytest.mark.integration
+async def test_result_error_stays_on_the_page(
+    client: _TestClient, fakes, result_form
+) -> None:
+    """Before, any error sent the user to the login page."""
+    await login(client, "result-admin")
+    resp = await client.post(
+        "/resultat_edit_new", data=RESULT_FORM, allow_redirects=False
+    )
+    assert resp.status == HTTPStatus.SEE_OTHER
+    path, query = location(resp)
+    assert path == "/resultat_edit_new"
+    assert query["event_id"] == EVENT_ID
+    assert query["informasjon"] == UNEXPECTED_ERROR
+
+
+@pytest.mark.integration
+async def test_result_expired_login_sends_to_login_page(
+    client: _TestClient, fakes, result_form
+) -> None:
+    result_form.error = web.HTTPBadRequest(reason="401 Unathorized - get_event")
+    await login(client, "result-admin")
+    resp = await client.post(
+        "/resultat_edit_new", data=RESULT_FORM, allow_redirects=False
+    )
+    assert resp.status == HTTPStatus.SEE_OTHER
+    assert location(resp)[0] == "/login"

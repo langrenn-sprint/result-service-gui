@@ -81,6 +81,6 @@ class Config(web.View):
         except Exception as e:
             informasjon = f"Det har oppstått en feil: {e}"
             logging.exception("Config update")
-        return web.HTTPSeeOther(
+        raise web.HTTPSeeOther(
             location=f"/config?action=edit_mode&event_id={event_id}&informasjon={informasjon}"
         )

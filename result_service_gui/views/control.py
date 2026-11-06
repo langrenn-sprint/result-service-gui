@@ -94,14 +94,14 @@ class Control(web.View):
             informasjon = f"Det har oppstått en feil - {e.args}."
             error_reason = str(e)
             if error_reason.startswith("401"):
-                return web.HTTPSeeOther(
+                raise web.HTTPSeeOther(
                     location=login_location(
                         f"Ingen tilgang, vennligst logg inn på nytt. {e}",
                         self.request.path_qs,
                     )
-                )
+                ) from e
 
-        return web.HTTPSeeOther(
+        raise web.HTTPSeeOther(
             location=f"/control?event_id={event_id}&informasjon={informasjon}&action={action}&valgt_klasse={valgt_klasse}"
         )
 

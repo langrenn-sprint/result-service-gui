@@ -29,7 +29,7 @@ class CsvList(web.View):
             action = self.request.rel_url.query["action"]
         except Exception:
             informasjon = "Ingen event eller action valgt. Kan ikke vise informasjon"
-            return web.HTTPSeeOther(location=f"/?informasjon={informasjon}")
+            raise web.HTTPSeeOther(location=f"/?informasjon={informasjon}") from None
 
         user = await check_login_open(self)
 
