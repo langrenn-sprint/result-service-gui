@@ -25,6 +25,10 @@ USER_SERVICE_URL = f"http://{USERS_HOST_SERVER}:{USERS_HOST_PORT}"
 # request does not reach the backend with a token that runs out on the way.
 TOKEN_EXPIRY_MARGIN_SECONDS = 10
 
+# Answer to POST /login when the user has not set a password yet
+# (event-service-gui#222). Keep the same text in all GUIs.
+NOT_ACTIVATED = "Brukeren er ikke aktivert. Bruk aktiveringslenken du har fått."
+
 
 class UserAdapter:
     """Class representing user."""
