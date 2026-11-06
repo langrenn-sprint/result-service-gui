@@ -42,6 +42,7 @@ from .views import (
     TimingInfo,
     VideoEvents,
 )
+from .views.utils import ADMIN_ROLE
 
 load_dotenv()
 LOGGING_LEVEL = os.getenv("LOGGING_LEVEL", "INFO")
@@ -120,6 +121,17 @@ async def handler(request) -> web.Response:
     return web.Response(text=text)
 
 
+async def role_context_processor(request: web.Request) -> dict:
+    """Add the admin flag to the context of all templates."""
+    is_admin = False
+    try:
+        session = await get_session(request)
+        is_admin = session.get("role") == ADMIN_ROLE
+    except Exception:
+        logging.exception("Error reading role from session")
+    return {"is_admin": is_admin}
+
+
 async def create_app() -> web.Application:
     """Create an web application."""
     app = web.Application()
@@ -148,6 +160,7 @@ async def create_app() -> web.Application:
         app,
         enable_async=True,
         loader=jinja2.FileSystemLoader(template_path),
+        context_processors=[role_context_processor],
     )
     logging.debug(f"template_path: {template_path}")
 

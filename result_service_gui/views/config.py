@@ -6,8 +6,9 @@ import aiohttp_jinja2
 from aiohttp import web
 
 from result_service_gui.adapters import ConfigAdapter
+from result_service_gui.adapters.config_adapter import NO_ACCESS_CONFIG
 
-from .utils import check_login, get_event
+from .utils import ADMIN_ROLE, check_login, get_event
 
 
 class Config(web.View):
@@ -64,11 +65,16 @@ class Config(web.View):
         event_id = str(form["event_id"])
         try:
             if "update_one" in form:
-                key = str(form["key"])
-                await ConfigAdapter().update_config(
-                    user["token"], event_id, key, str(form["value"])
-                )
-                informasjon = "Suksess. Informasjon er oppdatert."
+                if user["role"] != ADMIN_ROLE:
+                    informasjon = NO_ACCESS_CONFIG
+                else:
+                    key = str(form["key"])
+                    await ConfigAdapter().update_config(
+                        user["token"], event_id, key, str(form["value"])
+                    )
+                    informasjon = "Suksess. Informasjon er oppdatert."
+        except web.HTTPForbidden as e:
+            informasjon = str(e.reason)
         except Exception as e:
             informasjon = f"Det har oppstått en feil: {e}"
             logging.exception("Config update")

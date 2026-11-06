@@ -21,6 +21,7 @@ from result_service_gui.services import (
 
 # Pages that must not be the target of a redirect after login.
 _NO_NEXT_PATHS = ("/login", "/logout")
+ADMIN_ROLE = "admin"
 
 
 def safe_next_path(value: str | None) -> str | None:
@@ -70,6 +71,7 @@ async def check_login(self) -> dict:
         "name": session["name"],
         "loggedin": True,
         "token": session["token"],
+        "role": session.get("role", ""),
     }
 
 

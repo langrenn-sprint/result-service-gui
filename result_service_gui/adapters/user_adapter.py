@@ -196,6 +196,7 @@ def store_token(cookiestorage: Session, token: str) -> None:
     claim, and the time is needed to know when half its lifetime has passed.
     """
     cookiestorage["token"] = token
+    cookiestorage["role"] = get_role_from_token(token)
     cookiestorage["token_received_at"] = time.time()
 
 
@@ -223,8 +224,9 @@ def get_claims_from_token(token: str) -> dict:
 
     The signature is not verified: the token comes directly from user-service
     in the login response, and the session cookie it is stored in is encrypted.
-    The claims are only used to decide when to ask the user to log in; the
-    backend services still authorize every request with the token.
+    The claims are only used to decide what the GUI shows and when to ask the
+    user to log in; the backend services still authorize every request with
+    the token.
     """
     try:
         payload = token.split(".")[1]
@@ -234,3 +236,9 @@ def get_claims_from_token(token: str) -> dict:
         logging.warning("Could not read claims from token")
         return {}
     return claims if isinstance(claims, dict) else {}
+
+
+def get_role_from_token(token: str) -> str:
+    """Return the role claim of a JWT, or empty string if not found."""
+    role = get_claims_from_token(token).get("role", "")
+    return role if isinstance(role, str) else ""

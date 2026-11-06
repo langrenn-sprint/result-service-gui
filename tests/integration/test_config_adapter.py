@@ -24,11 +24,29 @@ DEFAULTS = json.loads(
 
 
 class FakePhotoService:
-    """Settings in memory, answering like photo-service."""
+    """Settings in memory, answering like photo-service.
+
+    writes: the POST and PUT requests received. With forbidden set, they are
+    answered with 403, as photo-service does for users other than admin.
+    """
 
     def __init__(self) -> None:
         self.settings: dict[tuple[str, str], str] = {}
         self.writes: list[tuple[str, dict]] = []
+        self.forbidden = False
+
+    def _forbidden(self) -> web.Response:
+        return web.json_response({"detail": "Operation forbidden"}, status=403)
+
+    async def get_all_configs(self, request: web.Request) -> web.Response:
+        event_id = request.query.get("eventId", "")
+        return web.json_response(
+            [
+                {"event_id": e, "key": k, "value": v}
+                for (e, k), v in self.settings.items()
+                if e == event_id
+            ]
+        )
 
     async def get_config(self, request: web.Request) -> web.Response:
         key = (request.query["eventId"], request.query["key"])
@@ -40,12 +58,16 @@ class FakePhotoService:
     async def create_config(self, request: web.Request) -> web.Response:
         body = await request.json()
         self.writes.append(("POST", body))
+        if self.forbidden:
+            return self._forbidden()
         self.settings[(body["event_id"], body["key"])] = body["value"]
         return web.Response(status=201, headers={"Location": "/config/c1"})
 
     async def update_config(self, request: web.Request) -> web.Response:
         body = await request.json()
         self.writes.append(("PUT", body))
+        if self.forbidden:
+            return self._forbidden()
         key = (body["event_id"], body["key"])
         if key not in self.settings:
             return web.json_response({"detail": "not found"}, status=404)
@@ -58,6 +80,7 @@ async def photo_service(aiohttp_server, monkeypatch: pytest.MonkeyPatch):
     fake = FakePhotoService()
     app = web.Application()
     app.router.add_get("/config", fake.get_config)
+    app.router.add_get("/configs", fake.get_all_configs)
     app.router.add_post("/config", fake.create_config)
     app.router.add_put("/config", fake.update_config)
     server = await aiohttp_server(app)
