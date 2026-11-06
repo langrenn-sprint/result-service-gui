@@ -37,7 +37,6 @@ Repository = "https://github.com/langrenn-sprint/result-service-gui"
 dev = [
     "Pygments>=2.19.0",
     "aiohttp-devtools>=1.1.2",
-    "aioresponses>=0.7.8",
     "codecov>=2.1.13",
     "coverage>=7.13.0",
     "docker>=7.1.0",

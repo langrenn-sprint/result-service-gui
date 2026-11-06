@@ -176,7 +176,7 @@ async with ClientSession() as session, session.get(url, headers=headers) as resp
 - **Integration tests**: Mark with `@pytest.mark.integration`
 - **Contract tests**: Mark with `@pytest.mark.contract`
 - Use `pytest-aiohttp` fixtures (`aiohttp_client`)
-- Mock external services with `aioresponses`
+- Fake external services with `aiohttp_server`, see "Testing adapters against HTTP" in `tests/conftest.py` (aioresponses does not work with aiohttp 3.14)
 - Environment variables are configured in `pyproject.toml` under `[tool.pytest.ini_options]`
 
 ## Environment Variables
@@ -265,7 +265,7 @@ tests/
 1. Create test file in appropriate directory (`integration/` or `contract/`)
 2. Mark with `@pytest.mark.integration` or `@pytest.mark.contract`
 3. Use `client` fixture from conftest.py for aiohttp testing
-4. Mock external services with `aioresponses`
+4. Fake external services with `aiohttp_server`, see "Testing adapters against HTTP" in `tests/conftest.py`
 5. Run with `uv run pytest -m integration` or `uv run pytest -m contract`
 
 ## Before Committing

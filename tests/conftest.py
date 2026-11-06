@@ -1,4 +1,35 @@
-"""Conftest module."""
+"""Conftest module.
+
+Testing adapters against HTTP
+-----------------------------
+aioresponses does not work with aiohttp 3.14 (#232), so it is not used. To
+test an adapter, run a small fake of the backend service with the
+aiohttp_server fixture from pytest-aiohttp, and point the adapter's URL
+constant to it. This tests the real HTTP calls: URLs, headers, bodies and
+how the adapter handles each status::
+
+    @pytest.fixture
+    async def race_service(aiohttp_server, monkeypatch: pytest.MonkeyPatch):
+        async def get_race(request: web.Request) -> web.Response:
+            return web.json_response({"id": request.match_info["race_id"]})
+
+        app = web.Application()
+        app.router.add_get("/races/{race_id}", get_race)
+        server = await aiohttp_server(app)
+        monkeypatch.setattr(
+            "result_service_gui.adapters.raceplans_adapter.RACE_SERVICE_URL",
+            str(server.make_url("")).rstrip("/"),
+        )
+
+Keep the state of the fake in an object, so tests can set it up and check
+the requests it got. Examples: photo_service in
+integration/test_config_adapter.py, race_service in
+integration/test_swap_starts.py, and the fake user-service in
+integration/test_token_renewal.py.
+
+To test a view without its backend calls, monkeypatch the adapter method
+instead, as the fakes fixture in integration/test_config_access.py does.
+"""
 
 from collections.abc import Generator
 from http import HTTPStatus
