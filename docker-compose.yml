@@ -3,7 +3,7 @@ services:
     build: .
     image: ghcr.io/langrenn-sprint/result-service-gui:test
     ports:
-      - 8090:8080
+      - 8080
     environment:
       - ADMIN_USERNAME=${ADMIN_USERNAME}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
@@ -35,8 +35,6 @@ services:
       - "mongodb"
   event-service-gui:
     image: ghcr.io/langrenn-sprint/event-service-gui:latest
-    ports:
-      - 8080:8080
     environment:
       - JWT_SECRET=${JWT_SECRET}
       - ADMIN_USERNAME=${ADMIN_USERNAME}
@@ -60,8 +58,6 @@ services:
       - "mongodb"
   event-service:
     image: ghcr.io/langrenn-sprint/event-service:latest
-    ports:
-      - 8082:8080
     environment:
       - JWT_SECRET=${JWT_SECRET}
       - ADMIN_USERNAME=${ADMIN_USERNAME}
@@ -80,8 +76,6 @@ services:
       - "mongodb"
   race-service:
     image: ghcr.io/langrenn-sprint/race-service:latest
-    ports:
-      - 8088:8080
     environment:
       - JWT_SECRET=${JWT_SECRET}
       - ADMIN_USERNAME=${ADMIN_USERNAME}
@@ -103,8 +97,6 @@ services:
       - "mongodb"
   photo-service:
     image: ghcr.io/langrenn-sprint/photo-service:latest
-    ports:
-      - 8092:8080
     environment:
       - JWT_SECRET=${JWT_SECRET}
       - ADMIN_USERNAME=${ADMIN_USERNAME}
@@ -124,8 +116,6 @@ services:
       - "mongodb"
   competition-format-service:
     image: ghcr.io/langrenn-sprint/competition-format-service:latest
-    ports:
-      - 8094:8080
     environment:
       - ADMIN_USERNAME=${ADMIN_USERNAME}
       - ADMIN_PASSWORD=${ADMIN_PASSWORD}
@@ -142,8 +132,6 @@ services:
       - mongodb
   user-service:
     image: ghcr.io/langrenn-sprint/user-service:latest
-    ports:
-      - 8086:8080
     environment:
       - JWT_EXP_DELTA_SECONDS=${JWT_EXP_DELTA_SECONDS}
       - JWT_SECRET=${JWT_SECRET}
@@ -184,8 +172,6 @@ services:
         target: /app/application_default_credentials.json
   mongodb:
     image: mongo:latest
-    ports:
-      - 27017:27017
     volumes:
       - ./data/db:/data/db
     environment:
