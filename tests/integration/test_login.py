@@ -12,7 +12,7 @@ from aiohttp_session import Session
 
 from result_service_gui import create_app
 from result_service_gui.adapters import UserAdapter
-from result_service_gui.adapters.user_adapter import store_token
+from result_service_gui.adapters.user_adapter import NOT_ACTIVATED, store_token
 from result_service_gui.views.utils import login_location, safe_next_path
 
 def make_token(claims: dict) -> str:
@@ -303,3 +303,23 @@ async def test_app_starts_with_valid_fernet_key(
 ) -> None:
     monkeypatch.setenv("FERNET_KEY", base64.urlsafe_b64encode(b"k" * 32).decode())
     assert await create_app() is not None
+
+
+# --- A user who has not set a password (event-service-gui#222) --------------
+
+
+@pytest.mark.integration
+async def test_login_not_activated(
+    client: _TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """user-service answers 403 for a user without password."""
+
+    async def fake_login(self, username: str, password: str, cookiestorage) -> int:
+        return 403
+
+    monkeypatch.setattr(UserAdapter, "login", fake_login)
+    resp = await client.post(
+        "/login", data={"username": "ny", "password": "x"}, allow_redirects=False
+    )
+    assert resp.status == 200
+    assert NOT_ACTIVATED in await resp.text()
