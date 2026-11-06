@@ -113,6 +113,8 @@ class StartEdit(web.View):
                 informasjon = await create_start(user, form)
             elif "delete_start" in form:
                 informasjon = await delete_start(user, form)
+            elif "move_start" in form and not form.get("new_heat"):
+                informasjon = "Velg nytt heat før du trykker Flytt."
             elif "move_start" in form:
                 informasjon = "Flytting utført: "
                 informasjon += await delete_start(user, form)

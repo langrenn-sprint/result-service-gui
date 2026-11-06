@@ -410,3 +410,39 @@ async def test_login_error_message(
     text = await resp.text()
     assert f"Innlogging feilet. {UNEXPECTED_ERROR}" in text
     assert "NoneType" not in text
+
+
+# --- Moving a start without choosing a heat ---------------------------------------------
+
+
+@pytest.mark.integration
+async def test_move_start_without_new_heat_keeps_the_start(
+    client: _TestClient, fakes, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """Before, the start was deleted and then the move failed."""
+    deleted: list[dict] = []
+
+    async def fake_delete_start(user: dict, form: dict) -> str:
+        deleted.append(form)
+        return "Slettet start."
+
+    monkeypatch.setattr(
+        "result_service_gui.views.start_edit.delete_start", fake_delete_start
+    )
+    await login(client, "result-admin")
+    form = {
+        "event_id": EVENT_ID,
+        "klasse": "G16",
+        "runde": "Q",
+        "race_id": "r1",
+        "start_id": "s1",
+        "bib": "12",
+        "new_heat": "",
+        "move_start": " Flytt ",
+    }
+    resp = await client.post("/start_edit", data=form, allow_redirects=False)
+    assert resp.status == HTTPStatus.SEE_OTHER
+    path, query = location(resp)
+    assert path == "/start_edit"
+    assert query["informasjon"] == "Velg nytt heat før du trykker Flytt."
+    assert deleted == []
