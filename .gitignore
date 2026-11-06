@@ -200,7 +200,7 @@ dmypy.json
 .res/bin/watchfiles
 
 # error log
-error.log
+error.log*
 
 # Container logs from failed contract tests
 docker-compose-logs.txt
