@@ -171,7 +171,7 @@ services:
         source: ${GOOGLE_APPLICATION_CREDENTIALS}
         target: /app/application_default_credentials.json
   mongodb:
-    image: mongo:latest
+    image: mongo:8.0-noble
     volumes:
       - ./data/db:/data/db
     environment:
