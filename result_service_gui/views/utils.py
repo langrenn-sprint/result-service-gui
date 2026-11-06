@@ -1,5 +1,6 @@
 """Utilities module for gui services."""
 
+import json
 import logging
 from datetime import datetime
 from typing import NoReturn
@@ -134,6 +135,39 @@ async def check_login(self) -> dict:
             location=login_location(informasjon, self.request.path_qs)
         )
 
+    return {
+        "name": session["name"],
+        "loggedin": True,
+        "token": session["token"],
+        "role": session.get("role", ""),
+    }
+
+
+def raise_login_expired(cause: Exception | None = None) -> NoReturn:
+    """Answer a request from a page's JavaScript when the login has expired.
+
+    401 with JSON, not a redirect to /login: XMLHttpRequest and fetch follow
+    redirects silently and would get the login page's HTML. The pages show
+    the message with a link to the login page, see login_expired in
+    open_base_new.html.
+    """
+    raise web.HTTPUnauthorized(
+        text=json.dumps({"error": "unauthorized", "informasjon": LOGIN_AGAIN}),
+        content_type="application/json",
+        headers={"Cache-Control": "no-store"},
+    ) from cause
+
+
+async def check_login_api(self) -> dict:
+    """Check login for requests from a page's JavaScript.
+
+    Same check as check_login, but a user who is not logged in, or whose
+    token has expired, gets 401 with JSON instead of a redirect. Call it
+    before any try/except Exception, which would catch the 401.
+    """
+    session = await get_session(self.request)
+    if not UserAdapter().isloggedin(session):
+        raise_login_expired()
     return {
         "name": session["name"],
         "loggedin": True,

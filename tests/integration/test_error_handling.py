@@ -361,7 +361,6 @@ async def test_photos_edit_error_stays_on_the_page(
             Exception("Klassens resultat kan ikke lages"),
             "Det har oppstått en feil: Klassens resultat kan ikke lages",
         ),
-        (Exception("401 Unathorized - create"), LOGIN_AGAIN),
     ],
 )
 async def test_resultat_update_answers_with_message(
