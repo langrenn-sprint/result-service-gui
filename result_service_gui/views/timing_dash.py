@@ -15,6 +15,7 @@ from .utils import (
     check_login,
     get_event,
     get_race_kpis,
+    raise_error,
 )
 
 
@@ -57,8 +58,7 @@ class TimingDash(web.View):
                 },
             )
         except Exception as e:
-            logging.exception("Error. Redirect to main page.")
-            return web.HTTPSeeOther(location=f"/?informasjon={e}")
+            raise_error(self, e)
 
 
 async def get_service_status(token: str, event_id: str) -> dict:

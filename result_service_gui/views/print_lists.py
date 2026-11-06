@@ -18,6 +18,7 @@ from .utils import (
     get_raceplan_summary,
     get_races_for_print,
     get_races_for_round_result,
+    raise_error,
 )
 
 
@@ -121,8 +122,7 @@ class PrintLists(web.View):
                 },
             )
         except Exception as e:
-            logging.exception("Error. Redirect to main page.")
-            return web.HTTPSeeOther(location=f"/?informasjon={e}")
+            raise_error(self, e)
 
 
 async def get_resultlists(

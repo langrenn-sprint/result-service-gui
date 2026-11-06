@@ -31,6 +31,7 @@ from .utils import (
     get_race_kpis,
     get_raceplan_summary,
     login_location,
+    raise_error,
 )
 
 
@@ -146,8 +147,7 @@ class ResultatEditNew(web.View):
                 },
             )
         except Exception as e:
-            logging.exception("Error. Redirect to main page.")
-            return web.HTTPSeeOther(location=f"/?informasjon={e}")
+            raise_error(self, e)
 
     async def post(self) -> web.Response:
         """Post route function that creates deltakerliste."""

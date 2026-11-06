@@ -19,6 +19,7 @@ from .utils import (
     check_login_open,
     get_event,
     get_qualification_text,
+    raise_error,
 )
 
 
@@ -103,8 +104,7 @@ class Live(web.View):
                 },
             )
         except Exception as e:
-            logging.exception("Error. Redirect to main page.")
-            return web.HTTPSeeOther(location=f"/?informasjon={e}")
+            raise_error(self, e)
 
 
 async def get_klasse_for_now_view(user: dict, event: dict, gender: str) -> str:

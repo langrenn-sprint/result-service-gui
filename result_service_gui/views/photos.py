@@ -13,6 +13,7 @@ from result_service_gui.adapters import (
 from .utils import (
     check_login_open,
     get_event,
+    raise_error,
 )
 
 
@@ -71,5 +72,4 @@ class Photos(web.View):
                 },
             )
         except Exception as e:
-            logging.exception("Error. Redirect to main page.")
-            return web.HTTPSeeOther(location=f"/?informasjon={e}")
+            raise_error(self, e)

@@ -16,6 +16,7 @@ from result_service_gui.adapters import (
 from .utils import (
     check_login,
     get_event,
+    raise_error,
 )
 
 
@@ -118,5 +119,4 @@ class TdReport(web.View):
                 },
             )
         except Exception as e:
-            logging.exception("Error. Redirect to main page.")
-            return web.HTTPSeeOther(location=f"/?informasjon={e}")
+            raise_error(self, e)

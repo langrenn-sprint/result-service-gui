@@ -20,6 +20,7 @@ from .utils import (
     get_raceplan_summary,
     get_races_for_live_view,
     get_startlist_with_logos,
+    raise_error,
 )
 
 
@@ -126,5 +127,4 @@ class Start(web.View):
                 },
             )
         except Exception as e:
-            logging.exception("Error. Redirect to main page.")
-            return web.HTTPSeeOther(location=f"/?informasjon={e}")
+            raise_error(self, e)

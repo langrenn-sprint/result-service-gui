@@ -8,7 +8,7 @@ from aiohttp import web
 from result_service_gui.adapters import ConfigAdapter
 from result_service_gui.adapters.config_adapter import NO_ACCESS_CONFIG, with_defaults
 
-from .utils import ADMIN_ROLE, check_login, get_event
+from .utils import ADMIN_ROLE, check_login, get_event, raise_error
 
 
 class Config(web.View):
@@ -58,8 +58,7 @@ class Config(web.View):
                 },
             )
         except Exception as e:
-            logging.exception("Error. Redirect to login page.")
-            return web.HTTPSeeOther(location=f"/login?informasjon={e}")
+            raise_error(self, e)
 
     async def post(self) -> web.Response:
         """Post route function that updates video events."""

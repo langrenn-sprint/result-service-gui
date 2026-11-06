@@ -15,6 +15,7 @@ from .utils import (
     get_event,
     get_passeringer,
     login_location,
+    raise_error,
 )
 
 
@@ -74,8 +75,7 @@ class Control(web.View):
                 },
             )
         except Exception as e:
-            logging.exception("Error. Redirect to main page.")
-            return web.HTTPSeeOther(location=f"/?informasjon={e}")
+            raise_error(self, e)
 
     async def post(self) -> web.Response:
         """Post route function that creates deltakerliste."""

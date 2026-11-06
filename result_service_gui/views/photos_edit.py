@@ -19,6 +19,7 @@ from .utils import (
     check_login,
     get_event,
     login_location,
+    raise_error,
 )
 
 
@@ -95,8 +96,7 @@ class PhotosEdit(web.View):
                 },
             )
         except Exception as e:
-            logging.exception("Error. Redirect to main page.")
-            return web.HTTPSeeOther(location=f"/?informasjon={e}")
+            raise_error(self, e)
 
     async def post(self) -> web.Response:
         """Post route function that updates a collection of photos."""
