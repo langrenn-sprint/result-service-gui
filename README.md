@@ -101,14 +101,13 @@ source .venv/bin/activate
 
 ## Running the API locally
 
-Start the server locally - use docker to start required backend-services:
+Start the backend services on fixed ports with the [deploy](https://github.com/langrenn-sprint/deploy) repo, then start the server locally:
 
 ```Zsh
 set -a
 source .env
 set +a
 uv run adev runserver -p 8090 result_service_gui
-docker compose up event-service competition-format-service user-service race-service mongodb photo-service integration-service
 ```
 
 ## Running the API in a wsgi-server (gunicorn)
@@ -126,10 +125,13 @@ To build and run the api in a Docker container:
 % docker run --env-file .env -p 8080:8080 -d langrenn-sprint/result-service-gui:latest
 ```
 
-The easier way would be with docker-compose:
+To run the whole stack (GUIs, backend services and MongoDB) on fixed ports, use the [deploy](https://github.com/langrenn-sprint/deploy) repo.
+
+The `docker-compose.yml` in this repo is for the contract tests. It publishes no fixed ports on the host, so the tests can run while the deploy stack is running. If you start it yourself, Docker picks a free port for the GUI:
 
 ```Zsh
-docker compose up --build
+docker compose up --build -d
+docker compose port result-service-gui 8080   # e.g. 0.0.0.0:55012
 ```
 
 ## Running tests
