@@ -15,6 +15,9 @@ PHOTOS_HOST_PORT = os.getenv("PHOTOS_HOST_PORT", "8092")
 PHOTO_SERVICE_URL = f"http://{PHOTOS_HOST_SERVER}:{PHOTOS_HOST_PORT}"
 PROJECT_ROOT = f"{Path.cwd()}/result_service_gui"
 
+# Message when photo-service answers 403: only admin may save settings.
+NO_ACCESS_CONFIG = "Du har ikke tilgang til å endre innstillinger. Krever rollen admin."
+
 
 def default_value(key: str) -> str:
     """Return the default value of a setting, from global_settings.json.
@@ -175,6 +178,8 @@ class ConfigAdapter:
             elif resp.status == HTTPStatus.UNAUTHORIZED:
                 informasjon = f"Login expired: {resp}"
                 raise Exception(informasjon)
+            elif resp.status == HTTPStatus.FORBIDDEN:
+                raise web.HTTPForbidden(reason=NO_ACCESS_CONFIG)
             else:
                 body = await resp.json()
                 informasjon = f"{servicename} failed - {resp.status} - {body['detail']}"
@@ -235,6 +240,8 @@ class ConfigAdapter:
             elif resp.status == HTTPStatus.UNAUTHORIZED:
                 informasjon = f"Login expired: {resp}"
                 raise Exception(informasjon)
+            elif resp.status == HTTPStatus.FORBIDDEN:
+                raise web.HTTPForbidden(reason=NO_ACCESS_CONFIG)
             else:
                 body = await resp.json()
                 informasjon = f"{servicename} failed - {resp.status} - {body['detail']}"

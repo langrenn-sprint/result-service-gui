@@ -126,7 +126,7 @@
         <div class="status-card" role="status" aria-live="polite">
           <h4>Automatisk deteksjon av målpassering</h4>
           <span id="integration_service_status" class="label label-danger">-</span>&nbsp;&nbsp;
-          <input type="checkbox" id="integration_automatic" onchange="handleCheckboxChange()" {% if service_status.integration_start %}checked{% endif %}>
+          <input type="checkbox" id="integration_automatic" onchange="handleCheckboxChange()" {% if service_status.integration_start %}checked{% endif %}{% if not is_admin %} disabled title="Krever rollen admin"{% endif %}>
           <span id="integration_command">-</span>
         </div>
         <!-- preview inside the card -->

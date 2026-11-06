@@ -9,8 +9,10 @@ from result_service_gui.adapters import (
     ConfigAdapter,
     StatusAdapter,
 )
+from result_service_gui.adapters.config_adapter import NO_ACCESS_CONFIG
 
 from .utils import (
+    ADMIN_ROLE,
     check_login,
 )
 
@@ -28,7 +30,13 @@ class VideoEvents(web.View):
             await check_login(self)
             action = form["action"]
             if action in ["status", "toggle"]:
-                if "integration_start" in form:
+                # Only admin may start and stop the integration:
+                refused = (
+                    "integration_start" in form or "integration_stop" in form
+                ) and user["role"] != ADMIN_ROLE
+                if refused:
+                    pass
+                elif "integration_start" in form:
                     await ConfigAdapter().update_config(
                         user["token"], event_id, "VIDEO_STORAGE_MODE", "pull_detections"
                     )
@@ -55,6 +63,10 @@ class VideoEvents(web.View):
                 response["informasjon"] = await get_integration_status(
                     user["token"], event_id
                 )
+                if refused:
+                    response["informasjon"] = NO_ACCESS_CONFIG
+        except web.HTTPForbidden as e:
+            response["informasjon"] = str(e.reason)
         except Exception as e:
             if "401" in str(e):
                 response["informasjon"] = (
