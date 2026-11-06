@@ -47,6 +47,7 @@
             {{ oneconfig.value }}
             </td><td>
           {% endif %}
+          {% if oneconfig.is_default %}<i title="Ikke lagret for arrangementet">(standard)</i>{% endif %}
         </td>
       </tr>
     {% endfor %}

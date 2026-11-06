@@ -6,7 +6,7 @@ import aiohttp_jinja2
 from aiohttp import web
 
 from result_service_gui.adapters import ConfigAdapter
-from result_service_gui.adapters.config_adapter import NO_ACCESS_CONFIG
+from result_service_gui.adapters.config_adapter import NO_ACCESS_CONFIG, with_defaults
 
 from .utils import ADMIN_ROLE, check_login, get_event
 
@@ -37,6 +37,10 @@ class Config(web.View):
                 event_config = await ConfigAdapter().get_all_configs(
                     user["token"], event_id
                 )
+                # Show all settings, also those not saved for the event yet,
+                # so admin can change them:
+                if event_id:
+                    event_config = with_defaults(event_config)
             except Exception as e:
                 event_config = []
                 informasjon += f" Feil ved innlasting av config. {e}"
