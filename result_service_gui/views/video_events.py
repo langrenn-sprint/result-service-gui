@@ -2,6 +2,7 @@
 
 import json
 import logging
+from html import escape
 
 from aiohttp import web
 
@@ -66,13 +67,14 @@ class VideoEvents(web.View):
                 )
                 if refused:
                     response["informasjon"] = NO_ACCESS_CONFIG
+        # informasjon is shown as HTML, see get_integration_status:
         except web.HTTPForbidden as e:
-            response["informasjon"] = str(e.reason)
+            response["informasjon"] = escape(str(e.reason))
         except Exception as e:
             logging.exception("Video events update")
             if is_login_error(e):
                 raise_login_expired(e)
-            response["informasjon"] = (
+            response["informasjon"] = escape(
                 f"Det har oppstått en feil ved henting av video events. {e}"
             )
         json_response = json.dumps(response)
@@ -80,11 +82,17 @@ class VideoEvents(web.View):
 
 
 async def get_integration_status(token: str, event_id: str) -> str:
-    """Get video analytics status messages."""
+    """Get video analytics status messages, as HTML for the timing dashboard.
+
+    The page shows the result with innerHTML, so the data from photo-service
+    (time and message) is escaped (#229).
+    """
     response = ""
     result_list = await StatusAdapter().get_status(token, event_id, 8)
     for res in result_list:
-        info_time = f"<a title={res['time']}>{res['time'][-8:]}</a>"
+        time = str(res["time"])
+        message = escape(str(res["message"]))
+        info_time = f'<a title="{escape(time)}">{escape(time[-8:])}</a>'
         res_type = ""
         if res["type"] == "video_status_CAPTURE":
             res_type = "<img id=menu_icon src=../static/capture.png title=Video>"
@@ -93,9 +101,7 @@ async def get_integration_status(token: str, event_id: str) -> str:
         elif res["type"] == "integration_status":
             res_type = "<img id=menu_icon src=../static/upload.png title=Opplasting>"
         if "Error" in res["message"]:
-            response += (
-                f"{info_time} {res_type} - <span id=red>{res['message']}</span><br>"
-            )
+            response += f"{info_time} {res_type} - <span id=red>{message}</span><br>"
         else:
-            response += f"{info_time} {res_type} - {res['message']}<br>"
+            response += f"{info_time} {res_type} - {message}<br>"
     return response
