@@ -18,6 +18,7 @@ from .utils import (
     get_event,
     get_qualification_text,
     login_location,
+    raise_error,
 )
 
 
@@ -94,8 +95,7 @@ class StartEdit(web.View):
                 },
             )
         except Exception as e:
-            logging.exception("Error. Redirect to main page.")
-            return web.HTTPSeeOther(location=f"/?informasjon={e}")
+            raise_error(self, e)
 
     async def post(self) -> web.Response:
         """Post route function that creates deltakerliste."""
@@ -122,15 +122,15 @@ class StartEdit(web.View):
             informasjon = f"Det har oppstått en feil - {e.args}."
             error_reason = str(e)
             if error_reason.startswith("401"):
-                return web.HTTPSeeOther(
+                raise web.HTTPSeeOther(
                     location=login_location(
                         f"Ingen tilgang, vennligst logg inn på nytt. {e}",
                         self.request.path_qs,
                     )
-                )
+                ) from e
         info = (
             f"{informasjon}&klasse={valgt_klasse}&runde={valgt_runde}&action={action}"
         )
-        return web.HTTPSeeOther(
+        raise web.HTTPSeeOther(
             location=f"/start_edit?event_id={event_id}&informasjon={info}"
         )

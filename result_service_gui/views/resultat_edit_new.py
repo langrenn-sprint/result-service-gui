@@ -21,8 +21,10 @@ from result_service_gui.services import (
 )
 
 from .utils import (
+    LOGIN_AGAIN,
     check_login,
     create_start,
+    error_text,
     get_enrichced_startlist,
     get_event,
     get_finish_timings,
@@ -30,7 +32,9 @@ from .utils import (
     get_qualification_text,
     get_race_kpis,
     get_raceplan_summary,
+    is_login_error,
     login_location,
+    raise_error,
 )
 
 
@@ -146,8 +150,7 @@ class ResultatEditNew(web.View):
                 },
             )
         except Exception as e:
-            logging.exception("Error. Redirect to main page.")
-            return web.HTTPSeeOther(location=f"/?informasjon={e}")
+            raise_error(self, e)
 
     async def post(self) -> web.Response:
         """Post route function that creates deltakerliste."""
@@ -221,13 +224,12 @@ class ResultatEditNew(web.View):
 
         except Exception as e:
             logging.exception("Error")
-            error_reason = str(e)
-            if error_reason.count("401") > 0:
+            if is_login_error(e):
                 informasjon = (
                     f"Error 401 - Ingen tilgang, vennligst logg inn på nytt. {e}"
                 )
             else:
-                informasjon += f"{error_reason}. " + informasjon
+                informasjon = f"{informasjon} {error_text(e)}".strip()
 
             # check for update without reload
             if "ajax" in form:
@@ -238,11 +240,14 @@ class ResultatEditNew(web.View):
                 }
                 json_response = json.dumps(response)
                 return web.Response(text=json_response)
-            return web.HTTPSeeOther(
-                location=login_location(informasjon, self.request.path_qs)
-            )
+            # Only a missing or expired login goes to the login page:
+            if is_login_error(e):
+                raise web.HTTPSeeOther(
+                    location=login_location(LOGIN_AGAIN, self.request.path_qs)
+                ) from e
+            event_id = str(form.get("event_id", ""))
         info = f"{informasjon}&klasse={valgt_runde.klasse}&runde={valgt_runde.runde}"
-        return web.HTTPSeeOther(
+        raise web.HTTPSeeOther(
             location=f"/resultat_edit_new?event_id={event_id}&informasjon={info}"
         )
 
