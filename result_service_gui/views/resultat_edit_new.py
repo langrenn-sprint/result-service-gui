@@ -23,6 +23,7 @@ from result_service_gui.services import (
 from .utils import (
     LOGIN_AGAIN,
     check_login,
+    check_login_api,
     create_start,
     error_text,
     get_enrichced_startlist,
@@ -35,6 +36,7 @@ from .utils import (
     is_login_error,
     login_location,
     raise_error,
+    raise_login_expired,
 )
 
 
@@ -154,11 +156,11 @@ class ResultatEditNew(web.View):
 
     async def post(self) -> web.Response:
         """Post route function that creates deltakerliste."""
-        # check login
-        user = await check_login(self)
+        form = dict(await self.request.post())
+        # check login; the page sends results without reload with ajax=true:
+        user = await (check_login_api(self) if "ajax" in form else check_login(self))
         informasjon = ""
         valgt_runde = ValgtRunde()
-        form = dict(await self.request.post())
 
         try:
             logging.debug(f"Form {form}")
@@ -230,6 +232,8 @@ class ResultatEditNew(web.View):
                 informasjon = f"{informasjon} {error_text(e)}".strip()
 
             # check for update without reload
+            if "ajax" in form and is_login_error(e):
+                raise_login_expired(e)
             if "ajax" in form:
                 response = {
                     "race_results": [],
