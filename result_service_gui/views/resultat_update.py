@@ -14,7 +14,14 @@ from result_service_gui.services import (
     RaceclassResultsService,
 )
 
-from .utils import check_login, get_event, get_race_kpis
+from .utils import (
+    LOGIN_AGAIN,
+    check_login,
+    error_text,
+    get_event,
+    get_race_kpis,
+    is_login_error,
+)
 
 
 class ResultatUpdate(web.View):
@@ -56,8 +63,9 @@ class ResultatUpdate(web.View):
                 logging.debug(f"Resultat for {raceclass_name} er publisert. {res}")
                 informasjon = f"Resultat for {raceclass_name} er publisert. "
         except Exception as e:
-            informasjon = f"Det har oppstått en feil: {e}"
+            # Answered as text or JSON, so no redirect to the login page:
             logging.exception("Result update")
+            informasjon = LOGIN_AGAIN if is_login_error(e) else error_text(e)
         if "json" in form:
             response = {
                 "informasjon": informasjon,

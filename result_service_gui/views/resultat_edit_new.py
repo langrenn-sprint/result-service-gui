@@ -225,9 +225,7 @@ class ResultatEditNew(web.View):
         except Exception as e:
             logging.exception("Error")
             if is_login_error(e):
-                informasjon = (
-                    f"Error 401 - Ingen tilgang, vennligst logg inn på nytt. {e}"
-                )
+                informasjon = f"Error 401 - {LOGIN_AGAIN}"
             else:
                 informasjon = f"{informasjon} {error_text(e)}".strip()
 

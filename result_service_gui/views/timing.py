@@ -17,8 +17,11 @@ from result_service_gui.services import (
 
 from .utils import (
     check_login,
+    error_message,
+    error_text,
     get_enrichced_startlist,
     get_event,
+    is_login_error,
     login_location,
     raise_error,
 )
@@ -118,16 +121,7 @@ class Timing(web.View):
                 informasjon = "Ugylding action - ingen endringer"
 
         except Exception as e:
-            logging.exception("Error")
-            informasjon = f"Det har oppstått en feil - {e.args}."
-            error_reason = str(e)
-            if error_reason.startswith("401"):
-                raise web.HTTPSeeOther(
-                    location=login_location(
-                        f"Ingen tilgang, vennligst logg inn på nytt. {e}",
-                        self.request.path_qs,
-                    )
-                ) from e
+            informasjon = error_message(self, e)
 
         raise web.HTTPSeeOther(
             location=f"/timing?event_id={event_id}&informasjon={informasjon}&action={action}&heat={valgt_heat}"
@@ -192,7 +186,10 @@ async def create_dns_time_events_manual(user: dict, event: dict, form: dict) -> 
                     i += 1
                     informasjon += f" {request_body['bib']}-{changelog_comment}. "
             except Exception as e:
-                informasjon += f"Error: {e}"
+                if is_login_error(e):
+                    raise
+                logging.exception("Error registering start time event")
+                informasjon += f" {error_text(e)}"
 
     return f" {i} registreringer lagret. {informasjon}"
 
