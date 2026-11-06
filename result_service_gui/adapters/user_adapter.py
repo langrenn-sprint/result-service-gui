@@ -12,6 +12,8 @@ from typing import TYPE_CHECKING, TypeGuard
 from aiohttp import ClientError, ClientSession, hdrs, web
 from multidict import MultiDict
 
+from .ids import require_id
+
 if TYPE_CHECKING:
     from aiohttp_session import Session
 
@@ -77,7 +79,7 @@ class UserAdapter:
                 (hdrs.AUTHORIZATION, f"Bearer {token}"),
             ],
         )
-        url = f"{USER_SERVICE_URL}/users/{w_id}"
+        url = f"{USER_SERVICE_URL}/users/{require_id(w_id)}"
         async with ClientSession() as session:
             async with session.delete(url, headers=headers) as resp:
                 pass
