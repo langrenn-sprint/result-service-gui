@@ -19,6 +19,7 @@ from result_service_gui.adapters import EventsAdapter
 from result_service_gui.views.utils import (
     LOGIN_AGAIN,
     UNEXPECTED_ERROR,
+    error_message,
     error_text,
     is_login_error,
     raise_error,
@@ -278,3 +279,134 @@ async def test_result_expired_login_sends_to_login_page(
     )
     assert resp.status == HTTPStatus.SEE_OTHER
     assert location(resp)[0] == "/login"
+
+
+# --- Errors where the user stays on the page (follow-up to #240) ---------------------------
+
+
+@pytest.mark.integration
+def test_error_message() -> None:
+    """Returns the message; redirects pass through, 401 goes to login."""
+
+    class Request:
+        method = "POST"
+        path_qs = "/photos_edit?event_id=e1"
+
+    class View:
+        request = Request()
+
+    view = View()
+    assert error_message(view, TypeError("x")) == UNEXPECTED_ERROR  # type: ignore[arg-type]
+    assert error_message(view, Exception("Klassen mangler")) == (  # type: ignore[arg-type]
+        "Det har oppstått en feil: Klassen mangler"
+    )
+    with pytest.raises(web.HTTPSeeOther) as e:
+        error_message(view, Exception("401 Unathorized - x"))  # type: ignore[arg-type]
+    assert URL(e.value.location).path == "/login"
+    redirect = web.HTTPSeeOther(location="/somewhere")
+    with pytest.raises(web.HTTPSeeOther) as e:
+        error_message(view, redirect)  # type: ignore[arg-type]
+    assert e.value is redirect
+
+
+@pytest.mark.integration
+@pytest.mark.parametrize(
+    ("error", "expected_path", "message"),
+    [
+        (
+            TypeError("'NoneType' object is not subscriptable"),
+            "/photos_edit",
+            UNEXPECTED_ERROR,
+        ),
+        (
+            Exception("Bildet finnes ikke"),
+            "/photos_edit",
+            "Det har oppstått en feil: Bildet finnes ikke",
+        ),
+        (
+            web.HTTPBadRequest(reason="401 Unathorized - get_event"),
+            "/login",
+            LOGIN_AGAIN,
+        ),
+    ],
+)
+async def test_photos_edit_error_stays_on_the_page(
+    client: _TestClient,
+    fakes,
+    monkeypatch: pytest.MonkeyPatch,
+    error: Exception,
+    expected_path: str,
+    message: str,
+) -> None:
+    """Before, the message was the raw error, e.g. "('…',)"."""
+
+    async def fail(*_) -> dict:
+        raise error
+
+    monkeypatch.setattr("result_service_gui.views.photos_edit.get_event", fail)
+    await login(client, "result-admin")
+    form = {"event_id": EVENT_ID, "update_race_info": "Lagre"}
+    resp = await client.post("/photos_edit", data=form, allow_redirects=False)
+    assert resp.status == HTTPStatus.SEE_OTHER
+    path, query = location(resp)
+    assert path == expected_path
+    assert query["informasjon"].strip() == message
+
+
+@pytest.mark.integration
+@pytest.mark.parametrize(
+    ("error", "message"),
+    [
+        (
+            Exception("Klassens resultat kan ikke lages"),
+            "Det har oppstått en feil: Klassens resultat kan ikke lages",
+        ),
+        (Exception("401 Unathorized - create"), LOGIN_AGAIN),
+    ],
+)
+async def test_resultat_update_answers_with_message(
+    client: _TestClient,
+    fakes,
+    monkeypatch: pytest.MonkeyPatch,
+    error: Exception,
+    message: str,
+) -> None:
+    """The page calls it in the background, so it answers, also on 401."""
+
+    async def fake_get_event(*_) -> dict:
+        return EVENT
+
+    async def fail(*_) -> str:
+        raise error
+
+    monkeypatch.setattr(
+        "result_service_gui.views.resultat_update.get_event", fake_get_event
+    )
+    monkeypatch.setattr(
+        "result_service_gui.views.resultat_update.RaceclassResultsService.create_raceclass_results",
+        fail,
+    )
+    await login(client, "result-admin")
+    form = {"action": "generate_resultlist", "event_id": EVENT_ID, "raceclass": "G11"}
+    resp = await client.post("/resultat_update", data=form, allow_redirects=False)
+    assert resp.status == HTTPStatus.OK
+    assert await resp.text() == message
+
+
+@pytest.mark.integration
+async def test_login_error_message(
+    client: _TestClient, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    """A login that fails with an error shows a message, not the raw error."""
+    from result_service_gui.adapters import UserAdapter
+
+    async def fail(*_) -> int:
+        raise TypeError("'NoneType' object is not subscriptable")
+
+    monkeypatch.setattr(UserAdapter, "login", fail)
+    resp = await client.post(
+        "/login", data={"username": "u", "password": "p"}, allow_redirects=False
+    )
+    text = await resp.text()
+    assert f"Innlogging feilet. {UNEXPECTED_ERROR}" in text
+    assert "NoneType" not in text

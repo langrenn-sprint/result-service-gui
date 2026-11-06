@@ -14,6 +14,7 @@ from .utils import (
     check_login,
     create_start,
     delete_start,
+    error_message,
     get_enrichced_startlist,
     get_event,
     get_qualification_text,
@@ -118,16 +119,7 @@ class StartEdit(web.View):
                 informasjon += await create_start(user, form)
 
         except Exception as e:
-            logging.exception("Error")
-            informasjon = f"Det har oppstått en feil - {e.args}."
-            error_reason = str(e)
-            if error_reason.startswith("401"):
-                raise web.HTTPSeeOther(
-                    location=login_location(
-                        f"Ingen tilgang, vennligst logg inn på nytt. {e}",
-                        self.request.path_qs,
-                    )
-                ) from e
+            informasjon = error_message(self, e)
         info = (
             f"{informasjon}&klasse={valgt_klasse}&runde={valgt_runde}&action={action}"
         )
