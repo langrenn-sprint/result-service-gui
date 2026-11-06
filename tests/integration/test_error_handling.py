@@ -410,3 +410,4 @@ async def test_login_error_message(
     text = await resp.text()
     assert f"Innlogging feilet. {UNEXPECTED_ERROR}" in text
     assert "NoneType" not in text
+
