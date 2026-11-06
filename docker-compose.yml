@@ -172,8 +172,6 @@ services:
         target: /app/application_default_credentials.json
   mongodb:
     image: mongo:7-jammy
-    volumes:
-      - ./data/db:/data/db
     environment:
       - MONGO_INITDB_ROOT_USERNAME=${DB_USER}
       - MONGO_INITDB_ROOT_PASSWORD=${DB_PASSWORD}
