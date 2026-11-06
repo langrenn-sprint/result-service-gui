@@ -19,7 +19,10 @@ from aiohttp_session import Session
 from yarl import URL
 
 from result_service_gui.adapters import ConfigAdapter, UserAdapter
-from result_service_gui.adapters.config_adapter import NO_ACCESS_CONFIG
+from result_service_gui.adapters.config_adapter import (
+    NO_ACCESS_CONFIG,
+    default_settings,
+)
 from result_service_gui.adapters.user_adapter import get_role_from_token, store_token
 
 from .test_config_adapter import EVENT_ID, FakePhotoService, photo_service
@@ -242,3 +245,38 @@ async def test_adapter_create_forbidden(fakes) -> None:
     with pytest.raises(web.HTTPForbidden) as e:
         await ConfigAdapter().update_config("t", EVENT_ID, "VIDEO_STORAGE_MODE", "x")
     assert e.value.reason == NO_ACCESS_CONFIG
+
+
+# --- All settings on the settings page (follow-up to #236) --------------------------
+
+
+@pytest.mark.integration
+async def test_settings_page_shows_all_settings(client: _TestClient, fakes) -> None:
+    """A new event shows every setting, with the default, so admin can edit it."""
+    fakes.settings.clear()
+    fakes.settings[(EVENT_ID, "VIDEO_STORAGE_MODE")] = "saved value"
+    fakes.settings[(EVENT_ID, "NOT_IN_DEFAULTS")] = "extra"
+    await login(client, "admin")
+    resp = await client.get(f"/config?event_id={EVENT_ID}&action=edit")
+    text = await resp.text()
+    defaults = default_settings()
+    for key in defaults:
+        assert f'name="key" value="{key}"' in text
+    assert 'name="key" value="NOT_IN_DEFAULTS"' in text
+    assert text.count("name=update_one") == len(defaults) + 1
+    # Defaults are marked, saved values are not:
+    assert text.count(">(standard)</i>") == len(defaults) - 1
+    assert 'value="saved value"' in text
+
+
+@pytest.mark.integration
+async def test_admin_saves_a_setting_that_is_not_saved_yet(
+    client: _TestClient, fakes
+) -> None:
+    fakes.settings.clear()
+    await login(client, "admin")
+    resp = await save_setting(client)
+    assert informasjon(resp) == "Suksess. Informasjon er oppdatert."
+    assert fakes.settings == {(EVENT_ID, "VIDEO_STORAGE_MODE"): "new value"}
+    text = await (await client.get(f"/config?event_id={EVENT_ID}")).text()
+    assert text.count(">(standard)</i>") == len(default_settings()) - 1

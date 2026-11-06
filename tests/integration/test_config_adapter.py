@@ -16,6 +16,7 @@ import pytest
 from aiohttp import web
 
 from result_service_gui.adapters import ConfigAdapter
+from result_service_gui.adapters.config_adapter import with_defaults
 
 EVENT_ID = "e1"
 DEFAULTS = json.loads(
@@ -165,3 +166,33 @@ async def test_update_unknown_setting(photo_service: FakePhotoService) -> None:
     assert "NO_SUCH_SETTING not found" in e.value.reason
     assert [method for method, _ in photo_service.writes] == ["PUT"]
     assert photo_service.settings == {}
+
+
+# --- All settings (follow-up) ------------------------------------------------------
+
+
+@pytest.mark.integration
+def test_with_defaults() -> None:
+    """All known settings, with saved values where saved, then other saved ones."""
+    saved = [
+        {"event_id": EVENT_ID, "key": "VIDEO_STORAGE_MODE", "value": "saved"},
+        {"event_id": EVENT_ID, "key": "NOT_IN_DEFAULTS", "value": "extra"},
+    ]
+    settings = with_defaults(saved)
+    assert [s["key"] for s in settings] == [*DEFAULTS, "NOT_IN_DEFAULTS"]
+    by_key = {s["key"]: s for s in settings}
+    assert by_key["VIDEO_STORAGE_MODE"] == {
+        "key": "VIDEO_STORAGE_MODE",
+        "value": "saved",
+        "is_default": False,
+    }
+    assert by_key["NOT_IN_DEFAULTS"]["is_default"] is False
+    assert by_key["RACE_DURATION_ESTIMATE"] == {
+        "key": "RACE_DURATION_ESTIMATE",
+        "value": DEFAULTS["RACE_DURATION_ESTIMATE"],
+        "is_default": True,
+    }
+    assert with_defaults([]) == [
+        {"key": key, "value": value, "is_default": True}
+        for key, value in DEFAULTS.items()
+    ]
