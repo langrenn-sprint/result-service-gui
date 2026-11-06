@@ -16,6 +16,21 @@ PHOTO_SERVICE_URL = f"http://{PHOTOS_HOST_SERVER}:{PHOTOS_HOST_PORT}"
 PROJECT_ROOT = f"{Path.cwd()}/result_service_gui"
 
 
+def default_value(key: str) -> str:
+    """Return the default value of a setting, from global_settings.json.
+
+    Raises web.HTTPBadRequest if the setting is unknown.
+    """
+    config_file = Path(f"{PROJECT_ROOT}/config/global_settings.json")
+    with config_file.open() as json_file:
+        settings = json.load(json_file)
+    if key in settings:
+        return settings[key]
+    informasjon = f"Config {key} not found in config file {config_file}."
+    logging.error(informasjon)
+    raise web.HTTPBadRequest(reason=informasjon)
+
+
 class ConfigAdapter:
     """Class representing config."""
 
@@ -43,18 +58,9 @@ class ConfigAdapter:
                 informasjon = f"Login expired: {resp}"
                 raise Exception(informasjon)
             elif resp.status == HTTPStatus.NOT_FOUND:
-                # config not found - find default value
-                config_file = Path(f"{PROJECT_ROOT}/config/global_settings.json")
-                with config_file.open() as json_file:
-                    settings = json.load(json_file)
-                    if key in settings:
-                        value = settings[key]
-                        # create config
-                        await self.create_config(token, event_id, key, value)
-                        return value
-                informasjon = f"Config {key} not found in config file {config_file}."
-                logging.error(informasjon)
-                raise web.HTTPBadRequest(reason=informasjon)
+                # Not saved for this event: use the default, without saving it.
+                # Reading must not write, as only admin may save settings.
+                return default_value(key)
             else:
                 body = await resp.json()
                 informasjon = f"{servicename} failed - {resp.status} - {body['detail']}"
@@ -222,18 +228,10 @@ class ConfigAdapter:
             if resp.status == HTTPStatus.NO_CONTENT:
                 logging.debug(f"update config - got response {resp}")
             elif resp.status == HTTPStatus.NOT_FOUND:
-                # config not found - find default value
-                config_file = Path(f"{PROJECT_ROOT}/config/global_settings.json")
-                with config_file.open() as json_file:
-                    settings = json.load(json_file)
-                    if key in settings:
-                        value = settings[key]
-                        # create config
-                        await self.create_config(token, event_id, key, value)
-                        return value
-                informasjon = f"Config {key} not found in config file {config_file}."
-                logging.error(informasjon)
-                raise web.HTTPBadRequest(reason=informasjon)
+                # Not saved for this event yet: save it with the new value.
+                default_value(key)  # only known settings may be saved
+                await self.create_config(token, event_id, key, new_value)
+                return str(HTTPStatus.CREATED.value)
             elif resp.status == HTTPStatus.UNAUTHORIZED:
                 informasjon = f"Login expired: {resp}"
                 raise Exception(informasjon)
